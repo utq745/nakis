@@ -19,27 +19,29 @@ import { useLanguage } from "@/components/providers/language-provider";
 export function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+
+    const prefix = language === 'tr' ? '/tr' : '';
 
     const customerNav = [
         {
             title: t.sidebar.dashboard,
-            href: "/dashboard",
+            href: `${prefix}/dashboard`,
             icon: LayoutDashboard,
         },
         {
             title: t.sidebar.orders,
-            href: "/orders",
+            href: `${prefix}/orders`,
             icon: Package,
         },
         {
             title: t.sidebar.newOrder,
-            href: "/orders/new",
+            href: `${prefix}/orders/new`,
             icon: Plus,
         },
         {
             title: t.sidebar.settings,
-            href: "/settings",
+            href: `${prefix}/settings`,
             icon: Settings,
         },
     ];
@@ -47,27 +49,27 @@ export function Sidebar() {
     const adminNav = [
         {
             title: t.sidebar.dashboard,
-            href: "/dashboard",
+            href: `${prefix}/dashboard`,
             icon: LayoutDashboard,
         },
         {
             title: t.sidebar.allOrders,
-            href: "/orders",
+            href: `${prefix}/orders`,
             icon: Package,
         },
         {
             title: t.sidebar.customers,
-            href: "/customers",
+            href: `${prefix}/customers`,
             icon: Users,
         },
         {
             title: t.sidebar.reports,
-            href: "/reports",
+            href: `${prefix}/reports`,
             icon: FileText,
         },
         {
             title: t.sidebar.settings,
-            href: "/settings",
+            href: `${prefix}/settings`,
             icon: Settings,
         },
     ];
@@ -90,7 +92,7 @@ export function Sidebar() {
                 {/* Navigation */}
                 <nav className="flex-1 space-y-1 px-3 py-4">
                     {navItems.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || pathname === item.href.replace('/tr', '');
                         return (
                             <Link
                                 key={item.href}

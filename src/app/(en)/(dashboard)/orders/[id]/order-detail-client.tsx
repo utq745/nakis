@@ -69,8 +69,11 @@ interface OrderDetailClientProps {
     isAdmin: boolean;
 }
 
+import { useLanguage } from "@/components/providers/language-provider";
+
 export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const router = useRouter();
+    const { t, language } = useLanguage();
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [status, setStatus] = useState<OrderStatus>(order.status);
@@ -93,13 +96,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             });
 
             if (!response.ok) {
-                throw new Error("Güncelleme başarısız");
+                throw new Error(t.orders.updateError);
             }
 
-            toast.success("Sipariş güncellendi");
+            toast.success(t.orders.updateSuccess);
             router.refresh();
         } catch (error) {
-            toast.error("Güncelleme sırasında hata oluştu");
+            toast.error(t.orders.updateError);
             console.error(error);
         } finally {
             setIsUpdating(false);
@@ -127,13 +130,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             });
 
             if (!response.ok) {
-                throw new Error("Yükleme başarısız");
+                throw new Error(t.orders.uploadError);
             }
 
-            toast.success("Dosyalar yüklendi");
+            toast.success(t.orders.uploadSuccess);
             router.refresh();
         } catch (error) {
-            toast.error("Dosya yüklenirken hata oluştu");
+            toast.error(t.orders.uploadError);
             console.error(error);
         } finally {
             setIsUploading(false);
@@ -145,17 +148,20 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         createdAt: c.createdAt.toISOString(),
     }));
 
+    const dateLocale = language === "tr" ? "tr-TR" : "en-US";
+    const prefix = language === "tr" ? "/tr" : "";
+
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-start justify-between">
                 <div>
                     <Link
-                        href="/orders"
+                        href={`${prefix}/orders`}
                         className="inline-flex items-center text-zinc-400 hover:text-white transition-colors mb-4"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Siparişlere Dön
+                        {t.orders.backToOrders}
                     </Link>
                     <div className="flex items-center gap-4">
                         <h1 className="text-2xl font-bold text-white">{order.title}</h1>
@@ -165,16 +171,16 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </div>
                     {isAdmin && (
                         <p className="text-zinc-400 mt-1">
-                            Müşteri: {order.customer.name || order.customer.email}
+                            {t.orders.customerName}: {order.customer.name || order.customer.email}
                         </p>
                     )}
                 </div>
 
                 {order.price && (
                     <div className="text-right">
-                        <p className="text-sm text-zinc-400">Fiyat</p>
+                        <p className="text-sm text-zinc-400">{t.orders.price}</p>
                         <p className="text-2xl font-bold text-violet-400">
-                            ₺{Number(order.price).toLocaleString("tr-TR")}
+                            ₺{Number(order.price).toLocaleString(dateLocale)}
                         </p>
                     </div>
                 )}
@@ -187,7 +193,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     {order.description && (
                         <Card className="bg-zinc-900 border-zinc-800">
                             <CardHeader>
-                                <CardTitle className="text-white text-lg">Açıklama</CardTitle>
+                                <CardTitle className="text-white text-lg">{t.orders.description}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-zinc-300 whitespace-pre-wrap">
@@ -200,31 +206,31 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     {/* Files */}
                     <Card className="bg-zinc-900 border-zinc-800">
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">Dosyalar</CardTitle>
+                            <CardTitle className="text-white text-lg">{t.orders.files}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Tabs defaultValue="original" className="w-full">
                                 <TabsList className="bg-zinc-800 w-full justify-start">
                                     <TabsTrigger value="original" className="data-[state=active]:bg-zinc-700">
-                                        Orijinal ({originalFiles.length})
+                                        {t.orders.original} ({originalFiles.length})
                                     </TabsTrigger>
                                     <TabsTrigger value="preview" className="data-[state=active]:bg-zinc-700">
-                                        Önizleme ({previewFiles.length})
+                                        {t.orders.preview} ({previewFiles.length})
                                     </TabsTrigger>
                                     <TabsTrigger value="final" className="data-[state=active]:bg-zinc-700">
-                                        Final ({finalFiles.length})
+                                        {t.orders.final} ({finalFiles.length})
                                     </TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="original" className="mt-4">
-                                    <FileList files={originalFiles} />
+                                    <FileList files={originalFiles} emptyText={t.orders.noFiles} />
                                 </TabsContent>
                                 <TabsContent value="preview" className="mt-4 space-y-4">
-                                    <FileList files={previewFiles} showPreview />
+                                    <FileList files={previewFiles} showPreview emptyText={t.orders.noFiles} />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
                                             <Label className="text-zinc-400 text-sm">
-                                                Önizleme Dosyası Yükle
+                                                {t.orders.previewUploadLabel}
                                             </Label>
                                             <input
                                                 type="file"
@@ -247,7 +253,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                         ) : (
                                                             <Upload className="mr-2 h-4 w-4" />
                                                         )}
-                                                        Önizleme Yükle
+                                                        {t.orders.uploadPreview}
                                                     </span>
                                                 </Button>
                                             </label>
@@ -255,11 +261,11 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     )}
                                 </TabsContent>
                                 <TabsContent value="final" className="mt-4 space-y-4">
-                                    <FileList files={finalFiles} />
+                                    <FileList files={finalFiles} emptyText={t.orders.noFiles} />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
                                             <Label className="text-zinc-400 text-sm">
-                                                Final Dosyası Yükle
+                                                {t.orders.finalUploadLabel}
                                             </Label>
                                             <input
                                                 type="file"
@@ -282,7 +288,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                         ) : (
                                                             <Upload className="mr-2 h-4 w-4" />
                                                         )}
-                                                        Final Dosyası Yükle
+                                                        {t.orders.uploadFinal}
                                                     </span>
                                                 </Button>
                                             </label>
@@ -297,7 +303,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     <Card className="bg-zinc-900 border-zinc-800">
                         <CardHeader>
                             <CardTitle className="text-white text-lg">
-                                Mesajlar & Revizyon Talepleri
+                                {t.orders.messages}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -311,17 +317,17 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     {/* Order Info */}
                     <Card className="bg-zinc-900 border-zinc-800">
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">Sipariş Bilgileri</CardTitle>
+                            <CardTitle className="text-white text-lg">{t.orders.orderInfo}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="text-sm text-zinc-400">Sipariş No</p>
+                                <p className="text-sm text-zinc-400">{t.orders.orderNo}</p>
                                 <p className="text-white font-mono">{order.id.slice(0, 8)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-zinc-400">Oluşturulma</p>
+                                <p className="text-sm text-zinc-400">{t.orders.created}</p>
                                 <p className="text-white">
-                                    {new Date(order.createdAt).toLocaleDateString("tr-TR", {
+                                    {new Date(order.createdAt).toLocaleDateString(dateLocale, {
                                         year: "numeric",
                                         month: "long",
                                         day: "numeric",
@@ -331,9 +337,9 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-sm text-zinc-400">Son Güncelleme</p>
+                                <p className="text-sm text-zinc-400">{t.orders.updated}</p>
                                 <p className="text-white">
-                                    {new Date(order.updatedAt).toLocaleDateString("tr-TR", {
+                                    {new Date(order.updatedAt).toLocaleDateString(dateLocale, {
                                         year: "numeric",
                                         month: "long",
                                         day: "numeric",
@@ -350,12 +356,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         <Card className="bg-zinc-900 border-zinc-800">
                             <CardHeader>
                                 <CardTitle className="text-white text-lg">
-                                    Sipariş Yönetimi
+                                    {t.orders.management}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label className="text-zinc-400">Durum</Label>
+                                    <Label className="text-zinc-400">{t.orders.status}</Label>
                                     <Select
                                         value={status}
                                         onValueChange={(value) => setStatus(value as OrderStatus)}
@@ -378,7 +384,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-zinc-400">Fiyat (₺)</Label>
+                                    <Label className="text-zinc-400">{t.orders.price} (₺)</Label>
                                     <Input
                                         type="number"
                                         value={price}
@@ -396,10 +402,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     {isUpdating ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Güncelleniyor...
+                                            {t.common.loading}
                                         </>
                                     ) : (
-                                        "Güncelle"
+                                        t.common.update
                                     )}
                                 </Button>
                             </CardContent>
@@ -414,6 +420,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 function FileList({
     files,
     showPreview = false,
+    emptyText,
 }: {
     files: Array<{
         id: string;
@@ -422,11 +429,12 @@ function FileList({
         size: number | null;
     }>;
     showPreview?: boolean;
+    emptyText: string;
 }) {
     if (files.length === 0) {
         return (
             <div className="text-center py-8 text-zinc-500">
-                Henüz dosya yüklenmemiş
+                {emptyText}
             </div>
         );
     }

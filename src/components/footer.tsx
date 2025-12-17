@@ -35,7 +35,7 @@ export function Footer() {
                     <div className="flex flex-col gap-4">
                         <h4 className="text-[#111318] dark:text-white font-bold text-sm uppercase tracking-wider">{t.footer.company}</h4>
                         <div className="flex flex-col gap-2">
-                            <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.footer.aboutUs}</Link>
+                            <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href={language === 'tr' ? '/tr/about' : '/about'}>{t.footer.aboutUs}</Link>
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.header.portfolio}</Link>
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.header.pricing}</Link>
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.footer.contact}</Link>

@@ -127,7 +127,7 @@ export function Header() {
                             <DropdownMenuSeparator className="bg-zinc-800" />
                             <DropdownMenuItem
                                 className="text-red-400 focus:text-red-300 focus:bg-zinc-800 cursor-pointer"
-                                onClick={() => signOut({ callbackUrl: "/login" })}
+                                onClick={() => signOut({ callbackUrl: language === 'tr' ? "/tr/login" : "/login" })}
                             >
                                 <LogOut className="mr-2 h-4 w-4" />
                                 {t.common.logout}

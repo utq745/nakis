@@ -4,13 +4,14 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
+
 import { useLanguage } from "@/components/providers/language-provider";
 
 export default function LoginPage() {
     const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -47,7 +48,7 @@ export default function LoginPage() {
                 if (result?.error) {
                     setError(result.error);
                 } else {
-                    router.push("/dashboard");
+                    router.push("/tr/dashboard");
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Registration failed");
@@ -63,7 +64,7 @@ export default function LoginPage() {
             if (result?.error) {
                 setError("Invalid email or password");
             } else {
-                router.push("/dashboard");
+                router.push("/tr/dashboard");
             }
         }
 
@@ -71,11 +72,11 @@ export default function LoginPage() {
     };
 
     const handleGoogleSignIn = () => {
-        signIn("google", { callbackUrl: "/dashboard" });
+        signIn("google", { callbackUrl: "/tr/dashboard" });
     };
 
     const handleAppleSignIn = () => {
-        signIn("apple", { callbackUrl: "/dashboard" });
+        signIn("apple", { callbackUrl: "/tr/dashboard" });
     };
 
     return (
@@ -207,14 +208,18 @@ export default function LoginPage() {
                                     <input
                                         className="block w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
                                         id="password"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
-                                    <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-500">
-                                        <span className="material-symbols-outlined text-[20px]">visibility</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-500"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
                                     </button>
                                 </div>
                             </div>
@@ -288,8 +293,6 @@ export default function LoginPage() {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 }
