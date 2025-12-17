@@ -80,7 +80,7 @@ export default async function OrdersPage() {
                 </Card>
             ) : (
                 <div className="grid gap-4">
-                    {orders.map((order) => (
+                    {orders.map((order: typeof orders[number]) => (
                         <Link key={order.id} href={`/orders/${order.id}`}>
                             <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer group">
                                 <CardContent className="p-6">
