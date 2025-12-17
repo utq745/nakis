@@ -19,7 +19,7 @@ export default async function CustomersPage() {
         orderBy: { createdAt: "desc" }
     });
 
-    const serializedCustomers = customers.map(customer => ({
+    const serializedCustomers = customers.map((customer: typeof customers[number]) => ({
         ...customer,
         createdAt: customer.createdAt.toISOString()
     }));

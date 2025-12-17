@@ -100,8 +100,8 @@ export default async function OrdersPage() {
                                                 </p>
                                             )}
                                         </div>
-                                        <Badge className={ORDER_STATUS_COLORS[order.status]}>
-                                            {ORDER_STATUS_LABELS[order.status]}
+                                        <Badge className={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS]}>
+                                            {ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS]}
                                         </Badge>
                                     </div>
 

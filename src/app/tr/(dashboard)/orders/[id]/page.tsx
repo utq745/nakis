@@ -53,9 +53,26 @@ export default async function OrderDetailPage({
         return notFound();
     }
 
+    // Cast status to OrderStatus type
+    const typedOrder = {
+        ...order,
+        status: order.status as import("@/types").OrderStatus,
+        customer: {
+            ...order.customer,
+            role: order.customer.role as "ADMIN" | "CUSTOMER"
+        },
+        comments: order.comments.map(c => ({
+            ...c,
+            user: {
+                ...c.user,
+                role: c.user.role as "ADMIN" | "CUSTOMER"
+            }
+        }))
+    };
+
     return (
         <Providers>
-            <OrderDetailClient order={order} isAdmin={isAdmin} />
+            <OrderDetailClient order={typedOrder} isAdmin={isAdmin} />
         </Providers>
     );
 }

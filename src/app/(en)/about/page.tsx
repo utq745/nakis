@@ -55,9 +55,6 @@ export default function AboutPage() {
 
                     <div className="relative max-w-[1280px] mx-auto px-4 md:px-10">
                         <div className="text-center">
-                            <span className="inline-block px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm font-medium mb-6 backdrop-blur-sm border border-white/10">
-                                🧵 ApprovalStitch
-                            </span>
                             <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1]">
                                 {ap.heroTitle}
                             </h1>
@@ -101,12 +98,12 @@ export default function AboutPage() {
                                     <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-[#135bec]/10 rounded-2xl"></div>
 
                                     {/* Main Image */}
-                                    <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-[#135bec] to-[#0d47c9] flex items-center justify-center">
-                                        <div className="text-center p-8">
-                                            <span className="material-symbols-outlined text-[120px] text-white/20">precision_manufacturing</span>
-                                            <p className="text-white font-bold text-xl mt-4">Tajima Calibrated</p>
-                                            <p className="text-white/60">Single-Head Machine</p>
-                                        </div>
+                                    <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+                                        <img
+                                            src="/images/Stitching-machine.webp"
+                                            alt="Tajima Calibrated Single-Head Machine"
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
                                 </div>
                             </div>
