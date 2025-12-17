@@ -61,7 +61,7 @@ export default async function OrderDetailPage({
             ...order.customer,
             role: order.customer.role as "ADMIN" | "CUSTOMER"
         },
-        comments: order.comments.map(c => ({
+        comments: order.comments.map((c: typeof order.comments[number]) => ({
             ...c,
             user: {
                 ...c.user,
