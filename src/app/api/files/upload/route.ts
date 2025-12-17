@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { join } from "path";
 
 export async function POST(request: Request) {
     try {
@@ -44,35 +46,30 @@ export async function POST(request: Request) {
             );
         }
 
-        const supabase = createServerSupabaseClient();
         const uploadedFiles = [];
+
+        // Ensure upload directory exists
+        const uploadDir = join(process.cwd(), "public", "uploads", orderId, type);
+        await mkdir(uploadDir, { recursive: true });
 
         for (const file of files) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
 
-            const fileName = `${orderId}/${type}/${Date.now()}-${file.name}`;
+            // Clean filename to prevent issues
+            const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+            const fileName = `${Date.now()}-${safeName}`;
+            const filePath = join(uploadDir, fileName);
 
-            const { data, error } = await supabase.storage
-                .from("order-files")
-                .upload(fileName, buffer, {
-                    contentType: file.type,
-                    upsert: false,
-                });
+            await writeFile(filePath, buffer);
 
-            if (error) {
-                console.error("Supabase upload error:", error);
-                continue;
-            }
-
-            const { data: urlData } = supabase.storage
-                .from("order-files")
-                .getPublicUrl(data.path);
+            // Public URL path
+            const publicUrl = `/uploads/${orderId}/${type}/${fileName}`;
 
             const dbFile = await prisma.file.create({
                 data: {
                     name: file.name,
-                    url: urlData.publicUrl,
+                    url: publicUrl,
                     type,
                     size: file.size,
                     orderId,

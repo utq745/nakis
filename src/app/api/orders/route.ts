@@ -60,13 +60,28 @@ export async function POST(request: Request) {
             },
         });
 
-        // TODO: Send email notification to admin
+        // Send email notifications
+        if (session.user.email) {
+            const { sendOrderCreatedEmail } = await import("@/lib/mail");
+
+            // Notify Customer
+            await sendOrderCreatedEmail(
+                session.user.email,
+                order.title
+            ).catch((err) => console.error("Failed to send customer email:", err));
+
+            // Notify Admin
+            await sendOrderCreatedEmail(
+                "admin@nakis.com",
+                `YENİ SİPARİŞ: ${order.title}`
+            ).catch((err) => console.error("Failed to send admin email:", err));
+        }
 
         return NextResponse.json(order, { status: 201 });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: error.errors[0].message },
+                { error: error.issues[0].message },
                 { status: 400 }
             );
         }

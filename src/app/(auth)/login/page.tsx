@@ -8,10 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Globe } from "lucide-react";
+import { useLanguage } from "@/components/providers/language-provider";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function LoginPage() {
     const router = useRouter();
+    const { t, setLanguage } = useLanguage();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -32,21 +40,53 @@ export default function LoginPage() {
             });
 
             if (result?.error) {
-                setError("E-posta veya şifre hatalı");
+                setError(t.common.error);
             } else {
                 router.push("/dashboard");
                 router.refresh();
             }
         } catch {
-            setError("Giriş sırasında bir hata oluştu");
+            setError(t.common.error);
         } finally {
             setIsLoading(false);
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-4 relative">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+
+            {/* Language Switcher */}
+            <div className="absolute top-4 right-4 z-10">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-zinc-400 hover:text-white"
+                        >
+                            <Globe className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        className="w-32 bg-zinc-900 border-zinc-800"
+                        align="end"
+                    >
+                        <DropdownMenuItem
+                            className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                            onClick={() => setLanguage("tr")}
+                        >
+                            🇹🇷 Türkçe
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                            onClick={() => setLanguage("en")}
+                        >
+                            🇺🇸 English
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
 
             <Card className="w-full max-w-md relative bg-zinc-900/80 border-zinc-800 backdrop-blur-sm">
                 <CardHeader className="space-y-1 text-center">
@@ -59,7 +99,7 @@ export default function LoginPage() {
                         Nakış Digitizing
                     </CardTitle>
                     <CardDescription className="text-zinc-400">
-                        Hesabınıza giriş yapın
+                        {t.auth.login}
                     </CardDescription>
                 </CardHeader>
 
@@ -72,7 +112,7 @@ export default function LoginPage() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-zinc-300">E-posta</Label>
+                            <Label htmlFor="email" className="text-zinc-300">{t.auth.email}</Label>
                             <Input
                                 id="email"
                                 name="email"
@@ -85,7 +125,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-zinc-300">Şifre</Label>
+                            <Label htmlFor="password" className="text-zinc-300">{t.auth.password}</Label>
                             <Input
                                 id="password"
                                 name="password"
@@ -107,17 +147,17 @@ export default function LoginPage() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Giriş yapılıyor...
+                                    {t.common.loading}
                                 </>
                             ) : (
-                                "Giriş Yap"
+                                t.auth.login
                             )}
                         </Button>
 
                         <p className="text-sm text-zinc-400 text-center">
-                            Hesabınız yok mu?{" "}
+                            {t.auth.noAccount}{" "}
                             <Link href="/register" className="text-violet-400 hover:text-violet-300 transition-colors">
-                                Kayıt olun
+                                {t.auth.register}
                             </Link>
                         </p>
                     </CardFooter>

@@ -14,55 +14,63 @@ import {
     Sparkles,
 } from "lucide-react";
 
-const customerNav = [
-    {
-        title: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-    },
-    {
-        title: "Siparişlerim",
-        href: "/orders",
-        icon: Package,
-    },
-    {
-        title: "Yeni Sipariş",
-        href: "/orders/new",
-        icon: Plus,
-    },
-];
-
-const adminNav = [
-    {
-        title: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-    },
-    {
-        title: "Tüm Siparişler",
-        href: "/orders",
-        icon: Package,
-    },
-    {
-        title: "Müşteriler",
-        href: "/customers",
-        icon: Users,
-    },
-    {
-        title: "Raporlar",
-        href: "/reports",
-        icon: FileText,
-    },
-    {
-        title: "Ayarlar",
-        href: "/settings",
-        icon: Settings,
-    },
-];
+import { useLanguage } from "@/components/providers/language-provider";
 
 export function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const { t } = useLanguage();
+
+    const customerNav = [
+        {
+            title: t.sidebar.dashboard,
+            href: "/dashboard",
+            icon: LayoutDashboard,
+        },
+        {
+            title: t.sidebar.orders,
+            href: "/orders",
+            icon: Package,
+        },
+        {
+            title: t.sidebar.newOrder,
+            href: "/orders/new",
+            icon: Plus,
+        },
+        {
+            title: t.sidebar.settings,
+            href: "/settings",
+            icon: Settings,
+        },
+    ];
+
+    const adminNav = [
+        {
+            title: t.sidebar.dashboard,
+            href: "/dashboard",
+            icon: LayoutDashboard,
+        },
+        {
+            title: t.sidebar.allOrders,
+            href: "/orders",
+            icon: Package,
+        },
+        {
+            title: t.sidebar.customers,
+            href: "/customers",
+            icon: Users,
+        },
+        {
+            title: t.sidebar.reports,
+            href: "/reports",
+            icon: FileText,
+        },
+        {
+            title: t.sidebar.settings,
+            href: "/settings",
+            icon: Settings,
+        },
+    ];
 
     const navItems = session?.user?.role === "ADMIN" ? adminNav : customerNav;
 
@@ -105,7 +113,7 @@ export function Sidebar() {
                 <div className="border-t border-zinc-800 p-4">
                     <div className="rounded-lg bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 p-4 border border-violet-500/20">
                         <p className="text-xs text-zinc-400 mb-2">
-                            {session?.user?.role === "ADMIN" ? "Admin Paneli" : "Müşteri Paneli"}
+                            {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
                         </p>
                         <p className="text-sm text-white truncate">
                             {session?.user?.name || session?.user?.email}

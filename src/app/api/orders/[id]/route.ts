@@ -82,13 +82,29 @@ export async function PATCH(
         const order = await prisma.order.update({
             where: { id },
             data: validatedData,
+            include: {
+                customer: {
+                    select: { email: true, name: true }
+                }
+            }
         });
+
+        // Send email notification to customer
+        if (order.customer.email && (validatedData.status || validatedData.price)) {
+            const { sendOrderStatusUpdatedEmail } = await import("@/lib/mail");
+            await sendOrderStatusUpdatedEmail(
+                order.customer.email,
+                order.title,
+                order.status,
+                validatedData.price
+            ).catch(console.error);
+        }
 
         return NextResponse.json(order);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: error.errors[0].message },
+                { error: error.issues[0].message },
                 { status: 400 }
             );
         }

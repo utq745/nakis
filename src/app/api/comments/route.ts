@@ -21,6 +21,11 @@ export async function POST(request: Request) {
         // Check order access
         const order = await prisma.order.findUnique({
             where: { id: validatedData.orderId },
+            include: {
+                customer: {
+                    select: { email: true }
+                }
+            }
         });
 
         if (!order) {
@@ -51,6 +56,20 @@ export async function POST(request: Request) {
                 where: { id: validatedData.orderId },
                 data: { status: "REVISION" },
             });
+        }
+
+        // Send Email Notification
+        const { sendNewCommentEmail } = await import("@/lib/mail");
+        const recipientEmail = isAdmin ? order.customer.email : "admin@nakis.com";
+        const senderName = session.user.name || session.user.email || "Kullanıcı";
+
+        if (recipientEmail) {
+            await sendNewCommentEmail(
+                recipientEmail,
+                order.title,
+                senderName,
+                validatedData.content
+            ).catch(console.error);
         }
 
         return NextResponse.json(comment, { status: 201 });
