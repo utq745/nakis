@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { translations, Locale } from "@/lib/dictionary";
+import { useRouter, usePathname } from "next/navigation";
 
 type LanguageContextType = {
     language: Locale;
@@ -11,26 +12,35 @@ type LanguageContextType = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguage] = useState<Locale>("en");
-    // Hydration mismatch is possible if local storage has 'en' but server renders 'tr'.
-    // We accept this flash for simplicity in this client-side i18n implementation.
+export function LanguageProvider({
+    children,
+    initialLang
+}: {
+    children: React.ReactNode;
+    initialLang: Locale;
+}) {
+    const [language, setLanguageState] = useState<Locale>(initialLang);
+    const router = useRouter();
+    const pathname = usePathname();
 
-    useEffect(() => {
-        const stored = localStorage.getItem("language") as Locale;
-        if (stored && (stored === "tr" || stored === "en")) {
-            setLanguage(stored);
+    const setLanguage = (lang: Locale) => {
+        setLanguageState(lang);
+
+        // Update URL based on language
+        if (lang === 'en') {
+            // Remove /tr prefix if exists
+            const newPath = pathname.replace(/^\/tr/, '') || '/';
+            router.push(newPath);
+        } else {
+            // Add /tr prefix if not exists
+            const newPath = pathname.startsWith('/tr') ? pathname : `/tr${pathname}`;
+            router.push(newPath);
         }
-    }, []);
-
-    const handleSetLanguage = (lang: Locale) => {
-        setLanguage(lang);
-        localStorage.setItem("language", lang);
     };
 
     const value = {
         language,
-        setLanguage: handleSetLanguage,
+        setLanguage,
         t: translations[language],
     };
 

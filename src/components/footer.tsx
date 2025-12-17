@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Footer() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     return (
         <footer className="w-full bg-white dark:bg-[#18212f] border-t border-[#f0f2f4] dark:border-[#2a3441] py-12 px-10">
@@ -38,7 +38,7 @@ export function Footer() {
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.footer.aboutUs}</Link>
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.header.portfolio}</Link>
                             <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.header.pricing}</Link>
-                            <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href="#">{t.footer.contact}</Link>
+                            <Link className="text-[#616f89] dark:text-gray-400 hover:text-[#135bec] dark:hover:text-[#135bec] text-sm" href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.footer.contact}</Link>
                         </div>
                     </div>
                     <div className="flex flex-col gap-4">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
     const { t, setLanguage } = useLanguage();
     const [isLoading, setIsLoading] = useState(false);
@@ -29,21 +28,30 @@ export default function LoginPage() {
         setError(null);
 
         const formData = new FormData(e.currentTarget);
+        const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
+        const confirmPassword = formData.get("confirmPassword") as string;
+
+        if (password !== confirmPassword) {
+            setError(t.common.error); // Generic error for mismatch, or could add specific key
+            setIsLoading(false);
+            return;
+        }
 
         try {
-            const result = await signIn("credentials", {
-                email,
-                password,
-                redirect: false,
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password }),
             });
 
-            if (result?.error) {
-                setError(t.common.error);
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || t.common.error);
             } else {
-                router.push("/dashboard");
-                router.refresh();
+                router.push("/login?registered=true");
             }
         } catch {
             setError(t.common.error);
@@ -96,10 +104,10 @@ export default function LoginPage() {
                         </div>
                     </div>
                     <CardTitle className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                        Nakış Digitizing
+                        {t.auth.register}
                     </CardTitle>
                     <CardDescription className="text-zinc-400">
-                        {t.auth.login}
+                        {t.auth.registerDesc}
                     </CardDescription>
                 </CardHeader>
 
@@ -110,6 +118,19 @@ export default function LoginPage() {
                                 {error}
                             </div>
                         )}
+
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-zinc-300">{t.auth.fullName}</Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                type="text"
+                                placeholder={t.auth.fullName}
+                                required
+                                disabled={isLoading}
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                            />
+                        </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-zinc-300">{t.auth.email}</Label>
@@ -132,6 +153,21 @@ export default function LoginPage() {
                                 type="password"
                                 placeholder="••••••••"
                                 required
+                                minLength={6}
+                                disabled={isLoading}
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="confirmPassword" className="text-zinc-300">{t.auth.confirmPassword}</Label>
+                            <Input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                placeholder="••••••••"
+                                required
+                                minLength={6}
                                 disabled={isLoading}
                                 className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
                             />
@@ -147,17 +183,17 @@ export default function LoginPage() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    {t.common.loading}
+                                    {t.auth.creatingAccount}
                                 </>
                             ) : (
-                                t.auth.login
+                                t.auth.createAccount
                             )}
                         </Button>
 
                         <p className="text-sm text-zinc-400 text-center">
-                            {t.auth.noAccount}{" "}
-                            <Link href="/register" className="text-violet-400 hover:text-violet-300 transition-colors">
-                                {t.auth.register}
+                            {t.auth.haveAccount}{" "}
+                            <Link href="/login" className="text-violet-400 hover:text-violet-300 transition-colors">
+                                {t.auth.login}
                             </Link>
                         </p>
                     </CardFooter>

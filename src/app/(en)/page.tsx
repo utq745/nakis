@@ -6,13 +6,13 @@ import { Footer } from "@/components/footer";
 import Link from "next/link";
 
 export default function LandingPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-[#f6f6f8] dark:bg-[#101622] font-[family-name:var(--font-inter)]">
       <Header />
       <main className="flex-grow flex flex-col items-center">
-        <section className="w-full max-w-[1280px] px-4 md:px-10 py-12 md:py-20">
+        <section className="w-full max-w-[1280px] px-4 md:px-10 py-12 md:py-20 pt-24 md:pt-32">
           <div className="@container">
             <div className="flex flex-col gap-10 lg:flex-row items-center">
               <div className="flex flex-col gap-6 lg:w-1/2 lg:pr-10">
@@ -27,7 +27,7 @@ export default function LandingPage() {
                   </h2>
                 </div>
                 <div className="flex flex-wrap gap-4 pt-2">
-                  <Link href="/login">
+                  <Link href={language === 'tr' ? '/tr/login' : '/login'}>
                     <button className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-[#135bec] text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl">
                       <span className="truncate">{t.landing.hero.uploadBtn}</span>
                     </button>
@@ -194,7 +194,7 @@ export default function LandingPage() {
                 {t.landing.cta.description}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                <Link href="/login">
+                <Link href={language === 'tr' ? '/tr/login' : '/login'}>
                   <button className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-white text-[#135bec] text-lg font-bold hover:bg-gray-100 transition-colors shadow-lg">
                     {t.landing.cta.startBtn}
                   </button>
