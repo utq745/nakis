@@ -12,7 +12,7 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguage] = useState<Locale>("tr");
+    const [language, setLanguage] = useState<Locale>("en");
     // Hydration mismatch is possible if local storage has 'en' but server renders 'tr'.
     // We accept this flash for simplicity in this client-side i18n implementation.
 
