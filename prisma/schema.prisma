@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING      // Yeni sipariş, fiyatlandırılmadı
+  PRICED       // Fiyatlandırıldı, müşteri onayı bekleniyor
+  IN_PROGRESS  // Üzerinde çalışılıyor
+  REVISION     // Revizyon talep edildi
+  COMPLETED    // Tamamlandı
+  CANCELLED    // İptal edildi
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          Role      @default(CUSTOMER)
+  orders        Order[]   @relation("CustomerOrders")
+  comments      Comment[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  title           String
+  description     String?
+  status          OrderStatus @default(PENDING)
+  price           Decimal?    @db.Decimal(10, 2)
+  customerId      String
+  customer        User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
+  files           File[]
+  comments        Comment[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model File {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  type        String   // 'original' | 'preview' | 'final'
+  size        Int?     // dosya boyutu (bytes)
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  uploadedBy  String   // user id
+  createdAt   DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
