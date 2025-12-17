@@ -89,7 +89,7 @@ export default function LoginPage() {
                     {/* Background Image */}
                     <div
                         className="absolute inset-0 w-full h-full bg-cover bg-center opacity-90"
-                        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbBPLuxg6vyG1bv40N4Y0CyM-9N9qNRd_O5SA58JdKX2pJxxYc7LnksP70tEU4aS-wbx2_gnRvSM8JbyYeS4oNcUCAbDIOG3c4YuXAO6-mHqxQZq_AFMoWUEOtJYYzJhP2C7uPlM-pOnXS7AekEfL4VD7gLzYXToBNYWa12Vs-8afVy9zYEpzHPlh-Dj0-vXNYMHvrM0uokPa7FGL_qLvhSO6DdnayHHkibfVpucue1EY1dhuKDRYoLv2C7rwFqeYhdGB91oC7wPI')" }}
+                        style={{ backgroundImage: "url('/images/hero/login-bg.webp')" }}
                     >
                     </div>
                     {/* Overlay Gradient */}
@@ -102,9 +102,9 @@ export default function LoginPage() {
                         </p>
                         <div className="flex gap-4 mt-8">
                             <div className="flex -space-x-2">
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChzUO6o2GPdeoSmN1YH-mfddJfYzt4NJBCxQkZf_0Y78hbS0TwJUgenPjT5EBq94SUQUaHMnmsQQZ67C6oNIatsIYVGKkm3B5G-38ui0_Rv3PRDO2HB32hfN0JznXHg-JV3LyLVyom7K38TOIWCoWiXW0GMkT6xhBFE-9RQUl5LF5HlpiG2898jMyPsuIiyrtilJbLwPCRhegJhE3EWAnQ2enGbVIcqSypy6N2GOgAKNXI_ORqtsgeWZFTS86_aUzmDBdatVXng6U" />
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs_TRMK5pmkY012f61GP3XVs8G9I3zMLUHXgOrq2I6UztiOFinzRwSVuXSKh0U7wX2thSulP0d_G4tuxH57mP6ImxetrxFgLLqZvnbrp9--OiCTRGd6H95M0DhokeX0pmpe0riu8TLfLqRG_tBTbScZa1o5LCEFrTihFkH7sozOZcXoI4CcOPv00ZUCLyRdFUVQeaejumAOT8G9nKw9EDlpG5ne6vE7czTOTx8-azvqy2nEmXYrSh1mM6hx7euVUwcN3KbiTIcHuQ" />
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvHTtiVhcQ1PgAMZd1YZxm0FdisN5J6gZCrnRwXCbz6piKfhM0qXJH-scHg8qJCJhLcs9RqQml4L3fxJs01yW-yUGgRb5zad31f38mVmlFxbYUrwrd2R8L7hSyAPeaoRnvGwK9D1GyzHgnrO7YO5meq7yI2Vg__sP11Fm2zKkAn6l3aEE8x_YpcT8zHso71PvID7YFUTNBmb65u2CzMUWhdyoTVqlu0Xu7qPEnknecfhWnVUfCNKRD8oPans5p9wAUmymGhi1q3FQ" />
+                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-1.webp" />
+                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-2.webp" />
+                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-3.webp" />
                             </div>
                             <div className="flex flex-col justify-center">
                                 <span className="text-white text-sm font-semibold">{lp.professionals}</span>

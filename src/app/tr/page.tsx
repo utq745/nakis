@@ -47,7 +47,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="w-full lg:w-1/2">
-                <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-[#2a3441]" data-alt="Close up of a vibrant embroidered patch being stitched on fabric" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNJT6F3rMiSQJR5J_U0dP9sAs-k6K_dEkfamP490pW2tXKZA7IMEHMhH5rnJYMnUTyRB20eldjAP1pwzBSoxpL87-92NmRPzj5npHeDuwaglbsoRDh9Rt91ke5018DSYM1zOouayeSXx5uo9aYlEBhO5CeJAdPy0OBT4uo7Ym1GT1Htt8Doc8FIfk84GJKJmiP2R9ieYQs6L5uxljTYLjhSbvTDmFwPekZBUr1Iv_mIyaOCJ2RC-yGA3D8UCuUAqt66ja1cLEaeH8")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-[#2a3441]" data-alt="Close up of a vibrant embroidered patch being stitched on fabric" style={{ backgroundImage: 'url("/images/hero/embroidery-hero.webp")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
                   <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none"></div>
                 </div>
               </div>
@@ -157,10 +157,10 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { title: t.landing.portfolio.item1Title, subtitle: t.landing.portfolio.item1Sub, bg: "https://lh3.googleusercontent.com/aida-public/AB6AXuA-Or1WdwhKvaoR9nGqhXmAyTJjrQCgshptIm8rChVaqpbTmkXgtrfCKpTDMe0HiAHVw8pbXMco2HXRvha_MPLplM3rDevJafNnOph1q-5yFgzsDqfb9vY8OVnJfxumeSUhFGBui5NavTw3xDkGhbNYPaIqFjwZRPZkjfDBdDh3mqHKW-vW1evAJrIr_916MM60pQcR5i7lDemCUW8r7FtMSivBdYPIKdsFaXBT8WlHiMa6-4YpOq-BYcbxGqfkICpAgUObXZcqxI4" },
-                { title: t.landing.portfolio.item2Title, subtitle: t.landing.portfolio.item2Sub, bg: "https://lh3.googleusercontent.com/aida-public/AB6AXuCGU95bHDxOs5N4LcbD2cHYutemyFL2G51SQ9ghzRcLb55B2Xwj31cTpPTXyed1jfSHHp5UXUq2-ZrNoalQ_Khqv5wYCitA__ADOfJUMRHtELzOjDuupEbgN2mlsdqY-EVySEa5jQn3iwvvQpbJBLxS5kV1oltnJveGYYgz0phyMnJVo5u0xomDhqLNMIYCHJac285hvH_w7nC19nb3Eh9vxbFH5KjbsQalcyphB1jE3TDIZ5V7cinp4An-mUwk-z3ba1czM7jQgn8" },
-                { title: t.landing.portfolio.item3Title, subtitle: t.landing.portfolio.item3Sub, bg: "https://lh3.googleusercontent.com/aida-public/AB6AXuCzNezx_31Jc13_IngWhnnWZRVOUQZom7n_lxjrabJTdgvE2bRImHIduOlGA-XOFdrq9U5FJJUteAxM99QlUC9XvIIPxkXCKVij6PzW_Cnlr9rj02wvyQiPPKpLdr-cNHpuvQPQVU_e2mPieK0fMZZ187gtCNO6hMiN1h2ZBtwIcBhqJ_cQZ_bTtbRakNQyKtzGS-hZldc8dqvuaf6cTopfAiZaMPzZO75cOL_BcvYLzdGJGIqHFsYowLDu2RsxiytceyFg93rkXoM" },
-                { title: t.landing.portfolio.item4Title, subtitle: t.landing.portfolio.item4Sub, bg: "https://lh3.googleusercontent.com/aida-public/AB6AXuBj1UVF8zsrVw02INhbU7zf285kP8S_ocNj4UvrBnFvegx4q5t_idXxJV8WOBc5W_hu2RZm6M0k1-4lXTx48VvpKy7SDVGGS7lPXMLwbBXpyu_2pq6u4e_dA2lSQQYzh0MPM-l4WHqv0g94YzRvUlabkey8bMzj50NjNJNsTVwiBTGYUSaBtR7TX-MyiVtdvLMkbMsF-z1PoN21JyJtgCXWcBmnVQmhtF1H4ftJGiG4sqpM39F1qRrxVqIIoiVWjx0m1YOL-_vGf9Q" }
+                { title: t.landing.portfolio.item1Title, subtitle: t.landing.portfolio.item1Sub, bg: "/images/portfolio/portfolio-1.webp" },
+                { title: t.landing.portfolio.item2Title, subtitle: t.landing.portfolio.item2Sub, bg: "/images/portfolio/portfolio-2.webp" },
+                { title: t.landing.portfolio.item3Title, subtitle: t.landing.portfolio.item3Sub, bg: "/images/portfolio/portfolio-3.webp" },
+                { title: t.landing.portfolio.item4Title, subtitle: t.landing.portfolio.item4Sub, bg: "/images/portfolio/portfolio-4.webp" }
               ].map((item, index) => (
                 <div key={index} className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url("${item.bg}")` }}></div>
@@ -210,7 +210,7 @@ export default function LandingPage() {
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
                 <p className="text-xl font-medium italic mb-6">{t.landing.cta.testimonial}</p>
                 <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-full bg-cover bg-center" data-alt="Profile picture of testimonial author" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCyfxJWwTIIoi_wmHJ9wStewza7NODn7bCKmZPapOLQS993Wm4vCaz3-FHry_3H_49UYt89dis5FRPucxQHe9vFNjGH2VnwXlFmDnNCuyJX5Dgw5QzZpjZX9DevMmj14hQcyyDEIdeboen7UjxSmAifN9gIymzRFYWHtbxSZex05sqa474uKJv63gDiIBXeCbvp5VEWEbzXhLOvnK-1_eueDpINkdKr0MOPdeVIOC2-9gOjXkz0WS7NHRaD4HX5VUG0H3zuBqDyDXw")' }}></div>
+                  <div className="size-12 rounded-full bg-cover bg-center" data-alt="Profile picture of testimonial author" style={{ backgroundImage: 'url("/images/avatars/testimonial-author.webp")' }}></div>
                   <div>
                     <p className="font-bold">{t.landing.cta.author}</p>
                     <p className="text-sm text-white/70">{t.landing.cta.role}</p>
