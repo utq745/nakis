@@ -6,29 +6,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-enum Role {
-  CUSTOMER
-  ADMIN
-}
-
-enum OrderStatus {
-  PENDING      // Yeni sipariş, fiyatlandırılmadı
-  PRICED       // Fiyatlandırıldı, müşteri onayı bekleniyor
-  IN_PROGRESS  // Üzerinde çalışılıyor
-  REVISION     // Revizyon talep edildi
-  COMPLETED    // Tamamlandı
-  CANCELLED    // İptal edildi
-}
+// Role: "CUSTOMER" | "ADMIN"
+// OrderStatus: "PENDING" | "PRICED" | "IN_PROGRESS" | "REVISION" | "COMPLETED" | "CANCELLED"
 
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   password      String
   name          String?
-  role          Role      @default(CUSTOMER)
+  role          String    @default("CUSTOMER")
   orders        Order[]   @relation("CustomerOrders")
   comments      Comment[]
   createdAt     DateTime  @default(now())
@@ -39,8 +29,8 @@ model Order {
   id              String      @id @default(cuid())
   title           String
   description     String?
-  status          OrderStatus @default(PENDING)
-  price           Decimal?    @db.Decimal(10, 2)
+  status          String      @default("PENDING")
+  price           Float?
   customerId      String
   customer        User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
   files           File[]

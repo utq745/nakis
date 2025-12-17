@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import prisma from "@/lib/prisma";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/types";
 
 declare module "next-auth" {
     interface Session {
@@ -65,7 +65,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     id: user.id,
                     email: user.email,
                     name: user.name,
-                    role: user.role,
+                    role: user.role as Role,
                 };
             },
         }),

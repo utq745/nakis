@@ -1,6 +1,6 @@
-import { Role, OrderStatus } from "@prisma/client";
+export type Role = "CUSTOMER" | "ADMIN";
 
-export type { Role, OrderStatus };
+export type OrderStatus = "PENDING" | "PRICED" | "IN_PROGRESS" | "REVISION" | "COMPLETED" | "CANCELLED";
 
 export interface SafeUser {
     id: string;
