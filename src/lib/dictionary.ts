@@ -229,6 +229,54 @@ export const translations = {
                 support: "Teknik Destek",
                 other: "Diğer"
             }
+        },
+        aboutPage: {
+            heroTitle: "Biz Kimiz",
+            heroSubtitle: "Dünya çapında markalar, üreticiler ve promosyon şirketleri için gerçek dikişli onay örnekleri üreten özel bir stüdyoyuz.",
+            location: "İstanbul merkezli, ABD, Kanada ve Avrupa'daki müşterilere hizmet veriyoruz.",
+
+            storyTitle: "Hikayemiz",
+            storyContent: "Mevcut nakış dosyanızı kalibre edilmiş bir Tajima makinesinde çalıştırıyor, ardından gerçek dikiş sonucunu yansıtan temiz, detaylı yüksek çözünürlüklü bir tarama sunuyoruz — tahmin veya simülasyon değil.",
+
+            experienceTitle: "Deneyimimiz",
+            experienceSubtitle: "35+ Yıllık Nakış Uzmanlığı",
+            experienceContent: "35+ yıllık nakış ve makine uzmanlığıyla, dikişlerin gerçek koşullarda nasıl davrandığını anlıyoruz.",
+            experienceItems: {
+                density: "Yoğunluk ve alt yapı",
+                pushPull: "İtme-çekme etkisi telafisi",
+                thread: "İplik / iğne seçimi",
+                stabilizer: "Her kumaş için stabilizatör",
+                smallText: "Küçük metin ayarı ve optimizasyonu",
+                fabric: "Kumaş bazlı davranış analizi"
+            },
+            experienceNote: "Her dikişli örnek, tam makine performansını ortaya koymak için hazırlanır ve taranır.",
+
+            deliverTitle: "Ne Sunuyoruz",
+            deliverSubtitle: "Kapsamlı Onay Paketi",
+            deliverItems: {
+                stitchTest: "Kalibreli Tajima'da gerçek dikiş testi",
+                hiResScan: "Sonucun yüksek çözünürlüklü taraması",
+                approvalCard: "Seçtiğiniz şablonda onay kartı",
+                threadList: "İplik renk listesi (Madeira / Robison-Anton / Isacord)",
+                needleDetails: "İğne ve stabilizatör detayları",
+                dstFile: "Üretime hazır DST dosyası"
+            },
+            deliverNote: "Seçtiğiniz onay kartı şablonu, son örneğinizin düzenini, boyutunu, etiketleme ve ölçüm stilini belirler.",
+
+            missionTitle: "Misyonumuz",
+            missionContent: "Misyonumuz, nakış üretim sürecine kesinlik, netlik ve hassasiyet getirmektir. Seri üretimdeki sorunların çoğu varsayımlardan kaynaklanır: yoğunluk sorunları, iplik kopmaları, okunamayan küçük metinler, yanlış telafi veya belirli kumaşlarda beklenmeyen bozulma.",
+            missionPurpose: "ApprovalStitch, yüksek çözünürlükte taranan ve seçtiğiniz açıkça etiketlenmiş bir onay kartı üzerinde hazırlanan makine doğrulanmış dikişli onaylar sağlayarak bu riskleri ortadan kaldırmak için var.",
+            missionGoals: {
+                brands: "Markalara güven",
+                production: "Üretim ekiplerine netlik",
+                factories: "Fabrikalara tutarlılık"
+            },
+            missionPromise: "Her dosya ilk seferde doğru çalışmalı — ve tek bir giysi üretime girmeden önce her dikiş tam olarak beklendiği gibi davranmalı.",
+            missionTagline: "Gerçekten test et, gerçekten doğrula ve tüm belirsizliği ortadan kaldıran bir sonuç gönder.",
+
+            ctaTitle: "Başlamaya Hazır mısınız?",
+            ctaContent: "DST dosyanızı üretime hazır dikişli bir onaya dönüştürün.",
+            ctaButton: "Siparişinizi Başlatın"
         }
     },
     en: {
@@ -459,6 +507,54 @@ export const translations = {
                 support: "Technical Support",
                 other: "Other"
             }
+        },
+        aboutPage: {
+            heroTitle: "Who We Are",
+            heroSubtitle: "A specialized studio focused on producing real stitched approval samples for brands, manufacturers and promotional companies worldwide.",
+            location: "Based in Istanbul, serving clients across the U.S., Canada and Europe.",
+
+            storyTitle: "Our Story",
+            storyContent: "We run your existing embroidery file on a calibrated Tajima machine, then provide a clean, detailed high-resolution scan that reflects the true stitch result — not an estimate or simulation.",
+
+            experienceTitle: "Our Experience",
+            experienceSubtitle: "35+ Years of Embroidery Excellence",
+            experienceContent: "With 35+ years of embroidery and machine expertise, we understand how stitches behave under real conditions.",
+            experienceItems: {
+                density: "Density & underlay structure",
+                pushPull: "Push–pull effect compensation",
+                thread: "Thread / needle selection",
+                stabilizer: "Stabilizer choice for each fabric",
+                smallText: "Small text tuning & optimization",
+                fabric: "Fabric-based behavior analysis"
+            },
+            experienceNote: "Every stitched sample is prepared and scanned to reveal the exact machine performance.",
+
+            deliverTitle: "What We Deliver",
+            deliverSubtitle: "Complete Approval Package",
+            deliverItems: {
+                stitchTest: "Real stitched test on calibrated Tajima",
+                hiResScan: "High-resolution scan of result",
+                approvalCard: "Approval card in your template",
+                threadList: "Thread color list (Madeira / Robison-Anton / Isacord)",
+                needleDetails: "Needle & stabilizer details",
+                dstFile: "Production-ready DST file"
+            },
+            deliverNote: "Your selected approval-card template defines the layout, size, labeling and measurement style of your final sample.",
+
+            missionTitle: "Our Mission",
+            missionContent: "Our mission is to bring certainty, clarity and precision to the embroidery production process. Most problems in mass production come from assumptions: density issues, thread breaks, unreadable small text, incorrect compensation or unexpected distortion on specific fabrics.",
+            missionPurpose: "ApprovalStitch exists to eliminate these risks by providing machine-verified stitched approvals, scanned in high resolution and prepared on a clearly-labeled approval card of your choice.",
+            missionGoals: {
+                brands: "Confidence to brands",
+                production: "Clarity to production teams",
+                factories: "Consistency to factories"
+            },
+            missionPromise: "Every file should run correctly on the first try — and every stitch should behave exactly as expected before a single garment enters production.",
+            missionTagline: "Test it for real, verify it for real, and send a result that removes all uncertainty.",
+
+            ctaTitle: "Ready to Get Started?",
+            ctaContent: "Turn your DST file into a production-ready stitched approval.",
+            ctaButton: "Start Your Order"
         }
     }
 };

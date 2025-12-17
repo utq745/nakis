@@ -63,7 +63,7 @@ export function Header() {
                     <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr#services' : '/#services'}>{t.header.services}</Link>
                     <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr#portfolio' : '/#portfolio'}>{t.header.portfolio}</Link>
                     <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr#pricing' : '/#pricing'}>{t.header.pricing}</Link>
-                    <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr#about' : '/#about'}>{t.header.about}</Link>
+                    <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr/about' : '/about'}>{t.header.about}</Link>
                     <Link className="text-[#111318] dark:text-white text-sm font-medium leading-normal hover:text-[#135bec] transition-colors" href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.header.contact}</Link>
                 </div>
 
