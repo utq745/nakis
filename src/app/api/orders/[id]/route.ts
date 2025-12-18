@@ -101,11 +101,15 @@ export async function PATCH(
         // Get current order to check if status changed
         const currentOrder = await prisma.order.findUnique({
             where: { id },
-            select: { status: true }
+            select: { status: true, price: true }
         });
 
         if (!currentOrder) {
             return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        }
+        // Auto-set status to PRICED when price is entered and current status is PENDING
+        if (validatedData.price && validatedData.price > 0 && currentOrder.status === "PENDING" && !validatedData.status) {
+            validatedData.status = "PRICED";
         }
 
         const order = await prisma.order.update({
