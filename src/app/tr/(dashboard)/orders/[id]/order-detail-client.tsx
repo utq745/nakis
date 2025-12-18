@@ -228,7 +228,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                             </Label>
                                             <input
                                                 type="file"
-                                                accept="image/*"
+                                                accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg"
                                                 onChange={(e) => handleFileUpload(e, "preview")}
                                                 className="hidden"
                                                 id="preview-upload"
@@ -263,6 +263,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                             </Label>
                                             <input
                                                 type="file"
+                                                accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg"
                                                 multiple
                                                 onChange={(e) => handleFileUpload(e, "final")}
                                                 className="hidden"

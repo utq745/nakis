@@ -135,7 +135,7 @@ export default function NewOrderPage() {
                                     onChange={handleFileChange}
                                     className="hidden"
                                     id="file-upload"
-                                    accept="image/*,.pdf,.ai,.eps,.svg"
+                                    accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg"
                                     disabled={isLoading}
                                 />
                                 <label
@@ -147,7 +147,7 @@ export default function NewOrderPage() {
                                         Dosyaları sürükleyin veya tıklayarak seçin
                                     </span>
                                     <span className="text-xs text-zinc-500 mt-1">
-                                        PNG, JPG, PDF, AI, EPS, SVG (max 10MB)
+                                        DST, DTS, PNG, JPG, PDF, AI, EPS, SVG (max 10MB)
                                     </span>
                                 </label>
                             </div>

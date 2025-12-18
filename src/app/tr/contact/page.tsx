@@ -220,7 +220,7 @@ export default function ContactPage() {
                                     <div className="relative">
                                         <input
                                             type="file"
-                                            accept=".dst,.pes,.jef,.exp,.vp3,.hus,.png,.jpg,.jpeg,.pdf,.ai,.eps"
+                                            accept=".dst,.dts,.pes,.jef,.exp,.vp3,.hus,.png,.jpg,.jpeg,.pdf,.ai,.eps"
                                             className="w-full px-4 py-3 rounded-lg border border-dashed border-[#e5e7eb] dark:border-[#374151] bg-[#f8f9fc] dark:bg-[#1f2937] text-[#111318] dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#135bec]/10 file:text-[#135bec] hover:file:bg-[#135bec]/20 transition-all cursor-pointer"
                                         />
                                     </div>

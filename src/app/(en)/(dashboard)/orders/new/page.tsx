@@ -44,7 +44,7 @@ export default function NewOrderPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Sipariş oluşturulamadı");
+                throw new Error("Failed to create order");
             }
 
             const order = await response.json();
@@ -64,10 +64,10 @@ export default function NewOrderPage() {
                 });
             }
 
-            toast.success("Sipariş başarıyla oluşturuldu");
+            toast.success("Order created successfully");
             router.push(`/orders/${order.id}`);
         } catch (error) {
-            toast.error("Sipariş oluşturulurken bir hata oluştu");
+            toast.error("An error occurred while creating the order");
             console.error(error);
         } finally {
             setIsLoading(false);
@@ -82,15 +82,15 @@ export default function NewOrderPage() {
                 className="inline-flex items-center text-zinc-400 hover:text-white transition-colors"
             >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Siparişlere Dön
+                Back to Orders
             </Link>
 
             <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                    <CardTitle className="text-white">Yeni Sipariş Oluştur</CardTitle>
+                    <CardTitle className="text-white">Create New Order</CardTitle>
                     <CardDescription className="text-zinc-400">
-                        Nakış tasarımınız için yeni bir sipariş oluşturun. Dosyalarınızı
-                        yükleyin ve siparişinizi açıklayın.
+                        Create a new order for your embroidery design. Upload your files
+                        and describe your order.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -98,12 +98,12 @@ export default function NewOrderPage() {
                         {/* Title */}
                         <div className="space-y-2">
                             <Label htmlFor="title" className="text-zinc-300">
-                                Sipariş Başlığı
+                                Order Title
                             </Label>
                             <Input
                                 id="title"
                                 name="title"
-                                placeholder="Örn: Logo Nakış Tasarımı"
+                                placeholder="E.g: Logo Embroidery Design"
                                 required
                                 disabled={isLoading}
                                 className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500"
@@ -113,12 +113,12 @@ export default function NewOrderPage() {
                         {/* Description */}
                         <div className="space-y-2">
                             <Label htmlFor="description" className="text-zinc-300">
-                                Açıklama
+                                Description
                             </Label>
                             <Textarea
                                 id="description"
                                 name="description"
-                                placeholder="Tasarım detaylarını açıklayın... (boyut, renk tercihleri, özel istekler)"
+                                placeholder="Describe design details... (size, color preferences, special requests)"
                                 rows={4}
                                 disabled={isLoading}
                                 className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 resize-none"
@@ -127,7 +127,7 @@ export default function NewOrderPage() {
 
                         {/* File Upload */}
                         <div className="space-y-2">
-                            <Label className="text-zinc-300">Dosyalar</Label>
+                            <Label className="text-zinc-300">Files</Label>
                             <div className="border-2 border-dashed border-zinc-700 rounded-lg p-6 text-center hover:border-violet-500/50 transition-colors">
                                 <input
                                     type="file"
@@ -135,7 +135,7 @@ export default function NewOrderPage() {
                                     onChange={handleFileChange}
                                     className="hidden"
                                     id="file-upload"
-                                    accept="image/*,.pdf,.ai,.eps,.svg"
+                                    accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg"
                                     disabled={isLoading}
                                 />
                                 <label
@@ -144,10 +144,10 @@ export default function NewOrderPage() {
                                 >
                                     <Upload className="h-10 w-10 text-zinc-500 mb-2" />
                                     <span className="text-zinc-400">
-                                        Dosyaları sürükleyin veya tıklayarak seçin
+                                        Drag and drop files or click to select
                                     </span>
                                     <span className="text-xs text-zinc-500 mt-1">
-                                        PNG, JPG, PDF, AI, EPS, SVG (max 10MB)
+                                        DST, DTS, PNG, JPG, PDF, AI, EPS, SVG (max 10MB)
                                     </span>
                                 </label>
                             </div>
@@ -194,10 +194,10 @@ export default function NewOrderPage() {
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Oluşturuluyor...
+                                    Creating...
                                 </>
                             ) : (
-                                "Sipariş Oluştur"
+                                "Create Order"
                             )}
                         </Button>
                     </form>
