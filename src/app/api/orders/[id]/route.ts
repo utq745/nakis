@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const updateOrderSchema = z.object({
     status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "REVISION", "COMPLETED", "CANCELLED"]).optional(),
-    price: z.number().positive().optional(),
+    price: z.number().nonnegative().nullable().optional(),
 });
 
 export async function GET(
@@ -158,7 +158,7 @@ export async function PATCH(
                 order.customer.email,
                 order.title,
                 order.status,
-                validatedData.price
+                validatedData.price ?? undefined
             ).catch(console.error);
         }
 

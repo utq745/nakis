@@ -92,7 +92,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     status,
-                    price: price ? parseFloat(price) : undefined,
+                    price: price ? parseFloat(price) : null,
                 }),
             });
 
