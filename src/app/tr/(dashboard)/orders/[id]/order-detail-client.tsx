@@ -418,48 +418,48 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <div className="divide-y divide-zinc-800">
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 Siparişim ne zaman hazır olur?
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 Süreç nasıl işliyor?
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 Revizyon talep edebilir miyim?
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 Hangi formatları destekliyorsunuz?
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             Giriş: JPG, PNG, PDF, AI, EPS, SVG. Çıkış: DST, PES, JEF ve diğer nakış formatları.
                                         </div>
                                     </details>

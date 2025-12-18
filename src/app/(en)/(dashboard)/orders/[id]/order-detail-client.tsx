@@ -424,12 +424,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <div className="divide-y divide-zinc-800">
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 {language === "tr" ? "Siparişim ne zaman hazır olur?" : "When will my order be ready?"}
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir."
                                                 : "Standard orders are typically completed within 24-48 hours. Complex designs may take longer."}
@@ -438,12 +438,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 {language === "tr" ? "Süreç nasıl işliyor?" : "How does the process work?"}
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin."
                                                 : "1) Upload file → 2) Get quote → 3) Approve → 4) Get preview → 5) Approve → 6) Download finals."}
@@ -452,12 +452,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 {language === "tr" ? "Revizyon talep edebilir miyim?" : "Can I request revisions?"}
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz."
                                                 : "Yes! After receiving your preview, request revisions through the messages section."}
@@ -466,12 +466,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
                                                 {language === "tr" ? "Hangi formatları destekliyorsunuz?" : "Supported file formats?"}
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "Giriş: JPG, PNG, PDF, AI, EPS, SVG. Çıkış: DST, PES, JEF ve diğer nakış formatları."
                                                 : "Input: JPG, PNG, PDF, AI, EPS, SVG. Output: DST, PES, JEF and other embroidery formats."}
