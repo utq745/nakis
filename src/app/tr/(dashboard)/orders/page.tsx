@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Package } from "lucide-react";
 import Link from "next/link";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/types";
+import { ORDER_STATUS_LABELS_TR as ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/types";
 
 async function getOrders(userId: string, isAdmin: boolean) {
     const where = isAdmin ? {} : { customerId: userId };

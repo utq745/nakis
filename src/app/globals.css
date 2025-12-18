@@ -126,40 +126,39 @@
 
   /* Headings */
   h1 {
-    font-size: clamp(3rem, 2.5385rem + 2.0513vw, 4rem);
+    font-size: clamp(1.9rem, 1.6rem + 1.2vw, 2.4rem);
   }
 
   h2 {
-    font-size: clamp(2.4rem, 2.1231rem + 1.2308vw, 3rem);
+    font-size: clamp(1.6rem, 1.4rem + 0.9vw, 2rem);
   }
 
   h3 {
-    font-size: clamp(2.1rem, 1.9154rem + 0.8205vw, 2.5rem);
+    font-size: clamp(1.35rem, 1.25rem + 0.5vw, 1.6rem);
   }
 
   h4 {
-    font-size: clamp(1.8rem, 1.7077rem + 0.4103vw, 2rem);
+    font-size: clamp(1.2rem, 1.15rem + 0.3vw, 1.35rem);
   }
 
   h5 {
-    font-size: clamp(1.6rem, 1.5308rem + 0.3077vw, 1.75rem);
+    font-size: clamp(1.05rem, 1.02rem + 0.2vw, 1.15rem);
   }
 
   h6 {
-    font-size: clamp(1.4rem, 1.3538rem + 0.2051vw, 1.5rem);
+    font-size: clamp(0.95rem, 0.93rem + 0.1vw, 1rem);
   }
 }
 
+
 @layer components {
 
-  /* Title 7 */
   .title-7 {
-    font-size: clamp(1.2rem, 1.1769rem + 0.1026vw, 1.25rem);
+    font-size: clamp(1.1rem, 1.05rem + 0.25vw, 1.2rem);
   }
 
-  /* Text styles */
   .subheading {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   .body {
@@ -172,7 +171,7 @@
   }
 
   .body-big {
-    font-size: 1.125rem;
+    font-size: 1.1rem;
   }
 
   .body-small {

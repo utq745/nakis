@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { join } from "path";
 
 export async function POST(request: Request) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
 
         if (!orderId || files.length === 0) {
             return NextResponse.json(
-                { error: "orderId ve dosyalar gerekli" },
+                { error: "orderId and files are required" },
                 { status: 400 }
             );
         }
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
         });
 
         if (!order) {
-            return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
 
         const isAdmin = session.user.role === "ADMIN";
@@ -41,35 +40,37 @@ export async function POST(request: Request) {
         // Only admin can upload preview/final files
         if ((type === "preview" || type === "final") && !isAdmin) {
             return NextResponse.json(
-                { error: "Bu dosya türünü sadece admin yükleyebilir" },
+                { error: "Only admin can upload this file type" },
                 { status: 403 }
             );
         }
 
         const uploadedFiles = [];
 
-        // Ensure upload directory exists
-        const uploadDir = join(process.cwd(), "public", "uploads", orderId, type);
+        // Use secure uploads directory (outside public)
+        const uploadDir = join(process.cwd(), "uploads", orderId, type);
         await mkdir(uploadDir, { recursive: true });
 
         for (const file of files) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
 
-            // Clean filename to prevent issues
+            // Generate secure filename with UUID
+            const uuid = crypto.randomUUID();
+            const ext = file.name.split(".").pop() || "";
             const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const fileName = `${Date.now()}-${safeName}`;
+            const fileName = `${uuid}-${safeName}`;
             const filePath = join(uploadDir, fileName);
 
             await writeFile(filePath, buffer);
 
-            // Public URL path
-            const publicUrl = `/uploads/${orderId}/${type}/${fileName}`;
+            // Store API URL path (not public path)
+            const apiUrl = `/api/files`;  // Will be: /api/files/{fileId}
 
             const dbFile = await prisma.file.create({
                 data: {
                     name: file.name,
-                    url: publicUrl,
+                    url: fileName,  // Store just filename, URL will be constructed via API
                     type,
                     size: file.size,
                     orderId,
@@ -77,14 +78,17 @@ export async function POST(request: Request) {
                 },
             });
 
-            uploadedFiles.push(dbFile);
+            uploadedFiles.push({
+                ...dbFile,
+                url: `/api/files/${dbFile.id}`,  // Return API URL
+            });
         }
 
-        return NextResponse.json(uploadedFiles, { status: 201 });
+        return NextResponse.json({ files: uploadedFiles }, { status: 201 });
     } catch (error) {
         console.error("Error uploading files:", error);
         return NextResponse.json(
-            { error: "Dosya yüklenirken hata oluştu" },
+            { error: "Failed to upload file" },
             { status: 500 }
         );
     }

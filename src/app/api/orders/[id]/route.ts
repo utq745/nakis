@@ -34,6 +34,9 @@ export async function GET(
                         user: {
                             select: { id: true, name: true, email: true, role: true },
                         },
+                        files: {
+                            select: { id: true, name: true, url: true, size: true },
+                        },
                     },
                     orderBy: { createdAt: "asc" },
                 },
@@ -41,7 +44,7 @@ export async function GET(
         });
 
         if (!order) {
-            return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
 
         // Check access
@@ -50,11 +53,27 @@ export async function GET(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        return NextResponse.json(order);
+        // Transform file URLs in comments to use API endpoint
+        const transformedOrder = {
+            ...order,
+            files: order.files.map(file => ({
+                ...file,
+                url: `/api/files/${file.id}`,
+            })),
+            comments: order.comments.map(comment => ({
+                ...comment,
+                attachments: comment.files.map(file => ({
+                    ...file,
+                    url: `/api/files/${file.id}`,
+                })),
+            })),
+        };
+
+        return NextResponse.json(transformedOrder);
     } catch (error) {
         console.error("Error fetching order:", error);
         return NextResponse.json(
-            { error: "Sipariş alınırken hata oluştu" },
+            { error: "Failed to fetch order" },
             { status: 500 }
         );
     }
@@ -111,7 +130,7 @@ export async function PATCH(
 
         console.error("Error updating order:", error);
         return NextResponse.json(
-            { error: "Sipariş güncellenirken hata oluştu" },
+            { error: "Failed to update order" },
             { status: 500 }
         );
     }

@@ -43,10 +43,12 @@ model File {
   id          String   @id @default(cuid())
   name        String
   url         String
-  type        String   // 'original' | 'preview' | 'final'
+  type        String   // 'original' | 'preview' | 'final' | 'comment'
   size        Int?     // dosya boyutu (bytes)
   orderId     String
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  commentId   String?  // Optional: link to comment if file is attached to a message
+  comment     Comment? @relation(fields: [commentId], references: [id], onDelete: SetNull)
   uploadedBy  String   // user id
   createdAt   DateTime @default(now())
 }
@@ -58,5 +60,7 @@ model Comment {
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files     File[]   // Attached files
   createdAt DateTime @default(now())
 }
+

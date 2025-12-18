@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const createCommentSchema = z.object({
-    content: z.string().min(1, "Yorum boş olamaz"),
+    content: z.string().min(1, "Comment cannot be empty"),
     orderId: z.string(),
+    fileIds: z.array(z.string()).optional(),
 });
 
 export async function POST(request: Request) {
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
         });
 
         if (!order) {
-            return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
 
         const isAdmin = session.user.role === "ADMIN";
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
+        // Create comment
         const comment = await prisma.comment.create({
             data: {
                 content: validatedData.content,
@@ -47,8 +49,62 @@ export async function POST(request: Request) {
                 user: {
                     select: { id: true, name: true, email: true, role: true },
                 },
+                files: {
+                    select: { id: true, name: true, url: true, size: true },
+                },
             },
         });
+
+        // Link files to comment if any
+        if (validatedData.fileIds && validatedData.fileIds.length > 0) {
+            await prisma.file.updateMany({
+                where: {
+                    id: { in: validatedData.fileIds },
+                    orderId: validatedData.orderId,
+                },
+                data: {
+                    commentId: comment.id,
+                    type: "comment",
+                },
+            });
+
+            // Refetch comment with files
+            const updatedComment = await prisma.comment.findUnique({
+                where: { id: comment.id },
+                include: {
+                    user: {
+                        select: { id: true, name: true, email: true, role: true },
+                    },
+                    files: {
+                        select: { id: true, name: true, url: true, size: true },
+                    },
+                },
+            });
+
+            if (updatedComment) {
+                // Send Email Notification
+                const { sendNewCommentEmail } = await import("@/lib/mail");
+                const recipientEmail = isAdmin ? order.customer.email : "admin@nakis.com";
+                const senderName = session.user.name || session.user.email || "User";
+
+                if (recipientEmail) {
+                    await sendNewCommentEmail(
+                        recipientEmail,
+                        order.title,
+                        senderName,
+                        validatedData.content
+                    ).catch(console.error);
+                }
+
+                return NextResponse.json({
+                    ...updatedComment,
+                    attachments: updatedComment.files.map((file: { id: string; name: string; url: string; size: number | null }) => ({
+                        ...file,
+                        url: `/api/files/${file.id}`,
+                    })),
+                }, { status: 201 });
+            }
+        }
 
         // Update order to REVISION status if customer requests revision
         if (!isAdmin && order.status === "PRICED") {
@@ -61,7 +117,7 @@ export async function POST(request: Request) {
         // Send Email Notification
         const { sendNewCommentEmail } = await import("@/lib/mail");
         const recipientEmail = isAdmin ? order.customer.email : "admin@nakis.com";
-        const senderName = session.user.name || session.user.email || "Kullanıcı";
+        const senderName = session.user.name || session.user.email || "User";
 
         if (recipientEmail) {
             await sendNewCommentEmail(
@@ -72,18 +128,24 @@ export async function POST(request: Request) {
             ).catch(console.error);
         }
 
-        return NextResponse.json(comment, { status: 201 });
+        return NextResponse.json({
+            ...comment,
+            attachments: comment.files.map((file: { id: string; name: string; url: string; size: number | null }) => ({
+                ...file,
+                url: `/api/files/${file.id}`,
+            })),
+        }, { status: 201 });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: error.issues?.[0]?.message || "Geçersiz veri" },
+                { error: error.issues?.[0]?.message || "Invalid data" },
                 { status: 400 }
             );
         }
 
         console.error("Error creating comment:", error);
         return NextResponse.json(
-            { error: "Yorum eklenirken hata oluştu" },
+            { error: "Failed to add comment" },
             { status: 500 }
         );
     }

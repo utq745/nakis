@@ -40,7 +40,7 @@ export default function ContactPage() {
             <main className="flex-grow pt-24 md:pt-32">
                 {/* Hero Section */}
                 <section className="w-full max-w-[1280px] mx-auto px-4 md:px-10 pb-12 text-center">
-                    <h1 className="text-4xl md:text-5xl font-black text-[#111318] dark:text-white tracking-tight mb-4">
+                    <h1 className="font-black text-[#111318] dark:text-white tracking-tight mb-4">
                         {cp.title}
                     </h1>
                     <p className="text-lg text-[#616f89] dark:text-gray-400 max-w-[600px] mx-auto">

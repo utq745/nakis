@@ -19,6 +19,9 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
                     user: {
                         select: { id: true, name: true, email: true, role: true },
                     },
+                    files: {
+                        select: { id: true, name: true, size: true },
+                    },
                 },
                 orderBy: { createdAt: "asc" },
             },
@@ -32,7 +35,25 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
         return null;
     }
 
-    return order;
+    // Transform file URLs to secure API format
+    const transformedFiles = order.files.map(file => ({
+        ...file,
+        url: `/api/files/${file.id}`,
+    }));
+
+    const transformedComments = order.comments.map(comment => ({
+        ...comment,
+        files: comment.files?.map(file => ({
+            ...file,
+            url: `/api/files/${file.id}`,
+        })) || [],
+    }));
+
+    return {
+        ...order,
+        files: transformedFiles,
+        comments: transformedComments,
+    };
 }
 
 export default async function OrderDetailPage({

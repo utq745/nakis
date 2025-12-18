@@ -45,6 +45,15 @@ export interface CommentWithUser {
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+    PENDING: "Pending",
+    PRICED: "Priced",
+    IN_PROGRESS: "In Progress",
+    REVISION: "Revision",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+};
+
+export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
     PENDING: "Beklemede",
     PRICED: "Fiyatlandırıldı",
     IN_PROGRESS: "Devam Ediyor",

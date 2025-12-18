@@ -55,7 +55,7 @@ export default function AboutPage() {
 
                     <div className="relative max-w-[1280px] mx-auto px-4 md:px-10">
                         <div className="text-center">
-                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1]">
+                            <h1 className="font-black text-white mb-6 tracking-tight leading-[1.1]">
                                 {ap.heroTitle}
                             </h1>
                             <p className="text-xl md:text-2xl text-white/80 max-w-[800px] mx-auto leading-relaxed mb-8">
@@ -83,7 +83,7 @@ export default function AboutPage() {
                         <div className="flex flex-col lg:flex-row gap-16 items-center">
                             <div className="flex-1">
                                 <span className="text-[#135bec] font-bold text-sm uppercase tracking-wider">{ap.storyTitle}</span>
-                                <h2 className="text-3xl md:text-4xl font-black text-[#111318] dark:text-white mt-4 mb-6">
+                                <h2 className="font-black text-[#111318] dark:text-white mt-4 mb-6">
                                     Real Stitching.<br />
                                     <span className="text-[#135bec]">Real Results.</span>
                                 </h2>
@@ -119,7 +119,7 @@ export default function AboutPage() {
                                 <span className="material-symbols-outlined text-lg">workspace_premium</span>
                                 {ap.experienceSubtitle}
                             </span>
-                            <h2 className="text-3xl md:text-4xl font-black text-[#111318] dark:text-white mb-4">
+                            <h2 className="font-black text-[#111318] dark:text-white mb-4">
                                 {ap.experienceTitle}
                             </h2>
                             <p className="text-lg text-[#616f89] dark:text-gray-400 max-w-[600px] mx-auto">
@@ -157,7 +157,7 @@ export default function AboutPage() {
                         <div className="flex flex-col lg:flex-row gap-16">
                             <div className="lg:w-1/3">
                                 <span className="text-[#135bec] font-bold text-sm uppercase tracking-wider">{ap.deliverSubtitle}</span>
-                                <h2 className="text-3xl md:text-4xl font-black text-[#111318] dark:text-white mt-4 mb-6">
+                                <h2 className="font-black text-[#111318] dark:text-white mt-4 mb-6">
                                     {ap.deliverTitle}
                                 </h2>
                                 <p className="text-[#616f89] dark:text-gray-400 leading-relaxed">
@@ -196,7 +196,7 @@ export default function AboutPage() {
 
                     <div className="relative max-w-[1280px] mx-auto px-4 md:px-10">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
+                            <h2 className="font-black text-white mb-6">
                                 {ap.missionTitle}
                             </h2>
                             <p className="text-lg text-gray-400 max-w-[800px] mx-auto leading-relaxed">
@@ -239,7 +239,7 @@ export default function AboutPage() {
 
                             <div className="relative z-10">
                                 <span className="material-symbols-outlined text-6xl text-white/30 mb-6">rocket_launch</span>
-                                <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
+                                <h2 className="font-black text-white mb-4">
                                     {ap.ctaTitle}
                                 </h2>
                                 <p className="text-xl text-white/80 mb-8 max-w-[500px] mx-auto">

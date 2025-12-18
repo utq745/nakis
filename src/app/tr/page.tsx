@@ -18,13 +18,13 @@ export default function LandingPage() {
               <div className="flex flex-col gap-6 lg:w-1/2 lg:pr-10">
                 <div className="flex flex-col gap-4 text-left">
                   <span className="text-[#135bec] font-bold tracking-wide uppercase text-sm">{t.landing.hero.badge}</span>
-                  <h1 className="text-[#111318] dark:text-white text-4xl font-black leading-[1.1] tracking-[-0.02em] sm:text-5xl lg:text-6xl">
+                  <h1 className="text-[#111318] dark:text-white font-black leading-[1.1] tracking-[-0.02em]">
                     {t.landing.hero.titleLine1}<br />
                     <span className="text-[#135bec]">{t.landing.hero.titleLine2}</span>
                   </h1>
-                  <h2 className="text-[#616f89] dark:text-gray-300 text-lg font-normal leading-relaxed max-w-[600px]">
+                  <p className="text-[#616f89] dark:text-gray-300 text-lg font-normal leading-relaxed max-w-[600px]">
                     {t.landing.hero.description}
-                  </h2>
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-4 pt-2">
                   <Link href={`/${language}/login`}>
@@ -58,7 +58,7 @@ export default function LandingPage() {
         <section className="w-full bg-white dark:bg-[#18212f] border-y border-[#f0f2f4] dark:border-[#2a3441] py-16">
           <div className="max-w-[1280px] mx-auto px-4 md:px-10">
             <div className="text-center mb-12">
-              <h2 className="text-[#111318] dark:text-white text-3xl md:text-4xl font-black leading-tight">
+              <h2 className="text-[#111318] dark:text-white font-black leading-tight">
                 {t.landing.why.title}
               </h2>
             </div>
@@ -67,7 +67,7 @@ export default function LandingPage() {
                 <div className="mb-2 inline-flex items-center justify-center size-16 rounded-full bg-[#135bec]/10 text-[#135bec] self-center">
                   <span className="material-symbols-outlined text-4xl">precision_manufacturing</span>
                 </div>
-                <h3 className="text-[#111318] dark:text-white tracking-tight text-xl font-bold leading-tight">{t.landing.why.card1Title}</h3>
+                <h3 className="text-[#111318] dark:text-white tracking-tight font-bold leading-tight">{t.landing.why.card1Title}</h3>
                 <p className="text-[#616f89] dark:text-gray-400 text-sm leading-relaxed">
                   {t.landing.why.card1Desc}
                 </p>
@@ -76,7 +76,7 @@ export default function LandingPage() {
                 <div className="mb-2 inline-flex items-center justify-center size-16 rounded-full bg-[#135bec]/10 text-[#135bec] self-center">
                   <span className="material-symbols-outlined text-4xl">wysiwyg</span>
                 </div>
-                <h3 className="text-[#111318] dark:text-white tracking-tight text-xl font-bold leading-tight">{t.landing.why.card2Title}</h3>
+                <h3 className="text-[#111318] dark:text-white tracking-tight font-bold leading-tight">{t.landing.why.card2Title}</h3>
                 <p className="text-[#616f89] dark:text-gray-400 text-sm leading-relaxed">
                   {t.landing.why.card2Desc}
                 </p>
@@ -85,7 +85,7 @@ export default function LandingPage() {
                 <div className="mb-2 inline-flex items-center justify-center size-16 rounded-full bg-[#135bec]/10 text-[#135bec] self-center">
                   <span className="material-symbols-outlined text-4xl">verified</span>
                 </div>
-                <h3 className="text-[#111318] dark:text-white tracking-tight text-xl font-bold leading-tight">{t.landing.why.card3Title}</h3>
+                <h3 className="text-[#111318] dark:text-white tracking-tight font-bold leading-tight">{t.landing.why.card3Title}</h3>
                 <p className="text-[#616f89] dark:text-gray-400 text-sm leading-relaxed">
                   {t.landing.why.card3Desc}
                 </p>
@@ -98,7 +98,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-12">
             <div className="flex flex-col gap-4 text-center items-center">
               <span className="text-[#135bec] font-bold tracking-wide uppercase text-sm">{t.landing.process.badge}</span>
-              <h2 className="text-[#111318] dark:text-white text-3xl md:text-4xl font-black leading-tight max-w-[720px]">
+              <h2 className="text-[#111318] dark:text-white font-black leading-tight max-w-[720px]">
                 {t.landing.process.title}
               </h2>
               <p className="text-[#616f89] dark:text-gray-400 text-base md:text-lg font-normal leading-normal max-w-[600px]">
@@ -130,7 +130,7 @@ export default function LandingPage() {
                     <span className="material-symbols-outlined text-[40px]">{item.icon}</span>
                   </div>
                   <div className="flex flex-col gap-2 z-10">
-                    <h3 className="text-[#111318] dark:text-white text-xl font-bold leading-tight">{item.title}</h3>
+                    <h3 className="text-[#111318] dark:text-white font-bold leading-tight">{item.title}</h3>
                     <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
@@ -144,7 +144,7 @@ export default function LandingPage() {
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
               <div className="flex flex-col gap-4">
                 <span className="text-[#135bec] font-bold tracking-wide uppercase text-sm">{t.landing.portfolio.badge}</span>
-                <h2 className="text-[#111318] dark:text-white text-3xl md:text-4xl font-black leading-tight">
+                <h2 className="text-[#111318] dark:text-white font-black leading-tight">
                   {t.landing.portfolio.title}
                 </h2>
                 <p className="text-[#616f89] dark:text-gray-400 text-base font-normal max-w-[600px]">
@@ -187,7 +187,7 @@ export default function LandingPage() {
                 <span className="material-symbols-outlined text-[24px]">star</span>
                 <span className="font-medium ml-2">{t.landing.cta.rating}</span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">
+              <h2 className="font-black leading-tight tracking-tight">
                 {t.landing.cta.title}
               </h2>
               <p className="text-lg text-white/90 max-w-[500px]">
