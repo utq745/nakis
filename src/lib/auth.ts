@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { compare } from "bcryptjs";
 import prisma from "@/lib/prisma";
 import type { Role } from "@/types";
@@ -32,15 +33,18 @@ declare module "@auth/core/jwt" {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    adapter: PrismaAdapter(prisma) as any,
     trustHost: true,
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
         }),
         Apple({
             clientId: process.env.APPLE_CLIENT_ID,
             clientSecret: process.env.APPLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
         }),
         Credentials({
             name: "credentials",
@@ -59,7 +63,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     },
                 });
 
-                if (!user) {
+                if (!user || !user.password) {
                     return null;
                 }
 
@@ -82,10 +86,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                token.role = user.role;
+                token.role = (user as any).role || "CUSTOMER";
+            }
+            if (trigger === "update" && session?.role) {
+                token.role = session.role;
             }
             return token;
         },
@@ -96,6 +103,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
             return session;
         },
+    },
+    events: {
+        async createUser({ user }) {
+            // New OAuth users get CUSTOMER role by default
+            if (user.id) {
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { role: "CUSTOMER" }
+                });
+            }
+        }
     },
     pages: {
         signIn: "/login",
