@@ -61,6 +61,7 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   files     File[]   // Attached files
+  isSystem  Boolean  @default(false) // System-generated messages (status changes, etc.)
   createdAt DateTime @default(now())
 }
 

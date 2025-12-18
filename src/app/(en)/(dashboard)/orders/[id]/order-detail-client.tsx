@@ -412,6 +412,69 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             </CardContent>
                         </Card>
                     )}
+
+                    {/* FAQ Section - Only for customers */}
+                    {!isAdmin && (
+                        <Card className="bg-zinc-900 border-zinc-800">
+                            <CardHeader>
+                                <CardTitle className="text-white text-lg flex items-center gap-2">
+                                    <span>❓</span>
+                                    {language === "tr" ? "Sıkça Sorulan Sorular" : "Frequently Asked Questions"}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-3">
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>{language === "tr" ? "Siparişim ne zaman hazır olur?" : "When will my order be ready?"}</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            {language === "tr"
+                                                ? "Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir. Durumu sipariş sayfanızdan takip edebilirsiniz."
+                                                : "Standard orders are typically completed within 24-48 hours. Complex designs may take longer. You can track the status on your order page."}
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>{language === "tr" ? "Süreç nasıl işliyor?" : "How does the process work?"}</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            {language === "tr"
+                                                ? "1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Revizyon yapın veya onaylayın → 6) Final dosyalarınızı indirin."
+                                                : "1) Upload your file → 2) Receive a quote → 3) Approve → 4) Get a preview → 5) Request revisions or approve → 6) Download your final files."}
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>{language === "tr" ? "Revizyon talep edebilir miyim?" : "Can I request revisions?"}</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            {language === "tr"
+                                                ? "Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz. Ekibimiz değişiklikleri en kısa sürede yapacaktır."
+                                                : "Yes! After receiving your preview, you can request revisions through the messages section. Our team will make changes as quickly as possible."}
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>{language === "tr" ? "Hangi dosya formatlarını destekliyorsunuz?" : "What file formats do you support?"}</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            {language === "tr"
+                                                ? "JPG, PNG, PDF, AI, EPS ve SVG dosyalarını kabul ediyoruz. Çıktı olarak DST, PES, JEF ve diğer popüler nakış formatlarını sağlıyoruz."
+                                                : "We accept JPG, PNG, PDF, AI, EPS, and SVG files. We provide output in DST, PES, JEF, and other popular embroidery formats."}
+                                        </p>
+                                    </details>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

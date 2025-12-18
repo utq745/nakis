@@ -98,6 +98,16 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
+        // Get current order to check if status changed
+        const currentOrder = await prisma.order.findUnique({
+            where: { id },
+            select: { status: true }
+        });
+
+        if (!currentOrder) {
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        }
+
         const order = await prisma.order.update({
             where: { id },
             data: validatedData,
@@ -107,6 +117,32 @@ export async function PATCH(
                 }
             }
         });
+
+        // If status changed, create a system message
+        if (validatedData.status && validatedData.status !== currentOrder.status) {
+            const statusLabels: Record<string, { en: string; tr: string }> = {
+                PENDING: { en: "Pending", tr: "Beklemede" },
+                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
+                IN_PROGRESS: { en: "In Progress", tr: "İşleniyor" },
+                REVISION: { en: "Revision", tr: "Revizyon" },
+                COMPLETED: { en: "Completed", tr: "Tamamlandı" },
+                CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
+            };
+
+            const newStatusLabel = statusLabels[validatedData.status] || { en: validatedData.status, tr: validatedData.status };
+
+            // Create bilingual system message
+            const systemMessageContent = `📋 Order Status Changed: ${newStatusLabel.en} | Sipariş Durumu Değişti: ${newStatusLabel.tr}`;
+
+            await prisma.comment.create({
+                data: {
+                    content: systemMessageContent,
+                    orderId: id,
+                    userId: session.user.id,
+                    isSystem: true,
+                },
+            });
+        }
 
         // Send email notification to customer
         if (order.customer.email && (validatedData.status || validatedData.price)) {

@@ -406,6 +406,61 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             </CardContent>
                         </Card>
                     )}
+
+                    {/* FAQ Section - Only for customers */}
+                    {!isAdmin && (
+                        <Card className="bg-zinc-900 border-zinc-800">
+                            <CardHeader>
+                                <CardTitle className="text-white text-lg flex items-center gap-2">
+                                    <span>❓</span>
+                                    Sıkça Sorulan Sorular
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-3">
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>Siparişim ne zaman hazır olur?</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir. Durumu sipariş sayfanızdan takip edebilirsiniz.
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>Süreç nasıl işliyor?</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Revizyon yapın veya onaylayın → 6) Final dosyalarınızı indirin.
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>Revizyon talep edebilir miyim?</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz. Ekibimiz değişiklikleri en kısa sürede yapacaktır.
+                                        </p>
+                                    </details>
+
+                                    <details className="group">
+                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                                            <span>Hangi dosya formatlarını destekliyorsunuz?</span>
+                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                        </summary>
+                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
+                                            JPG, PNG, PDF, AI, EPS ve SVG dosyalarını kabul ediyoruz. Çıktı olarak DST, PES, JEF ve diğer popüler nakış formatlarını sağlıyoruz.
+                                        </p>
+                                    </details>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

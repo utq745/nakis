@@ -16,6 +16,7 @@ interface Comment {
     orderId: string;
     userId: string;
     createdAt: string;
+    isSystem?: boolean;
     attachments?: {
         id: string;
         name: string;
@@ -249,7 +250,36 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                     comments.map((comment, index) => {
                         const isOwn = comment.userId === session?.user?.id;
                         const isAdmin = comment.user.role === "ADMIN";
-                        const isSequence = index > 0 && comments[index - 1].userId === comment.userId;
+                        const isSequence = index > 0 && comments[index - 1].userId === comment.userId && !comment.isSystem && !comments[index - 1].isSystem;
+
+                        // System message - display centered with special styling
+                        if (comment.isSystem) {
+                            // Extract the appropriate language text from bilingual message
+                            // Format: "📋 Order Status Changed: In Progress | Sipariş Durumu Değişti: İşleniyor"
+                            let displayText = comment.content;
+                            if (comment.content.includes(" | ")) {
+                                const parts = comment.content.split(" | ");
+                                displayText = language === "tr" ? parts[1] : parts[0];
+                            }
+
+                            return (
+                                <div key={comment.id} className="flex justify-center my-4">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                        <span className="text-sm text-amber-400">
+                                            {displayText}
+                                        </span>
+                                        <span className="text-[10px] text-amber-500/60">
+                                            {new Date(comment.createdAt).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        }
 
                         return (
                             <div
@@ -311,8 +341,8 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${isOwn
-                                                                ? "bg-white/10 hover:bg-white/20"
-                                                                : "bg-zinc-700/50 hover:bg-zinc-700"
+                                                            ? "bg-white/10 hover:bg-white/20"
+                                                            : "bg-zinc-700/50 hover:bg-zinc-700"
                                                             }`}
                                                     >
                                                         <FileIcon className="h-4 w-4 shrink-0" />
