@@ -23,6 +23,7 @@ import {
     Upload,
     Loader2,
     Image as ImageIcon,
+    ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -169,15 +170,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </p>
                     )}
                 </div>
-
-                {order.price && (
-                    <div className="text-right">
-                        <p className="text-sm text-zinc-400">Fiyat</p>
-                        <p className="text-2xl font-bold text-violet-400">
-                            ₺{Number(order.price).toLocaleString("tr-TR")}
-                        </p>
-                    </div>
-                )}
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
@@ -314,35 +306,41 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         <CardHeader>
                             <CardTitle className="text-white text-lg">Sipariş Bilgileri</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <p className="text-sm text-zinc-400">Sipariş No</p>
-                                <p className="text-white font-mono">{order.id.slice(0, 8)}</p>
+                        <CardContent className="space-y-3">
+                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                                <span className="text-white font-medium">Sipariş No</span>
+                                <span className="text-sm text-zinc-400 font-mono">{order.id.slice(0, 8)}</span>
                             </div>
-                            <div>
-                                <p className="text-sm text-zinc-400">Oluşturulma</p>
-                                <p className="text-white">
+                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                                <span className="text-white font-medium">Oluşturulma</span>
+                                <span className="text-sm text-zinc-400">
                                     {new Date(order.createdAt).toLocaleDateString("tr-TR", {
-                                        year: "numeric",
-                                        month: "long",
+                                        month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
                                         minute: "2-digit",
                                     })}
-                                </p>
+                                </span>
                             </div>
-                            <div>
-                                <p className="text-sm text-zinc-400">Son Güncelleme</p>
-                                <p className="text-white">
+                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                                <span className="text-white font-medium">Son Güncelleme</span>
+                                <span className="text-sm text-zinc-400">
                                     {new Date(order.updatedAt).toLocaleDateString("tr-TR", {
-                                        year: "numeric",
-                                        month: "long",
+                                        month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
                                         minute: "2-digit",
                                     })}
-                                </p>
+                                </span>
                             </div>
+                            {order.price && (
+                                <div className="flex justify-between items-center py-2 pt-3">
+                                    <span className="text-white font-medium">Fiyat</span>
+                                    <span className="text-lg font-bold text-violet-400">
+                                        ₺{Number(order.price).toLocaleString("tr-TR")}
+                                    </span>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -410,52 +408,60 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     {/* FAQ Section - Only for customers */}
                     {!isAdmin && (
                         <Card className="bg-zinc-900 border-zinc-800">
-                            <CardHeader>
+                            <CardHeader className="pb-3">
                                 <CardTitle className="text-white text-lg flex items-center gap-2">
-                                    <span>❓</span>
+                                    <span className="text-violet-400">?</span>
                                     Sıkça Sorulan Sorular
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-3">
-                                    <details className="group">
-                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
-                                            <span>Siparişim ne zaman hazır olur?</span>
-                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                            <CardContent className="pt-0">
+                                <div className="divide-y divide-zinc-800">
+                                    <details className="group py-3">
+                                        <summary className="flex items-center justify-between cursor-pointer">
+                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                                Siparişim ne zaman hazır olur?
+                                            </span>
+                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
-                                            Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir. Durumu sipariş sayfanızdan takip edebilirsiniz.
-                                        </p>
+                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                            Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir.
+                                        </div>
                                     </details>
 
-                                    <details className="group">
-                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
-                                            <span>Süreç nasıl işliyor?</span>
-                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                    <details className="group py-3">
+                                        <summary className="flex items-center justify-between cursor-pointer">
+                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                                Süreç nasıl işliyor?
+                                            </span>
+                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
-                                            1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Revizyon yapın veya onaylayın → 6) Final dosyalarınızı indirin.
-                                        </p>
+                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                            1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin.
+                                        </div>
                                     </details>
 
-                                    <details className="group">
-                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
-                                            <span>Revizyon talep edebilir miyim?</span>
-                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                    <details className="group py-3">
+                                        <summary className="flex items-center justify-between cursor-pointer">
+                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                                Revizyon talep edebilir miyim?
+                                            </span>
+                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
-                                            Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz. Ekibimiz değişiklikleri en kısa sürede yapacaktır.
-                                        </p>
+                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                            Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz.
+                                        </div>
                                     </details>
 
-                                    <details className="group">
-                                        <summary className="flex items-center justify-between cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
-                                            <span>Hangi dosya formatlarını destekliyorsunuz?</span>
-                                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                                    <details className="group py-3">
+                                        <summary className="flex items-center justify-between cursor-pointer">
+                                            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                                Hangi formatları destekliyorsunuz?
+                                            </span>
+                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <p className="mt-2 text-xs text-zinc-500 pl-2 border-l border-zinc-800">
-                                            JPG, PNG, PDF, AI, EPS ve SVG dosyalarını kabul ediyoruz. Çıktı olarak DST, PES, JEF ve diğer popüler nakış formatlarını sağlıyoruz.
-                                        </p>
+                                        <div className="mt-2 ml-0 text-xs text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                            Giriş: JPG, PNG, PDF, AI, EPS, SVG. Çıkış: DST, PES, JEF ve diğer nakış formatları.
+                                        </div>
                                     </details>
                                 </div>
                             </CardContent>

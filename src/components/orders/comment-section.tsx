@@ -212,7 +212,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     };
 
     return (
-        <div className="flex flex-col h-[600px] border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/50">
+        <div className="flex flex-col h-[400px] border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/50">
             {/* Header */}
             <div className="p-4 border-b border-zinc-800 bg-zinc-900/80 flex items-center justify-between backdrop-blur-sm">
                 <div className="flex items-center gap-2 text-zinc-100">
