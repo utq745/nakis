@@ -19,6 +19,7 @@ model User {
   password      String
   name          String?
   role          String    @default("CUSTOMER")
+  language      String    @default("en")
   orders        Order[]   @relation("CustomerOrders")
   comments      Comment[]
   createdAt     DateTime  @default(now())
@@ -31,6 +32,7 @@ model Order {
   description     String?
   status          String      @default("PENDING")
   price           Float?
+  hidden          Boolean     @default(false)
   customerId      String
   customer        User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
   files           File[]

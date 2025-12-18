@@ -48,7 +48,11 @@ export default function LoginPage() {
                 if (result?.error) {
                     setError(result.error);
                 } else {
-                    router.push("/dashboard");
+                    // Fetch user language preference
+                    const userRes = await fetch("/api/user/profile");
+                    const userData = await userRes.json();
+                    const redirectPath = userData?.language === "tr" ? "/tr/dashboard" : "/dashboard";
+                    router.push(redirectPath);
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Registration failed");
@@ -64,7 +68,11 @@ export default function LoginPage() {
             if (result?.error) {
                 setError("Invalid email or password");
             } else {
-                router.push("/dashboard");
+                // Fetch user language preference
+                const userRes = await fetch("/api/user/profile");
+                const userData = await userRes.json();
+                const redirectPath = userData?.language === "tr" ? "/tr/dashboard" : "/dashboard";
+                router.push(redirectPath);
             }
         }
 

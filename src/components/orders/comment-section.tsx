@@ -50,7 +50,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     // Translations
     const texts = {
         en: {
-            supportMessages: "Support & Messages",
+            supportMessages: "Messages & Revision Requests",
             refreshEvery: "Refreshes every 30s",
             refreshMessages: "Refresh Messages",
             noMessages: "No messages yet. Send the first message!",
@@ -64,7 +64,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             removeFile: "Remove file",
         },
         tr: {
-            supportMessages: "Destek & Mesajlar",
+            supportMessages: "Mesajlar ve Revizyon Talepleri",
             refreshEvery: "Her 30sn'de güncellenir",
             refreshMessages: "Mesajları Yenile",
             noMessages: "Henüz mesaj yok. İlk mesajı siz gönderin!",
@@ -113,14 +113,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
         }
     };
 
-    // Auto-refresh every 30 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchComments(false);
-        }, 30000);
-
-        return () => clearInterval(interval);
-    }, [orderId, comments]);
+    // Removed auto-refresh - users can manually refresh with button
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
@@ -212,26 +205,24 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     };
 
     return (
-        <div className="flex flex-col h-[400px] border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/50">
+        <div className="flex flex-col h-[500px] overflow-hidden bg-zinc-900/50">
             {/* Header */}
             <div className="p-4 border-b border-zinc-800 bg-zinc-900/80 flex items-center justify-between backdrop-blur-sm">
                 <div className="flex items-center gap-2 text-zinc-100">
                     <MessageSquare className="h-5 w-5 text-violet-400" />
-                    <h3 className="font-semibold">{txt.supportMessages}</h3>
+                    <h5 className="font-semibold">{txt.supportMessages}</h5>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500 hidden sm:inline">
-                        {txt.refreshEvery}
-                    </span>
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
                         onClick={() => fetchComments(true)}
                         disabled={isRefreshing}
-                        className="text-zinc-400 hover:text-white"
+                        className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 gap-1.5"
                         title={txt.refreshMessages}
                     >
                         <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                        <span className="hidden sm:inline text-xs">{txt.refreshMessages}</span>
                     </Button>
                 </div>
             </div>
@@ -395,39 +386,42 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                         />
                     </div>
 
-                    {/* File Attach Button */}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        onChange={handleFileSelect}
-                        className="hidden"
-                        accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg,.zip,.rar"
-                    />
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-zinc-400 hover:text-violet-400 h-[44px] w-[44px] rounded-xl shrink-0"
-                        title={txt.attachFile}
-                    >
-                        <Paperclip className="h-5 w-5" />
-                    </Button>
+                    {/* Buttons Column: Attachment on top, Send below */}
+                    <div className="flex flex-col gap-2">
+                        {/* File Attach Button */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            onChange={handleFileSelect}
+                            className="hidden"
+                            accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg,.zip,.rar"
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 h-[38px] w-[38px] rounded-xl shrink-0"
+                            title={txt.attachFile}
+                        >
+                            <Paperclip className="h-5 w-5" />
+                        </Button>
 
-                    {/* Send Button */}
-                    <Button
-                        type="submit"
-                        size="icon"
-                        disabled={isLoading || (!newComment.trim() && attachedFiles.length === 0)}
-                        className="bg-zinc-100 text-zinc-900 hover:bg-zinc-200 hover:text-zinc-950 h-[44px] w-[44px] rounded-xl shrink-0 shadow-sm transition-all active:scale-95 disabled:opacity-50"
-                    >
-                        {isLoading ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                            <Send className="h-5 w-5 ml-0.5" />
-                        )}
-                    </Button>
+                        {/* Send Button */}
+                        <Button
+                            type="submit"
+                            size="icon"
+                            disabled={isLoading || (!newComment.trim() && attachedFiles.length === 0)}
+                            className="bg-violet-600 text-white hover:bg-violet-500 h-[38px] w-[38px] rounded-xl shrink-0 shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            {isLoading ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                                <Send className="h-5 w-5 ml-0.5" />
+                            )}
+                        </Button>
+                    </div>
                 </form>
             </div>
         </div>

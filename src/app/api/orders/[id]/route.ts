@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "REVISION", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "REVISION", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
+    hidden: z.boolean().optional(),
 });
 
 export async function GET(
@@ -132,6 +133,7 @@ export async function PATCH(
                 PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
                 IN_PROGRESS: { en: "In Progress", tr: "İşleniyor" },
                 REVISION: { en: "Revision", tr: "Revizyon" },
+                PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
             };

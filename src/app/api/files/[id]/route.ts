@@ -12,7 +12,11 @@ export async function GET(
     try {
         const session = await auth();
         if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            const url = new URL(request.url);
+            const referer = request.headers.get("referer");
+            const isTurkish = referer?.includes("/tr/") || request.headers.get("accept-language")?.startsWith("tr");
+            const loginPath = isTurkish ? "/tr/login" : "/login";
+            return NextResponse.redirect(new URL(loginPath, url.origin));
         }
 
         const { id } = await params;
@@ -22,7 +26,7 @@ export async function GET(
             where: { id },
             include: {
                 order: {
-                    select: { customerId: true }
+                    select: { customerId: true, status: true }
                 }
             }
         });
@@ -31,10 +35,19 @@ export async function GET(
             return NextResponse.json({ error: "File not found" }, { status: 404 });
         }
 
-        // Check access - user must own the order or be admin
         const isAdmin = session.user.role === "ADMIN";
+
+        // Ownership check
         if (!isAdmin && file.order.customerId !== session.user.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        // PAYMENT PROTECTION: If it's a final file and payment is pending, block download for customer
+        if (file.type === "final" && file.order.status === "PAYMENT_PENDING" && !isAdmin) {
+            return NextResponse.json(
+                { error: "Payment required to access final files" },
+                { status: 402 }
+            );
         }
 
         // Determine file path - check both old (public) and new (uploads) locations

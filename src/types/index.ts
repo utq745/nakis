@@ -1,6 +1,6 @@
 export type Role = "CUSTOMER" | "ADMIN";
 
-export type OrderStatus = "PENDING" | "PRICED" | "IN_PROGRESS" | "REVISION" | "COMPLETED" | "CANCELLED";
+export type OrderStatus = "PENDING" | "PRICED" | "IN_PROGRESS" | "REVISION" | "PAYMENT_PENDING" | "COMPLETED" | "CANCELLED";
 
 export interface SafeUser {
     id: string;
@@ -49,6 +49,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
     PRICED: "Priced",
     IN_PROGRESS: "In Progress",
     REVISION: "Revision",
+    PAYMENT_PENDING: "Payment Pending",
     COMPLETED: "Completed",
     CANCELLED: "Cancelled",
 };
@@ -58,6 +59,7 @@ export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
     PRICED: "Fiyatlandırıldı",
     IN_PROGRESS: "Devam Ediyor",
     REVISION: "Revizyon",
+    PAYMENT_PENDING: "Ödeme Bekleniyor",
     COMPLETED: "Tamamlandı",
     CANCELLED: "İptal Edildi",
 };
@@ -67,6 +69,7 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
     PRICED: "bg-blue-500/10 text-blue-500",
     IN_PROGRESS: "bg-purple-500/10 text-purple-500",
     REVISION: "bg-orange-500/10 text-orange-500",
+    PAYMENT_PENDING: "bg-fuchsia-500/10 text-fuchsia-500",
     COMPLETED: "bg-green-500/10 text-green-500",
     CANCELLED: "bg-red-500/10 text-red-500",
 };

@@ -24,6 +24,8 @@ import {
     Loader2,
     Image as ImageIcon,
     ChevronDown,
+    CreditCard,
+    Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -170,31 +172,41 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             {ORDER_STATUS_LABELS[order.status]}
                         </Badge>
                     </div>
-                    {isAdmin && (
-                        <p className="text-zinc-400 mt-1">
-                            {t.orders.customerName}: {order.customer.name || order.customer.email}
-                        </p>
-                    )}
                 </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
+            {/* Payment Banner for Customer */}
+            {!isAdmin && status === "PAYMENT_PENDING" && (
+                <Card className="border-fuchsia-500/50 bg-fuchsia-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-fuchsia-500/20 text-fuchsia-400">
+                                    <CreditCard className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white">
+                                        {t.orders.payButton}
+                                    </h3>
+                                    <p className="text-sm text-zinc-400">
+                                        {t.orders.paymentPendingDesc}
+                                    </p>
+                                </div>
+                            </div>
+                            <Link href={`${language === 'tr' ? '/tr' : ''}/orders/${order.id}/payment`} className="w-full md:w-auto">
+                                <Button className="w-full md:w-auto bg-fuchsia-600 hover:bg-fuchsia-500 text-white gap-2">
+                                    <CreditCard className="h-4 w-4" />
+                                    {t.orders.payButton}
+                                </Button>
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Description */}
-                    {order.description && (
-                        <Card className="bg-zinc-900 border-zinc-800">
-                            <CardHeader>
-                                <CardTitle className="text-white text-lg">{t.orders.description}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-zinc-300 whitespace-pre-wrap">
-                                    {order.description}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    )}
-
                     {/* Files */}
                     <Card className="bg-zinc-900 border-zinc-800">
                         <CardHeader>
@@ -203,13 +215,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         <CardContent>
                             <Tabs defaultValue="original" className="w-full">
                                 <TabsList className="bg-zinc-800 w-full justify-start">
-                                    <TabsTrigger value="original" className="data-[state=active]:bg-zinc-700">
+                                    <TabsTrigger value="original" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
                                         {t.orders.original} ({originalFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="preview" className="data-[state=active]:bg-zinc-700">
+                                    <TabsTrigger value="preview" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
                                         {t.orders.preview} ({previewFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="final" className="data-[state=active]:bg-zinc-700">
+                                    <TabsTrigger value="final" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
                                         {t.orders.final} ({finalFiles.length})
                                     </TabsTrigger>
                                 </TabsList>
@@ -221,7 +233,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <FileList files={previewFiles} showPreview emptyText={t.orders.noFiles} />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-400 text-sm">
+                                            <Label className="text-zinc-300 text-sm">
                                                 {t.orders.previewUploadLabel}
                                             </Label>
                                             <input
@@ -236,7 +248,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 <Button
                                                     asChild
                                                     variant="outline"
-                                                    className="mt-2 border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                                                    className="mt-2 border-violet-500 bg-violet-600 text-white hover:bg-violet-500 hover:text-white"
                                                     disabled={isUploading}
                                                 >
                                                     <span>
@@ -253,10 +265,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     )}
                                 </TabsContent>
                                 <TabsContent value="final" className="mt-4 space-y-4">
-                                    <FileList files={finalFiles} emptyText={t.orders.noFiles} />
+                                    <FileList
+                                        files={finalFiles}
+                                        emptyText={t.orders.noFiles}
+                                        isLocked={!isAdmin && status === "PAYMENT_PENDING"}
+                                    />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-400 text-sm">
+                                            <Label className="text-zinc-300 text-sm">
                                                 {t.orders.finalUploadLabel}
                                             </Label>
                                             <input
@@ -272,7 +288,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 <Button
                                                     asChild
                                                     variant="outline"
-                                                    className="mt-2 border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                                                    className="mt-2 border-violet-500 bg-violet-600 text-white hover:bg-violet-500 hover:text-white"
                                                     disabled={isUploading}
                                                 >
                                                     <span>
@@ -294,12 +310,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* Comments */}
                     <Card className="bg-zinc-900 border-zinc-800">
-                        <CardHeader>
-                            <CardTitle className="text-white text-lg">
-                                {t.orders.messages}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-0">
                             <CommentSection orderId={order.id} initialComments={formattedComments} />
                         </CardContent>
                     </Card>
@@ -312,12 +323,18 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         <CardHeader>
                             <CardTitle className="text-white text-lg">{t.orders.orderInfo}</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                        <CardContent className="space-y-0">
+                            {isAdmin && (
+                                <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
+                                    <span className="text-white font-medium">{t.orders.customerName}</span>
+                                    <span className="text-sm text-zinc-400">{order.customer.name || order.customer.email}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
                                 <span className="text-white font-medium">{t.orders.orderNo}</span>
                                 <span className="text-sm text-zinc-400 font-mono">{order.id.slice(0, 8)}</span>
                             </div>
-                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
                                 <span className="text-white font-medium">{t.orders.created}</span>
                                 <span className="text-sm text-zinc-400">
                                     {new Date(order.createdAt).toLocaleDateString(dateLocale, {
@@ -328,7 +345,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     })}
                                 </span>
                             </div>
-                            <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
                                 <span className="text-white font-medium">{t.orders.updated}</span>
                                 <span className="text-sm text-zinc-400">
                                     {new Date(order.updatedAt).toLocaleDateString(dateLocale, {
@@ -340,15 +357,29 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </span>
                             </div>
                             {order.price && (
-                                <div className="flex justify-between items-center py-2 pt-3">
+                                <div className="flex justify-between items-center py-1.5">
                                     <span className="text-white font-medium">{t.orders.price}</span>
                                     <span className="text-lg font-bold text-violet-400">
-                                        ₺{Number(order.price).toLocaleString(dateLocale)}
+                                        ${Number(order.price).toLocaleString("en-US")}
                                     </span>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Description - Moved to sidebar */}
+                    {order.description && (
+                        <Card className="bg-zinc-900 border-zinc-800">
+                            <CardHeader>
+                                <CardTitle className="text-white text-lg">{t.orders.description}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-zinc-300 whitespace-pre-wrap text-sm">
+                                    {order.description}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Admin Controls */}
                     {isAdmin && (
@@ -358,39 +389,40 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     {t.orders.management}
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label className="text-zinc-400">{t.orders.status}</Label>
-                                    <Select
-                                        value={status}
-                                        onValueChange={(value) => setStatus(value as OrderStatus)}
-                                    >
-                                        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-zinc-800 border-zinc-700">
-                                            {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
-                                                <SelectItem
-                                                    key={key}
-                                                    value={key}
-                                                    className="text-white focus:bg-zinc-700"
-                                                >
-                                                    {label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-zinc-400">{t.orders.price} (₺)</Label>
-                                    <Input
-                                        type="number"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        placeholder="0.00"
-                                        className="bg-zinc-800 border-zinc-700 text-white"
-                                    />
+                            <CardContent className="space-y-3">
+                                <div className="grid grid-cols-6 gap-3">
+                                    <div className="col-span-4 space-y-1">
+                                        <Label className="text-zinc-400 text-xs">{t.orders.status}</Label>
+                                        <Select
+                                            value={status}
+                                            onValueChange={(value) => setStatus(value as OrderStatus)}
+                                        >
+                                            <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white h-9">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-zinc-800 border-zinc-700">
+                                                {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
+                                                    <SelectItem
+                                                        key={key}
+                                                        value={key}
+                                                        className="text-white focus:bg-zinc-700"
+                                                    >
+                                                        {label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="col-span-2 space-y-1">
+                                        <Label className="text-zinc-400 text-xs">{t.orders.price} ($)</Label>
+                                        <Input
+                                            type="number"
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            placeholder="0.00"
+                                            className="bg-zinc-800 border-zinc-700 text-white h-9"
+                                        />
+                                    </div>
                                 </div>
 
                                 <Button
@@ -491,6 +523,7 @@ function FileList({
     files,
     showPreview = false,
     emptyText,
+    isLocked = false,
 }: {
     files: Array<{
         id: string;
@@ -500,6 +533,7 @@ function FileList({
     }>;
     showPreview?: boolean;
     emptyText: string;
+    isLocked?: boolean;
 }) {
     if (files.length === 0) {
         return (
@@ -538,15 +572,21 @@ function FileList({
                                 )}
                             </div>
                         </div>
-                        <a href={file.url} target="_blank" rel="noopener noreferrer">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-zinc-400 hover:text-white"
-                            >
-                                <Download className="h-4 w-4" />
-                            </Button>
-                        </a>
+                        {isLocked ? (
+                            <div className="p-2 rounded-lg bg-zinc-800/50 text-zinc-500" title="Payment required">
+                                <Lock className="h-4 w-4" />
+                            </div>
+                        ) : (
+                            <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                >
+                                    <Download className="h-4 w-4" />
+                                </Button>
+                            </a>
+                        )}
                     </div>
                 </div>
             ))}

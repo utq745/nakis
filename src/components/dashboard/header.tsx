@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bell, LogOut, Settings, User, Globe } from "lucide-react";
+import { LogOut, Settings, User, Globe } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Header() {
@@ -78,15 +78,6 @@ export function Header() {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Notifications */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-                >
-                    <Bell className="h-5 w-5" />
-                </Button>
 
                 {/* User Menu */}
                 {mounted ? (

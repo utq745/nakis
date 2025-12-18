@@ -84,6 +84,25 @@ export async function POST(request: Request) {
             });
         }
 
+        // If final files were uploaded, update order status to PAYMENT_PENDING
+        if (type === "final" && isAdmin) {
+            await prisma.order.update({
+                where: { id: orderId },
+                data: { status: "PAYMENT_PENDING" }
+            });
+
+            // Create system message
+            const systemMessageContent = `📋 Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`;
+            await prisma.comment.create({
+                data: {
+                    content: systemMessageContent,
+                    orderId: orderId,
+                    userId: session.user.id,
+                    isSystem: true,
+                },
+            });
+        }
+
         return NextResponse.json({ files: uploadedFiles }, { status: 201 });
     } catch (error) {
         console.error("Error uploading files:", error);
