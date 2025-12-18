@@ -108,7 +108,10 @@ export async function PATCH(
             return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
         // Auto-set status to PRICED when price is entered and current status is PENDING
-        if (validatedData.price && validatedData.price > 0 && currentOrder.status === "PENDING" && !validatedData.status) {
+        // Only if user didn't manually change the status (status is same as current)
+        if (validatedData.price && validatedData.price > 0 &&
+            currentOrder.status === "PENDING" &&
+            (!validatedData.status || validatedData.status === "PENDING")) {
             validatedData.status = "PRICED";
         }
 
