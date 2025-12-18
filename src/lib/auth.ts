@@ -106,11 +106,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     events: {
         async createUser({ user }) {
-            // New OAuth users get CUSTOMER role by default
+            // New OAuth users: sync profile data and set CUSTOMER role
             if (user.id) {
                 await prisma.user.update({
                     where: { id: user.id },
-                    data: { role: "CUSTOMER" }
+                    data: {
+                        role: "CUSTOMER",
+                        // Sync name and email from OAuth profile
+                        ...(user.name && { name: user.name }),
+                        ...(user.email && { email: user.email }),
+                    }
                 });
             }
         }
