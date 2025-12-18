@@ -31,12 +31,12 @@ export function SettingsForm({ user }: SettingsFormProps) {
                 body: JSON.stringify({ name }),
             });
 
-            if (!response.ok) throw new Error("Profil güncellenemedi");
+            if (!response.ok) throw new Error("Failed to update profile");
 
-            toast.success("Profil başarıyla güncellendi");
+            toast.success("Profile updated successfully");
             router.refresh();
         } catch (error) {
-            toast.error("Hata oluştu");
+            toast.error("An error occurred");
         } finally {
             setIsLoading(false);
         }
@@ -52,7 +52,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
         const confirmPassword = formData.get("confirmPassword") as string;
 
         if (newPassword !== confirmPassword) {
-            toast.error("Yeni şifreler eşleşmiyor");
+            toast.error("New passwords do not match");
             setIsLoading(false);
             return;
         }
@@ -66,10 +66,10 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || "Şifre güncellenemedi");
+                throw new Error(data.error || "Failed to update password");
             }
 
-            toast.success("Şifre başarıyla güncellendi");
+            toast.success("Password updated successfully");
             (e.target as HTMLFormElement).reset();
         } catch (error: any) {
             toast.error(error.message);
@@ -82,9 +82,9 @@ export function SettingsForm({ user }: SettingsFormProps) {
         <div className="space-y-6">
             <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                    <CardTitle className="text-white">Profil Bilgileri</CardTitle>
+                    <CardTitle className="text-white">Profile Information</CardTitle>
                     <CardDescription className="text-zinc-400">
-                        Kişisel bilgilerinizi güncelleyin.
+                        Update your personal information.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -99,7 +99,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="name" className="text-zinc-300">İsim Soyisim</Label>
+                                <Label htmlFor="name" className="text-zinc-300">Full Name</Label>
                                 <Input
                                     id="name"
                                     name="name"
@@ -115,7 +115,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 className="bg-violet-600 hover:bg-violet-500 text-white"
                             >
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Kaydet
+                                Save
                             </Button>
                         </div>
                     </form>
@@ -124,15 +124,15 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
             <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                    <CardTitle className="text-white">Güvenlik</CardTitle>
+                    <CardTitle className="text-white">Security</CardTitle>
                     <CardDescription className="text-zinc-400">
-                        Şifrenizi güncelleyin.
+                        Update your password.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handlePasswordUpdate} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="currentPassword" className="text-zinc-300">Mevcut Şifre</Label>
+                            <Label htmlFor="currentPassword" className="text-zinc-300">Current Password</Label>
                             <Input
                                 id="currentPassword"
                                 name="currentPassword"
@@ -143,7 +143,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                         </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="newPassword" className="text-zinc-300">Yeni Şifre</Label>
+                                <Label htmlFor="newPassword" className="text-zinc-300">New Password</Label>
                                 <Input
                                     id="newPassword"
                                     name="newPassword"
@@ -153,7 +153,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-zinc-300">Yeni Şifre (Tekrar)</Label>
+                                <Label htmlFor="confirmPassword" className="text-zinc-300">Confirm New Password</Label>
                                 <Input
                                     id="confirmPassword"
                                     name="confirmPassword"
@@ -170,7 +170,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 className="bg-indigo-600 hover:bg-indigo-500 text-white"
                             >
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Şifreyi Güncelle
+                                Update Password
                             </Button>
                         </div>
                     </form>

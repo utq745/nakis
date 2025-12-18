@@ -7,9 +7,9 @@ export default async function SettingsPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight text-white">Ayarlar</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-white">Settings</h2>
                 <p className="text-zinc-400">
-                    Profil tercihlerinizi ve hesap ayarlarınızı yönetin.
+                    Manage your profile preferences and account settings.
                 </p>
             </div>
 
