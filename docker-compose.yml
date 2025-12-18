@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: netjs-site
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    volumes:
+      # Veritabanını korumak için SQLite dosyası (dev.db) klasörüyle birlikte bağlanıyor
+      - ./prisma/dev.db:/app/prisma/dev.db
+      # Yüklenen dosyaların kaybolmaması için uploads klasörü bağlanıyor
+      - ./uploads:/app/uploads
+      # Projeye özel diğer resimler/assetlar varsa onları da buraya ekleyebilirsiniz
+      - ./public/images:/app/public/images
+    networks:
+      - cloudflare
+
+networks:
+  cloudflare:
+    external: true
