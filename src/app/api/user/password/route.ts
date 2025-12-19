@@ -27,6 +27,14 @@ export async function PATCH(request: Request) {
             return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
         }
 
+        // OAuth users don't have a password
+        if (!user.password) {
+            return NextResponse.json(
+                { error: "Sosyal medya ile giriş yapan kullanıcılar şifre değiştiremez" },
+                { status: 400 }
+            );
+        }
+
         const isPasswordValid = await compare(
             validatedData.currentPassword,
             user.password
