@@ -119,7 +119,7 @@ export async function GET(
         return new NextResponse(fileBuffer, {
             headers: {
                 "Content-Type": contentType,
-                "Content-Disposition": download
+                "Content-Disposition": (download || file.type === "final")
                     ? `attachment; filename="${encodeURIComponent(file.name)}"`
                     : `inline; filename="${encodeURIComponent(file.name)}"`,
                 "Content-Length": fileBuffer.length.toString(),

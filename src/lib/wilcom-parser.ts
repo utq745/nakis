@@ -1090,7 +1090,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     const widthInches = parseFloat((data.widthMm / 25.4).toFixed(2));
 
     // Dynamic PPI calculation to fit within A4 page (same as operator card)
-    const MAX_RULER_HEIGHT_PX = 650;
+    const MAX_RULER_HEIGHT_PX = 450;
     const MAX_RULER_WIDTH_PX = 720;
     const PAGE_WIDTH_PX = 720;
 
@@ -1249,7 +1249,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         .ruler-area {
             padding: 0;
             border: 2px solid #000;
-            min-height: 400px;
+            min-height: 300px;
             position: relative;
             background: white;
         }
@@ -1429,7 +1429,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         </div>
         
         <div class="ruler-section">
-            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 400px;">
+            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 300px;">
                 <div class="corner-block">
                     <div class="corner-label">inch</div>
                 </div>
@@ -1442,7 +1442,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
                     ${horizontalMarks.join('')}
                 </div>
                 
-                <div class="embroidery-area" style="height: ${containerHeight}px;">
+                <div class="embroidery-area">
                     ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
                 </div>
             </div>

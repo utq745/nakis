@@ -17,6 +17,7 @@ import {
     RefreshCw,
     CheckCircle,
     AlertCircle,
+    Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -92,7 +93,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
         if (!e.target.files?.length) return;
 
         const file = e.target.files[0];
-        if (!file.name.endsWith('.pdf')) {
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
             toast.error('Only PDF files are accepted');
             return;
         }
@@ -129,7 +130,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 <CardHeader>
                     <CardTitle className="text-white text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5 text-violet-400" />
-                        Wilcom Design Data
+                        Upload Wilcom File
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -197,7 +198,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-white text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5 text-violet-400" />
-                        Wilcom Design Data
+                        Upload Wilcom File
                     </CardTitle>
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
@@ -284,7 +285,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20"
+                                className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
                             >
                                 <Eye className="mr-2 h-4 w-4" />
                                 Customer Approval Card
@@ -302,7 +303,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/20"
+                                className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
                             >
                                 <Eye className="mr-2 h-4 w-4" />
                                 Operator Approval Card
@@ -326,6 +327,27 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                                 Original PDF
                             </Button>
                         </a>
+                    )}
+
+                    {/* Publish Button */}
+                    {isAdmin && (
+                        <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-500 text-white font-semibold transition-all shadow-lg shadow-green-900/20 gap-2"
+                            onClick={async () => {
+                                try {
+                                    const res = await fetch(`/api/orders/${orderId}/wilcom/publish`, { method: 'POST' });
+                                    if (!res.ok) throw new Error('Publish failed');
+                                    toast.success('Approval cards published to Final section!');
+                                    router.refresh();
+                                } catch (error) {
+                                    toast.error('Failed to publish cards');
+                                }
+                            }}
+                        >
+                            <Send className="h-4 w-4" />
+                            Publish
+                        </Button>
                     )}
 
                     {/* Re-upload button - admin only */}
@@ -367,7 +389,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="w-full text-zinc-400 hover:text-white"
+                            className="w-full mt-4 bg-zinc-800/30 hover:bg-zinc-800/70 text-zinc-400 hover:text-white border border-zinc-700/50 hover:border-zinc-600 transition-all"
                             onClick={() => setShowDetails(!showDetails)}
                         >
                             {showDetails ? 'Hide Details' : 'Show Technical Details'}
