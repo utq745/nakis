@@ -29,8 +29,56 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
+import { WilcomSection } from "@/components/orders/wilcom-section";
 import { ORDER_STATUS_LABELS_TR as ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
 import { useLanguage } from "@/components/providers/language-provider";
+
+interface WilcomColor {
+    code: string;
+    name: string;
+    hex: string;
+    stitches: number;
+    threadUsedM: number;
+    chart: string;
+}
+
+interface WilcomColorSequenceItem {
+    stop: number;
+    colorCode: string;
+    colorName: string;
+    hex: string;
+    stitches: number;
+    threadUsedM: number;
+}
+
+interface WilcomData {
+    id: string;
+    designName: string;
+    title: string | null;
+    heightMm: number;
+    widthMm: number;
+    stitchCount: number;
+    colorCount: number;
+    colorway: string | null;
+    machineFormat: string | null;
+    machineRuntime: string | null;
+    colorChanges: number | null;
+    stops: number | null;
+    trims: number | null;
+    maxStitchMm: number | null;
+    minStitchMm: number | null;
+    maxJumpMm: number | null;
+    totalThreadM: number | null;
+    totalBobbinM: number | null;
+    colors: WilcomColor[];
+    colorSequence: WilcomColorSequenceItem[];
+    designImageUrl: string | null;
+    operatorApprovalPdf: string | null;
+    customerApprovalPdf: string | null;
+    wilcomPdfUrl: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
 
 interface OrderDetailClientProps {
     order: {
@@ -67,6 +115,7 @@ interface OrderDetailClientProps {
                 role: "CUSTOMER" | "ADMIN";
             };
         }>;
+        wilcomData: WilcomData | null;
         createdAt: Date;
         updatedAt: Date;
     };
@@ -302,6 +351,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             </Tabs>
                         </CardContent>
                     </Card>
+
+                    {/* Wilcom Design Data */}
+                    <WilcomSection
+                        orderId={order.id}
+                        wilcomData={order.wilcomData}
+                        isAdmin={isAdmin}
+                    />
 
                     {/* Comments */}
                     <Card className="bg-zinc-900 border-zinc-800">

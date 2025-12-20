@@ -121,6 +121,8 @@ export const translations = {
             finalUploadLabel: "Final Dosyası Yükle",
             payButton: "Ödeme Yap",
             paymentPendingDesc: "Final dosyalarını indirebilmek için ödeme yapmanız gerekmektedir.",
+            wilcomUpload: "Wilcom Dosyası Yükle",
+            publish: "Paylaş",
         },
         payment: {
             title: "Ödeme",
@@ -443,6 +445,8 @@ export const translations = {
             finalUploadLabel: "Upload Final File",
             payButton: "Pay Now",
             paymentPendingDesc: "You need to make a payment to download the final files.",
+            wilcomUpload: "Upload Wilcom File",
+            publish: "Publish",
         },
         payment: {
             title: "Payment",

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/components/providers/language-provider";
 
 interface WilcomColor {
     code: string;
@@ -86,6 +87,7 @@ function getContrastColor(hexColor: string): string {
 
 export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionProps) {
     const router = useRouter();
+    const { t } = useLanguage();
     const [isUploading, setIsUploading] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
 
@@ -130,7 +132,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 <CardHeader>
                     <CardTitle className="text-white text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5 text-violet-400" />
-                        Upload Wilcom File
+                        {t.orders.wilcomUpload}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -198,7 +200,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-white text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5 text-violet-400" />
-                        Upload Wilcom File
+                        {t.orders.wilcomUpload}
                     </CardTitle>
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
@@ -346,7 +348,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                             }}
                         >
                             <Send className="h-4 w-4" />
-                            Publish
+                            {t.orders.publish}
                         </Button>
                     )}
 
