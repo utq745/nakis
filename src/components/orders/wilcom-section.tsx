@@ -85,6 +85,7 @@ function getContrastColor(hexColor: string): string {
     return brightness > 128 ? '#000000' : '#FFFFFF';
 }
 
+// WilcomSection component for displaying and managing Wilcom design data with multi-language support
 export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionProps) {
     const router = useRouter();
     const { t } = useLanguage();
