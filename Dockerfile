@@ -17,8 +17,13 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 \
     libxkbcommon0 \
     libxshmfence1 \
+    python3 \
+    python3-pip \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir pymupdf pillow
 
 WORKDIR /app
 
