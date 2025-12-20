@@ -134,3 +134,71 @@ export async function GET(
         );
     }
 }
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user || session.user.role !== "ADMIN") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        const { id } = await params;
+
+        // Get file from database with order status
+        const file = await prisma.file.findUnique({
+            where: { id },
+            include: {
+                order: {
+                    select: { status: true }
+                }
+            }
+        });
+
+        if (!file) {
+            return NextResponse.json({ error: "File not found" }, { status: 404 });
+        }
+
+        // Check if deletion is allowed based on order status
+        if (file.order.status === "PAYMENT_PENDING" || file.order.status === "COMPLETED") {
+            return NextResponse.json(
+                { error: "Cannot delete files when payment is pending or order is completed" },
+                { status: 400 }
+            );
+        }
+
+        // Determine file path
+        const urlPath = file.url;
+        const filename = urlPath.includes("/") ? urlPath.split("/").pop() || "" : urlPath;
+
+        const securePath = join(process.cwd(), "uploads", file.orderId, file.type, filename);
+        const publicPath = join(process.cwd(), "public", urlPath);
+        const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, filename);
+
+        let filePathToDelete: string | null = null;
+        if (existsSync(securePath)) filePathToDelete = securePath;
+        else if (existsSync(publicPath)) filePathToDelete = publicPath;
+        else if (existsSync(oldPublicPath)) filePathToDelete = oldPublicPath;
+
+        // Delete from database
+        await prisma.file.delete({
+            where: { id }
+        });
+
+        // Delete from disk if found
+        if (filePathToDelete) {
+            const { unlink } = await import("fs/promises");
+            await unlink(filePathToDelete).catch(err => console.error("Disk deletion error:", err));
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        return NextResponse.json(
+            { error: "Failed to delete file" },
+            { status: 500 }
+        );
+    }
+}

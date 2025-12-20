@@ -528,87 +528,74 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     const heightInches = parseFloat((data.heightMm / 25.4).toFixed(2));
     const widthInches = parseFloat((data.widthMm / 25.4).toFixed(2));
 
+    // Split sequence into rows of 25 (Show all stops)
+    const sequenceRowsArr: string[] = [];
+    for (let i = 0; i < data.colorSequence.length; i += 25) {
+        const rowItems = data.colorSequence.slice(i, i + 25).map((item, idx) => `
+            <div class="seq-item">
+                <div class="seq-circle" style="background: ${item.hex}; color: ${getContrastColor(item.hex)}">${i + idx + 1}</div>
+                <div class="seq-number">${item.colorCode}</div>
+            </div>
+        `).join('');
+        sequenceRowsArr.push(`<div class="color-sequence">${rowItems}</div>`);
+    }
+
+    const isMultiPage = data.colorSequence.length > 75;
+
     // Dynamic PPI calculation to fit within A4 page
-    // A4 page: 210mm width, 297mm height
-    // With 10mm padding on each side: usable area is 190mm x 277mm
-    // Available space for ruler area (accounting for header, margins, footer):
-    // Height: ~240mm = ~567px at 96 DPI, Width: ~190mm = ~450px at 96 DPI
-    const MAX_RULER_HEIGHT_PX = 650; // Maximum height for ruler area in pixels (increased)
-    const MAX_RULER_WIDTH_PX = 720;  // Maximum width for ruler area in pixels (increased)
-    const PAGE_WIDTH_PX = 720; // Available page width for horizontal ruler
+    const MAX_RULER_HEIGHT_PX = isMultiPage ? 720 : 500;
+    const MAX_RULER_WIDTH_PX = 720;
+    const PAGE_WIDTH_PX = 720;
 
     // Calculate required PPI to fit the design
-    const basePPI = 80; // Ideal PPI for 1:1 scale
-    // Add 0.5 inch margin on top for the design
-    const maxVerticalInches = Math.ceil(heightInches + 1); // Extra space for 0.5 inch top margin
+    const basePPI = 80;
+    const maxVerticalInches = Math.ceil(heightInches + 1);
     const maxHorizontalInches = Math.ceil(widthInches + 0.5);
 
-    // Calculate PPI needed to fit within max dimensions
     const ppiForHeight = MAX_RULER_HEIGHT_PX / maxVerticalInches;
     const ppiForWidth = MAX_RULER_WIDTH_PX / maxHorizontalInches;
 
-    // Use the smaller PPI to ensure both dimensions fit
     const PPI = Math.min(basePPI, ppiForHeight, ppiForWidth);
 
-    // Generate dynamic ruler marks
     const maxVertical = maxVerticalInches;
-    // Horizontal ruler extends to fill available width
     const maxHorizontal = Math.floor(PAGE_WIDTH_PX / PPI);
-
-    // Container dimensions in pixels
     const containerHeight = maxVertical * PPI;
 
-    // Generate vertical ruler marks with subdivisions (1/4 inch intervals)
+    // Generate vertical ruler marks
     const verticalMarks: string[] = [];
     for (let i = 0; i <= maxVertical; i++) {
         const bottomPx = i * PPI;
-        // Add major tick and number at each inch
         if (i > 0) {
             verticalMarks.push(`
                 <div class="v-number" style="bottom: ${bottomPx}px;">${i}</div>
                 <div class="v-tick major" style="bottom: ${bottomPx}px;"></div>
             `);
         }
-        // Add subdivision ticks within this inch
         if (i < maxVertical) {
-            // 1/4 inch tick
-            const quarter1Px = (i + 0.25) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter1Px}px;"></div>`);
-            // 1/2 inch tick (larger)
-            const halfPx = (i + 0.5) * PPI;
-            verticalMarks.push(`<div class="v-tick half" style="bottom: ${halfPx}px;"></div>`);
-            // 3/4 inch tick
-            const quarter3Px = (i + 0.75) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter3Px}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${(i + 0.25) * PPI}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick half" style="bottom: ${(i + 0.5) * PPI}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${(i + 0.75) * PPI}px;"></div>`);
         }
     }
 
-    // Generate horizontal ruler marks with subdivisions (1/4 inch intervals)
+    // Generate horizontal ruler marks
     const horizontalMarks: string[] = [];
     for (let i = 0; i <= maxHorizontal; i++) {
         const leftPx = i * PPI;
-        // Add major tick and number at each inch
         if (i > 0) {
             horizontalMarks.push(`
                 <div class="h-number" style="left: ${leftPx}px;">${i}</div>
                 <div class="h-tick major" style="left: ${leftPx}px;"></div>
             `);
         }
-        // Add subdivision ticks within this inch
         if (i < maxHorizontal) {
-            // 1/4 inch tick
-            const quarter1Px = (i + 0.25) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter1Px}px;"></div>`);
-            // 1/2 inch tick (larger)
-            const halfPx = (i + 0.5) * PPI;
-            horizontalMarks.push(`<div class="h-tick half" style="left: ${halfPx}px;"></div>`);
-            // 3/4 inch tick
-            const quarter3Px = (i + 0.75) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter3Px}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick" style="left: ${(i + 0.25) * PPI}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick half" style="left: ${(i + 0.5) * PPI}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick" style="left: ${(i + 0.75) * PPI}px;"></div>`);
         }
     }
 
-    // Generate color grid HTML (Show all colors)
+    // Generate color grid HTML
     const colorGridHtml = data.colors.map(color => `
         <div class="color-cell">
             <div class="color-code" style="background: ${color.hex}; color: ${getContrastColor(color.hex)}">${color.code}</div>
@@ -617,33 +604,347 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         </div>
     `).join('');
 
-    // Generate color sequence HTML
-    const colorSequenceHtml = data.colorSequence.map((item, index) => `
-        <div class="seq-item">
-            <div class="seq-circle" style="background: ${item.hex}; color: ${getContrastColor(item.hex)}">${index + 1}</div>
-            <div class="seq-number">${item.colorCode}</div>
-        </div>
-    `).join('');
+    const designImageSrc = designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '';
+    const artworkImageSrc = artworkImageBase64 ? `data:image/png;base64,${artworkImageBase64}` : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
+    const barcodeText = `*${Math.random().toString(36).substring(2, 12).toUpperCase()}*`;
 
-    // Split sequence into rows of 20 (Show all stops)
-    const sequenceRows: string[] = [];
-    for (let i = 0; i < data.colorSequence.length; i += 20) {
-        const rowItems = data.colorSequence.slice(i, i + 20).map((item, idx) => `
-            <div class="seq-item">
-                <div class="seq-circle" style="background: ${item.hex}; color: ${getContrastColor(item.hex)}">${i + idx + 1}</div>
-                <div class="seq-number">${item.colorCode}</div>
+    const styles = `
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Barcode+128&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            padding: 20px 0;
+        }
+        
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 0 auto ${isMultiPage ? '20px' : '0'};
+            padding: 8mm 10mm;
+            position: relative;
+            box-sizing: border-box;
+            box-shadow: ${isMultiPage ? '0 0 10px rgba(0,0,0,0.1)' : 'none'};
+        }
+        
+        .page-footer {
+            position: absolute;
+            bottom: 6mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .page { margin: 0; border: none; box-shadow: none; page-break-after: always; }
+            .page:last-child { page-break-after: avoid; }
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 6px;
+        }
+        
+        .header-left h1 { font-size: 16px; font-weight: 700; margin-bottom: 1px; }
+        .header-left p { font-size: 10px; color: #666; }
+        
+        .header-right {
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .barcode { font-family: 'Libre Barcode 128', cursive; font-size: 32px; }
+        .rid-box { border: 2px solid #000; padding: 2px 6px; font-weight: 600; font-size: 12px; }
+        
+        .title {
+            text-align: center;
+            font-size: ${isMultiPage ? '20' : '24'}px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .top-content {
+            display: grid;
+            grid-template-columns: 1fr 140px;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .design-info {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 2px;
+            align-items: center;
+        }
+        
+        .info-label { font-weight: 600; font-size: 11px; }
+        .info-value { font-size: 11px; }
+        
+        .artwork-preview-box { text-align: right; }
+        .customer-artwork-label { font-weight: 600; font-size: 9px; margin-bottom: 3px; display: block; }
+        
+        .artwork-preview {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            margin-left: auto;
+        }
+        
+        .artwork-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .section-title { 
+            font-weight: 800; 
+            font-size: 11px; 
+            margin-bottom: 8px; 
+            border-bottom: 1px solid #ccc; 
+            padding-bottom: 1px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: table;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .color-cell { display: flex; height: 22px; border: 1px solid #eee; }
+        .color-code { font-weight: 700; font-size: 8px; padding: 0 4px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
+        .color-name { background: white; font-size: 8px; padding: 0 4px; display: flex; align-items: center; font-weight: 500; flex: 1; overflow: hidden; white-space: nowrap; }
+        .color-length { background: white; font-size: 8px; padding: 0 3px; display: flex; align-items: center; justify-content: flex-end; min-width: 24px; border-left: 1px solid #eee; }
+        
+        .color-sequence {
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            gap: 2px;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        .seq-item { text-align: center; }
+        .seq-circle {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1px;
+            font-size: 7px;
+            font-weight: 700;
+            border: 1px solid #000;
+        }
+        .seq-number { font-size: 6px; font-weight: 700; color: #000; }
+        
+        .ruler-section { margin-bottom: 15px; position: relative; }
+        
+        .ruler-area {
+            padding: 0;
+            border: 2px solid #000;
+            min-height: 350px;
+            position: relative;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .vertical-ruler {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 35px;
+            width: 35px;
+            background: #000;
+            color: white;
+            z-index: 10;
+        }
+        
+        .corner-block {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 35px;
+            height: 35px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 8px;
+            font-weight: 600;
+        }
+        
+        .corner-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: white; }
+        .corner-block::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: white; }
+        
+        .v-tick { position: absolute; right: 0; width: 6px; height: 1px; background: white; }
+        .v-tick.half { width: 12px; }
+        .v-tick.major { width: 35px; }
+        .v-number { position: absolute; left: 4px; transform: translateY(-50%); font-size: 10px; font-weight: 600; color: white; }
+        
+        .horizontal-ruler {
+            position: absolute;
+            bottom: 0;
+            left: 35px;
+            right: 0;
+            height: 35px;
+            background: #000;
+            color: white;
+            z-index: 10;
+        }
+        
+        .h-tick { position: absolute; top: 0; width: 1px; height: 6px; background: white; }
+        .h-tick.half { height: 12px; }
+        .h-tick.major { height: 35px; }
+        .h-number { position: absolute; top: 15px; transform: translateX(-50%); margin-left: -10px; font-size: 10px; font-weight: 600; color: white; }
+        
+        .embroidery-area {
+            position: absolute;
+            left: 35px;
+            bottom: 35px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            background: #ffffff;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .embroidery-placeholder { object-fit: fill; object-position: left bottom; }
+        
+        .bottom-sections {
+            ${isMultiPage ? 'margin-top: 10px;' : 'position: absolute; bottom: 15mm; left: 10mm; right: 10mm;'}
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: ${isMultiPage ? '2px solid #000' : '1px solid #eee'};
+            padding-top: 10px;
+        }
+        
+        .approval-section { display: flex; flex-direction: row; gap: 40px; font-size: 11px; margin-bottom: 2px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; }
+        .checkbox { width: 16px; height: 16px; border: 2px solid #000; display: inline-block; }
+        .approval-label { font-weight: 700; text-transform: uppercase; font-size: 11px; }
+        
+        .notes-area { border: 2px solid #000; min-height: 40px; padding: 6px; background: white; }
+        .notes-title { font-weight: 700; font-size: 11px; margin-bottom: 2px; }
+    `;
+
+    const commonHeader = `
+        <div class="header">
+            <div class="header-left">
+                <h1>www.APPROVALSTITCH.com</h1>
+                <p>High-End Embroidery Digitizing Services</p>
             </div>
-        `).join('');
-        sequenceRows.push(`<div class="color-sequence">${rowItems}</div>`);
+            <div class="header-right">
+                <div class="barcode">${barcodeText}</div>
+                <div class="rid-box">${data.designName}</div>
+            </div>
+        </div>
+    `;
+
+    const commonFooter = (page: number, total: number) => `
+        <div class="page-footer">${data.designName} - Page ${page}/${total} - approvalstitch.com</div>
+    `;
+
+    const technicalContent = `
+        <div class="section-title">Project Info</div>
+        <div class="top-content">
+            <div class="design-info">
+                <div class="info-label">Design Name:</div> <div class="info-value">${data.designName}</div>
+                <div class="info-label">Final Size:</div> <div class="info-value">${widthInches}" x ${heightInches}"</div>
+                <div class="info-label">Stitch Count:</div> <div class="info-value">${data.stitchCount.toLocaleString()}</div>
+                <div class="info-label">Colors / Stops:</div> <div class="info-value">${data.colorCount} / ${data.stops || 0}</div>
+                <div class="info-label">Runtime:</div> <div class="info-value">${data.machineRuntime || 'N/A'}</div>
+            </div>
+            <div class="artwork-preview-box">
+                <span class="customer-artwork-label">CUSTOMER ARTWORK</span>
+                <div class="artwork-preview">
+                    <img src="${artworkImageSrc}" alt="Customer Artwork">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">Color Grid & Usage</div>
+        <div class="color-grid">${colorGridHtml}</div>
+
+        <div class="section-title">Color Sequence (Stops)</div>
+        ${sequenceRowsArr.join('')}
+    `;
+
+    const visualContent = `
+        <div class="section-title">Visual Preview (Scaled)</div>
+        <div class="ruler-section">
+            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 350px;">
+                <div class="corner-block"><div class="corner-label">inch</div></div>
+                <div class="vertical-ruler">${verticalMarks.join('')}</div>
+                <div class="horizontal-ruler">${horizontalMarks.join('')}</div>
+                <div class="embroidery-area" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">
+                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-sections">
+            <div class="section-title">Operator Final Quality Check</div>
+            <div class="approval-section">
+                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">APPROVED</span></div>
+                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">CHANGES NEEDED</span></div>
+            </div>
+            <div class="notes-section">
+                <div class="notes-title">Notes & Feedback:</div>
+                <div class="notes-area"></div>
+            </div>
+        </div>
+    `;
+
+    if (isMultiPage) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Approval Card</title>
+    <style>${styles}</style>
+</head>
+<body>
+    <div class="page">
+        ${commonHeader}
+        <div class="title">OPERATOR CARD - TECH SPECS</div>
+        ${technicalContent}
+        ${commonFooter(1, 2)}
+    </div>
+
+    <div class="page">
+        ${commonHeader}
+        <div class="title">OPERATOR CARD - VISUAL PROOF</div>
+        ${visualContent}
+        ${commonFooter(2, 2)}
+    </div>
+</body>
+</html>`;
     }
-
-    const designImageSrc = designImageBase64
-        ? `data:image/png;base64,${designImageBase64}`
-        : '';
-
-    const artworkImageSrc = artworkImageBase64
-        ? `data:image/png;base64,${artworkImageBase64}`
-        : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -651,428 +952,15 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operator Approval Card</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Barcode+128&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: white;
-            padding: 0;
-        }
-        
-        .page {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            margin: 0 auto;
-            padding: 10mm;
-            padding-bottom: 20mm;
-            position: relative;
-            box-sizing: border-box;
-            page-break-after: always;
-        }
-        
-        .page:last-child {
-            page-break-after: auto;
-        }
-        
-        .page-footer {
-            position: absolute;
-            bottom: 10mm;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        @media print {
-            body { margin: 0; }
-            .page { margin: 0; }
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #000;
-            padding-bottom: 10px;
-        }
-        
-        .header-left h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-        .header-left p { font-size: 11px; color: #666; }
-        
-        .header-right {
-            text-align: right;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .barcode { font-family: 'Libre Barcode 128', cursive; font-size: 40px; }
-        .rid-box { border: 2px solid #000; padding: 4px 8px; font-weight: 600; font-size: 14px; }
-        
-        .title {
-            text-align: center;
-            font-size: 30px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .design-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .info-left {
-            display: grid;
-            grid-template-columns: 160px 1fr;
-            gap: 0px;
-            align-items: center;
-        }
-        
-        .info-label { font-weight: 600; font-size: 13px; }
-        .info-value { font-size: 13px; }
-        
-        .info-right { display: flex; flex-direction: column; align-items: flex-end; }
-        .customer-artwork-label { font-weight: 600; font-size: 11px; margin-bottom: 5px; }
-        
-        .artwork-preview {
-            width: 120px;
-            height: 120px;
-            border: 2px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f9f9f9;
-        }
-        
-        .artwork-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .color-grid-section { margin-bottom: 12px; }
-        .section-title { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
-        
-        .color-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 3px;
-            margin-bottom: 12px;
-        }
-        
-        .color-cell { display: flex; height: 28px; border: 1px solid #ddd; }
-        
-        .color-code {
-            font-weight: 600;
-            font-size: 10px;
-            padding: 0 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 30px;
-        }
-        
-        .color-name {
-            background: white;
-            font-size: 10px;
-            padding: 0 6px;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            flex: 1;
-        }
-        
-        .color-length {
-            background: white;
-            font-size: 10px;
-            padding: 0 4px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            min-width: 32px;
-            border-left: 1px solid #ddd;
-        }
-        
-        .color-sequence-section { margin-bottom: 15px; }
-        
-        .color-sequence {
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 2px;
-            margin-bottom: 3px;
-        }
-        
-        .seq-item { text-align: center; }
-        
-        .seq-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2px;
-            font-size: 9px;
-            font-weight: 700;
-            border: 1px solid #000;
-        }
-        
-        .seq-number { font-size: 8px; font-weight: 600; color: #000; }
-        
-        .ruler-section { margin-bottom: 25px; position: relative; }
-        
-        .ruler-area {
-            padding: 0;
-            border: 2px solid #000;
-            min-height: 365px;
-            position: relative;
-            background: white;
-        }
-        
-        .vertical-ruler {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 40px;
-            width: 40px;
-            background: #000;
-            color: white;
-        }
-        
-        .corner-block {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 40px;
-            height: 40px;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 9px;
-            font-weight: 600;
-        }
-        
-        /* Tick line on top of corner block */
-        .corner-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: white;
-        }
-        
-        /* Tick line on right of corner block */
-        .corner-block::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 1px;
-            background: white;
-        }
-        
-        .corner-label { color: white; font-size: 9px; font-weight: 600; }
-        
-        /* Vertical ruler ticks - white lines on black background */
-        .v-tick { 
-            position: absolute; 
-            right: 0;
-            width: 8px; 
-            height: 1px; 
-            background: white;
-        }
-        .v-tick.half { 
-            width: 15px; 
-            height: 1px;
-        }
-        .v-tick.major { 
-            width: 40px; /* Full width of ruler */
-            height: 1px;
-        }
-        /* Vertical numbers - inside the ruler, white on black */
-        .v-number { 
-            position: absolute; 
-            left: 5px;
-            transform: translateY(-50%);
-            font-size: 11px; 
-            font-weight: 600; 
-            color: white;
-        }
-        
-        .horizontal-ruler {
-            position: absolute;
-            bottom: 0;
-            left: 40px;
-            right: 0;
-            height: 40px;
-            background: #000;
-            color: white;
-        }
-        
-        /* Horizontal ruler ticks - white lines on black background */
-        .h-tick { 
-            position: absolute; 
-            top: 0;
-            width: 1px; 
-            height: 8px; 
-            background: white;
-        }
-        .h-tick.half { 
-            height: 15px; 
-            width: 1px;
-        }
-        .h-tick.major { 
-            height: 40px; /* Full height of ruler */
-            width: 1px;
-        }
-        /* Horizontal numbers - inside the ruler, white on black */
-        .h-number { 
-            position: absolute; 
-            top: 18px;
-            transform: translateX(-80%);
-            font-size: 11px; 
-            font-weight: 600; 
-            color: white;
-        }
-        
-        .embroidery-area {
-            position: absolute;
-            left: 40px;
-            bottom: 40px;
-            display: flex;
-            align-items: flex-end;  /* Align to bottom */
-            justify-content: flex-start;  /* Align to left - origin point */
-            background: #ffffff;
-            padding: 0;  /* No padding for accurate positioning */
-            overflow: hidden;
-        }
-        
-        .embroidery-placeholder { 
-            object-fit: fill;  /* Fill the container completely to match ruler scale */
-            object-position: left bottom;  /* Align to origin (0,0) */
-        }
-        
-        .approval-section { display: flex; gap: 40px; margin-bottom: 20px; font-size: 14px; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; }
-        .checkbox { width: 20px; height: 20px; border: 2px solid #000; display: inline-block; }
-        .approval-label { font-weight: 500; }
-        
-        .notes-section { margin-top: 20px; }
-        .notes-title { font-weight: 700; font-size: 16px; margin-bottom: 10px; }
-        .notes-area { border: 2px solid #000; min-height: 60px; padding: 10px; background: white; }
-    </style>
+    <style>${styles}</style>
 </head>
 <body>
-    <!-- PAGE 1: Data & Approval -->
     <div class="page">
-        <div class="header">
-            <div class="header-left">
-                <h1>www.APPROVALSTITCH.com</h1>
-            </div>
-            <div class="header-right">
-                <div class="barcode">*${Math.random().toString(36).substring(2, 12).toUpperCase()}*</div>
-                <div class="rid-box">${data.designName}</div>
-            </div>
-        </div>
-        
-        <div class="title">OPERATOR APPROVALCARD</div>
-        
-        <div class="design-info">
-            <div class="info-left">
-                <div class="info-label">Design Name:</div> <div class="info-value">${data.designName}</div>
-                <div class="info-label">Final Size:</div> <div class="info-value">${widthInches}" x ${heightInches}"</div>
-                <div class="info-label">Stitch Count:</div> <div class="info-value">${data.stitchCount.toLocaleString()}</div>
-                <div class="info-label">Colors:</div> <div class="info-value">${data.colorCount}</div>
-                <div class="info-label">Stops:</div> <div class="info-value">${data.stops || 0}</div>
-                <div class="info-label">Color Changes:</div> <div class="info-value">${data.colorChanges || 0}</div>
-                <div class="info-label">Machine Runtime:</div> <div class="info-value">${data.machineRuntime || 'N/A'}</div>
-            </div>
-            <div class="info-right">
-                <div class="customer-artwork-label">CUSTOMER ARTWORK</div>
-                <div class="artwork-preview">
-                    <img src="${artworkImageSrc}" alt="Customer Artwork">
-                </div>
-            </div>
-        </div>
-        
-        <div class="color-grid-section">
-            <div class="section-title">Color Grid</div>
-            <div class="color-grid">
-                ${colorGridHtml}
-            </div>
-        </div>
-        
-        <div class="color-sequence-section">
-            <div class="section-title">Color Sequence:</div>
-            ${sequenceRows.join('')}
-        </div>
-        
-        <div class="page-footer">1/2</div>
-    </div>
-    
-    <!-- PAGE 2: Preview/Ruler -->
-    <div class="page">
-        <div class="header">
-            <div class="header-left">
-                <h1>www.APPROVALSTITCH.com</h1>
-            </div>
-            <div class="header-right">
-                <div class="barcode">*${Math.random().toString(36).substring(2, 12).toUpperCase()}*</div>
-                <div class="rid-box">${data.designName}</div>
-            </div>
-        </div>
-        
-        <div style="height: 40px;"></div>
-        
-        <div class="ruler-section">
-            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 365px;">
-                <div class="corner-block">
-                    <div class="corner-label">inch</div>
-                </div>
-                
-                <div class="vertical-ruler">
-                    ${verticalMarks.join('')}
-                </div>
-                
-                <div class="horizontal-ruler">
-                    ${horizontalMarks.join('')}
-                </div>
-                
-                <div class="embroidery-area">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
-                </div>
-            </div>
-        </div>
-        
-        <div class="approval-section">
-            <div class="checkbox-group">
-                <span class="checkbox"></span>
-                <span class="approval-label">APPROVED</span>
-            </div>
-            <div class="checkbox-group">
-                <span class="checkbox"></span>
-                <span class="approval-label">CHANGES NEEDED (see notes below)</span>
-            </div>
-        </div>
-        
-        <div class="notes-section">
-            <div class="notes-title">Notes:</div>
-            <div class="notes-area"></div>
-        </div>
-        
-        <div class="page-footer">2/2</div>
+        ${commonHeader}
+        <div class="title">OPERATOR APPROVAL CARD</div>
+        ${technicalContent}
+        ${visualContent}
+        ${commonFooter(1, 1)}
     </div>
 </body>
 </html>`;
@@ -1090,7 +978,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     const widthInches = parseFloat((data.widthMm / 25.4).toFixed(2));
 
     // Dynamic PPI calculation to fit within A4 page (same as operator card)
-    const MAX_RULER_HEIGHT_PX = 450;
+    const MAX_RULER_HEIGHT_PX = 550; // More space for customer card as it has less technical info
     const MAX_RULER_WIDTH_PX = 720;
     const PAGE_WIDTH_PX = 720;
 
@@ -1110,7 +998,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     // Container dimensions in pixels
     const containerHeight = maxVertical * PPI;
 
-    // Generate vertical ruler marks with subdivisions (1/4 inch intervals)
+    // Generate vertical ruler marks
     const verticalMarks: string[] = [];
     for (let i = 0; i <= maxVertical; i++) {
         const bottomPx = i * PPI;
@@ -1121,16 +1009,13 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             `);
         }
         if (i < maxVertical) {
-            const quarter1Px = (i + 0.25) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter1Px}px;"></div>`);
-            const halfPx = (i + 0.5) * PPI;
-            verticalMarks.push(`<div class="v-tick half" style="bottom: ${halfPx}px;"></div>`);
-            const quarter3Px = (i + 0.75) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter3Px}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${(i + 0.25) * PPI}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick half" style="bottom: ${(i + 0.5) * PPI}px;"></div>`);
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${(i + 0.75) * PPI}px;"></div>`);
         }
     }
 
-    // Generate horizontal ruler marks with subdivisions (1/4 inch intervals)
+    // Generate horizontal ruler marks
     const horizontalMarks: string[] = [];
     for (let i = 0; i <= maxHorizontal; i++) {
         const leftPx = i * PPI;
@@ -1141,38 +1026,27 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             `);
         }
         if (i < maxHorizontal) {
-            const quarter1Px = (i + 0.25) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter1Px}px;"></div>`);
-            const halfPx = (i + 0.5) * PPI;
-            horizontalMarks.push(`<div class="h-tick half" style="left: ${halfPx}px;"></div>`);
-            const quarter3Px = (i + 0.75) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter3Px}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick" style="left: ${(i + 0.25) * PPI}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick half" style="left: ${(i + 0.5) * PPI}px;"></div>`);
+            horizontalMarks.push(`<div class="h-tick" style="left: ${(i + 0.75) * PPI}px;"></div>`);
         }
     }
 
-    const designImageSrc = designImageBase64
-        ? `data:image/png;base64,${designImageBase64}`
-        : '';
+    const designImageSrc = designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '';
 
     const artworkImageSrc = artworkImageBase64
         ? `data:image/png;base64,${artworkImageBase64}`
         : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Approval Card</title>
-    <style>
+    const styles = `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: white;
-            padding: 0;
+            background: #f5f5f5;
+            padding: 20px 0;
         }
         
         .page {
@@ -1180,66 +1054,90 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             min-height: 297mm;
             background: white;
             margin: 0 auto;
-            padding: 10mm;
+            padding: 8mm 10mm;
+            position: relative;
+            box-sizing: border-box;
+            box-shadow: none;
+        }
+        
+        .page-footer {
+            position: absolute;
+            bottom: 6mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .page { margin: 0; border: none; box-shadow: none; }
         }
         
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #000;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 6px;
         }
         
-        .header-left h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-        
-        .header-right {
-            text-align: right;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .rid-box { border: 2px solid #000; padding: 4px 8px; font-weight: 600; font-size: 14px; }
+        .header-left h1 { font-size: 16px; font-weight: 700; margin-bottom: 1px; }
+        .header-right { text-align: right; }
+        .rid-box { border: 2px solid #000; padding: 2px 6px; font-weight: 600; font-size: 12px; }
         
         .title {
             text-align: center;
-            font-size: 30px;
+            font-size: 24px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             margin-bottom: 15px;
+        }
+        
+        .section-title { 
+            font-weight: 800; 
+            font-size: 12px; 
+            margin-bottom: 8px; 
+            border-bottom: 1px solid #ccc; 
+            padding-bottom: 1px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: table;
+        }
+        
+        .top-content {
+            display: grid;
+            grid-template-columns: 1fr 140px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
         .design-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .info-left {
-            display: grid;
-            grid-template-columns: 160px 1fr;
-            gap: 5px;
+            grid-template-columns: 140px 1fr;
+            gap: 4px;
             align-items: center;
         }
         
-        .info-label { font-weight: 600; font-size: 13px; }
-        .info-value { font-size: 13px; }
+        .info-label { font-weight: 600; font-size: 12px; }
+        .info-value { font-size: 12px; }
         
-        .info-right { display: flex; flex-direction: column; align-items: flex-end; }
-        .customer-artwork-label { font-weight: 600; font-size: 11px; margin-bottom: 5px; }
+        .artwork-preview-box { text-align: right; }
+        .customer-artwork-label { font-weight: 600; font-size: 10px; margin-bottom: 3px; display: block; }
         
         .artwork-preview {
-            width: 120px;
-            height: 120px;
-            border: 2px solid #ddd;
+            width: 110px;
+            height: 110px;
+            border: 1px solid #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #f9f9f9;
+            margin-left: auto;
         }
         
         .artwork-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -1249,223 +1147,159 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         .ruler-area {
             padding: 0;
             border: 2px solid #000;
-            min-height: 300px;
+            min-height: 350px;
             position: relative;
             background: white;
+            overflow: hidden;
         }
         
         .vertical-ruler {
             position: absolute;
             left: 0;
             top: 0;
-            bottom: 40px;
-            width: 40px;
+            bottom: 35px;
+            width: 35px;
             background: #000;
             color: white;
+            z-index: 10;
         }
         
         .corner-block {
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 600;
         }
         
-        /* Tick line on top of corner block */
-        .corner-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: white;
-        }
+        .corner-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: white; }
+        .corner-block::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: white; }
         
-        /* Tick line on right of corner block */
-        .corner-block::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 1px;
-            background: white;
-        }
-        
-        .corner-label { color: white; font-size: 9px; font-weight: 600; }
-        
-        /* Vertical ruler ticks - white lines on black background */
-        .v-tick { 
-            position: absolute; 
-            right: 0;
-            width: 8px; 
-            height: 1px; 
-            background: white;
-        }
-        .v-tick.half { 
-            width: 15px; 
-            height: 1px;
-        }
-        .v-tick.major { 
-            width: 40px; /* Full width of ruler */
-            height: 1px;
-        }
-        /* Vertical numbers - inside the ruler, white on black */
-        .v-number { 
-            position: absolute; 
-            left: 5px;
-            transform: translateY(-50%);
-            font-size: 11px; 
-            font-weight: 600; 
-            color: white;
-        }
+        .v-tick { position: absolute; right: 0; width: 6px; height: 1px; background: white; }
+        .v-tick.half { width: 12px; }
+        .v-tick.major { width: 35px; }
+        .v-number { position: absolute; left: 4px; transform: translateY(-50%); font-size: 10px; font-weight: 600; color: white; }
         
         .horizontal-ruler {
             position: absolute;
             bottom: 0;
-            left: 40px;
+            left: 35px;
             right: 0;
-            height: 40px;
+            height: 35px;
             background: #000;
             color: white;
+            z-index: 10;
         }
         
-        /* Horizontal ruler ticks - white lines on black background */
-        .h-tick { 
-            position: absolute; 
-            top: 0;
-            width: 1px; 
-            height: 8px; 
-            background: white;
-        }
-        .h-tick.half { 
-            height: 15px; 
-            width: 1px;
-        }
-        .h-tick.major { 
-            height: 40px; /* Full height of ruler */
-            width: 1px;
-        }
-        /* Horizontal numbers - inside the ruler, white on black */
-        .h-number { 
-            position: absolute; 
-            top: 18px;
-            transform: translateX(-80%);
-            font-size: 11px; 
-            font-weight: 600; 
-            color: white;
-        }
+        .h-tick { position: absolute; top: 0; width: 1px; height: 6px; background: white; }
+        .h-tick.half { height: 12px; }
+        .h-tick.major { height: 35px; }
+        .h-number { position: absolute; top: 15px; transform: translateX(-50%); margin-left: -10px; font-size: 10px; font-weight: 600; color: white; }
         
         .embroidery-area {
             position: absolute;
-            left: 40px;
-            bottom: 40px;
+            left: 35px;
+            bottom: 35px;
             display: flex;
-            align-items: flex-end;  /* Align to bottom */
-            justify-content: flex-start;  /* Align to left - origin point */
+            align-items: flex-end;
+            justify-content: flex-start;
             background: #ffffff;
             padding: 0;
             overflow: hidden;
         }
         
-        .embroidery-placeholder { 
-            object-fit: fill;  /* Fill the container completely to match ruler scale */
-            object-position: left bottom;  /* Align to origin (0,0) */
+        .embroidery-placeholder { object-fit: fill; object-position: left bottom; }
+        
+        .bottom-sections {
+            position: absolute;
+            bottom: 15mm;
+            left: 10mm;
+            right: 10mm;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
         }
         
-        .approval-section { display: flex; gap: 40px; margin-bottom: 20px; font-size: 14px; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; }
-        .checkbox { width: 20px; height: 20px; border: 2px solid #000; display: inline-block; }
-        .approval-label { font-weight: 500; }
+        .approval-section { display: flex; flex-direction: row; gap: 40px; font-size: 12px; margin-bottom: 5px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; }
+        .checkbox { width: 18px; height: 18px; border: 2px solid #000; display: inline-block; }
+        .approval-label { font-weight: 700; text-transform: uppercase; font-size: 12px; }
         
-        .notes-section { margin-top: 20px; }
-        .notes-title { font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+        .notes-section { }
+        .notes-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
         .notes-area { border: 2px solid #000; min-height: 80px; padding: 10px; background: white; }
-    </style>
+    `;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Approval Card</title>
+    <style>${styles}</style>
 </head>
 <body>
     <div class="page">
         <div class="header">
-            <div class="header-left">
-                <h1>www.APPROVALSTITCH.com</h1>
+            <div class="header-left"><h1>www.APPROVALSTITCH.com</h1></div>
+            <div class="header-right"><div class="rid-box">${data.designName}</div></div>
+        </div>
+        
+        <div class="title">CUSTOMER APPROVAL CARD</div>
+        
+        <div class="section-title">Project Info</div>
+        <div class="top-content">
+            <div class="design-info">
+                <div class="info-label">Design Name:</div> <div class="info-value">${data.designName}</div>
+                <div class="info-label">Final Size:</div> <div class="info-value">${widthInches}" x ${heightInches}"</div>
+                <div class="info-label">Stitch Count:</div> <div class="info-value">${data.stitchCount.toLocaleString()}</div>
+                <div class="info-label">Colors:</div> <div class="info-value">${data.colorCount}</div>
             </div>
-            <div class="header-right">
-                <div class="rid-box">${data.designName}</div>
+            <div class="artwork-preview-box">
+                <span class="customer-artwork-label">CUSTOMER ARTWORK</span>
+                <div class="artwork-preview"><img src="${artworkImageSrc}" alt="Customer Artwork"></div>
             </div>
         </div>
         
-        <div class="title">Approval Card</div>
+        <div class="section-title">Visual Preview</div>
+        <div class="ruler-section">
+            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 350px;">
+                <div class="corner-block"><div class="corner-label">inch</div></div>
+                <div class="vertical-ruler">${verticalMarks.join('')}</div>
+                <div class="horizontal-ruler">${horizontalMarks.join('')}</div>
+                <div class="embroidery-area" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">
+                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                </div>
+            </div>
+        </div>
         
-        <div class="design-info">
-            <div class="info-left">
-                <div class="info-label">Design Name:</div>
-                <div class="info-value">${data.designName}</div>
-                
-                <div class="info-label">Final Size:</div>
-                <div class="info-value">${widthInches}" x ${heightInches}"</div>
-                
-                <div class="info-label">Stitch Count:</div>
-                <div class="info-value">${data.stitchCount.toLocaleString()}</div>
-                
-                <div class="info-label">Colors:</div>
-                <div class="info-value">${data.colorCount}</div>
+        <div class="bottom-sections">
+            <div class="approval-header" style="font-weight: 800; font-size: 13px; text-transform: uppercase;">Customer Final Approval</div>
+            <div class="approval-section">
+                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">APPROVED</span></div>
+                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">CHANGES NEEDED</span></div>
             </div>
             
-            <div class="info-right">
-                <div class="customer-artwork-label">Customer<br>Artwork</div>
-                <div class="artwork-preview">
-                    <img src="${artworkImageSrc}" alt="Artwork Preview">
-                </div>
+            <div class="notes-section">
+                <div class="notes-title">Customer Notes & Instructions:</div>
+                <div class="notes-area"></div>
             </div>
         </div>
         
-        <div class="ruler-section">
-            <div class="ruler-area" style="height: ${containerHeight}px; min-height: 300px;">
-                <div class="corner-block">
-                    <div class="corner-label">inch</div>
-                </div>
-                
-                <div class="vertical-ruler">
-                    ${verticalMarks.join('')}
-                </div>
-                
-                <div class="horizontal-ruler">
-                    ${horizontalMarks.join('')}
-                </div>
-                
-                <div class="embroidery-area">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
-                </div>
-            </div>
-        </div>
-        
-        <div class="approval-section">
-            <div class="checkbox-group">
-                <span class="checkbox"></span>
-                <span class="approval-label">APPROVED</span>
-            </div>
-            <div class="checkbox-group">
-                <span class="checkbox"></span>
-                <span class="approval-label">CHANGES NEEDED (see notes below)</span>
-            </div>
-        </div>
-        
-        <div class="notes-section">
-            <div class="notes-title">Notes:</div>
-            <div class="notes-area"></div>
-        </div>
+        <div class="page-footer">${data.designName} - Page 1/1 - approvalstitch.com</div>
     </div>
 </body>
 </html>`;
+
 }
 
 // Helper function to determine text color based on background
@@ -1578,12 +1412,12 @@ if largest_image:
         img = img.convert("RGB")
         
         # 1. OPTIONAL: Convert near-white background to pure white for cleaner look
-        # This helps if the source has off-white artifacts
+        # Only if it's very close to pure white to avoid destroying white design parts
         datas = img.getdata()
         new_data = []
         for item in datas:
-            # Threshold for "white" (e.g. >240)
-            if item[0] > 240 and item[1] > 240 and item[2] > 240:
+            # Absolute white threshold (254 instead of 250)
+            if item[0] >= 254 and item[1] >= 254 and item[2] >= 254:
                 new_data.append((255, 255, 255))
             else:
                 new_data.append(item)
@@ -1592,8 +1426,8 @@ if largest_image:
         # 2. TRIM WHITESPACE
         # Convert to grayscale
         gray = img.convert('L')
-        # Threshold: make anything < 250 black (0), else white (255)
-        threshold = 250
+        # Threshold: only absolute white or very near white is background
+        threshold = 254
         bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
         # Invert so content is white (to detect bbox), background is black
         bw = ImageOps.invert(bw.convert('L'))

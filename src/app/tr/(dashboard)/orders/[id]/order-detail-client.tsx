@@ -26,12 +26,14 @@ import {
     ChevronDown,
     CreditCard,
     Lock,
+    Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
 import { WilcomSection } from "@/components/orders/wilcom-section";
 import { ORDER_STATUS_LABELS_TR as ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
 import { useLanguage } from "@/components/providers/language-provider";
+import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
 
 interface WilcomColor {
     code: string;
@@ -129,10 +131,44 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [status, setStatus] = useState<OrderStatus>(order.status);
     const [price, setPrice] = useState(order.price?.toString() || "");
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [fileToDelete, setFileToDelete] = useState<string | null>(null);
+    const [isDeletingFile, setIsDeletingFile] = useState(false);
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
     const finalFiles = order.files.filter((f) => f.type === "final");
+
+    function handleDeleteFile(fileId: string) {
+        setFileToDelete(fileId);
+        setIsDeleteDialogOpen(true);
+    }
+
+    async function performDelete() {
+        if (!fileToDelete) return;
+
+        setIsDeletingFile(true);
+        try {
+            const response = await fetch(`/api/files/${fileToDelete}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Silme işlemi başarısız");
+            }
+
+            toast.success(t.common?.deleteSuccess || "Dosya silindi");
+            setIsDeleteDialogOpen(false);
+            setFileToDelete(null);
+            router.refresh();
+        } catch (error: any) {
+            toast.error(error.message || "Dosya silinirken hata oluştu");
+            console.error(error);
+        } finally {
+            setIsDeletingFile(false);
+        }
+    }
 
     async function handleUpdateOrder() {
         setIsUpdating(true);
@@ -272,10 +308,21 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </TabsList>
 
                                 <TabsContent value="original" className="mt-4">
-                                    <FileList files={originalFiles} />
+                                    <FileList
+                                        files={originalFiles}
+                                        isAdmin={isAdmin}
+                                        onDelete={handleDeleteFile}
+                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                    />
                                 </TabsContent>
                                 <TabsContent value="preview" className="mt-4 space-y-4">
-                                    <FileList files={previewFiles} showPreview />
+                                    <FileList
+                                        files={previewFiles}
+                                        showPreview
+                                        isAdmin={isAdmin}
+                                        onDelete={handleDeleteFile}
+                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                    />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
                                             <Label className="text-zinc-300 text-sm">
@@ -313,6 +360,9 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <FileList
                                         files={finalFiles}
                                         isLocked={!isAdmin && status === "PAYMENT_PENDING"}
+                                        isAdmin={isAdmin}
+                                        onDelete={handleDeleteFile}
+                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
                                     />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
@@ -357,6 +407,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         orderId={order.id}
                         wilcomData={order.wilcomData}
                         isAdmin={isAdmin}
+                        status={order.status}
                     />
 
                     {/* Comments */}
@@ -447,6 +498,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         <Select
                                             value={status}
                                             onValueChange={(value) => setStatus(value as OrderStatus)}
+                                            disabled={order.status === "COMPLETED"}
                                         >
                                             <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white h-9">
                                                 <SelectValue />
@@ -478,8 +530,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                 <Button
                                     onClick={handleUpdateOrder}
-                                    disabled={isUpdating}
-                                    className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
+                                    disabled={isUpdating || order.status === "COMPLETED"}
+                                    className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isUpdating ? (
                                         <>
@@ -537,7 +589,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
                                         <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
-                                            Evet! Önizleme aldıktan sonra mesaj bölümünden revizyon talebinde bulunabilirsiniz.
+                                            Evet! Önizleme aldıktan sonra "Mesajlar ve Sipariş Durumu" bölümünden revizyon talebinde bulunabilirsiniz.
                                         </div>
                                     </details>
 
@@ -558,6 +610,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     )}
                 </div>
             </div>
+
+            <ActionConfirmDialog
+                isOpen={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={performDelete}
+                isPending={isDeletingFile}
+                description="Bu dosya kalıcı olarak silinecektir. Bu işlemi geri alamazsınız."
+            />
         </div>
     );
 }
@@ -566,6 +626,9 @@ function FileList({
     files,
     showPreview = false,
     isLocked = false,
+    isAdmin = false,
+    onDelete,
+    canDelete = false,
 }: {
     files: Array<{
         id: string;
@@ -575,6 +638,9 @@ function FileList({
     }>;
     showPreview?: boolean;
     isLocked?: boolean;
+    isAdmin?: boolean;
+    onDelete?: (id: string) => void;
+    canDelete?: boolean;
 }) {
     if (files.length === 0) {
         return (
@@ -613,21 +679,34 @@ function FileList({
                                 )}
                             </div>
                         </div>
-                        {isLocked ? (
-                            <div className="p-2 rounded-lg bg-zinc-800/50 text-zinc-500" title="Ödeme gerekli">
-                                <Lock className="h-4 w-4" />
-                            </div>
-                        ) : (
-                            <a href={file.url} target="_blank" rel="noopener noreferrer">
+                        <div className="flex items-center gap-1">
+                            {!isLocked && (
+                                <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                    </Button>
+                                </a>
+                            )}
+                            {isAdmin && canDelete && onDelete && (
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                    onClick={() => onDelete(file.id)}
+                                    className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all duration-300"
                                 >
-                                    <Download className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
-                            </a>
-                        )}
+                            )}
+                            {isLocked && (
+                                <div className="p-2 rounded-lg bg-zinc-800/50 text-zinc-500" title="Ödeme gerekli">
+                                    <Lock className="h-4 w-4" />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             ))}

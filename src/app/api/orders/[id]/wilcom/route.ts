@@ -1,107 +1,43 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-
-// Dynamic import to avoid build-time evaluation
+import fs from "fs/promises";
+import path from "path";
+import { processWilcomPdf } from "@/lib/wilcom-parser";
 
 export async function POST(
-    request: Request,
+    req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
-        if (!session?.user || session.user.role !== "ADMIN") {
+
+        if (!session || session.user.role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const { id: orderId } = await params;
-
-        // Check if order exists
-        const order = await prisma.order.findUnique({
-            where: { id: orderId },
-            include: { wilcomData: true },
-        });
-
-        if (!order) {
-            return NextResponse.json({ error: "Order not found" }, { status: 404 });
-        }
-
-        // Get the uploaded file
-        const formData = await request.formData();
-        const file = formData.get("file") as File | null;
+        const formData = await req.formData();
+        const file = formData.get("file") as File;
 
         if (!file) {
-            return NextResponse.json(
-                { error: "No file provided" },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: "No file provided" }, { status: 400 });
         }
 
-        // Validate file type
-        if (!file.name.endsWith(".pdf")) {
-            return NextResponse.json(
-                { error: "Only PDF files are accepted" },
-                { status: 400 }
-            );
-        }
+        const uploadsDir = path.join(process.cwd(), "uploads", orderId, "wilcom");
+        await fs.mkdir(uploadsDir, { recursive: true });
 
-        // Create directory for order files
-        const uploadDir = join(process.cwd(), "uploads", orderId, "wilcom");
-        await mkdir(uploadDir, { recursive: true });
-
-        // Save the uploaded PDF
-        const wilcomPdfPath = join(uploadDir, "wilcom.pdf");
+        const pdfPath = path.join(uploadsDir, "wilcom.pdf");
         const bytes = await file.arrayBuffer();
-        await writeFile(wilcomPdfPath, Buffer.from(bytes));
+        const buffer = Buffer.from(bytes);
+        await fs.writeFile(pdfPath, buffer);
 
-        // Process the Wilcom PDF (dynamic import to avoid build-time issues)
-        const { processWilcomPdf } = await import("@/lib/wilcom-parser");
-        const result = await processWilcomPdf(
-            wilcomPdfPath,
-            orderId,
-            uploadDir
-        );
+        // Process the PDF
+        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir);
 
-        // Create or update WilcomData in database
+        // Save/Update in database
         const wilcomData = await prisma.wilcomData.upsert({
-            where: { orderId },
-            create: {
-                orderId,
-                designName: result.data.designName,
-                title: result.data.title,
-                heightMm: result.data.heightMm,
-                widthMm: result.data.widthMm,
-                stitchCount: result.data.stitchCount,
-                colorCount: result.data.colorCount,
-                colorway: result.data.colorway,
-                machineFormat: result.data.machineFormat,
-                machineRuntime: result.data.machineRuntime,
-                colorChanges: result.data.colorChanges,
-                stops: result.data.stops,
-                trims: result.data.trims,
-                maxStitchMm: result.data.maxStitchMm,
-                minStitchMm: result.data.minStitchMm,
-                maxJumpMm: result.data.maxJumpMm,
-                totalThreadM: result.data.totalThreadM,
-                totalBobbinM: result.data.totalBobbinM,
-                leftMm: result.data.leftMm,
-                rightMm: result.data.rightMm,
-                upMm: result.data.upMm,
-                downMm: result.data.downMm,
-                areaMm2: result.data.areaMm2,
-                colors: JSON.stringify(result.data.colors),
-                colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: result.designImagePath
-                    ? `/api/orders/${orderId}/wilcom/image/design`
-                    : null,
-                operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
-                customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
-                wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,
-                designLastSaved: result.data.designLastSaved,
-                datePrinted: result.data.datePrinted,
-            },
+            where: { orderId: orderId },
             update: {
                 designName: result.data.designName,
                 title: result.data.title,
@@ -120,96 +56,103 @@ export async function POST(
                 maxJumpMm: result.data.maxJumpMm,
                 totalThreadM: result.data.totalThreadM,
                 totalBobbinM: result.data.totalBobbinM,
-                leftMm: result.data.leftMm,
-                rightMm: result.data.rightMm,
-                upMm: result.data.upMm,
-                downMm: result.data.downMm,
-                areaMm2: result.data.areaMm2,
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: result.designImagePath
-                    ? `/api/orders/${orderId}/wilcom/image/design`
-                    : null,
+                designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
                 wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,
-                designLastSaved: result.data.designLastSaved,
-                datePrinted: result.data.datePrinted,
-                updatedAt: new Date(),
+            },
+            create: {
+                orderId: orderId,
+                designName: result.data.designName,
+                title: result.data.title,
+                heightMm: result.data.heightMm,
+                widthMm: result.data.widthMm,
+                stitchCount: result.data.stitchCount,
+                colorCount: result.data.colorCount,
+                colorway: result.data.colorway,
+                machineFormat: result.data.machineFormat,
+                machineRuntime: result.data.machineRuntime,
+                colorChanges: result.data.colorChanges,
+                stops: result.data.stops,
+                trims: result.data.trims,
+                maxStitchMm: result.data.maxStitchMm,
+                minStitchMm: result.data.minStitchMm,
+                maxJumpMm: result.data.maxJumpMm,
+                totalThreadM: result.data.totalThreadM,
+                totalBobbinM: result.data.totalBobbinM,
+                colors: JSON.stringify(result.data.colors),
+                colorSequence: JSON.stringify(result.data.colorSequence),
+                designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
+                operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
+                customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
+                wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,
             },
         });
 
-        // Create a system comment to notify about the wilcom upload
-        await prisma.comment.create({
+        // Update order status if it was PENDING or PRICED
+        await prisma.order.update({
+            where: { id: orderId },
             data: {
-                content: `📋 Wilcom PDF uploaded and processed | Design: ${result.data.designName} | Size: ${result.data.widthMm.toFixed(1)}mm x ${result.data.heightMm.toFixed(1)}mm | Stitches: ${result.data.stitchCount.toLocaleString()}`,
-                orderId,
-                userId: session.user.id,
-                isSystem: true,
-            },
+                status: "IN_PROGRESS"
+            }
         });
 
-        return NextResponse.json({
-            success: true,
-            wilcomData: {
-                ...wilcomData,
-                colors: result.data.colors,
-                colorSequence: result.data.colorSequence,
-            },
-        });
+        return NextResponse.json({ success: true, data: wilcomData });
     } catch (error) {
-        console.error("Error processing Wilcom PDF:", error);
-        return NextResponse.json(
-            { error: "Failed to process Wilcom PDF" },
-            { status: 500 }
-        );
+        console.error("[WILCOM_POST]", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
-// GET endpoint to fetch wilcom data for an order
-export async function GET(
-    request: Request,
+export async function DELETE(
+    req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
-        if (!session?.user) {
+
+        if (!session || session.user.role !== "ADMIN") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const { id: orderId } = await params;
 
-        // Check order access
+        // Get wilcom data to find file paths
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { wilcomData: true },
-        });
-
-        if (!order) {
-            return NextResponse.json({ error: "Order not found" }, { status: 404 });
-        }
-
-        const isAdmin = session.user.role === "ADMIN";
-        if (!isAdmin && order.customerId !== session.user.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
-
-        if (!order.wilcomData) {
-            return NextResponse.json({ wilcomData: null });
-        }
-
-        return NextResponse.json({
-            wilcomData: {
-                ...order.wilcomData,
-                colors: JSON.parse(order.wilcomData.colors),
-                colorSequence: JSON.parse(order.wilcomData.colorSequence),
+            include: {
+                wilcomData: true,
             },
         });
+
+        if (!order || !order.wilcomData) {
+            return NextResponse.json({ error: "Wilcom data not found" }, { status: 404 });
+        }
+
+        // Check order status - prevent deletion if completed
+        if (order.status === "COMPLETED") {
+            return NextResponse.json({ error: "Cannot delete files for completed orders" }, { status: 400 });
+        }
+
+        // The files are stored in uploads/[orderId]/wilcom/
+        const uploadsDir = path.join(process.cwd(), "uploads", orderId, "wilcom");
+
+        try {
+            await fs.rm(uploadsDir, { recursive: true, force: true });
+        } catch (err) {
+            console.error(`Failed to delete directory: ${uploadsDir}`, err);
+        }
+
+        // Delete from database
+        await prisma.wilcomData.delete({
+            where: { id: order.wilcomData.id },
+        });
+
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("Error fetching Wilcom data:", error);
-        return NextResponse.json(
-            { error: "Failed to fetch Wilcom data" },
-            { status: 500 }
-        );
+        console.error("[WILCOM_DELETE]", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -50,7 +50,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     // Translations
     const texts = {
         en: {
-            supportMessages: "Messages & Revision Requests",
+            supportMessages: "Messages & Order Status",
             refreshEvery: "Refreshes every 30s",
             refreshMessages: "Refresh Messages",
             noMessages: "No messages yet. Send the first message!",
@@ -64,7 +64,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             removeFile: "Remove file",
         },
         tr: {
-            supportMessages: "Mesajlar ve Revizyon Talepleri",
+            supportMessages: "Mesajlar ve Sipariş Durumu",
             refreshEvery: "Her 30sn'de güncellenir",
             refreshMessages: "Mesajları Yenile",
             noMessages: "Henüz mesaj yok. İlk mesajı siz gönderin!",

@@ -18,10 +18,14 @@ import {
     CheckCircle,
     AlertCircle,
     Send,
+    Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/language-provider";
+import { type OrderStatus } from "@/types";
+import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
+import { cn } from "@/lib/utils";
 
 interface WilcomColor {
     code: string;
@@ -74,6 +78,7 @@ interface WilcomSectionProps {
     orderId: string;
     wilcomData: WilcomData | null;
     isAdmin: boolean;
+    status: OrderStatus;
 }
 
 function getContrastColor(hexColor: string): string {
@@ -86,18 +91,22 @@ function getContrastColor(hexColor: string): string {
 }
 
 // WilcomSection component for displaying and managing Wilcom design data with multi-language support
-export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionProps) {
+export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSectionProps) {
     const router = useRouter();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [isUploading, setIsUploading] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
+    const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
+    const [isPublishing, setIsPublishing] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.length) return;
 
         const file = e.target.files[0];
         if (!file.name.toLowerCase().endsWith('.pdf')) {
-            toast.error('Only PDF files are accepted');
+            toast.error(language === 'tr' ? 'Sadece PDF dosyaları kabul edilir' : 'Only PDF files are accepted');
             return;
         }
 
@@ -113,18 +122,51 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.error || 'Failed to upload Wilcom PDF');
+                throw new Error(error.error || (language === 'tr' ? 'Wilcom PDF yüklenemedi' : 'Failed to upload Wilcom PDF'));
             }
 
-            toast.success('Wilcom PDF processed successfully!');
+            toast.success(language === 'tr' ? 'Wilcom PDF başarıyla işlendi!' : 'Wilcom PDF processed successfully!');
             router.refresh();
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to process Wilcom PDF');
+            toast.error(error instanceof Error ? error.message : (language === 'tr' ? 'Wilcom PDF işlenirken hata oluştu' : 'Failed to process Wilcom PDF'));
             console.error(error);
         } finally {
             setIsUploading(false);
         }
     }, [orderId, router]);
+
+    const handlePublish = async () => {
+        setIsPublishing(true);
+        try {
+            const res = await fetch(`/api/orders/${orderId}/wilcom/publish`, { method: 'POST' });
+            if (!res.ok) throw new Error('Publish failed');
+            toast.success(t.orders.publishSuccess || 'Approval cards published to Final section!');
+            setIsPublishDialogOpen(false);
+            router.refresh();
+        } catch (error) {
+            toast.error(t.orders.publishError || 'Failed to publish cards');
+        } finally {
+            setIsPublishing(false);
+        }
+    };
+
+    const handleDeleteWilcom = async () => {
+        setIsDeleting(true);
+        try {
+            const res = await fetch(`/api/orders/${orderId}/wilcom`, { method: 'DELETE' });
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || 'Delete failed');
+            }
+            toast.success(language === 'tr' ? 'Wilcom verileri silindi!' : 'Wilcom data deleted successfully!');
+            setIsDeleteDialogOpen(false);
+            router.refresh();
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to delete data');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     // If no wilcom data and user is admin, show upload prompt
     if (!wilcomData && isAdmin) {
@@ -144,10 +186,10 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                             </div>
                             <div>
                                 <h3 className="text-white font-medium mb-1">
-                                    Upload Wilcom PDF
+                                    {t.orders.wilcom.uploadTitle}
                                 </h3>
                                 <p className="text-sm text-zinc-400">
-                                    Upload the Wilcom export PDF to generate approval cards
+                                    {t.orders.wilcom.uploadDesc}
                                 </p>
                             </div>
                             <input
@@ -162,18 +204,18 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                                 <Button
                                     asChild
                                     className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
-                                    disabled={isUploading}
+                                    disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
                                 >
                                     <span>
                                         {isUploading ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Processing...
+                                                {t.orders.wilcom.processing}
                                             </>
                                         ) : (
                                             <>
                                                 <Upload className="mr-2 h-4 w-4" />
-                                                Select PDF
+                                                {t.orders.wilcom.selectPdf}
                                             </>
                                         )}
                                     </span>
@@ -205,7 +247,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                     </CardTitle>
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Processed
+                        {t.orders.wilcom.processed}
                     </Badge>
                 </div>
             </CardHeader>
@@ -213,12 +255,12 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 {/* Design Info Summary */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-1">Design Name</div>
+                        <div className="text-xs text-zinc-400 mb-1">{t.orders.wilcom.designName}</div>
                         <div className="text-white font-medium text-sm">{wilcomData.designName}</div>
                     </div>
                     <div className="bg-zinc-800/50 rounded-lg p-3">
                         <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Ruler className="h-3 w-3" /> Size
+                            <Ruler className="h-3 w-3" /> {t.orders.wilcom.size}
                         </div>
                         <div className="text-white font-medium text-sm">
                             {widthInches}" × {heightInches}"
@@ -226,18 +268,18 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                     </div>
                     <div className="bg-zinc-800/50 rounded-lg p-3">
                         <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Scissors className="h-3 w-3" /> Stitches
+                            <Scissors className="h-3 w-3" /> {t.orders.wilcom.stitches}
                         </div>
                         <div className="text-white font-medium text-sm">
-                            {new Intl.NumberFormat('en-US').format(wilcomData.stitchCount)}
+                            {new Intl.NumberFormat(language === 'tr' ? 'tr-TR' : 'en-US').format(wilcomData.stitchCount)}
                         </div>
                     </div>
                     <div className="bg-zinc-800/50 rounded-lg p-3">
                         <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Clock className="h-3 w-3" /> Runtime
+                            <Clock className="h-3 w-3" /> {t.orders.wilcom.runtime}
                         </div>
                         <div className="text-white font-medium text-sm">
-                            {wilcomData.machineRuntime || 'N/A'}
+                            {wilcomData.machineRuntime || t.common.notAvailable}
                         </div>
                     </div>
                 </div>
@@ -245,7 +287,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 {/* Color Preview */}
                 <div className="bg-zinc-800/50 rounded-lg p-3">
                     <div className="text-xs text-zinc-400 mb-2 flex items-center gap-1">
-                        <Palette className="h-3 w-3" /> Colors ({wilcomData.colorCount})
+                        <Palette className="h-3 w-3" /> {t.orders.wilcom.colors} ({wilcomData.colorCount})
                     </div>
                     <div className="flex flex-wrap gap-1">
                         {wilcomData.colors.map((color, index) => (
@@ -265,10 +307,10 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 {/* Design Image */}
                 {wilcomData.designImageUrl && (
                     <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-2">Design Preview</div>
+                        <div className="text-xs text-zinc-400 mb-2">{t.orders.wilcom.designPreview}</div>
                         <div className="flex justify-center bg-white/5 rounded-lg p-4">
                             <img
-                                src={wilcomData.designImageUrl}
+                                src={`${wilcomData.designImageUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
                                 alt="Design Preview"
                                 className="max-w-full max-h-48 object-contain"
                             />
@@ -277,112 +319,123 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap gap-2 pt-2">
-                    {/* Customer Approval Card - visible to everyone */}
-                    {wilcomData.customerApprovalPdf && (
-                        <a
-                            href={wilcomData.customerApprovalPdf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
+                <div className="flex flex-wrap items-center gap-2 pt-2">
+                    <div className="flex flex-wrap gap-2">
+                        {/* Customer Approval Card - visible to everyone */}
+                        {wilcomData.customerApprovalPdf && (
+                            <a
+                                href={`${wilcomData.customerApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                             >
-                                <Eye className="mr-2 h-4 w-4" />
-                                Customer Approval Card
-                            </Button>
-                        </a>
-                    )}
-
-                    {/* Operator Approval Card - admin only */}
-                    {isAdmin && wilcomData.operatorApprovalPdf && (
-                        <a
-                            href={wilcomData.operatorApprovalPdf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
-                            >
-                                <Eye className="mr-2 h-4 w-4" />
-                                Operator Approval Card
-                            </Button>
-                        </a>
-                    )}
-
-                    {/* Original Wilcom PDF - admin only */}
-                    {isAdmin && wilcomData.wilcomPdfUrl && (
-                        <a
-                            href={wilcomData.wilcomPdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                            >
-                                <Download className="mr-2 h-4 w-4" />
-                                Original PDF
-                            </Button>
-                        </a>
-                    )}
-
-                    {/* Publish Button */}
-                    {isAdmin && (
-                        <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-500 text-white font-semibold transition-all shadow-lg shadow-green-900/20 gap-2"
-                            onClick={async () => {
-                                try {
-                                    const res = await fetch(`/api/orders/${orderId}/wilcom/publish`, { method: 'POST' });
-                                    if (!res.ok) throw new Error('Publish failed');
-                                    toast.success('Approval cards published to Final section!');
-                                    router.refresh();
-                                } catch (error) {
-                                    toast.error('Failed to publish cards');
-                                }
-                            }}
-                        >
-                            <Send className="h-4 w-4" />
-                            {t.orders.publish}
-                        </Button>
-                    )}
-
-                    {/* Re-upload button - admin only */}
-                    {isAdmin && (
-                        <>
-                            <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="wilcom-reupload"
-                                disabled={isUploading}
-                            />
-                            <label htmlFor="wilcom-reupload">
                                 <Button
-                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
+                                >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    {t.orders.wilcom.customerCard}
+                                </Button>
+                            </a>
+                        )}
+
+                        {/* Operator Approval Card - admin only */}
+                        {isAdmin && wilcomData.operatorApprovalPdf && (
+                            <a
+                                href={`${wilcomData.operatorApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
+                                >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    {t.orders.wilcom.operatorCard}
+                                </Button>
+                            </a>
+                        )}
+
+                        {/* Original Wilcom PDF - admin only */}
+                        {isAdmin && wilcomData.wilcomPdfUrl && (
+                            <a
+                                href={`${wilcomData.wilcomPdfUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Button
                                     variant="outline"
                                     size="sm"
                                     className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                                    disabled={isUploading}
                                 >
-                                    <span>
-                                        {isUploading ? (
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <RefreshCw className="mr-2 h-4 w-4" />
-                                        )}
-                                        Re-upload
-                                    </span>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    {t.orders.wilcom.originalPdf}
                                 </Button>
-                            </label>
-                        </>
+                            </a>
+                        )}
+
+                        {/* Re-upload button - admin only */}
+                        {isAdmin && (
+                            <>
+                                <input
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                    id="wilcom-reupload"
+                                    disabled={isUploading}
+                                />
+                                <label htmlFor="wilcom-reupload">
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                        disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                    >
+                                        <span>
+                                            {isUploading ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <RefreshCw className="mr-2 h-4 w-4" />
+                                            )}
+                                            {t.orders.wilcom.reUpload}
+                                        </span>
+                                    </Button>
+                                </label>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-transparent border-red-900/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-600 transition-all"
+                                    disabled={isDeleting || status === "COMPLETED"}
+                                    onClick={() => setIsDeleteDialogOpen(true)}
+                                >
+                                    {isDeleting ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                    )}
+                                    {t.orders.wilcom.deleteWilcom}
+                                </Button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Publish Button shifted to right */}
+                    {isAdmin && (
+                        <div className="ml-auto">
+                            <Button
+                                size="sm"
+                                disabled={status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold transition-all shadow-lg shadow-violet-900/20 gap-2 disabled:opacity-50"
+                                onClick={() => setIsPublishDialogOpen(true)}
+                            >
+                                <Send className="h-4 w-4" />
+                                {t.orders.publish}
+                            </Button>
+                        </div>
                     )}
                 </div>
 
@@ -395,53 +448,53 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                             className="w-full mt-4 bg-zinc-800/30 hover:bg-zinc-800/70 text-zinc-400 hover:text-white border border-zinc-700/50 hover:border-zinc-600 transition-all"
                             onClick={() => setShowDetails(!showDetails)}
                         >
-                            {showDetails ? 'Hide Details' : 'Show Technical Details'}
+                            {showDetails ? t.orders.wilcom.hideDetails : t.orders.wilcom.showDetails}
                         </Button>
 
                         {showDetails && (
                             <div className="border-t border-zinc-800 pt-4 space-y-3">
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                                     <div>
-                                        <span className="text-zinc-500">Machine Format:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.machineFormat || 'N/A'}</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.machineFormat}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.machineFormat || t.common.notAvailable}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Color Changes:</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.colorChanges}:</span>
                                         <span className="text-zinc-300 ml-2">{wilcomData.colorChanges || 0}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Stops:</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.stops}:</span>
                                         <span className="text-zinc-300 ml-2">{wilcomData.stops || 0}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Trims:</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.trims}:</span>
                                         <span className="text-zinc-300 ml-2">{wilcomData.trims || 0}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Total Thread:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.totalThreadM?.toFixed(2) || 'N/A'}m</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.totalThread}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.totalThreadM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalThreadM ? 'm' : ''}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Total Bobbin:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.totalBobbinM?.toFixed(2) || 'N/A'}m</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.totalBobbin}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.totalBobbinM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalBobbinM ? 'm' : ''}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Max Stitch:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.maxStitchMm?.toFixed(1) || 'N/A'}mm</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.maxStitch}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.maxStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxStitchMm ? 'mm' : ''}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Min Stitch:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.minStitchMm?.toFixed(1) || 'N/A'}mm</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.minStitch}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.minStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.minStitchMm ? 'mm' : ''}</span>
                                     </div>
                                     <div>
-                                        <span className="text-zinc-500">Max Jump:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.maxJumpMm?.toFixed(1) || 'N/A'}mm</span>
+                                        <span className="text-zinc-500">{t.orders.wilcom.maxJump}:</span>
+                                        <span className="text-zinc-300 ml-2">{wilcomData.maxJumpMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxJumpMm ? 'mm' : ''}</span>
                                     </div>
                                 </div>
 
                                 {/* Color Sequence */}
                                 <div>
-                                    <div className="text-xs text-zinc-500 mb-2">Color Sequence:</div>
+                                    <div className="text-xs text-zinc-500 mb-2">{t.orders.wilcom.colorSequence}:</div>
                                     <div className="flex flex-wrap gap-1">
                                         {wilcomData.colorSequence.map((item, index) => (
                                             <div
@@ -460,6 +513,28 @@ export function WilcomSection({ orderId, wilcomData, isAdmin }: WilcomSectionPro
                     </>
                 )}
             </CardContent>
+
+            <ActionConfirmDialog
+                isOpen={isPublishDialogOpen}
+                onOpenChange={setIsPublishDialogOpen}
+                onConfirm={handlePublish}
+                isPending={isPublishing}
+                variant="default"
+                title={t.orders.publish || "Yayınla"}
+                description={t.orders.wilcom.publishConfirm}
+                confirmText={t.orders.publish || "Yayınla"}
+            />
+
+            <ActionConfirmDialog
+                isOpen={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDeleteWilcom}
+                isPending={isDeleting}
+                variant="destructive"
+                title={t.orders.wilcom.deleteWilcom || "Sil"}
+                description={t.orders.wilcom.deleteWilcomConfirm}
+                confirmText={t.common?.delete || "Sil"}
+            />
         </Card>
     );
 }

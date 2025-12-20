@@ -78,7 +78,7 @@ export async function POST(
         // Create a system comment
         await prisma.comment.create({
             data: {
-                content: `🚀 Approval cards published to Final section.`,
+                content: `🚀 Approval cards published to Final section. | 🚀 Onay kartları Final bölümüne gönderildi.`,
                 orderId,
                 userId: session.user.id,
                 isSystem: true,
