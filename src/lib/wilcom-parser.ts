@@ -55,6 +55,20 @@ print(full_text)
 
 
 
+// Extended Color Map
+const COLOR_NAME_TO_HEX: Record<string, string> = {
+    'black': '#000000', 'white': '#FFFFFF', 'red': '#FF0000', 'green': '#008000', 'blue': '#0000FF',
+    'yellow': '#FFFF00', 'magenta': '#FF00FF', 'cyan': '#00FFFF', 'orange': '#FFA500', 'purple': '#800080',
+    'pink': '#FFC0CB', 'brown': '#A52A2A', 'gray': '#808080', 'grey': '#808080', 'light gray': '#D3D3D3',
+    'dark gray': '#A9A9A9', 'charcoal': '#36454F', 'navy': '#000080', 'royal blue': '#4169E1',
+    'light blue': '#ADD8E6', 'sky blue': '#87CEEB', 'powder blue': '#B0E0E6', 'gold': '#FFD700',
+    'silver': '#C0C0C0', 'khaki': '#F0E68C', 'sand': '#C2B280', 'beige': '#F5F5DC', 'cream': '#FFFDD0',
+    'olive': '#808000', 'maroon': '#800000', 'burgundy': '#800020', 'teal': '#008080', 'turquoise': '#40E0D0',
+    'lime': '#00FF00', 'emerald': '#50C878', 'forest green': '#228B22', 'dark green': '#006400',
+    'dark blue': '#00008B', 'dark red': '#8B0000', 'lilac': '#C8A2C8', 'lavender': '#E6E6FA',
+    'mustard': '#FFDB58', 'peach': '#FFDAB9', 'coral': '#FF7F50', 'rust': '#B7410E', 'mint': '#98FF98',
+};
+
 // Color mapping for Wilcom default chart
 const WILCOM_COLOR_MAP: Record<string, { name: string; hex: string }> = {
     '1': { name: 'Dark Green', hex: '#006400' },
@@ -157,20 +171,24 @@ function parseDate(dateStr: string | undefined): Date | null {
 }
 
 function getColorInfo(code: string, name?: string): { name: string; hex: string } {
-    const mapped = WILCOM_COLOR_MAP[code];
-    if (mapped) return mapped;
-
-    // Use provided name if available
     if (name) {
-        // Try to find a matching color by name
-        const byName = Object.values(WILCOM_COLOR_MAP).find(
-            c => c.name.toLowerCase() === name.toLowerCase()
-        );
-        if (byName) return byName;
-        return { name, hex: '#888888' };
+        let cleanName = name.trim().replace(/\s+default$/i, '');
+        const searchName = cleanName.toLowerCase();
+
+        // Exact lookup
+        if (COLOR_NAME_TO_HEX[searchName]) return { name: cleanName, hex: COLOR_NAME_TO_HEX[searchName] };
+
+        // Fuzzy lookup
+        const keys = Object.keys(COLOR_NAME_TO_HEX).sort((a, b) => b.length - a.length);
+        for (const key of keys) {
+            if (searchName.includes(key)) return { name: cleanName, hex: COLOR_NAME_TO_HEX[key] };
+        }
     }
 
-    return { name: `Color ${code}`, hex: '#888888' };
+    const mapped = WILCOM_COLOR_MAP[code];
+    if (mapped) return name ? { name: name.replace(/\s+default$/i, '').trim(), hex: mapped.hex } : mapped;
+
+    return { name: name || `Color ${code}`, hex: '#888888' };
 }
 
 export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData> {
@@ -346,123 +364,115 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
 
         let i = 0;
         while (i < lines.length) {
-            // Pattern A: Look for stop number only like "1."
             const stopOnlyMatch = lines[i].match(/^(\d+)\.$/);
-            // Pattern B: Look for stop + N# like "10. 10"  
             const stopWithNMatch = lines[i].match(/^(\d+)\.\s+(\d+)$/);
 
-            if (stopOnlyMatch && i + 4 < lines.length) {
-                // Pattern A: Separate lines
+            if (stopOnlyMatch) {
                 const stopNum = parseInt(stopOnlyMatch[1]);
-                const nNum = lines[i + 1];
-                const stitchesRaw = lines[i + 2];
-                const colorLine = lines[i + 3];
-                const chart = lines[i + 4];
+                let stitches = 0;
+                let threadUsed = 0;
+                let colorCode = '';
+                let colorName = '';
+                let found = false;
+                let linesConsumed = 0;
 
-                const colorMatch = colorLine.match(/^(\d+)\s+(.+)$/);
-                if (colorMatch) {
-                    const colorCode = colorMatch[1];
-                    const colorName = colorMatch[2].trim();
-                    const colorInfo = getColorInfo(colorCode, colorName);
+                for (let k = 1; k <= 6; k++) {
+                    if (i + k >= lines.length) break;
+                    const line = lines[i + k];
+                    if (line.match(/^\d+\.$/) || line.match(/^\d+\.\s+\d+$/)) break;
 
-                    let stitches = 0;
-                    if (stitchesRaw.includes('.')) {
-                        stitches = parseInt(stitchesRaw.replace('.', '')) || 0;
-                    } else {
-                        stitches = parseInt(stitchesRaw) || 0;
+                    const mMatch = line.match(/([\d.,]+)\s*m\b/i);
+                    if (mMatch) {
+                        try { threadUsed = parseFloat(mMatch[1].replace(',', '.')); } catch (e) { }
                     }
 
-                    console.log('Parsed stop (Pattern A):', { stopNum, colorCode, colorName, stitches, chart });
+                    const cMatch = line.match(/^(\d+)\s+([A-Za-z].+)$/);
+                    if (cMatch) {
+                        colorCode = cMatch[1];
+                        colorName = cMatch[2].trim();
+                        linesConsumed = k;
+                        found = true;
 
+                        for (let j = 1; j < k; j++) {
+                            const pLine = lines[i + j];
+                            if (pLine.match(/^[\d.,]+$/)) {
+                                stitches = parseInt(pLine.replace(/[.,]/g, '')) || 0;
+                            }
+                        }
+                    }
+                }
+
+                if (found) {
+                    const colorInfo = getColorInfo(colorCode, colorName);
+                    const derivedThread = stitches / 1000;
                     result.colorSequence.push({
                         stop: stopNum,
                         colorCode: colorCode,
                         colorName: colorInfo.name,
                         hex: colorInfo.hex,
                         stitches: stitches,
-                        threadUsedM: 0,
+                        threadUsedM: threadUsed > 0 ? threadUsed : derivedThread,
                     });
-
-                    i += 5;
+                    i += linesConsumed + 1;
                     continue;
                 }
-            } else if (stopWithNMatch && i + 3 < lines.length) {
-                // Pattern B: Stop and N# on same line
+            } else if (stopWithNMatch) {
                 const stopNum = parseInt(stopWithNMatch[1]);
-                const nNum = stopWithNMatch[2];
-                const stitchesRaw = lines[i + 1];
-                const colorLine = lines[i + 2];
-                const chart = lines[i + 3];
+                let stitches = 0;
+                let threadUsed = 0;
+                let colorCode = '';
+                let colorName = '';
+                let found = false;
+                let linesConsumed = 0;
 
-                const colorMatch = colorLine.match(/^(\d+)\s+(.+)$/);
-                if (colorMatch) {
-                    const colorCode = colorMatch[1];
-                    const colorName = colorMatch[2].trim();
-                    const colorInfo = getColorInfo(colorCode, colorName);
+                for (let k = 1; k <= 5; k++) {
+                    if (i + k >= lines.length) break;
+                    const line = lines[i + k];
+                    if (line.match(/^\d+\.$/) || line.match(/^\d+\.\s+\d+$/)) break;
 
-                    let stitches = 0;
-                    if (stitchesRaw.includes('.')) {
-                        stitches = parseInt(stitchesRaw.replace('.', '')) || 0;
-                    } else {
-                        stitches = parseInt(stitchesRaw) || 0;
+                    const mMatch = line.match(/([\d.,]+)\s*m\b/i);
+                    if (mMatch) {
+                        try { threadUsed = parseFloat(mMatch[1].replace(',', '.')); } catch (e) { }
                     }
 
-                    console.log('Parsed stop (Pattern B):', { stopNum, colorCode, colorName, stitches, chart });
+                    const cMatch = line.match(/^(\d+)\s+([A-Za-z].+)$/);
+                    if (cMatch) {
+                        colorCode = cMatch[1];
+                        colorName = cMatch[2].trim();
+                        linesConsumed = k;
+                        found = true;
+                        for (let j = 1; j < k; j++) {
+                            const pLine = lines[i + j];
+                            if (pLine.match(/^[\d.,]+$/)) {
+                                stitches = parseInt(pLine.replace(/[.,]/g, '')) || 0;
+                            }
+                        }
+                    }
+                }
 
+                if (found) {
+                    const colorInfo = getColorInfo(colorCode, colorName);
+                    const derivedThread = stitches / 1000;
                     result.colorSequence.push({
                         stop: stopNum,
                         colorCode: colorCode,
                         colorName: colorInfo.name,
                         hex: colorInfo.hex,
                         stitches: stitches,
-                        threadUsedM: 0,
+                        threadUsedM: threadUsed > 0 ? threadUsed : derivedThread,
                     });
-
-                    i += 4;
+                    i += linesConsumed + 1;
                     continue;
                 }
             }
             i++;
         }
-
-        console.log('Total color sequence items:', result.colorSequence.length);
     }
+    console.log('Total color sequence items:', result.colorSequence.length);
 
-    // Parse detailed color info from Color Film section
-    const colorFilmMatch = text.match(/Color:\s*\d+[\s\S]*?(?=Color Film|Production Summary|$)/g);
-    if (colorFilmMatch) {
-        const colorMap = new Map<string, WilcomColor>();
+    // Color Film section is intentionally ignored here to use robust sequence data
 
-        for (const colorBlock of colorFilmMatch) {
-            const codeMatch = colorBlock.match(/Code:\s*(\d+)/);
-            const nameMatch = colorBlock.match(/Name:\s*(\w+(?:\s+\w+)?)/);
-            const stitchesMatch = colorBlock.match(/Stitches:\s*([\d.,]+)/);
-            const threadMatch = colorBlock.match(/Thread used:\s*([\d.,]+)m/);
-            const chartMatch = colorBlock.match(/Chart:\s*(\w+)/);
 
-            if (codeMatch) {
-                const code = codeMatch[1];
-                const colorInfo = getColorInfo(code, nameMatch?.[1]);
-
-                if (!colorMap.has(code)) {
-                    colorMap.set(code, {
-                        code,
-                        name: colorInfo.name,
-                        hex: colorInfo.hex,
-                        stitches: 0,
-                        threadUsedM: 0,
-                        chart: chartMatch?.[1] || 'Default',
-                    });
-                }
-
-                const existingColor = colorMap.get(code)!;
-                existingColor.stitches += parseInt(stitchesMatch?.[1]?.replace(/[.,]/g, '') || '0');
-                existingColor.threadUsedM += parseNumber(threadMatch?.[1]) || 0;
-            }
-        }
-
-        result.colors = Array.from(colorMap.values());
-    }
 
     // Always derive unique colors from colorSequence for reliability
     // This ensures we have colors even if Color Film section parsing fails
@@ -482,6 +492,7 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
             } else {
                 const existing = uniqueColors.get(seqItem.colorCode)!;
                 existing.stitches += seqItem.stitches;
+                existing.threadUsedM += seqItem.threadUsedM;
             }
         }
 
@@ -517,47 +528,87 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     const heightInches = parseFloat((data.heightMm / 25.4).toFixed(2));
     const widthInches = parseFloat((data.widthMm / 25.4).toFixed(2));
 
-    // PPI (Pixels Per Inch) constant used for display scaling
-    const PPI = 80;
+    // Dynamic PPI calculation to fit within A4 page
+    // A4 page: 210mm width, 297mm height
+    // With 10mm padding on each side: usable area is 190mm x 277mm
+    // Available space for ruler area (accounting for header, margins, footer):
+    // Height: ~240mm = ~567px at 96 DPI, Width: ~190mm = ~450px at 96 DPI
+    const MAX_RULER_HEIGHT_PX = 650; // Maximum height for ruler area in pixels (increased)
+    const MAX_RULER_WIDTH_PX = 720;  // Maximum width for ruler area in pixels (increased)
+    const PAGE_WIDTH_PX = 720; // Available page width for horizontal ruler
+
+    // Calculate required PPI to fit the design
+    const basePPI = 80; // Ideal PPI for 1:1 scale
+    // Add 0.5 inch margin on top for the design
+    const maxVerticalInches = Math.ceil(heightInches + 1); // Extra space for 0.5 inch top margin
+    const maxHorizontalInches = Math.ceil(widthInches + 0.5);
+
+    // Calculate PPI needed to fit within max dimensions
+    const ppiForHeight = MAX_RULER_HEIGHT_PX / maxVerticalInches;
+    const ppiForWidth = MAX_RULER_WIDTH_PX / maxHorizontalInches;
+
+    // Use the smaller PPI to ensure both dimensions fit
+    const PPI = Math.min(basePPI, ppiForHeight, ppiForWidth);
 
     // Generate dynamic ruler marks
-    // Calculate max ruler value (round up to nearest 0.5 inch with some margin)
-    const maxVertical = Math.ceil(heightInches + 0.5);
-    const maxHorizontal = Math.ceil(widthInches + 0.5);
+    const maxVertical = maxVerticalInches;
+    // Horizontal ruler extends to fill available width
+    const maxHorizontal = Math.floor(PAGE_WIDTH_PX / PPI);
 
     // Container dimensions in pixels
     const containerHeight = maxVertical * PPI;
-    // We'll limit width to avoid overflow if design is huge, but typically embroidery is handled within bounds
 
-    // Generate vertical ruler marks
+    // Generate vertical ruler marks with subdivisions (1/4 inch intervals)
     const verticalMarks: string[] = [];
-    for (let i = 1; i <= maxVertical; i++) {
+    for (let i = 0; i <= maxVertical; i++) {
         const bottomPx = i * PPI;
-        verticalMarks.push(`
-            <div class="v-number" style="bottom: ${bottomPx}px;">${i}</div>
-            <div class="v-tick major" style="bottom: ${bottomPx}px;"></div>
-        `);
+        // Add major tick and number at each inch
+        if (i > 0) {
+            verticalMarks.push(`
+                <div class="v-number" style="bottom: ${bottomPx}px;">${i}</div>
+                <div class="v-tick major" style="bottom: ${bottomPx}px;"></div>
+            `);
+        }
+        // Add subdivision ticks within this inch
         if (i < maxVertical) {
-            const halfBottomPx = (i + 0.5) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${halfBottomPx}px;"></div>`);
+            // 1/4 inch tick
+            const quarter1Px = (i + 0.25) * PPI;
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter1Px}px;"></div>`);
+            // 1/2 inch tick (larger)
+            const halfPx = (i + 0.5) * PPI;
+            verticalMarks.push(`<div class="v-tick half" style="bottom: ${halfPx}px;"></div>`);
+            // 3/4 inch tick
+            const quarter3Px = (i + 0.75) * PPI;
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter3Px}px;"></div>`);
         }
     }
 
-    // Generate horizontal ruler marks
+    // Generate horizontal ruler marks with subdivisions (1/4 inch intervals)
     const horizontalMarks: string[] = [];
-    for (let i = 1; i <= maxHorizontal; i++) {
+    for (let i = 0; i <= maxHorizontal; i++) {
         const leftPx = i * PPI;
-        horizontalMarks.push(`
-            <div class="h-number" style="left: ${leftPx}px;">${i}</div>
-            <div class="h-tick major" style="left: ${leftPx}px;"></div>
-        `);
+        // Add major tick and number at each inch
+        if (i > 0) {
+            horizontalMarks.push(`
+                <div class="h-number" style="left: ${leftPx}px;">${i}</div>
+                <div class="h-tick major" style="left: ${leftPx}px;"></div>
+            `);
+        }
+        // Add subdivision ticks within this inch
         if (i < maxHorizontal) {
-            const halfLeftPx = (i + 0.5) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${halfLeftPx}px;"></div>`);
+            // 1/4 inch tick
+            const quarter1Px = (i + 0.25) * PPI;
+            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter1Px}px;"></div>`);
+            // 1/2 inch tick (larger)
+            const halfPx = (i + 0.5) * PPI;
+            horizontalMarks.push(`<div class="h-tick half" style="left: ${halfPx}px;"></div>`);
+            // 3/4 inch tick
+            const quarter3Px = (i + 0.75) * PPI;
+            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter3Px}px;"></div>`);
         }
     }
 
-    // Generate color grid HTML
+    // Generate color grid HTML (Show all colors)
     const colorGridHtml = data.colors.map(color => `
         <div class="color-cell">
             <div class="color-code" style="background: ${color.hex}; color: ${getContrastColor(color.hex)}">${color.code}</div>
@@ -574,7 +625,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         </div>
     `).join('');
 
-    // Split sequence into rows of 20
+    // Split sequence into rows of 20 (Show all stops)
     const sequenceRows: string[] = [];
     for (let i = 0; i < data.colorSequence.length; i += 20) {
         const rowItems = data.colorSequence.slice(i, i + 20).map((item, idx) => `
@@ -601,7 +652,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operator Approval Card</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Barcode+128&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -617,6 +668,30 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             background: white;
             margin: 0 auto;
             padding: 10mm;
+            padding-bottom: 20mm;
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+        
+        .page:last-child {
+            page-break-after: auto;
+        }
+        
+        .page-footer {
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        @media print {
+            body { margin: 0; }
+            .page { margin: 0; }
         }
         
         .header {
@@ -687,7 +762,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         
         .color-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 3px;
             margin-bottom: 12px;
         }
@@ -701,7 +776,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 35px;
+            min-width: 30px;
         }
         
         .color-name {
@@ -721,7 +796,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            min-width: 38px;
+            min-width: 32px;
             border-left: 1px solid #ddd;
         }
         
@@ -781,13 +856,60 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 9px;
+            font-weight: 600;
         }
         
-        .corner-label { color: white; font-size: 10px; font-weight: 600; transform: rotate(-45deg); }
+        /* Tick line on top of corner block */
+        .corner-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: white;
+        }
         
-        .v-tick { position: absolute; right: 0; width: 15px; height: 2px; background: white; }
-        .v-tick.major { width: 25px; height: 3px; }
-        .v-number { position: absolute; right: 28px; font-size: 12px; font-weight: 600; transform: translateY(-50%); }
+        /* Tick line on right of corner block */
+        .corner-block::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 1px;
+            background: white;
+        }
+        
+        .corner-label { color: white; font-size: 9px; font-weight: 600; }
+        
+        /* Vertical ruler ticks - white lines on black background */
+        .v-tick { 
+            position: absolute; 
+            right: 0;
+            width: 8px; 
+            height: 1px; 
+            background: white;
+        }
+        .v-tick.half { 
+            width: 15px; 
+            height: 1px;
+        }
+        .v-tick.major { 
+            width: 40px; /* Full width of ruler */
+            height: 1px;
+        }
+        /* Vertical numbers - inside the ruler, white on black */
+        .v-number { 
+            position: absolute; 
+            left: 5px;
+            transform: translateY(-50%);
+            font-size: 11px; 
+            font-weight: 600; 
+            color: white;
+        }
         
         .horizontal-ruler {
             position: absolute;
@@ -799,9 +921,31 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             color: white;
         }
         
-        .h-tick { position: absolute; bottom: 0; width: 2px; height: 15px; background: white; }
-        .h-tick.major { height: 25px; width: 3px; }
-        .h-number { position: absolute; bottom: 28px; font-size: 12px; font-weight: 600; transform: translateX(-50%); }
+        /* Horizontal ruler ticks - white lines on black background */
+        .h-tick { 
+            position: absolute; 
+            top: 0;
+            width: 1px; 
+            height: 8px; 
+            background: white;
+        }
+        .h-tick.half { 
+            height: 15px; 
+            width: 1px;
+        }
+        .h-tick.major { 
+            height: 40px; /* Full height of ruler */
+            width: 1px;
+        }
+        /* Horizontal numbers - inside the ruler, white on black */
+        .h-number { 
+            position: absolute; 
+            top: 18px;
+            transform: translateX(-80%);
+            font-size: 11px; 
+            font-weight: 600; 
+            color: white;
+        }
         
         .embroidery-area {
             position: absolute;
@@ -831,53 +975,34 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     </style>
 </head>
 <body>
+    <!-- PAGE 1: Data & Approval -->
     <div class="page">
         <div class="header">
             <div class="header-left">
                 <h1>www.APPROVALSTITCH.com</h1>
             </div>
             <div class="header-right">
-                <div class="barcode">*${data.designName}*</div>
+                <div class="barcode">*${Math.random().toString(36).substring(2, 12).toUpperCase()}*</div>
                 <div class="rid-box">${data.designName}</div>
             </div>
         </div>
         
-        <div class="title">Operator Approval Card</div>
+        <div class="title">OPERATOR APPROVALCARD</div>
         
         <div class="design-info">
             <div class="info-left">
-                <div class="info-label">Design Name:</div>
-                <div class="info-value">${data.designName}</div>
-                
-                <div class="info-label">Final Size:</div>
-                <div class="info-value">${widthInches}" x ${heightInches}"</div>
-                
-                <div class="info-label">Stitch Count:</div>
-                <div class="info-value">${data.stitchCount.toLocaleString()}</div>
-                
-                <div class="info-label">Machine Runtime:</div>
-                <div class="info-value">${data.machineRuntime || 'N/A'}</div>
-                
-                <div class="info-label">Machine Format:</div>
-                <div class="info-value">${data.machineFormat || 'N/A'}</div>
-                
-                <div class="info-label">Color Changes:</div>
-                <div class="info-value">${data.colorChanges || 0}</div>
-                
-                <div class="info-label">Stops:</div>
-                <div class="info-value">${data.stops || 0}</div>
-                
-                <div class="info-label">Trims:</div>
-                <div class="info-value">${data.trims || 0}</div>
-                
-                <div class="info-label">Total Thread:</div>
-                <div class="info-value">${data.totalThreadM?.toFixed(2) || 'N/A'}m</div>
+                <div class="info-label">Design Name:</div> <div class="info-value">${data.designName}</div>
+                <div class="info-label">Final Size:</div> <div class="info-value">${widthInches}" x ${heightInches}"</div>
+                <div class="info-label">Stitch Count:</div> <div class="info-value">${data.stitchCount.toLocaleString()}</div>
+                <div class="info-label">Colors:</div> <div class="info-value">${data.colorCount}</div>
+                <div class="info-label">Stops:</div> <div class="info-value">${data.stops || 0}</div>
+                <div class="info-label">Color Changes:</div> <div class="info-value">${data.colorChanges || 0}</div>
+                <div class="info-label">Machine Runtime:</div> <div class="info-value">${data.machineRuntime || 'N/A'}</div>
             </div>
-            
             <div class="info-right">
-                <div class="customer-artwork-label">Customer<br>Artwork</div>
+                <div class="customer-artwork-label">CUSTOMER ARTWORK</div>
                 <div class="artwork-preview">
-                    <img src="${artworkImageSrc}" alt="Artwork Preview">
+                    <img src="${artworkImageSrc}" alt="Customer Artwork">
                 </div>
             </div>
         </div>
@@ -894,6 +1019,23 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             ${sequenceRows.join('')}
         </div>
         
+        <div class="page-footer">1/2</div>
+    </div>
+    
+    <!-- PAGE 2: Preview/Ruler -->
+    <div class="page">
+        <div class="header">
+            <div class="header-left">
+                <h1>www.APPROVALSTITCH.com</h1>
+            </div>
+            <div class="header-right">
+                <div class="barcode">*${Math.random().toString(36).substring(2, 12).toUpperCase()}*</div>
+                <div class="rid-box">${data.designName}</div>
+            </div>
+        </div>
+        
+        <div style="height: 40px;"></div>
+        
         <div class="ruler-section">
             <div class="ruler-area" style="height: ${containerHeight}px; min-height: 365px;">
                 <div class="corner-block">
@@ -908,8 +1050,8 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
                     ${horizontalMarks.join('')}
                 </div>
                 
-                <div class="embroidery-area" style="height: ${containerHeight}px;">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                <div class="embroidery-area">
+                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
                 </div>
             </div>
         </div>
@@ -929,6 +1071,8 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             <div class="notes-title">Notes:</div>
             <div class="notes-area"></div>
         </div>
+        
+        <div class="page-footer">2/2</div>
     </div>
 </body>
 </html>`;
@@ -945,39 +1089,64 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     const heightInches = parseFloat((data.heightMm / 25.4).toFixed(2));
     const widthInches = parseFloat((data.widthMm / 25.4).toFixed(2));
 
-    // PPI (Pixels Per Inch) constant used for display scaling
-    const PPI = 80;
+    // Dynamic PPI calculation to fit within A4 page (same as operator card)
+    const MAX_RULER_HEIGHT_PX = 650;
+    const MAX_RULER_WIDTH_PX = 720;
+    const PAGE_WIDTH_PX = 720;
+
+    const basePPI = 80;
+    const maxVerticalInches = Math.ceil(heightInches + 1); // Extra space for 0.5 inch top margin
+    const maxHorizontalInches = Math.ceil(widthInches + 0.5);
+
+    const ppiForHeight = MAX_RULER_HEIGHT_PX / maxVerticalInches;
+    const ppiForWidth = MAX_RULER_WIDTH_PX / maxHorizontalInches;
+
+    const PPI = Math.min(basePPI, ppiForHeight, ppiForWidth);
 
     // Generate dynamic ruler marks (same logic as operator card)
-    const maxVertical = Math.ceil(heightInches + 0.5);
-    const maxHorizontal = Math.ceil(widthInches + 0.5);
+    const maxVertical = maxVerticalInches;
+    const maxHorizontal = Math.floor(PAGE_WIDTH_PX / PPI);
 
     // Container dimensions in pixels
     const containerHeight = maxVertical * PPI;
 
+    // Generate vertical ruler marks with subdivisions (1/4 inch intervals)
     const verticalMarks: string[] = [];
-    for (let i = 1; i <= maxVertical; i++) {
+    for (let i = 0; i <= maxVertical; i++) {
         const bottomPx = i * PPI;
-        verticalMarks.push(`
-            <div class="v-number" style="bottom: ${bottomPx}px;">${i}</div>
-            <div class="v-tick major" style="bottom: ${bottomPx}px;"></div>
-        `);
+        if (i > 0) {
+            verticalMarks.push(`
+                <div class="v-number" style="bottom: ${bottomPx}px;">${i}</div>
+                <div class="v-tick major" style="bottom: ${bottomPx}px;"></div>
+            `);
+        }
         if (i < maxVertical) {
-            const halfBottomPx = (i + 0.5) * PPI;
-            verticalMarks.push(`<div class="v-tick" style="bottom: ${halfBottomPx}px;"></div>`);
+            const quarter1Px = (i + 0.25) * PPI;
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter1Px}px;"></div>`);
+            const halfPx = (i + 0.5) * PPI;
+            verticalMarks.push(`<div class="v-tick half" style="bottom: ${halfPx}px;"></div>`);
+            const quarter3Px = (i + 0.75) * PPI;
+            verticalMarks.push(`<div class="v-tick" style="bottom: ${quarter3Px}px;"></div>`);
         }
     }
 
+    // Generate horizontal ruler marks with subdivisions (1/4 inch intervals)
     const horizontalMarks: string[] = [];
-    for (let i = 1; i <= maxHorizontal; i++) {
+    for (let i = 0; i <= maxHorizontal; i++) {
         const leftPx = i * PPI;
-        horizontalMarks.push(`
-            <div class="h-number" style="left: ${leftPx}px;">${i}</div>
-            <div class="h-tick major" style="left: ${leftPx}px;"></div>
-        `);
+        if (i > 0) {
+            horizontalMarks.push(`
+                <div class="h-number" style="left: ${leftPx}px;">${i}</div>
+                <div class="h-tick major" style="left: ${leftPx}px;"></div>
+            `);
+        }
         if (i < maxHorizontal) {
-            const halfLeftPx = (i + 0.5) * PPI;
-            horizontalMarks.push(`<div class="h-tick" style="left: ${halfLeftPx}px;"></div>`);
+            const quarter1Px = (i + 0.25) * PPI;
+            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter1Px}px;"></div>`);
+            const halfPx = (i + 0.5) * PPI;
+            horizontalMarks.push(`<div class="h-tick half" style="left: ${halfPx}px;"></div>`);
+            const quarter3Px = (i + 0.75) * PPI;
+            horizontalMarks.push(`<div class="h-tick" style="left: ${quarter3Px}px;"></div>`);
         }
     }
 
@@ -1089,8 +1258,8 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             position: absolute;
             left: 0;
             top: 0;
-            bottom: 50px;
-            width: 50px;
+            bottom: 40px;
+            width: 40px;
             background: #000;
             color: white;
         }
@@ -1099,38 +1268,107 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 9px;
+            font-weight: 600;
         }
         
-        .corner-label { color: white; font-size: 11px; font-weight: 600; transform: rotate(-45deg); }
+        /* Tick line on top of corner block */
+        .corner-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: white;
+        }
         
-        .v-tick { position: absolute; right: 0; width: 20px; height: 2px; background: white; }
-        .v-tick.major { width: 30px; height: 3px; }
-        .v-number { position: absolute; right: 35px; font-size: 16px; font-weight: 600; transform: translateY(-50%); }
+        /* Tick line on right of corner block */
+        .corner-block::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 1px;
+            background: white;
+        }
+        
+        .corner-label { color: white; font-size: 9px; font-weight: 600; }
+        
+        /* Vertical ruler ticks - white lines on black background */
+        .v-tick { 
+            position: absolute; 
+            right: 0;
+            width: 8px; 
+            height: 1px; 
+            background: white;
+        }
+        .v-tick.half { 
+            width: 15px; 
+            height: 1px;
+        }
+        .v-tick.major { 
+            width: 40px; /* Full width of ruler */
+            height: 1px;
+        }
+        /* Vertical numbers - inside the ruler, white on black */
+        .v-number { 
+            position: absolute; 
+            left: 5px;
+            transform: translateY(-50%);
+            font-size: 11px; 
+            font-weight: 600; 
+            color: white;
+        }
         
         .horizontal-ruler {
             position: absolute;
             bottom: 0;
-            left: 50px;
+            left: 40px;
             right: 0;
-            height: 50px;
+            height: 40px;
             background: #000;
             color: white;
         }
         
-        .h-tick { position: absolute; bottom: 0; width: 2px; height: 20px; background: white; }
-        .h-tick.major { height: 30px; width: 3px; }
-        .h-number { position: absolute; bottom: 32px; font-size: 16px; font-weight: 600; transform: translateX(-50%); }
+        /* Horizontal ruler ticks - white lines on black background */
+        .h-tick { 
+            position: absolute; 
+            top: 0;
+            width: 1px; 
+            height: 8px; 
+            background: white;
+        }
+        .h-tick.half { 
+            height: 15px; 
+            width: 1px;
+        }
+        .h-tick.major { 
+            height: 40px; /* Full height of ruler */
+            width: 1px;
+        }
+        /* Horizontal numbers - inside the ruler, white on black */
+        .h-number { 
+            position: absolute; 
+            top: 18px;
+            transform: translateX(-80%);
+            font-size: 11px; 
+            font-weight: 600; 
+            color: white;
+        }
         
         .embroidery-area {
             position: absolute;
-            left: 50px;
-            bottom: 50px;
+            left: 40px;
+            bottom: 40px;
             display: flex;
             align-items: flex-end;  /* Align to bottom */
             justify-content: flex-start;  /* Align to left - origin point */
@@ -1205,7 +1443,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
                 </div>
                 
                 <div class="embroidery-area" style="height: ${containerHeight}px;">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
                 </div>
             </div>
         </div>
@@ -1306,15 +1544,33 @@ except ImportError:
     HAS_PIL = False
 
 doc = fitz.open(pdf_path)
-page = doc[0]
-images = page.get_images()
 
-if images:
-    xref = images[0][0]
-    pix = fitz.Pixmap(doc, xref)
-    if pix.n >= 5:
-        pix = fitz.Pixmap(fitz.csRGB, pix)
+# Find the largest image across all pages
+largest_image = None
+largest_size = 0
+
+for page_num in range(len(doc)):
+    page = doc[page_num]
+    images = page.get_images()
     
+    for img_info in images:
+        xref = img_info[0]
+        try:
+            pix = fitz.Pixmap(doc, xref)
+            if pix.n >= 5:
+                pix = fitz.Pixmap(fitz.csRGB, pix)
+            
+            # Calculate image size (width * height)
+            img_size = pix.width * pix.height
+            
+            if img_size > largest_size:
+                largest_size = img_size
+                largest_image = pix
+        except:
+            continue
+
+if largest_image:
+    pix = largest_image
     img_bytes = pix.tobytes("png")
     
     if HAS_PIL:
