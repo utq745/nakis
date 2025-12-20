@@ -25,6 +25,7 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
                 },
                 orderBy: { createdAt: "asc" },
             },
+            wilcomData: true,
         },
     });
 
@@ -49,10 +50,20 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
         })) || [],
     }));
 
+    // Transform wilcom data if exists
+    const transformedWilcomData = order.wilcomData ? {
+        ...order.wilcomData,
+        colors: JSON.parse(order.wilcomData.colors),
+        colorSequence: JSON.parse(order.wilcomData.colorSequence),
+        createdAt: order.wilcomData.createdAt.toISOString(),
+        updatedAt: order.wilcomData.updatedAt.toISOString(),
+    } : null;
+
     return {
         ...order,
         files: transformedFiles,
         comments: transformedComments,
+        wilcomData: transformedWilcomData,
     };
 }
 
@@ -88,7 +99,8 @@ export default async function OrderDetailPage({
                 ...c.user,
                 role: c.user.role as "ADMIN" | "CUSTOMER"
             }
-        }))
+        })),
+        wilcomData: order.wilcomData,
     };
 
     return (

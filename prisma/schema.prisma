@@ -68,8 +68,63 @@ model Order {
   customer        User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
   files           File[]
   comments        Comment[]
+  wilcomData      WilcomData?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+}
+
+// Wilcom PDF'den parse edilen nakış tasarım verileri
+model WilcomData {
+  id                    String   @id @default(cuid())
+  orderId               String   @unique
+  order                 Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Design Info
+  designName            String
+  title                 String?
+  heightMm              Float
+  widthMm               Float
+  stitchCount           Int
+  colorCount            Int
+  colorway              String?
+  
+  // Machine Info
+  machineFormat         String?
+  machineRuntime        String?   // "0:36:03" format
+  colorChanges          Int?
+  stops                 Int?
+  trims                 Int?
+  maxStitchMm           Float?
+  minStitchMm           Float?
+  maxJumpMm             Float?
+  totalThreadM          Float?
+  totalBobbinM          Float?
+  
+  // Hoop/Position Info
+  leftMm                Float?
+  rightMm               Float?
+  upMm                  Float?
+  downMm                Float?
+  areaMm2               Float?
+  
+  // JSON fields for complex data
+  colors                String    // JSON array of color objects
+  colorSequence         String    // JSON array of color sequence
+  
+  // Embroidery Design Image (extracted from PDF)
+  designImageUrl        String?
+  customerArtworkUrl    String?
+  
+  // Generated Approval Card PDFs
+  operatorApprovalPdf   String?
+  customerApprovalPdf   String?
+  
+  // Metadata
+  wilcomPdfUrl          String?   // Original Wilcom PDF
+  designLastSaved       DateTime?
+  datePrinted           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model File {

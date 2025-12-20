@@ -1299,16 +1299,8 @@ from io import BytesIO
 
 pdf_path = sys.argv[1]
 
-# Try to use rembg for AI-based background removal
 try:
-    from rembg import remove
-    from PIL import Image
-    HAS_REMBG = True
-except ImportError:
-    HAS_REMBG = False
-
-try:
-    from PIL import Image
+    from PIL import Image, ImageOps
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
@@ -1325,60 +1317,33 @@ if images:
     
     img_bytes = pix.tobytes("png")
     
-    if HAS_REMBG:
-        # Use AI-based background removal
-        img = Image.open(BytesIO(img_bytes))
-        output = remove(img)  # Returns RGBA with transparent background
-        
-        # Convert transparent to light gray for PDF compatibility
-        if output.mode == 'RGBA':
-            # Create a light gray background (now white as per latest change)
-            background = Image.new('RGB', output.size, (255, 255, 255))
-            # Paste the image onto the background using alpha as mask
-            background.paste(output, mask=output.split()[3])
-            output = background
-        
-        # TRIM LOGIC: Crop the image to the bounding box of non-white pixels
-        # Convert to grayscale for thresholding
-        gray = output.convert('L')
-        # Invert so content is white, background is black
-        import PIL.ImageOps
-        inverted = PIL.ImageOps.invert(gray)
-        # Get bounding box of non-black content
-        bbox = inverted.getbbox()
-        if bbox:
-            output = output.crop(bbox)
-
-        buffer = BytesIO()
-        output.save(buffer, format="PNG")
-        buffer.seek(0)
-        print(base64.b64encode(buffer.read()).decode())
-    elif HAS_PIL:
-        # Fallback: Simple white replacement
+    if HAS_PIL:
         img = Image.open(BytesIO(img_bytes))
         img = img.convert("RGB")
-        datas = img.getdata()
         
+        # 1. OPTIONAL: Convert near-white background to pure white for cleaner look
+        # This helps if the source has off-white artifacts
+        datas = img.getdata()
         new_data = []
         for item in datas:
+            # Threshold for "white" (e.g. >240)
             if item[0] > 240 and item[1] > 240 and item[2] > 240:
                 new_data.append((255, 255, 255))
             else:
                 new_data.append(item)
-        
         img.putdata(new_data)
         
-        # TRIM LOGIC for Fallback
+        # 2. TRIM WHITESPACE
+        # Convert to grayscale
         gray = img.convert('L')
-        # We want to find non-white pixels. White is 255.
         # Threshold: make anything < 250 black (0), else white (255)
-        # Then invert so content is white (255) to use getbbox
         threshold = 250
         bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
-        
-        from PIL import ImageOps
+        # Invert so content is white (to detect bbox), background is black
         bw = ImageOps.invert(bw.convert('L'))
+        # Get bounding box of content
         bbox = bw.getbbox()
+        
         if bbox:
             img = img.crop(bbox)
         
@@ -1387,7 +1352,7 @@ if images:
         buffer.seek(0)
         print(base64.b64encode(buffer.read()).decode())
     else:
-        # No image processing available
+        # No PIL available, just return the extracted image bytes
         print(base64.b64encode(img_bytes).decode())
 `;
 
