@@ -1038,8 +1038,10 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         ? `data:image/png;base64,${artworkImageBase64}`
         : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
 
+    const barcodeText = `*${Math.random().toString(36).substring(2, 12).toUpperCase()}*`;
+
     const styles = `
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Barcode+128&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -1086,7 +1088,13 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         }
         
         .header-left h1 { font-size: 16px; font-weight: 700; margin-bottom: 1px; }
-        .header-right { text-align: right; }
+        .header-right { 
+            text-align: right; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .barcode { font-family: 'Libre Barcode 128', cursive; font-size: 32px; }
         .rid-box { border: 2px solid #000; padding: 2px 6px; font-weight: 600; font-size: 12px; }
         
         .title {
@@ -1251,7 +1259,10 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     <div class="page">
         <div class="header">
             <div class="header-left"><h1>www.APPROVALSTITCH.com</h1></div>
-            <div class="header-right"><div class="rid-box">${data.designName}</div></div>
+            <div class="header-right">
+                <div class="barcode">${barcodeText}</div>
+                <div class="rid-box">${data.designName}</div>
+            </div>
         </div>
         
         <div class="title">CUSTOMER APPROVAL CARD</div>
@@ -1416,8 +1427,8 @@ if largest_image:
         datas = img.getdata()
         new_data = []
         for item in datas:
-            # Absolute white threshold (254 instead of 250)
-            if item[0] >= 254 and item[1] >= 254 and item[2] >= 254:
+            # Absolute white threshold (250 instead of 254 to be more forgiving but still safe)
+            if item[0] >= 250 and item[1] >= 250 and item[2] >= 250:
                 new_data.append((255, 255, 255))
             else:
                 new_data.append(item)
@@ -1427,7 +1438,7 @@ if largest_image:
         # Convert to grayscale
         gray = img.convert('L')
         # Threshold: only absolute white or very near white is background
-        threshold = 254
+        threshold = 250
         bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
         # Invert so content is white (to detect bbox), background is black
         bw = ImageOps.invert(bw.convert('L'))
