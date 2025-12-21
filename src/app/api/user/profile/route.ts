@@ -4,8 +4,8 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const profileSchema = z.object({
-    name: z.string().min(2, "İsim en az 2 karakter olmalıdır").optional(),
     language: z.enum(["en", "tr"]).optional(),
+    billingAddress: z.string().optional(),
 });
 
 export async function GET() {
@@ -17,7 +17,7 @@ export async function GET() {
 
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { id: true, email: true, name: true, role: true, language: true },
+            select: { id: true, email: true, name: true, role: true, language: true, billingAddress: true },
         });
 
         return NextResponse.json(user);
@@ -42,8 +42,8 @@ export async function PATCH(request: Request) {
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },
             data: {
-                ...(validatedData.name && { name: validatedData.name }),
                 ...(validatedData.language && { language: validatedData.language }),
+                ...(validatedData.billingAddress !== undefined && { billingAddress: validatedData.billingAddress }),
             },
         });
 

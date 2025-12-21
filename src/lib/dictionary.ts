@@ -128,6 +128,9 @@ export const translations = {
             publish: "Yayınla",
             publishSuccess: "Onay kartları Final bölümüne yayınlandı!",
             publishError: "Onay kartları yayınlanamadı.",
+            priceReceivedTitle: "Fiyat Teklifi Alındı",
+            priceReceivedDesc: "Admin siparişinizi {price} olarak fiyatlandırdı. Devam etmek için onaylayın.",
+            approvePrice: "Fiyatı Onayla",
             wilcom: {
                 processed: "İşlendi",
                 designName: "Tasarım Adı",
@@ -489,6 +492,9 @@ export const translations = {
             publish: "Publish",
             publishSuccess: "Approval cards published to Final section!",
             publishError: "Failed to publish cards.",
+            priceReceivedTitle: "Price Offer Received",
+            priceReceivedDesc: "The admin has priced your order at {price}. Please approve to proceed.",
+            approvePrice: "Approve Price",
             wilcom: {
                 processed: "Processed",
                 designName: "Design Name",

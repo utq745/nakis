@@ -94,19 +94,43 @@ export async function PATCH(
         const body = await request.json();
         const validatedData = updateOrderSchema.parse(body);
 
-        // Only admin can update status and price
-        if (session.user.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
+        // Check if user is customer or admin
+        const isAdmin = session.user.role === "ADMIN";
 
-        // Get current order to check if status changed
+        // Get current order to check if status changed and check permissions
         const currentOrder = await prisma.order.findUnique({
             where: { id },
-            select: { status: true, price: true }
+            select: { status: true, price: true, customerId: true }
         });
 
         if (!currentOrder) {
             return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        }
+
+        // Only admin can update price
+        if (!isAdmin && (validatedData.price !== undefined || validatedData.hidden !== undefined)) {
+            return NextResponse.json({ error: "Only admins can update price or visibility" }, { status: 403 });
+        }
+
+        // Status update rules:
+        if (validatedData.status && validatedData.status !== currentOrder.status) {
+            if (!isAdmin) {
+                // Customer can ONLY transition from PRICED to IN_PROGRESS (Approval)
+                const isAcceptingPrice = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
+
+                if (currentOrder.customerId !== session.user.id) {
+                    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+                }
+
+                if (!isAcceptingPrice) {
+                    return NextResponse.json({ error: "You can only approve a priced order." }, { status: 403 });
+                }
+            }
+        } else if (!isAdmin && Object.keys(validatedData).length > 0) {
+            // No status change but other updates attempted by non-admin
+            if (currentOrder.customerId !== session.user.id) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+            }
         }
         // Auto-set status to PRICED when price is entered and current status is PENDING
         // Only if user didn't manually change the status (status is same as current)

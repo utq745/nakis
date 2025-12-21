@@ -243,7 +243,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-white text-lg flex items-center gap-2">
                         <FileText className="h-5 w-5 text-violet-400" />
-                        {t.orders.wilcomUpload}
+                        {isAdmin ? t.orders.wilcomUpload : (language === 'tr' ? 'Tasarım Detayları' : 'Design Details')}
                     </CardTitle>
                     <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />

@@ -7,6 +7,7 @@ export interface SafeUser {
     email: string;
     name: string | null;
     role: Role;
+    billingAddress: string | null;
     createdAt: Date;
 }
 

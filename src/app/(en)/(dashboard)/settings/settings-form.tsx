@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,6 +40,9 @@ const texts = {
         turkish: "Türkçe",
         languageUpdated: "Language preference saved",
         updateLanguage: "Update Language",
+        billingTitle: "Billing Address",
+        billingDesc: "Provide your address for invoices.",
+        billingPlaceholder: "Street, city, country...",
     },
     tr: {
         profileTitle: "Profil Bilgileri",
@@ -63,6 +67,9 @@ const texts = {
         turkish: "Türkçe",
         languageUpdated: "Dil tercihi kaydedildi",
         updateLanguage: "Dili Güncelle",
+        billingTitle: "Fatura Adresi",
+        billingDesc: "Faturalarınız için adres bilgilerinizi girin.",
+        billingPlaceholder: "Sokak, mahalle, şehir...",
     },
 };
 
@@ -78,13 +85,13 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
         setIsLoading(true);
 
         const formData = new FormData(e.currentTarget);
-        const name = formData.get("name") as string;
+        const billingAddress = formData.get("billingAddress") as string;
 
         try {
             const response = await fetch("/api/user/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ billingAddress }),
             });
 
             if (!response.ok) throw new Error("Failed to update profile");
@@ -186,9 +193,21 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 <Input
                                     id="name"
                                     name="name"
-                                    defaultValue={user?.name || ""}
-                                    className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                    value={user?.name || ""}
+                                    disabled
+                                    className="bg-zinc-800/50 border-zinc-700 text-zinc-400"
                                 />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="billingAddress" className="text-zinc-300">{t.billingTitle}</Label>
+                                <Textarea
+                                    id="billingAddress"
+                                    name="billingAddress"
+                                    defaultValue={user?.billingAddress || ""}
+                                    placeholder={t.billingPlaceholder}
+                                    className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 min-h-[100px]"
+                                />
+                                <p className="text-xs text-zinc-500">{t.billingDesc}</p>
                             </div>
                         </div>
                         <div className="flex justify-end">
@@ -298,6 +317,6 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     );
 }

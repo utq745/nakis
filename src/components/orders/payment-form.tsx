@@ -24,14 +24,16 @@ interface PaymentFormProps {
     orderTitle: string;
     price: number;
     locale: "en" | "tr";
+    initialBillingAddress?: string;
 }
 
-export function PaymentForm({ orderId, orderTitle, price, locale }: PaymentFormProps) {
+export function PaymentForm({ orderId, orderTitle, price, locale, initialBillingAddress }: PaymentFormProps) {
     const router = useRouter();
     const { t } = useLanguage();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [billingType, setBillingType] = useState<"individual" | "corporate">("individual");
+    const [address, setAddress] = useState(initialBillingAddress || "");
 
     // Card State
     const [cardNumber, setCardNumber] = useState("");
@@ -189,7 +191,14 @@ export function PaymentForm({ orderId, orderTitle, price, locale }: PaymentFormP
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="md:col-span-2 space-y-2">
                                     <Label htmlFor="address" className="text-zinc-300">{t.payment.address}</Label>
-                                    <Input id="address" required placeholder={t.payment.addressPlaceholder} className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500" />
+                                    <Input
+                                        id="address"
+                                        required
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        placeholder={t.payment.addressPlaceholder}
+                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="zipCode" className="text-zinc-300">{t.payment.zipCode}</Label>

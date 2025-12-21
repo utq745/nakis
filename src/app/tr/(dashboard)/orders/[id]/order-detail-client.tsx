@@ -22,11 +22,13 @@ import {
     Download,
     Upload,
     Loader2,
+    CheckCircle2,
     Image as ImageIcon,
     ChevronDown,
     CreditCard,
     Lock,
     Trash2,
+    Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -230,6 +232,31 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
+    async function handleApprovePrice() {
+        setIsUpdating(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    status: "IN_PROGRESS",
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Onay başarısız");
+            }
+
+            toast.success("Fiyat onaylandı, sipariş işleme alındı.");
+            router.refresh();
+        } catch (error) {
+            toast.error("İşlem sırasında hata oluştu");
+            console.error(error);
+        } finally {
+            setIsUpdating(false);
+        }
+    }
+
     const formattedComments = order.comments.map((c) => ({
         ...c,
         createdAt: c.createdAt.toISOString(),
@@ -255,6 +282,37 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Price Approval Banner for Customer */}
+            {!isAdmin && status === "PRICED" && (
+                <Card className="border-blue-500/50 bg-blue-500/05 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                    <CheckCircle2 className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white">
+                                        {t.orders.priceReceivedTitle}
+                                    </h3>
+                                    <p className="text-sm text-zinc-400">
+                                        {t.orders.priceReceivedDesc?.replace('{price}', `$${Number(order.price).toLocaleString("en-US")}`)}
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={handleApprovePrice}
+                                disabled={isUpdating}
+                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white gap-2"
+                            >
+                                {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                {t.orders.approvePrice}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Payment Banner for Customer */}
             {!isAdmin && status === "PAYMENT_PENDING" && (
@@ -297,7 +355,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             <Tabs defaultValue="original" className="w-full">
                                 <TabsList className="bg-zinc-800 w-full justify-start">
                                     <TabsTrigger value="original" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
-                                        Orijinal ({originalFiles.length})
+                                        Müşteri Dosyaları ({originalFiles.length})
                                     </TabsTrigger>
                                     <TabsTrigger value="preview" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
                                         Önizleme ({previewFiles.length})
@@ -681,22 +739,35 @@ function FileList({
                         </div>
                         <div className="flex items-center gap-1">
                             {!isLocked && (
-                                <a href={file.url} target="_blank" rel="noopener noreferrer">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
-                                    >
-                                        <Download className="h-4 w-4" />
-                                    </Button>
-                                </a>
+                                <>
+                                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                                            title="Önizle"
+                                        >
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                    </a>
+                                    <a href={file.url} download>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                            title="İndir"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </a>
+                                </>
                             )}
                             {isAdmin && canDelete && onDelete && (
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => onDelete(file.id)}
-                                    className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all duration-300"
+                                    className="text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
