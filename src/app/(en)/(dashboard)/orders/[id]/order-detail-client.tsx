@@ -27,6 +27,7 @@ import {
     CreditCard,
     Lock,
     Trash2,
+    Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -136,6 +137,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState<string | null>(null);
     const [isDeletingFile, setIsDeletingFile] = useState(false);
+    const [isApprovingPrice, setIsApprovingPrice] = useState(false);
+    const [isApprovingPreview, setIsApprovingPreview] = useState(false);
+    const [isSendingPreview, setIsSendingPreview] = useState(false);
+    const [hasNewPreviewFiles, setHasNewPreviewFiles] = useState(false);
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
@@ -223,12 +228,87 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             }
 
             toast.success(t.orders.uploadSuccess);
+            if (type === "preview") {
+                setHasNewPreviewFiles(true);
+            }
             router.refresh();
         } catch (error) {
             toast.error(t.orders.uploadError);
             console.error(error);
         } finally {
             setIsUploading(false);
+        }
+    }
+
+    async function handlePriceApproval() {
+        setIsApprovingPrice(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "IN_PROGRESS" }),
+            });
+
+            if (!response.ok) throw new Error("Failed to approve price");
+
+            toast.success(t.orders.priceApproved);
+            // Small delay to let user see the success message
+            setTimeout(() => {
+                router.refresh();
+                setIsApprovingPrice(false);
+            }, 500);
+        } catch (error) {
+            toast.error(t.orders.updateError);
+            console.error(error);
+            setIsApprovingPrice(false);
+        }
+    }
+
+    async function handlePreviewApproval() {
+        setIsApprovingPreview(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "IN_PROGRESS" }),
+            });
+
+            if (!response.ok) throw new Error("Failed to approve preview");
+
+            toast.success(t.orders.previewApproved);
+            // Small delay to let user see the success message
+            setTimeout(() => {
+                router.refresh();
+                setIsApprovingPreview(false);
+            }, 500);
+        } catch (error) {
+            toast.error(t.orders.updateError);
+            console.error(error);
+            setIsApprovingPreview(false);
+        }
+    }
+
+    async function handleSendPreview() {
+        setIsSendingPreview(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "APPROVAL_AWAITING" }),
+            });
+
+            if (!response.ok) throw new Error("Failed to send preview");
+
+            toast.success(t.orders.previewSent);
+            setHasNewPreviewFiles(false); // Reset after sending
+            setTimeout(() => {
+                router.refresh();
+                setIsSendingPreview(false);
+            }, 500);
+        } catch (error) {
+            toast.error(t.orders.updateError);
+            console.error(error);
+            setIsSendingPreview(false);
         }
     }
 
@@ -290,6 +370,89 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
+            {/* Price Approval Banner for Customer */}
+            {!isAdmin && status === "PRICED" && order.price && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                    <CreditCard className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white">
+                                        {t.orders.priceApprovalTitle}
+                                    </h3>
+                                    <p className="text-sm text-zinc-400">
+                                        {t.orders.priceApprovalDesc}
+                                    </p>
+                                    <p className="text-2xl font-bold text-blue-400 mt-2">
+                                        ${Number(order.price).toLocaleString("en-US")}
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={handlePriceApproval}
+                                disabled={isApprovingPrice}
+                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white gap-2"
+                            >
+                                {isApprovingPrice ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        {t.common.loading}
+                                    </>
+                                ) : (
+                                    <>
+                                        <CreditCard className="h-4 w-4" />
+                                        {t.orders.approvePrice}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Preview Approval Banner for Customer */}
+            {!isAdmin && status === "APPROVAL_AWAITING" && (
+                <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-orange-500/20 text-orange-400">
+                                    <ImageIcon className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white">
+                                        {t.orders.previewApprovalTitle}
+                                    </h3>
+                                    <p className="text-sm text-zinc-400">
+                                        {t.orders.previewApprovalDesc}
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={handlePreviewApproval}
+                                disabled={isApprovingPreview}
+                                className="w-full md:w-auto bg-orange-600 hover:bg-orange-500 text-white gap-2"
+                            >
+                                {isApprovingPreview ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        {t.common.loading}
+                                    </>
+                                ) : (
+                                    <>
+                                        <ImageIcon className="h-4 w-4" />
+                                        {t.orders.approvePreview}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
@@ -322,14 +485,22 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     />
                                 </TabsContent>
                                 <TabsContent value="preview" className="mt-4 space-y-4">
-                                    <FileList
-                                        files={previewFiles}
-                                        showPreview
-                                        emptyText={t.orders.noFiles}
-                                        isAdmin={isAdmin}
-                                        onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
-                                    />
+                                    {(isAdmin || status === "APPROVAL_AWAITING") && (
+                                        <FileList
+                                            files={previewFiles}
+                                            showPreview
+                                            emptyText={t.orders.noFiles}
+                                            isAdmin={isAdmin}
+                                            onDelete={handleDeleteFile}
+                                            canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                        />
+                                    )}
+                                    {!isAdmin && status !== "APPROVAL_AWAITING" && previewFiles.length > 0 && (
+                                        <div className="text-center py-8 text-zinc-500">
+                                            <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                            <p>Preview files are being prepared by admin</p>
+                                        </div>
+                                    )}
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-zinc-800">
                                             <Label className="text-zinc-300 text-sm">
@@ -343,23 +514,44 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 id="preview-upload"
                                                 disabled={isUploading}
                                             />
-                                            <label htmlFor="preview-upload">
-                                                <Button
-                                                    asChild
-                                                    variant="outline"
-                                                    className="mt-2 border-violet-500 bg-violet-600 text-white hover:bg-violet-500 hover:text-white"
-                                                    disabled={isUploading}
-                                                >
-                                                    <span>
-                                                        {isUploading ? (
-                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            <div className="flex items-center justify-between gap-3 mt-2">
+                                                <label htmlFor="preview-upload" className="flex-1">
+                                                    <Button
+                                                        asChild
+                                                        variant="outline"
+                                                        className="w-full border-violet-500 bg-violet-600 text-white hover:bg-violet-500 hover:text-white"
+                                                        disabled={isUploading}
+                                                    >
+                                                        <span>
+                                                            {isUploading ? (
+                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            ) : (
+                                                                <Upload className="mr-2 h-4 w-4" />
+                                                            )}
+                                                            {t.orders.uploadPreview}
+                                                        </span>
+                                                    </Button>
+                                                </label>
+                                                {hasNewPreviewFiles && (
+                                                    <Button
+                                                        onClick={handleSendPreview}
+                                                        disabled={isSendingPreview}
+                                                        className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white"
+                                                    >
+                                                        {isSendingPreview ? (
+                                                            <>
+                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                {t.common.loading}
+                                                            </>
                                                         ) : (
-                                                            <Upload className="mr-2 h-4 w-4" />
+                                                            <>
+                                                                <Send className="mr-2 h-4 w-4" />
+                                                                {t.orders.sendPreview}
+                                                            </>
                                                         )}
-                                                        {t.orders.uploadPreview}
-                                                    </span>
-                                                </Button>
-                                            </label>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </TabsContent>
@@ -367,7 +559,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <FileList
                                         files={finalFiles}
                                         emptyText={t.orders.noFiles}
-                                        isLocked={!isAdmin && status === "PAYMENT_PENDING"}
+                                        isLocked={!isAdmin && status !== "COMPLETED"}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
                                         canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
@@ -410,13 +602,15 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Wilcom Design Data */}
-                    <WilcomSection
-                        orderId={order.id}
-                        wilcomData={order.wilcomData}
-                        isAdmin={isAdmin}
-                        status={order.status}
-                    />
+                    {/* Wilcom Design Data - Admin Only */}
+                    {isAdmin && (
+                        <WilcomSection
+                            orderId={order.id}
+                            wilcomData={order.wilcomData}
+                            isAdmin={isAdmin}
+                            status={order.status}
+                        />
+                    )}
 
                     {/* Comments */}
                     <Card className="bg-zinc-900 border-zinc-800">

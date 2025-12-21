@@ -12,8 +12,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Settings, User, Globe } from "lucide-react";
+import { LogOut, Settings, Globe, LayoutDashboard, Package } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
+import Link from "next/link";
 
 export function Header() {
     const { data: session } = useSession();
@@ -35,18 +36,7 @@ export function Header() {
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm px-6">
-            <div>
-                <h1 className="text-lg font-medium text-white">{t.common.welcome}</h1>
-                <p className="text-sm text-zinc-400">
-                    {new Date().toLocaleDateString(dateLocale, {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                    })}
-                </p>
-            </div>
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-end border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm px-6">
 
             <div className="flex items-center gap-2">
                 {/* Language Switcher */}
@@ -107,14 +97,24 @@ export function Header() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-zinc-800" />
-                            <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
-                                <User className="mr-2 h-4 w-4" />
-                                {t.common.profile}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
-                                <Settings className="mr-2 h-4 w-4" />
-                                {t.common.settings}
-                            </DropdownMenuItem>
+                            <Link href={language === 'tr' ? '/tr/dashboard' : '/dashboard'}>
+                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                                    {t.sidebar.dashboard}
+                                </DropdownMenuItem>
+                            </Link>
+                            <Link href={language === 'tr' ? '/tr/orders' : '/orders'}>
+                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                    <Package className="mr-2 h-4 w-4" />
+                                    {t.sidebar.orders}
+                                </DropdownMenuItem>
+                            </Link>
+                            <Link href={language === 'tr' ? '/tr/settings' : '/settings'}>
+                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    {t.common.settings}
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuSeparator className="bg-zinc-800" />
                             <DropdownMenuItem
                                 className="text-red-400 focus:text-red-300 focus:bg-zinc-800 cursor-pointer"

@@ -142,7 +142,10 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
             if (!res.ok) throw new Error('Publish failed');
             toast.success(t.orders.publishSuccess || 'Approval cards published to Final section!');
             setIsPublishDialogOpen(false);
-            router.refresh();
+
+            setTimeout(() => {
+                router.refresh();
+            }, 500);
         } catch (error) {
             toast.error(t.orders.publishError || 'Failed to publish cards');
         } finally {
@@ -433,7 +436,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                 onClick={() => setIsPublishDialogOpen(true)}
                             >
                                 <Send className="h-4 w-4" />
-                                {t.orders.publish}
+                                {t.orders.send}
                             </Button>
                         </div>
                     )}
@@ -520,9 +523,9 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                 onConfirm={handlePublish}
                 isPending={isPublishing}
                 variant="default"
-                title={t.orders.publish || "Yayınla"}
+                title={t.orders.send || "Gönder"}
                 description={t.orders.wilcom.publishConfirm}
-                confirmText={t.orders.publish || "Yayınla"}
+                confirmText={t.orders.send || "Gönder"}
             />
 
             <ActionConfirmDialog

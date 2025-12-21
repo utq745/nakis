@@ -25,6 +25,11 @@ export default async function PaymentPage({
         },
     });
 
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { billingAddress: true }
+    }) as { billingAddress: string | null } | null;
+
     if (!order) redirect("/orders");
     if (order.customerId !== session.user.id) redirect("/orders");
     if (order.status !== "PAYMENT_PENDING") redirect(`/orders/${id}`);
@@ -49,6 +54,7 @@ export default async function PaymentPage({
                 orderTitle={order.title}
                 price={order.price || 0}
                 locale="en"
+                initialBillingAddress={user?.billingAddress || ""}
             />
         </div>
     );

@@ -95,10 +95,21 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             );
         });
 
+        // Sort function to prioritize PENDING and IN_PROGRESS for admin
+        const sortOrders = (orders: typeof filtered) => {
+            if (!isAdmin) return orders;
+            return [...orders].sort((a, b) => {
+                const aPriority = a.status === "PENDING" || a.status === "IN_PROGRESS" ? 1 : 0;
+                const bPriority = b.status === "PENDING" || b.status === "IN_PROGRESS" ? 1 : 0;
+                if (aPriority !== bPriority) return bPriority - aPriority;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+        };
+
         return {
-            allOrders: filtered.filter(
+            allOrders: sortOrders(filtered.filter(
                 (o) => o.status !== "COMPLETED" && o.status !== "CANCELLED" && !o.hidden
-            ),
+            )),
             completedOrders: filtered.filter(
                 (o) => o.status === "COMPLETED" && !o.hidden
             ),
@@ -107,7 +118,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             ),
             hiddenOrders: filtered.filter((o) => o.hidden),
         };
-    }, [localOrders, searchQuery]);
+    }, [localOrders, searchQuery, isAdmin]);
 
     async function toggleHidden(orderId: string, currentHidden: boolean) {
         try {
@@ -132,15 +143,26 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
 
     function OrderCard({ order }: { order: Order }) {
         const needsPrice = order.status === "PENDING" && !order.price;
+        const isPriced = !isAdmin && order.status === "PRICED";
+        const isAwaitingApproval = !isAdmin && order.status === "APPROVAL_AWAITING";
+        const isPaymentPending = !isAdmin && order.status === "PAYMENT_PENDING";
+        const isOrangeAlert = isAwaitingApproval || isPaymentPending;
+        const isAdminPriority = isAdmin && (order.status === "PENDING" || order.status === "IN_PROGRESS");
         const basePath = locale === "tr" ? "/tr" : "";
 
         return (
             <div className="relative group">
                 <Link href={`${basePath}/orders/${order.id}`}>
                     <Card
-                        className={`border transition-colors cursor-pointer ${needsPrice
-                            ? "bg-amber-950/30 border-amber-700/50 hover:border-amber-600"
-                            : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
+                        className={`border transition-all cursor-pointer ${isPriced
+                            ? "bg-blue-950/30 border-blue-500/50 hover:border-blue-400 shadow-lg shadow-blue-500/10 animate-pulse"
+                            : isOrangeAlert
+                                ? "bg-orange-950/30 border-orange-500/50 hover:border-orange-400 shadow-lg shadow-orange-500/10 animate-pulse"
+                                : isAdminPriority
+                                    ? "bg-violet-950/30 border-violet-500/50 hover:border-violet-400 shadow-lg shadow-violet-500/10 animate-pulse"
+                                    : needsPrice
+                                        ? "bg-amber-950/30 border-amber-700/50 hover:border-amber-600"
+                                        : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
                             }`}
                     >
                         <CardContent className="py-3 px-4">
@@ -153,21 +175,38 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                         <span className="text-xs font-mono text-zinc-500">
                                             #{order.id.slice(0, 8)}
                                         </span>
-                                        <Badge
-                                            className={`text-xs ${ORDER_STATUS_COLORS[
-                                                order.status as keyof typeof ORDER_STATUS_COLORS
-                                            ]
-                                                }`}
-                                        >
-                                            {
-                                                statusLabels[
-                                                order.status as keyof typeof statusLabels
+                                        {!isPriced && !isOrangeAlert && (
+                                            <Badge
+                                                className={`text-xs ${ORDER_STATUS_COLORS[
+                                                    order.status as keyof typeof ORDER_STATUS_COLORS
                                                 ]
-                                            }
-                                        </Badge>
+                                                    } ${isAdminPriority ? "animate-pulse" : ""}`}
+                                            >
+                                                {
+                                                    statusLabels[
+                                                    order.status as keyof typeof statusLabels
+                                                    ]
+                                                }
+                                            </Badge>
+                                        )}
                                         {needsPrice && (
                                             <Badge className="bg-amber-600 text-white text-xs">
                                                 {t.needsPrice}
+                                            </Badge>
+                                        )}
+                                        {isPriced && (
+                                            <Badge className="bg-blue-600 text-white text-xs animate-pulse">
+                                                💰 {locale === "tr" ? "Onay Bekliyor" : "Awaiting Approval"}
+                                            </Badge>
+                                        )}
+                                        {isAwaitingApproval && (
+                                            <Badge className="bg-orange-600 text-white text-xs animate-pulse">
+                                                🖼️ {locale === "tr" ? "Önizleme Onayı" : "Preview Approval"}
+                                            </Badge>
+                                        )}
+                                        {isPaymentPending && (
+                                            <Badge className="bg-orange-600 text-white text-xs animate-pulse">
+                                                💳 {locale === "tr" ? "Ödeme Bekleniyor" : "Payment Pending"}
                                             </Badge>
                                         )}
                                         {isAdmin && (
@@ -179,7 +218,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                 </div>
                                 <div className="text-right shrink-0">
                                     {order.price && (
-                                        <p className="text-sm font-medium text-violet-400">
+                                        <p className={`text-sm font-medium ${isPriced ? "text-blue-400 font-bold" : isOrangeAlert ? "text-orange-400 font-bold" : "text-violet-400"}`}>
                                             ${Number(order.price).toLocaleString("en-US")}
                                         </p>
                                     )}

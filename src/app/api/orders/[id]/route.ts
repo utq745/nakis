@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "REVISION", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "APPROVAL_AWAITING", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
 });
@@ -57,13 +57,13 @@ export async function GET(
         // Transform file URLs in comments to use API endpoint
         const transformedOrder = {
             ...order,
-            files: order.files.map(file => ({
+            files: order.files.map((file: any) => ({
                 ...file,
                 url: `/api/files/${file.id}`,
             })),
-            comments: order.comments.map(comment => ({
+            comments: order.comments.map((comment: any) => ({
                 ...comment,
-                attachments: comment.files.map(file => ({
+                attachments: comment.files.map((file: any) => ({
                     ...file,
                     url: `/api/files/${file.id}`,
                 })),
@@ -115,15 +115,17 @@ export async function PATCH(
         // Status update rules:
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             if (!isAdmin) {
-                // Customer can ONLY transition from PRICED to IN_PROGRESS (Approval)
+                // Customer can transition from PRICED to IN_PROGRESS (price approval)
+                // OR from APPROVAL_AWAITING to IN_PROGRESS (preview approval)
                 const isAcceptingPrice = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
+                const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
 
                 if (currentOrder.customerId !== session.user.id) {
                     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
                 }
 
-                if (!isAcceptingPrice) {
-                    return NextResponse.json({ error: "You can only approve a priced order." }, { status: 403 });
+                if (!isAcceptingPrice && !isAcceptingPreview) {
+                    return NextResponse.json({ error: "You can only approve a priced order or preview." }, { status: 403 });
                 }
             }
         } else if (!isAdmin && Object.keys(validatedData).length > 0) {
@@ -156,7 +158,7 @@ export async function PATCH(
                 PENDING: { en: "Pending", tr: "Beklemede" },
                 PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
                 IN_PROGRESS: { en: "In Progress", tr: "İşleniyor" },
-                REVISION: { en: "Revision", tr: "Revizyon" },
+                APPROVAL_AWAITING: { en: "Awaiting Approval", tr: "Onay Bekleniyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },

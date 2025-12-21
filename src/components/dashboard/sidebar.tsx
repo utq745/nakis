@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -12,16 +13,22 @@ import {
     Users,
     FileText,
     Sparkles,
+    Home,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/providers/language-provider";
+import { useSidebar } from "@/components/providers/sidebar-provider";
 
 export function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
     const { t, language } = useLanguage();
+    const { isCollapsed, toggle } = useSidebar();
 
     const prefix = language === 'tr' ? '/tr' : '';
+    const homeUrl = language === 'tr' ? '/tr' : '/';
 
     const customerNav = [
         {
@@ -77,20 +84,31 @@ export function Sidebar() {
     const navItems = session?.user?.role === "ADMIN" ? adminNav : customerNav;
 
     return (
-        <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-zinc-900 border-r border-zinc-800">
+        <aside className={cn(
+            "fixed left-0 top-0 z-40 h-screen bg-zinc-900 border-r border-zinc-800 transition-all duration-300",
+            isCollapsed ? "w-16" : "w-64"
+        )}>
             <div className="flex h-full flex-col">
                 {/* Logo */}
-                <div className="flex h-16 items-center gap-2 border-b border-zinc-800 px-6">
-                    <div className="p-2 rounded-lg bg-gradient-to-tr from-violet-500 to-fuchsia-500">
+                <div className={cn(
+                    "flex h-16 items-center gap-2 border-b border-zinc-800 transition-all duration-300",
+                    isCollapsed ? "justify-center px-2" : "px-6"
+                )}>
+                    <div className="p-2 rounded-lg bg-gradient-to-tr from-violet-500 to-fuchsia-500 shrink-0">
                         <Sparkles className="h-5 w-5 text-white" />
                     </div>
-                    <span className="text-lg font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                        Nakış Digitizing
-                    </span>
+                    {!isCollapsed && (
+                        <span className="text-lg font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent whitespace-nowrap">
+                            Approval Stitch
+                        </span>
+                    )}
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 space-y-1 px-3 py-4">
+                <nav className={cn(
+                    "flex-1 space-y-1 py-4 transition-all duration-300",
+                    isCollapsed ? "px-2" : "px-3"
+                )}>
                     {navItems.map((item) => {
                         const isActive = pathname === item.href || pathname === item.href.replace('/tr', '');
                         return (
@@ -98,29 +116,108 @@ export function Sidebar() {
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+                                    "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all group relative",
+                                    isCollapsed ? "justify-center px-2" : "px-3",
                                     isActive
                                         ? "bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white border border-violet-500/30"
                                         : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
                                 )}
                             >
-                                <item.icon className={cn("h-5 w-5", isActive && "text-violet-400")} />
-                                {item.title}
+                                <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", isActive && "text-violet-400")} />
+                                {!isCollapsed && item.title}
+
+                                {/* Custom Tooltip */}
+                                {isCollapsed && (
+                                    <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                        {item.title}
+                                    </div>
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
                 {/* Footer */}
-                <div className="border-t border-zinc-800 p-4">
-                    <div className="rounded-lg bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 p-4 border border-violet-500/20">
-                        <p className="text-xs text-zinc-400 mb-2">
-                            {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
-                        </p>
-                        <p className="text-sm text-white truncate">
-                            {session?.user?.name || session?.user?.email}
-                        </p>
+                <div className={cn(
+                    "border-t border-zinc-800 transition-all duration-300",
+                    isCollapsed ? "p-2" : "p-4"
+                )}>
+                    {/* User Info */}
+                    <div className={cn(
+                        "rounded-lg bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 transition-all duration-300",
+                        isCollapsed ? "p-2" : "p-4"
+                    )}>
+                        {!isCollapsed ? (
+                            <>
+                                <p className="text-xs text-zinc-400 mb-2">
+                                    {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
+                                </p>
+                                <p className="text-sm text-white truncate">
+                                    {session?.user?.name || session?.user?.email}
+                                </p>
+                            </>
+                        ) : (
+                            <div className="flex justify-center group relative">
+                                <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center transition-transform group-hover:scale-110">
+                                    <span className="text-xs text-violet-400 font-bold">
+                                        {(session?.user?.name || session?.user?.email || "U")[0].toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                    {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
+                                </div>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Back to Site Button */}
+                    <Link href={homeUrl} className="block mt-3">
+                        <Button
+                            variant="ghost"
+                            className={cn(
+                                "w-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors group relative",
+                                isCollapsed ? "justify-center px-2" : "justify-start"
+                            )}
+                        >
+                            <Home className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
+                            {!isCollapsed && (
+                                <span className="ml-2">{language === 'tr' ? 'Siteye Dön' : 'Back to Site'}</span>
+                            )}
+                            {isCollapsed && (
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                    {language === 'tr' ? 'Siteye Dön' : 'Back to Site'}
+                                </div>
+                            )}
+                        </Button>
+                    </Link>
+                </div>
+
+                {/* Collapse Button */}
+                <div className="border-t border-zinc-800 p-2">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggle}
+                        className="w-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors group relative"
+                    >
+                        {isCollapsed ? (
+                            <>
+                                <ChevronRight className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                    {language === 'tr' ? 'Genişlet' : 'Expand'}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <ChevronLeft className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
+                                <span>{language === 'tr' ? 'Daralt' : 'Collapse'}</span>
+                            </>
+                        )}
+                    </Button>
                 </div>
             </div>
         </aside>

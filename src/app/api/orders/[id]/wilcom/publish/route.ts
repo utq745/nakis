@@ -75,14 +75,28 @@ export async function POST(
             }
         }
 
-        // Create a system comment
-        await prisma.comment.create({
-            data: {
-                content: `🚀 Approval cards published to Final section. | 🚀 Onay kartları Final bölümüne gönderildi.`,
-                orderId,
-                userId: session.user.id,
-                isSystem: true,
-            },
+        // Update order status to PAYMENT_PENDING
+        await prisma.order.update({
+            where: { id: orderId },
+            data: { status: "PAYMENT_PENDING" },
+        });
+
+        // Create system comments
+        await prisma.comment.createMany({
+            data: [
+                {
+                    content: `🚀 Approval cards published to Final section. | 🚀 Onay kartları Final bölümüne gönderildi.`,
+                    orderId,
+                    userId: session.user.id,
+                    isSystem: true,
+                },
+                {
+                    content: `📋 Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`,
+                    orderId,
+                    userId: session.user.id,
+                    isSystem: true,
+                }
+            ],
         });
 
         return NextResponse.json({ success: true });

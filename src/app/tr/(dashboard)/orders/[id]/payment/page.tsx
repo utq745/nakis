@@ -25,10 +25,11 @@ export default async function PaymentPage({
         },
     });
 
+    // Refreshing billingAddress check
     const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { billingAddress: true }
-    });
+    }) as { billingAddress: string | null } | null;
 
     if (!order) redirect("/tr/orders");
     if (order.customerId !== session.user.id) redirect("/tr/orders");

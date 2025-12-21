@@ -175,7 +175,7 @@ export default function NewOrderPage() {
                                                 size="icon"
                                                 onClick={() => removeFile(index)}
                                                 disabled={isLoading}
-                                                className="text-zinc-400 hover:text-red-400"
+                                                className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
