@@ -112,7 +112,7 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <Badge className={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
-                                            {t.status[order.status as OrderStatus] || order.status}
+                                            {(t.status as any)[order.status] || order.status}
                                         </Badge>
                                         <span className="text-sm text-zinc-500">
                                             {new Date(order.createdAt).toLocaleDateString(dateLocale)}

@@ -290,6 +290,7 @@ export const translations = {
             PAYMENT_PENDING: "Ödeme Bekleniyor",
             COMPLETED: "Tamamlandı",
             CANCELLED: "İptal",
+            APPROVAL_AWAITING: "Onay Bekleniyor",
         },
         contactPage: {
             title: "İletişim / Sipariş",
@@ -661,6 +662,7 @@ export const translations = {
             PAYMENT_PENDING: "Payment Pending",
             COMPLETED: "Completed",
             CANCELLED: "Cancelled",
+            APPROVAL_AWAITING: "Awaiting Approval",
         },
         contactPage: {
             title: "Contact / Order",
