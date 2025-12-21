@@ -1,5 +1,7 @@
-FROM node:20-slim
+# Base stage for dependencies
+FROM node:20-slim AS base
 
+# Install system dependencies needed for both build and runtime
 RUN apt-get update && apt-get install -y \
     openssl \
     libnss3 \
@@ -22,25 +24,58 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Install Python dependencies globally
 RUN pip3 install --no-cache-dir pymupdf pillow --break-system-packages
 
+# --- Dependencies Stage ---
+FROM base AS deps
 WORKDIR /app
 
-# Install dependencies
+# Copy lockfiles and install dependencies
 COPY package*.json ./
-RUN npm install
+# Use npm ci for faster, more reliable installs in CI/Docker
+RUN npm ci
 
-# Copy project files
+# --- Builder Stage ---
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build the application
+# Build Next.js
+# Note: Ensure next.config.ts has output: 'standalone' for best results
+ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
+
+# --- Runner Stage ---
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files from builder
+# We use standalone mode to only include what's needed for runtime
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Ensure the uploads directory exists and has correct permissions
+RUN mkdir -p uploads && chown nextjs:nodejs uploads
+
+USER nextjs
 
 EXPOSE 3000
 
-# Start server
-CMD ["npm", "start"]
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+# Start server using the standalone server.js
+CMD ["node", "server.js"]
