@@ -40,10 +40,11 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Generate Prisma client
+# Copy prisma folder and generate client FIRST for better caching
+COPY prisma ./prisma/
 RUN npx prisma generate
+# Now copy the rest of the files
+COPY . .
 
 # Build Next.js
 # Note: Ensure next.config.ts has output: 'standalone' for best results
