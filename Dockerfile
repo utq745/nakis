@@ -67,6 +67,9 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy prisma folder for migrations and scripts for admin tools
+COPY --from=builder /app/prisma ./prisma/
+COPY --from=builder /app/scripts ./scripts/
 
 # Ensure the uploads directory exists and has correct permissions
 RUN mkdir -p uploads && chown nextjs:nodejs uploads
