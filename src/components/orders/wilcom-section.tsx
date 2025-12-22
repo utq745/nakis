@@ -26,6 +26,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { type OrderStatus } from "@/types";
 import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
 import { cn } from "@/lib/utils";
+import { UploadOverlay } from "@/components/ui/upload-overlay";
 
 interface WilcomColor {
     code: string;
@@ -90,7 +91,6 @@ function getContrastColor(hexColor: string): string {
     return brightness > 128 ? '#000000' : '#FFFFFF';
 }
 
-// WilcomSection component for displaying and managing Wilcom design data with multi-language support
 export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSectionProps) {
     const router = useRouter();
     const { t, language } = useLanguage();
@@ -133,7 +133,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
         } finally {
             setIsUploading(false);
         }
-    }, [orderId, router]);
+    }, [orderId, router, language]);
 
     const handlePublish = async () => {
         setIsPublishing(true);
@@ -171,351 +171,323 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
         }
     };
 
-    // If no wilcom data and user is admin, show upload prompt
-    if (!wilcomData && isAdmin) {
-        return (
-            <Card className="bg-zinc-900 border-zinc-800">
-                <CardHeader>
-                    <CardTitle className="text-white text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-violet-400" />
-                        {t.orders.wilcomUpload}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center">
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="p-4 rounded-full bg-violet-500/10">
-                                <Upload className="h-8 w-8 text-violet-400" />
-                            </div>
-                            <div>
-                                <h3 className="text-white font-medium mb-1">
-                                    {t.orders.wilcom.uploadTitle}
-                                </h3>
-                                <p className="text-sm text-zinc-400">
-                                    {t.orders.wilcom.uploadDesc}
-                                </p>
-                            </div>
-                            <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="wilcom-upload"
-                                disabled={isUploading}
-                            />
-                            <label htmlFor="wilcom-upload">
-                                <Button
-                                    asChild
-                                    className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
-                                    disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
-                                >
-                                    <span>
-                                        {isUploading ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                {t.orders.wilcom.processing}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Upload className="mr-2 h-4 w-4" />
-                                                {t.orders.wilcom.selectPdf}
-                                            </>
-                                        )}
-                                    </span>
-                                </Button>
-                            </label>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    // If no wilcom data and user is not admin
-    if (!wilcomData) {
-        return null;
-    }
-
-    // Convert mm to inches for display
-    const heightInches = (wilcomData.heightMm / 25.4).toFixed(2);
-    const widthInches = (wilcomData.widthMm / 25.4).toFixed(2);
-
     return (
         <Card className="bg-zinc-900 border-zinc-800">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-white text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-violet-400" />
-                        {isAdmin ? t.orders.wilcomUpload : (language === 'tr' ? 'Tasarım Detayları' : 'Design Details')}
-                    </CardTitle>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        {t.orders.wilcom.processed}
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {/* Design Info Summary */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-1">{t.orders.wilcom.designName}</div>
-                        <div className="text-white font-medium text-sm">{wilcomData.designName}</div>
-                    </div>
-                    <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Ruler className="h-3 w-3" /> {t.orders.wilcom.size}
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                            {widthInches}" × {heightInches}"
-                        </div>
-                    </div>
-                    <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Scissors className="h-3 w-3" /> {t.orders.wilcom.stitches}
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                            {new Intl.NumberFormat(language === 'tr' ? 'tr-TR' : 'en-US').format(wilcomData.stitchCount)}
-                        </div>
-                    </div>
-                    <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
-                            <Clock className="h-3 w-3" /> {t.orders.wilcom.runtime}
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                            {wilcomData.machineRuntime || t.common.notAvailable}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Color Preview */}
-                <div className="bg-zinc-800/50 rounded-lg p-3">
-                    <div className="text-xs text-zinc-400 mb-2 flex items-center gap-1">
-                        <Palette className="h-3 w-3" /> {t.orders.wilcom.colors} ({wilcomData.colorCount})
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                        {wilcomData.colors.map((color, index) => (
-                            <div
-                                key={`${color.code}-${index}`}
-                                className="flex items-center gap-1 px-2 py-1 rounded text-xs"
-                                style={{ backgroundColor: color.hex, color: getContrastColor(color.hex) }}
-                                title={`${color.name} (${color.code})`}
-                            >
-                                <span className="font-semibold">{color.code}</span>
-                                <span>{color.name}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Design Image */}
-                {wilcomData.designImageUrl && (
-                    <div className="bg-zinc-800/50 rounded-lg p-3">
-                        <div className="text-xs text-zinc-400 mb-2">{t.orders.wilcom.designPreview}</div>
-                        <div className="flex justify-center bg-white/5 rounded-lg p-4">
-                            <img
-                                src={`${wilcomData.designImageUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
-                                alt="Design Preview"
-                                className="max-w-full max-h-48 object-contain"
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap items-center gap-2 pt-2">
-                    <div className="flex flex-wrap gap-2">
-                        {/* Customer Approval Card - visible to everyone */}
-                        {wilcomData.customerApprovalPdf && (
-                            <a
-                                href={`${wilcomData.customerApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
-                                >
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    {t.orders.wilcom.customerCard}
-                                </Button>
-                            </a>
-                        )}
-
-                        {/* Operator Approval Card - admin only */}
-                        {isAdmin && wilcomData.operatorApprovalPdf && (
-                            <a
-                                href={`${wilcomData.operatorApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
-                                >
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    {t.orders.wilcom.operatorCard}
-                                </Button>
-                            </a>
-                        )}
-
-                        {/* Original Wilcom PDF - admin only */}
-                        {isAdmin && wilcomData.wilcomPdfUrl && (
-                            <a
-                                href={`${wilcomData.wilcomPdfUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                                >
-                                    <Download className="mr-2 h-4 w-4" />
-                                    {t.orders.wilcom.originalPdf}
-                                </Button>
-                            </a>
-                        )}
-
-                        {/* Re-upload button - admin only */}
-                        {isAdmin && (
-                            <>
+            <UploadOverlay
+                isVisible={isUploading}
+                message={language === 'tr' ? "Wilcom dosyası işleniyor..." : "Processing Wilcom file..."}
+            />
+            {/* If no wilcom data and user is admin, show upload prompt */}
+            {!wilcomData && isAdmin ? (
+                <>
+                    <CardHeader>
+                        <CardTitle className="text-white text-lg flex items-center gap-2">
+                            <FileText className="h-5 w-5 text-violet-400" />
+                            {t.orders.wilcomUpload}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center">
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="p-4 rounded-full bg-violet-500/10">
+                                    <Upload className="h-8 w-8 text-violet-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-medium mb-1">
+                                        {t.orders.wilcom.uploadTitle}
+                                    </h3>
+                                    <p className="text-sm text-zinc-400">
+                                        {t.orders.wilcom.uploadDesc}
+                                    </p>
+                                </div>
                                 <input
                                     type="file"
                                     accept=".pdf"
                                     onChange={handleFileUpload}
                                     className="hidden"
-                                    id="wilcom-reupload"
+                                    id="wilcom-upload"
                                     disabled={isUploading}
                                 />
-                                <label htmlFor="wilcom-reupload">
+                                <label htmlFor="wilcom-upload">
                                     <Button
                                         asChild
-                                        variant="outline"
-                                        size="sm"
-                                        className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                        className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
                                         disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
                                     >
                                         <span>
-                                            {isUploading ? (
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <RefreshCw className="mr-2 h-4 w-4" />
-                                            )}
-                                            {t.orders.wilcom.reUpload}
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            {t.orders.wilcom.selectPdf}
                                         </span>
                                     </Button>
                                 </label>
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="bg-transparent border-red-900/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-600 transition-all"
-                                    disabled={isDeleting || status === "COMPLETED"}
-                                    onClick={() => setIsDeleteDialogOpen(true)}
-                                >
-                                    {isDeleting ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                    )}
-                                    {t.orders.wilcom.deleteWilcom}
-                                </Button>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Publish Button shifted to right */}
-                    {isAdmin && (
-                        <div className="ml-auto">
-                            <Button
-                                size="sm"
-                                disabled={status === "PAYMENT_PENDING" || status === "COMPLETED"}
-                                className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold transition-all shadow-lg shadow-violet-900/20 gap-2 disabled:opacity-50"
-                                onClick={() => setIsPublishDialogOpen(true)}
-                            >
-                                <Send className="h-4 w-4" />
-                                {t.orders.send}
-                            </Button>
+                            </div>
                         </div>
-                    )}
-                </div>
-
-                {/* Expandable Details - Admin only */}
-                {isAdmin && (
-                    <>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full mt-4 bg-zinc-800/30 hover:bg-zinc-800/70 text-zinc-400 hover:text-white border border-zinc-700/50 hover:border-zinc-600 transition-all"
-                            onClick={() => setShowDetails(!showDetails)}
-                        >
-                            {showDetails ? t.orders.wilcom.hideDetails : t.orders.wilcom.showDetails}
-                        </Button>
-
-                        {showDetails && (
-                            <div className="border-t border-zinc-800 pt-4 space-y-3">
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.machineFormat}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.machineFormat || t.common.notAvailable}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.colorChanges}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.colorChanges || 0}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.stops}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.stops || 0}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.trims}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.trims || 0}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.totalThread}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.totalThreadM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalThreadM ? 'm' : ''}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.totalBobbin}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.totalBobbinM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalBobbinM ? 'm' : ''}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.maxStitch}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.maxStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxStitchMm ? 'mm' : ''}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.minStitch}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.minStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.minStitchMm ? 'mm' : ''}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-zinc-500">{t.orders.wilcom.maxJump}:</span>
-                                        <span className="text-zinc-300 ml-2">{wilcomData.maxJumpMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxJumpMm ? 'mm' : ''}</span>
-                                    </div>
+                    </CardContent>
+                </>
+            ) : wilcomData ? (
+                <>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-white text-lg flex items-center gap-2">
+                                <FileText className="h-5 w-5 text-violet-400" />
+                                {isAdmin ? t.orders.wilcomUpload : (language === 'tr' ? 'Tasarım Detayları' : 'Design Details')}
+                            </CardTitle>
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                {t.orders.wilcom.processed}
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* Design Info Summary */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="bg-zinc-800/50 rounded-lg p-3">
+                                <div className="text-xs text-zinc-400 mb-1">{t.orders.wilcom.designName}</div>
+                                <div className="text-white font-medium text-sm">{wilcomData.designName}</div>
+                            </div>
+                            <div className="bg-zinc-800/50 rounded-lg p-3">
+                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                                    <Ruler className="h-3 w-3" /> {t.orders.wilcom.size}
                                 </div>
+                                <div className="text-white font-medium text-sm">
+                                    {(wilcomData.widthMm / 25.4).toFixed(2)}" × {(wilcomData.heightMm / 25.4).toFixed(2)}"
+                                </div>
+                            </div>
+                            <div className="bg-zinc-800/50 rounded-lg p-3">
+                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                                    <Scissors className="h-3 w-3" /> {t.orders.wilcom.stitches}
+                                </div>
+                                <div className="text-white font-medium text-sm">
+                                    {new Intl.NumberFormat(language === 'tr' ? 'tr-TR' : 'en-US').format(wilcomData.stitchCount)}
+                                </div>
+                            </div>
+                            <div className="bg-zinc-800/50 rounded-lg p-3">
+                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                                    <Clock className="h-3 w-3" /> {t.orders.wilcom.runtime}
+                                </div>
+                                <div className="text-white font-medium text-sm">
+                                    {wilcomData.machineRuntime || t.common.notAvailable}
+                                </div>
+                            </div>
+                        </div>
 
-                                {/* Color Sequence */}
-                                <div>
-                                    <div className="text-xs text-zinc-500 mb-2">{t.orders.wilcom.colorSequence}:</div>
-                                    <div className="flex flex-wrap gap-1">
-                                        {wilcomData.colorSequence.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border border-zinc-600"
-                                                style={{ backgroundColor: item.hex, color: getContrastColor(item.hex) }}
-                                                title={`Stop ${item.stop}: ${item.colorName} (${item.colorCode})`}
-                                            >
-                                                {index + 1}
-                                            </div>
-                                        ))}
+                        {/* Color Preview */}
+                        <div className="bg-zinc-800/50 rounded-lg p-3">
+                            <div className="text-xs text-zinc-400 mb-2 flex items-center gap-1">
+                                <Palette className="h-3 w-3" /> {t.orders.wilcom.colors} ({wilcomData.colorCount})
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                                {wilcomData.colors.map((color, index) => (
+                                    <div
+                                        key={`${color.code}-${index}`}
+                                        className="flex items-center gap-1 px-2 py-1 rounded text-xs"
+                                        style={{ backgroundColor: color.hex, color: getContrastColor(color.hex) }}
+                                        title={`${color.name} (${color.code})`}
+                                    >
+                                        <span className="font-semibold">{color.code}</span>
+                                        <span>{color.name}</span>
                                     </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Design Image */}
+                        {wilcomData.designImageUrl && (
+                            <div className="bg-zinc-800/50 rounded-lg p-3">
+                                <div className="text-xs text-zinc-400 mb-2">{t.orders.wilcom.designPreview}</div>
+                                <div className="flex justify-center bg-white/5 rounded-lg p-4">
+                                    <img
+                                        src={`${wilcomData.designImageUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                        alt="Design Preview"
+                                        className="max-w-full max-h-48 object-contain"
+                                    />
                                 </div>
                             </div>
                         )}
-                    </>
-                )}
-            </CardContent>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2 pt-2">
+                            <div className="flex flex-wrap gap-2">
+                                {wilcomData.customerApprovalPdf && (
+                                    <a
+                                        href={`${wilcomData.customerApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
+                                        >
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            {t.orders.wilcom.customerCard}
+                                        </Button>
+                                    </a>
+                                )}
+
+                                {isAdmin && wilcomData.operatorApprovalPdf && (
+                                    <a
+                                        href={`${wilcomData.operatorApprovalPdf}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
+                                        >
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            {t.orders.wilcom.operatorCard}
+                                        </Button>
+                                    </a>
+                                )}
+
+                                {isAdmin && wilcomData.wilcomPdfUrl && (
+                                    <a
+                                        href={`${wilcomData.wilcomPdfUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                        >
+                                            <Download className="mr-2 h-4 w-4" />
+                                            {t.orders.wilcom.originalPdf}
+                                        </Button>
+                                    </a>
+                                )}
+
+                                {isAdmin && (
+                                    <>
+                                        <input
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={handleFileUpload}
+                                            className="hidden"
+                                            id="wilcom-reupload"
+                                            disabled={isUploading}
+                                        />
+                                        <label htmlFor="wilcom-reupload">
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="sm"
+                                                className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                                disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                            >
+                                                <span>
+                                                    <RefreshCw className="mr-2 h-4 w-4" />
+                                                    {t.orders.wilcom.reUpload}
+                                                </span>
+                                            </Button>
+                                        </label>
+
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="bg-transparent border-red-900/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-600 transition-all"
+                                            disabled={isDeleting || status === "COMPLETED"}
+                                            onClick={() => setIsDeleteDialogOpen(true)}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            {t.orders.wilcom.deleteWilcom}
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+
+                            {isAdmin && (
+                                <div className="ml-auto">
+                                    <Button
+                                        size="sm"
+                                        disabled={status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                        className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold transition-all shadow-lg shadow-violet-900/20 gap-2 disabled:opacity-50"
+                                        onClick={() => setIsPublishDialogOpen(true)}
+                                    >
+                                        <Send className="h-4 w-4" />
+                                        {t.orders.send}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
+                        {isAdmin && (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full mt-4 bg-zinc-800/30 hover:bg-zinc-800/70 text-zinc-400 hover:text-white border border-zinc-700/50 hover:border-zinc-600 transition-all"
+                                    onClick={() => setShowDetails(!showDetails)}
+                                >
+                                    {showDetails ? t.orders.wilcom.hideDetails : t.orders.wilcom.showDetails}
+                                </Button>
+
+                                {showDetails && (
+                                    <div className="border-t border-zinc-800 pt-4 space-y-3">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.machineFormat}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.machineFormat || t.common.notAvailable}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.colorChanges}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.colorChanges || 0}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.stops}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.stops || 0}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.trims}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.trims || 0}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.totalThread}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.totalThreadM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalThreadM ? 'm' : ''}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.totalBobbin}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.totalBobbinM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalBobbinM ? 'm' : ''}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.maxStitch}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.maxStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxStitchMm ? 'mm' : ''}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.minStitch}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.minStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.minStitchMm ? 'mm' : ''}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-zinc-500">{t.orders.wilcom.maxJump}:</span>
+                                                <span className="text-zinc-300 ml-2">{wilcomData.maxJumpMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxJumpMm ? 'mm' : ''}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Color Sequence */}
+                                        <div>
+                                            <div className="text-xs text-zinc-500 mb-2">{t.orders.wilcom.colorSequence}:</div>
+                                            <div className="flex flex-wrap gap-1">
+                                                {wilcomData.colorSequence.map((item, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border border-zinc-600"
+                                                        style={{ backgroundColor: item.hex, color: getContrastColor(item.hex) }}
+                                                        title={`Stop ${item.stop}: ${item.colorName} (${item.colorCode})`}
+                                                    >
+                                                        {index + 1}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </CardContent>
+                </>
+            ) : null}
 
             <ActionConfirmDialog
                 isOpen={isPublishDialogOpen}

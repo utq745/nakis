@@ -9,6 +9,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Check } from "lucide-react";
 
 export function Header() {
     const { language, setLanguage, t } = useLanguage();
@@ -90,8 +91,25 @@ export function Header() {
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-white dark:bg-[#2a3441] border-[#e5e7eb] dark:border-[#374151]">
-                            <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">🇺🇸 English</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setLanguage("tr")} className="cursor-pointer">🇹🇷 Türkçe</DropdownMenuItem>
+                            {language === 'tr' ? (
+                                <>
+                                    <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
+                                        Türkçe <Check className="h-3 w-3" />
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">
+                                        English
+                                    </DropdownMenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
+                                        English <Check className="h-3 w-3" />
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setLanguage("tr")} className="cursor-pointer">
+                                        Türkçe
+                                    </DropdownMenuItem>
+                                </>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

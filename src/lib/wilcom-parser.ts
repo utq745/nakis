@@ -25,30 +25,27 @@ print(full_text)
 `;
 
     try {
-        // Write the Python script to a temp file
         writeFileSync(tempScriptPath, pythonScript);
 
-        // Execute the script with the PDF path as argument
-        const result = execSync(`python3 "${tempScriptPath}" "${pdfPath}"`, {
+        const { execFileSync } = await import('child_process');
+
+        // Use execFileSync to avoid shell interpretation of arguments
+        const result = execFileSync('python3', [tempScriptPath, pdfPath], {
             encoding: 'utf-8',
             maxBuffer: 50 * 1024 * 1024,
         });
 
-        // Clean up temp file
-        if (existsSync(tempScriptPath)) {
-            unlinkSync(tempScriptPath);
-        }
-
         return result;
     } catch (error) {
         console.error('Python extraction failed:', error);
-        // Clean up temp file on error
+        return '';
+    } finally {
+        // Clean up temp file in finally block to ensure it happens
         try {
             if (existsSync(tempScriptPath)) {
                 unlinkSync(tempScriptPath);
             }
         } catch { }
-        return '';
     }
 }
 
@@ -227,9 +224,9 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
         datePrinted: null,
     };
 
-    // Parse design name
-    const designMatch = text.match(/Design:\s*(\S+)/);
-    if (designMatch) result.designName = designMatch[1];
+    // Parse design name - capture everything until end of line
+    const designMatch = text.match(/Design:\s*(.+?)(?:\n|$)/);
+    if (designMatch) result.designName = designMatch[1].trim();
 
     // Parse dimensions
     const heightMatch = text.match(/Height:\s*([\d.,]+)\s*mm/);

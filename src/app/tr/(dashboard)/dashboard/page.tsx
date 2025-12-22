@@ -7,7 +7,7 @@ async function getOrderStats(userId: string, isAdmin: boolean) {
 
     const [total, pending, inProgress, completed] = await Promise.all([
         prisma.order.count({ where }),
-        prisma.order.count({ where: { ...where, status: "PENDING" } }),
+        prisma.order.count({ where: { ...where, status: "WAITING_PRICE" } }),
         prisma.order.count({ where: { ...where, status: "IN_PROGRESS" } }),
         prisma.order.count({ where: { ...where, status: "COMPLETED" } }),
     ]);

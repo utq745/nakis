@@ -91,13 +91,7 @@ export async function POST(
             },
         });
 
-        // Update order status if it was PENDING or PRICED
-        await prisma.order.update({
-            where: { id: orderId },
-            data: {
-                status: "IN_PROGRESS"
-            }
-        });
+        // Note: Status changes are now handled explicitly via the UI/workflow, not automatically
 
         return NextResponse.json({ success: true, data: wilcomData });
     } catch (error) {

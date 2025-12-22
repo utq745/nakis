@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Settings, Globe, LayoutDashboard, Package } from "lucide-react";
+import { LogOut, Settings, Globe, LayoutDashboard, Package, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 import Link from "next/link";
 
@@ -54,18 +54,35 @@ export function Header() {
                         className="w-32 bg-zinc-900 border-zinc-800"
                         align="end"
                     >
-                        <DropdownMenuItem
-                            className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
-                            onClick={() => setLanguage("tr")}
-                        >
-                            🇹🇷 Türkçe
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
-                            onClick={() => setLanguage("en")}
-                        >
-                            🇺🇸 English
-                        </DropdownMenuItem>
+                        {language === 'tr' ? (
+                            <>
+                                <DropdownMenuItem
+                                    className="text-white bg-zinc-800 cursor-default font-semibold flex items-center justify-between"
+                                >
+                                    Türkçe <Check className="h-3 w-3" />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                                    onClick={() => setLanguage("en")}
+                                >
+                                    English
+                                </DropdownMenuItem>
+                            </>
+                        ) : (
+                            <>
+                                <DropdownMenuItem
+                                    className="text-white bg-zinc-800 cursor-default font-semibold flex items-center justify-between"
+                                >
+                                    English <Check className="h-3 w-3" />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                                    onClick={() => setLanguage("tr")}
+                                >
+                                    Türkçe
+                                </DropdownMenuItem>
+                            </>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
 

@@ -45,7 +45,7 @@ const texts = {
         noHiddenOrders: "No hidden orders",
         files: "files",
         messages: "messages",
-        needsPrice: "Needs Price",
+        needsPrice: "Price Pending",
         orderRestored: "Order restored",
         orderHidden: "Order hidden",
         updateFailed: "Failed to update order",
@@ -67,7 +67,7 @@ const texts = {
         noHiddenOrders: "Gizlenen sipariş yok",
         files: "dosya",
         messages: "mesaj",
-        needsPrice: "Fiyat Bekliyor",
+        needsPrice: "Fiyat Bekleniyor",
         orderRestored: "Sipariş gösterildi",
         orderHidden: "Sipariş gizlendi",
         updateFailed: "Sipariş güncellenemedi",
@@ -95,12 +95,12 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             );
         });
 
-        // Sort function to prioritize PENDING and IN_PROGRESS for admin
+        // Sort function to prioritize WAITING_PRICE and PRICE_ACCEPTED for admin
         const sortOrders = (orders: typeof filtered) => {
             if (!isAdmin) return orders;
             return [...orders].sort((a, b) => {
-                const aPriority = a.status === "PENDING" || a.status === "IN_PROGRESS" ? 1 : 0;
-                const bPriority = b.status === "PENDING" || b.status === "IN_PROGRESS" ? 1 : 0;
+                const aPriority = a.status === "WAITING_PRICE" || a.status === "PRICE_ACCEPTED" ? 1 : 0;
+                const bPriority = b.status === "WAITING_PRICE" || b.status === "PRICE_ACCEPTED" ? 1 : 0;
                 if (aPriority !== bPriority) return bPriority - aPriority;
                 return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             });
@@ -142,40 +142,40 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
     }
 
     function OrderCard({ order }: { order: Order }) {
-        const needsPrice = order.status === "PENDING" && !order.price;
+        const needsPrice = order.status === "WAITING_PRICE" && !order.price;
         const isPriced = !isAdmin && order.status === "PRICED";
         const isAwaitingApproval = !isAdmin && order.status === "APPROVAL_AWAITING";
         const isPaymentPending = !isAdmin && order.status === "PAYMENT_PENDING";
         const isOrangeAlert = isAwaitingApproval || isPaymentPending;
-        const isAdminPriority = isAdmin && (order.status === "PENDING" || order.status === "IN_PROGRESS");
+        const isAdminPriority = isAdmin && (order.status === "WAITING_PRICE" || order.status === "PRICE_ACCEPTED");
         const basePath = locale === "tr" ? "/tr" : "";
 
         return (
             <div className="relative group">
                 <Link href={`${basePath}/orders/${order.id}`}>
                     <Card
-                        className={`border transition-all cursor-pointer ${isPriced
-                            ? "bg-blue-950/30 border-blue-500/50 hover:border-blue-400 shadow-lg shadow-blue-500/10 animate-pulse"
+                        className={`border transition-all cursor-pointer duration-200 hover:scale-[1.01] ${isPriced
+                            ? "bg-blue-950/30 border-blue-500/50 hover:border-blue-400 hover:bg-blue-900/40 shadow-lg shadow-blue-500/10 animate-pulse"
                             : isOrangeAlert
-                                ? "bg-orange-950/30 border-orange-500/50 hover:border-orange-400 shadow-lg shadow-orange-500/10 animate-pulse"
+                                ? "bg-orange-950/30 border-orange-500/50 hover:border-orange-400 hover:bg-orange-900/40 shadow-lg shadow-orange-500/10 animate-pulse"
                                 : isAdminPriority
-                                    ? "bg-violet-950/30 border-violet-500/50 hover:border-violet-400 shadow-lg shadow-violet-500/10 animate-pulse"
+                                    ? "bg-violet-950/30 border-violet-500/50 hover:border-violet-400 hover:bg-violet-900/40 shadow-lg shadow-violet-500/10 animate-pulse"
                                     : needsPrice
-                                        ? "bg-amber-950/30 border-amber-700/50 hover:border-amber-600"
-                                        : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
+                                        ? "bg-amber-950/30 border-amber-700/50 hover:border-amber-600 hover:bg-amber-900/40"
+                                        : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80"
                             }`}
                     >
                         <CardContent className="py-3 px-4">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-medium text-white group-hover:text-violet-400 transition-colors truncate mb-1">
+                                    <h3 className="font-medium text-white transition-colors truncate mb-1">
                                         {order.title}
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs font-mono text-zinc-500">
                                             #{order.id.slice(0, 8)}
                                         </span>
-                                        {!isPriced && !isOrangeAlert && (
+                                        {!isPriced && !isOrangeAlert && (isAdmin || order.status !== "WAITING_PRICE") && (
                                             <Badge
                                                 className={`text-xs ${ORDER_STATUS_COLORS[
                                                     order.status as keyof typeof ORDER_STATUS_COLORS

@@ -4,8 +4,15 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const createOrderSchema = z.object({
-    title: z.string().min(1, "Başlık gerekli"),
+    title: z.string().optional(),
     description: z.string().optional(),
+    machineBrand: z.string().optional(),
+    serviceType: z.string().optional(),
+    productType: z.string().optional(),
+    garmentType: z.string().optional(),
+    isNotSure: z.boolean().default(false),
+    customProduct: z.string().optional(),
+    addKnockdownStitch: z.boolean().default(false),
 });
 
 export async function GET() {
@@ -51,14 +58,31 @@ export async function POST(request: Request) {
         const body = await request.json();
         const validatedData = createOrderSchema.parse(body);
 
-        const order = await prisma.order.create({
+        let order = await prisma.order.create({
             data: {
-                title: validatedData.title,
+                title: validatedData.title || "Yeni Sipariş",
                 description: validatedData.description,
+                machineBrand: validatedData.machineBrand,
+                serviceType: validatedData.serviceType,
+                productType: validatedData.productType,
+                garmentType: validatedData.garmentType,
+                isNotSure: validatedData.isNotSure,
+                customProduct: validatedData.customProduct,
+                addKnockdownStitch: validatedData.addKnockdownStitch,
                 customerId: session.user.id,
-                status: "PENDING",
+                status: "WAITING_PRICE",
             },
         });
+
+        // If title was not provided, use the Order ID as title
+        if (!validatedData.title) {
+            order = await prisma.order.update({
+                where: { id: order.id },
+                data: { title: `Order #${order.id.slice(-6).toUpperCase()}` } // Shortened ID for better UX
+            });
+        }
+
+        const projectTitle = order.title || "Yeni Sipariş";
 
         // Send email notifications
         if (session.user.email) {
@@ -67,13 +91,13 @@ export async function POST(request: Request) {
             // Notify Customer
             await sendOrderCreatedEmail(
                 session.user.email,
-                order.title
+                projectTitle
             ).catch((err) => console.error("Failed to send customer email:", err));
 
             // Notify Admin
             await sendOrderCreatedEmail(
                 "admin@nakis.com",
-                `YENİ SİPARİŞ: ${order.title}`
+                `YENİ SİPARİŞ: ${projectTitle}`
             ).catch((err) => console.error("Failed to send admin email:", err));
         }
 

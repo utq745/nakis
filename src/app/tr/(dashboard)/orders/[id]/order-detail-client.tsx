@@ -247,7 +247,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    status: "IN_PROGRESS",
+                    status: "PRICE_ACCEPTED",
                 }),
             });
 
@@ -592,8 +592,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Wilcom Design Data - Admin Only */}
-                    {isAdmin && (
+                    {/* Wilcom Design Data - Admin Only, visible after price approval */}
+                    {isAdmin && ["PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}

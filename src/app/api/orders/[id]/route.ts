@@ -4,9 +4,18 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["PENDING", "PRICED", "IN_PROGRESS", "APPROVAL_AWAITING", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    machineBrand: z.string().optional(),
+    serviceType: z.string().optional(),
+    productType: z.string().optional(),
+    garmentType: z.string().optional(),
+    isNotSure: z.boolean().optional(),
+    customProduct: z.string().optional(),
+    addKnockdownStitch: z.boolean().optional(),
 });
 
 export async function GET(
@@ -134,11 +143,11 @@ export async function PATCH(
                 return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
             }
         }
-        // Auto-set status to PRICED when price is entered and current status is PENDING
+        // Auto-set status to PRICED when price is entered and current status is WAITING_PRICE
         // Only if user didn't manually change the status (status is same as current)
         if (validatedData.price && validatedData.price > 0 &&
-            currentOrder.status === "PENDING" &&
-            (!validatedData.status || validatedData.status === "PENDING")) {
+            currentOrder.status === "WAITING_PRICE" &&
+            (!validatedData.status || validatedData.status === "WAITING_PRICE")) {
             validatedData.status = "PRICED";
         }
 
@@ -155,10 +164,11 @@ export async function PATCH(
         // If status changed, create a system message
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
-                PENDING: { en: "Pending", tr: "Beklemede" },
+                WAITING_PRICE: { en: "Price Pending", tr: "Fiyat Bekleniyor" },
                 PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
-                IN_PROGRESS: { en: "In Progress", tr: "İşleniyor" },
-                APPROVAL_AWAITING: { en: "Awaiting Approval", tr: "Onay Bekleniyor" },
+                PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
+                APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
+                IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },

@@ -106,13 +106,7 @@ export async function POST(request: Request) {
             }
         }
 
-        // Update order to REVISION status if customer requests revision
-        if (!isAdmin && order.status === "PRICED") {
-            await prisma.order.update({
-                where: { id: validatedData.orderId },
-                data: { status: "REVISION" },
-            });
-        }
+        // Note: REVISION status has been removed from the workflow
 
         // Send Email Notification
         const { sendNewCommentEmail } = await import("@/lib/mail");

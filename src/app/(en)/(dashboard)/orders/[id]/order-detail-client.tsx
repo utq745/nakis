@@ -28,13 +28,15 @@ import {
     Lock,
     Trash2,
     Send,
+    DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
 import { WilcomSection } from "@/components/orders/wilcom-section";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_LABELS_TR, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
 import { useLanguage } from "@/components/providers/language-provider";
 import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
+import { UploadOverlay } from "@/components/ui/upload-overlay";
 
 interface WilcomColor {
     code: string;
@@ -246,7 +248,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             const response = await fetch(`/api/orders/${order.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "IN_PROGRESS" }),
+                body: JSON.stringify({ status: "PRICE_ACCEPTED" }),
             });
 
             if (!response.ok) throw new Error("Failed to approve price");
@@ -322,6 +324,16 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
     return (
         <div className="space-y-6">
+            <UploadOverlay
+                isVisible={isUploading || isApprovingPrice || isApprovingPreview || isSendingPreview}
+                message={
+                    isUploading ? (language === 'tr' ? "Dosyalar yükleniyor..." : "Uploading files...") :
+                        isApprovingPrice ? (language === 'tr' ? "Fiyat onaylanıyor..." : "Approving price...") :
+                            isApprovingPreview ? (language === 'tr' ? "Önizleme onaylanıyor..." : "Approving preview...") :
+                                isSendingPreview ? (language === 'tr' ? "Önizleme gönderiliyor..." : "Sending preview...") :
+                                    "Lütfen bekleyin..."
+                }
+            />
             {/* Header */}
             <div className="flex items-start justify-between">
                 <div>
@@ -334,12 +346,129 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </Link>
                     <div className="flex items-center gap-4">
                         <h1 className="text-2xl font-bold text-white">{order.title}</h1>
-                        <Badge className={ORDER_STATUS_COLORS[order.status]}>
-                            {ORDER_STATUS_LABELS[order.status]}
+                        <Badge className={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS]}>
+                            {language === "tr"
+                                ? ORDER_STATUS_LABELS_TR[order.status as keyof typeof ORDER_STATUS_LABELS_TR]
+                                : ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS]}
                         </Badge>
                     </div>
                 </div>
             </div>
+
+            {/* Admin Price Warning Banner */}
+            {isAdmin && status === "WAITING_PRICE" && (
+                <Card className="border-yellow-500/50 bg-yellow-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-yellow-500/20 text-yellow-400">
+                                <DollarSign className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {language === "tr" ? "Siparişe fiyat vermeniz bekleniyor" : "Price entry required"}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {language === "tr"
+                                        ? "Bu sipariş için fiyat belirleyin. Fiyat girildikten sonra müşteri onay bekleyecektir."
+                                        : "Set a price for this order. Customer will be notified for approval once you set the price."}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Waiting for Price Approval Banner */}
+            {isAdmin && status === "PRICED" && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                <CreditCard className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {language === "tr" ? "Müşterinin fiyatı onaylaması bekleniyor" : "Waiting for customer price approval"}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {language === "tr"
+                                        ? "Fiyat müşteriye iletildi. Müşterinin onayı bekleniyor."
+                                        : "Price has been sent to the customer. Waiting for approval."}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Preview Upload Warning Banner */}
+            {isAdmin && status === "PRICE_ACCEPTED" && (
+                <Card className="border-emerald-500/50 bg-emerald-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-emerald-500/20 text-emerald-400">
+                                <ImageIcon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {language === "tr" ? "Önizleme dosyası yüklemeniz bekleniyor" : "Preview file upload required"}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {language === "tr"
+                                        ? "Müşteri fiyatı onayladı. Şimdi önizleme dosyalarını yükleyin ve müşteriye gönderin."
+                                        : "Customer approved the price. Upload preview files and send them to the customer."}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Waiting for Preview Approval Banner */}
+            {isAdmin && status === "APPROVAL_AWAITING" && (
+                <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-orange-500/20 text-orange-400">
+                                <ImageIcon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {language === "tr" ? "Müşteri önizlemeyi inceliyor" : "Customer is reviewing preview"}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {language === "tr"
+                                        ? "Önizleme dosyaları gönderildi. Müşterinin onayı bekleniyor."
+                                        : "Preview files have been sent. Waiting for customer approval."}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Final Files Upload Warning Banner */}
+            {isAdmin && status === "IN_PROGRESS" && (
+                <Card className="border-purple-500/50 bg-purple-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-purple-500/20 text-purple-400">
+                                <Send className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {language === "tr" ? "Final dosyalarını göndermeniz bekleniyor" : "Final files upload required"}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {language === "tr"
+                                        ? "Müşteri önizlemeyi onayladı. Şimdi final dosyalarını yükleyin."
+                                        : "Customer approved the preview. Upload the final files now."}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Payment Banner for Customer */}
             {!isAdmin && status === "PAYMENT_PENDING" && (
@@ -465,7 +594,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             <Tabs defaultValue="original" className="w-full">
                                 <TabsList className="bg-zinc-800 w-full justify-start">
                                     <TabsTrigger value="original" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
-                                        {t.orders.original} ({originalFiles.length})
+                                        {language === "tr" ? "Müşteri Dosyaları" : "Customer's File(s)"} ({originalFiles.length})
                                     </TabsTrigger>
                                     <TabsTrigger value="preview" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
                                         {t.orders.preview} ({previewFiles.length})
@@ -602,8 +731,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Wilcom Design Data - Admin Only */}
-                    {isAdmin && (
+                    {/* Wilcom Design Data - Admin Only, visible after price approval */}
+                    {isAdmin && ["PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}
@@ -782,8 +911,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         </summary>
                                         <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
-                                                ? "1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin."
-                                                : "1) Upload file → 2) Get quote → 3) Approve → 4) Get preview → 5) Approve → 6) Download finals."}
+                                                ? "1) Dosya Yükle → 2) Fiyatlandırma → 3) Fiyat Onayı → 4) Önizleme Onayı → 5) Ödeme → 6) İndir"
+                                                : "1) Upload File → 2) Pricing → 3) Price Approval → 4) Preview Approval → 5) Payment → 6) Download"}
                                         </div>
                                     </details>
 
@@ -804,14 +933,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
                                             <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
-                                                {language === "tr" ? "Hangi formatları destekliyorsunuz?" : "Supported file formats?"}
+                                                {language === "tr" ? "Hangi dosya formatlarını kabul ediyorsunuz?" : "Which file formats are supported?"}
                                             </span>
                                             <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
                                         <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
                                             {language === "tr"
-                                                ? "Giriş: JPG, PNG, PDF, AI, EPS, SVG. Çıkış: DST, PES, JEF ve diğer nakış formatları."
-                                                : "Input: JPG, PNG, PDF, AI, EPS, SVG. Output: DST, PES, JEF and other embroidery formats."}
+                                                ? "DST, EMB, AI, veya PDF"
+                                                : "DST, EMB, AI, or PDF"}
                                         </div>
                                     </details>
                                 </div>

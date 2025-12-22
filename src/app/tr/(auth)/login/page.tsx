@@ -12,7 +12,8 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
@@ -30,7 +31,11 @@ export default function LoginPage() {
                 const res = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email, password }),
+                    body: JSON.stringify({
+                        name: `${firstName} ${lastName}`.trim(),
+                        email,
+                        password
+                    }),
                 });
 
                 if (!res.ok) {
@@ -163,21 +168,40 @@ export default function LoginPage() {
                         {/* Form */}
                         <form className="space-y-5" onSubmit={handleCredentialsSubmit}>
                             {activeTab === 'signup' && (
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="name">{lp.fullName}</label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                            <span className="material-symbols-outlined text-[20px]">person</span>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="firstName">{lp.firstName}</label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <span className="material-symbols-outlined text-[20px]">person</span>
+                                            </div>
+                                            <input
+                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                                id="firstName"
+                                                type="text"
+                                                placeholder={lp.firstName}
+                                                value={firstName}
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                                required={activeTab === 'signup'}
+                                            />
                                         </div>
-                                        <input
-                                            className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
-                                            id="name"
-                                            type="text"
-                                            placeholder={lp.fullNamePlaceholder}
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            required={activeTab === 'signup'}
-                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="lastName">{lp.lastName}</label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <span className="material-symbols-outlined text-[20px]">person</span>
+                                            </div>
+                                            <input
+                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                                id="lastName"
+                                                type="text"
+                                                placeholder={lp.lastName}
+                                                value={lastName}
+                                                onChange={(e) => setLastName(e.target.value)}
+                                                required={activeTab === 'signup'}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}

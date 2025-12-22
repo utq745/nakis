@@ -60,11 +60,21 @@ model Session {
 
 model Order {
   id              String      @id @default(cuid())
-  title           String
-  description     String?
-  status          String      @default("PENDING")
+  title           String?     // Artık opsiyonel, proje ismi gibi kullanılabilir
+  description     String?     // Notlar alanı gibi kullanılabilir
+  status          String      @default("WAITING_PRICE")
   price           Float?
   hidden          Boolean     @default(false)
+  
+  // Yeni form alanları
+  machineBrand    String?     // Tajima, Barudan
+  serviceType     String?     // Approval Sample, Fix DST, New Digitizing
+  productType     String?     // Garment, Cap, Towel, Apron
+  garmentType     String?     // T-Shirt, Polo, vb.
+  isNotSure       Boolean     @default(false)
+  customProduct   String?     // Diğer seçeneği için
+  addKnockdownStitch Boolean  @default(false)
+  
   customerId      String
   customer        User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
   files           File[]

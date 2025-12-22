@@ -79,9 +79,6 @@ export async function GET(
             return NextResponse.json({ error: "File not found on disk" }, { status: 404 });
         }
 
-        // Read file
-        const fileBuffer = await readFile(filePath);
-
         // Determine content type
         const ext = file.name.split(".").pop()?.toLowerCase();
         const contentTypes: Record<string, string> = {
@@ -115,15 +112,38 @@ export async function GET(
         const url = new URL(request.url);
         const download = url.searchParams.get("download") === "true";
 
+        // Memory-efficient streaming
+        const { createReadStream, statSync } = await import("fs");
+        const stats = statSync(filePath);
+        const stream = createReadStream(filePath);
+
+        // Convert Node stream to Web Stream for Next.js
+        const readableStream = new ReadableStream({
+            start(controller) {
+                stream.on("data", (chunk) => {
+                    // Ensure chunk is a Buffer/Uint8Array
+                    const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+                    controller.enqueue(new Uint8Array(data));
+                });
+                stream.on("end", () => controller.close());
+                stream.on("error", (err) => controller.error(err));
+            },
+            cancel() {
+                stream.destroy();
+            }
+        });
+
         // Return file with proper headers
-        return new NextResponse(fileBuffer, {
+        return new NextResponse(readableStream, {
             headers: {
                 "Content-Type": contentType,
                 "Content-Disposition": (download || file.type === "final")
                     ? `attachment; filename="${encodeURIComponent(file.name)}"`
                     : `inline; filename="${encodeURIComponent(file.name)}"`,
-                "Content-Length": fileBuffer.length.toString(),
+                "Content-Length": stats.size.toString(),
                 "Cache-Control": "private, max-age=3600",
+                "X-Content-Type-Options": "nosniff", // Security: prevent MIME sniffing
+                "Content-Security-Policy": "default-src 'none'; img-src 'self'; style-src 'unsafe-inline';", // Security: restrictive CSP
             },
         });
     } catch (error) {
