@@ -90,7 +90,7 @@ export async function POST(request: Request) {
                 if (recipientEmail) {
                     await sendNewCommentEmail(
                         recipientEmail,
-                        order.title,
+                        order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
                         senderName,
                         validatedData.content
                     ).catch(console.error);
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
         if (recipientEmail) {
             await sendNewCommentEmail(
                 recipientEmail,
-                order.title,
+                order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
                 senderName,
                 validatedData.content
             ).catch(console.error);

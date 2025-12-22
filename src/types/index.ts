@@ -13,7 +13,7 @@ export interface SafeUser {
 
 export interface OrderWithRelations {
     id: string;
-    title: string;
+    title: string | null;
     description: string | null;
     status: OrderStatus;
     price: number | null;

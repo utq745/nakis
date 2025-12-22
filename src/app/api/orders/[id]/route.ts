@@ -194,7 +194,7 @@ export async function PATCH(
             const { sendOrderStatusUpdatedEmail } = await import("@/lib/mail");
             await sendOrderStatusUpdatedEmail(
                 order.customer.email,
-                order.title,
+                order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
                 order.status,
                 validatedData.price ?? undefined
             ).catch(console.error);

@@ -51,7 +51,7 @@ export default async function PaymentPage({
 
             <PaymentForm
                 orderId={order.id}
-                orderTitle={order.title}
+                orderTitle={order.title || `Order #${order.id.slice(-6).toUpperCase()}`}
                 price={order.price || 0}
                 locale="en"
                 initialBillingAddress={user?.billingAddress || ""}

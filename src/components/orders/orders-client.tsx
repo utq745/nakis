@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 interface Order {
     id: string;
-    title: string;
+    title: string | null;
     description: string | null;
     status: string;
     price: number | null;
@@ -88,7 +88,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             if (!searchQuery) return true;
             const query = searchQuery.toLowerCase();
             return (
-                order.title.toLowerCase().includes(query) ||
+                (order.title?.toLowerCase().includes(query) ?? false) ||
                 order.id.toLowerCase().includes(query) ||
                 order.customer.name?.toLowerCase().includes(query) ||
                 order.customer.email.toLowerCase().includes(query)
@@ -169,7 +169,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-medium text-white transition-colors truncate mb-1">
-                                        {order.title}
+                                        {order.title || `Order #${order.id.slice(-6).toUpperCase()}`}
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs font-mono text-zinc-500">

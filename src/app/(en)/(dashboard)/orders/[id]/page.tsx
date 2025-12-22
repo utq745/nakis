@@ -85,9 +85,10 @@ export default async function OrderDetailPage({
         return notFound();
     }
 
-    // Cast status to OrderStatus type
+    // Cast status to OrderStatus type and ensure title is never null
     const typedOrder = {
         ...order,
+        title: order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
         status: order.status as import("@/types").OrderStatus,
         customer: {
             ...order.customer,
