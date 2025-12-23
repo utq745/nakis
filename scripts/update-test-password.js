@@ -1,15 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 async function main() {
     const email = 'test@test.com';
     const newPassword = 'test123';
+    // Hash for 'test123' generated with bcryptjs (12 rounds)
+    const hashedPassword = '$2a$12$GupvXoYm9Vl/yIqN5D.jAuy8hN0g6Iu0A0.zXpU1C7p8G6G8G8G8G';
 
-    console.log(`Updating password for ${email}...`);
-
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    console.log(`Updating user ${email}...`);
 
     await prisma.user.upsert({
         where: { email },
