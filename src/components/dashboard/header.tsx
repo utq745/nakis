@@ -11,7 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, Settings, Globe, LayoutDashboard, Package, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 import Link from "next/link";
@@ -95,6 +95,9 @@ export function Header() {
                                 className="relative h-10 w-10 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500"
                             >
                                 <Avatar className="h-10 w-10">
+                                    {session?.user?.image && (
+                                        <AvatarImage src={session.user.image} alt={session.user.name || ""} />
+                                    )}
                                     <AvatarFallback className="bg-transparent text-white font-medium">
                                         {initials}
                                     </AvatarFallback>
@@ -148,6 +151,9 @@ export function Header() {
                         className="relative h-10 w-10 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500"
                     >
                         <Avatar className="h-10 w-10">
+                            {session?.user?.image && (
+                                <AvatarImage src={session.user.image} alt={session.user.name || ""} />
+                            )}
                             <AvatarFallback className="bg-transparent text-white font-medium">
                                 {initials}
                             </AvatarFallback>

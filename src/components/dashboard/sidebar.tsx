@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/providers/language-provider";
 import { useSidebar } from "@/components/providers/sidebar-provider";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export function Sidebar() {
     const pathname = usePathname();
@@ -146,27 +147,40 @@ export function Sidebar() {
                     {/* User Info */}
                     <div className={cn(
                         "rounded-lg bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 transition-all duration-300",
-                        isCollapsed ? "p-2" : "p-4"
+                        isCollapsed ? "p-1.5" : "p-3"
                     )}>
                         {!isCollapsed ? (
-                            <>
-                                <p className="text-xs text-zinc-400 mb-2">
-                                    {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
-                                </p>
-                                <p className="text-sm text-white truncate">
-                                    {session?.user?.name || session?.user?.email}
-                                </p>
-                            </>
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-9 w-9 border border-violet-500/20 shrink-0">
+                                    {session?.user?.image && (
+                                        <AvatarImage src={session.user.image} alt={session.user.name || ""} />
+                                    )}
+                                    <AvatarFallback className="bg-violet-500/10 text-violet-400 text-xs font-bold">
+                                        {(session?.user?.name || session?.user?.email || "U")[0].toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mb-0.5">
+                                        {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
+                                    </p>
+                                    <p className="text-sm text-white font-medium truncate">
+                                        {session?.user?.name || session?.user?.email?.split('@')[0]}
+                                    </p>
+                                </div>
+                            </div>
                         ) : (
                             <div className="flex justify-center group relative">
-                                <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center transition-transform group-hover:scale-110">
-                                    <span className="text-xs text-violet-400 font-bold">
+                                <Avatar className="h-9 w-9 border border-violet-500/20 transition-transform group-hover:scale-105">
+                                    {session?.user?.image && (
+                                        <AvatarImage src={session.user.image} alt={session.user.name || ""} />
+                                    )}
+                                    <AvatarFallback className="bg-violet-500/10 text-violet-400 text-xs font-bold">
                                         {(session?.user?.name || session?.user?.email || "U")[0].toUpperCase()}
-                                    </span>
-                                </div>
+                                    </AvatarFallback>
+                                </Avatar>
                                 <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
                                     <div className="w-1 h-1 rounded-full bg-violet-500" />
-                                    {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
+                                    {session?.user?.name || session?.user?.email}
                                 </div>
                             </div>
                         )}

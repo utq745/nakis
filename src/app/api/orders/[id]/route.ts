@@ -34,7 +34,7 @@ export async function GET(
             where: { id },
             include: {
                 customer: {
-                    select: { id: true, name: true, email: true, role: true },
+                    select: { id: true, name: true, email: true, role: true, image: true },
                 },
                 files: {
                     orderBy: { createdAt: "desc" },
@@ -42,7 +42,7 @@ export async function GET(
                 comments: {
                     include: {
                         user: {
-                            select: { id: true, name: true, email: true, role: true },
+                            select: { id: true, name: true, email: true, role: true, image: true },
                         },
                         files: {
                             select: { id: true, name: true, url: true, size: true },

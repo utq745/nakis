@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff, Camera, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,11 @@ const texts = {
         profileDesc: "Your personal information.",
         email: "Email",
         fullName: "Full Name",
+        firstName: "First Name",
+        lastName: "Last Name",
         save: "Save",
+        pendingVerificationTitle: "Verification Pending",
+        pendingVerificationDesc: "Please confirm the email we sent to your new address to apply your changes.",
         securityTitle: "Security",
         securityDesc: "Update your password.",
         currentPassword: "Current Password",
@@ -36,6 +41,7 @@ const texts = {
         updatePassword: "Update Password",
         passwordMismatch: "New passwords do not match",
         profileUpdated: "Profile updated successfully",
+        profileVerified: "Profile changes verified successfully",
         passwordUpdated: "Password updated successfully",
         error: "An error occurred",
         languageTitle: "Language Preferences",
@@ -69,13 +75,24 @@ const texts = {
         deleteConfirmTitle: "Are you sure?",
         deleteConfirmDesc: "This billing address will be permanently deleted.",
         addNewAddress: "Add New Address",
+        changeAvatar: "Change Avatar",
+        avatarModalTitle: "Choose Your Avatar",
+        avatarModalDesc: "Select a fun avatar or upload your own image.",
+        uploadCustom: "Upload Custom",
+        maxSizeInfo: "Max 5MB (PNG, JPG)",
+        uploading: "Uploading...",
+        avatarUpdated: "Avatar updated successfully",
     },
     tr: {
         profileTitle: "Profil Bilgileri",
         profileDesc: "Kişisel bilgileriniz.",
         email: "E-posta",
         fullName: "Ad Soyad",
+        firstName: "Ad",
+        lastName: "Soyad",
         save: "Kaydet",
+        pendingVerificationTitle: "Doğrulama Bekleniyor",
+        pendingVerificationDesc: "Değişikliklerin uygulanması için yeni adresinize gönderdiğimiz e-postayı onaylamanız gerekmektedir.",
         securityTitle: "Güvenlik",
         securityDesc: "Şifrenizi güncelleyin.",
         currentPassword: "Mevcut Şifre",
@@ -84,6 +101,7 @@ const texts = {
         updatePassword: "Şifreyi Güncelle",
         passwordMismatch: "Yeni şifreler eşleşmiyor",
         profileUpdated: "Profil başarıyla güncellendi",
+        profileVerified: "Profil değişiklikleri başarıyla onaylandı",
         passwordUpdated: "Şifre başarıyla güncellendi",
         error: "Bir hata oluştu",
         languageTitle: "Dil Tercihleri",
@@ -117,6 +135,13 @@ const texts = {
         deleteConfirmTitle: "Emin misiniz?",
         deleteConfirmDesc: "Bu fatura adresi kalıcı olarak silinecektir.",
         addNewAddress: "Yeni Adres Ekle",
+        changeAvatar: "Avatarı Değiştir",
+        avatarModalTitle: "Avatarınızı Seçin",
+        avatarModalDesc: "Eğlenceli bir avatar seçin veya kendi görselinizi yükleyin.",
+        uploadCustom: "Özel Yükle",
+        maxSizeInfo: "Maks 5MB (PNG, JPG)",
+        uploading: "Yükleniyor...",
+        avatarUpdated: "Avatar başarıyla güncellendi",
     },
 };
 
@@ -215,6 +240,27 @@ const countries = [
     { code: "ZW", name: "Zimbabwe" },
 ];
 
+const PRESET_AVATARS = [
+    // People
+    { name: "Woman 1", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anya&backgroundColor=b6e3f4&mouth=smile" },
+    { name: "Woman 2", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amaya&backgroundColor=ffdfbf&skinColor=45230e&mouth=smile" },
+    { name: "Man 1", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=c0aede&mouth=smile" },
+    { name: "Man 2", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Milo&backgroundColor=d1d4f9&skinColor=45230e&mouth=smile" },
+
+    // Robot
+    { name: "Robot", url: "https://api.dicebear.com/7.x/bottts/svg?seed=Robo&backgroundColor=b6e3f4" },
+
+    // Embroidery Themed
+    { name: "Machine 1", url: "https://api.dicebear.com/7.x/shapes/svg?seed=sewing&backgroundColor=f87171" },
+    { name: "Machine 2", url: "https://api.dicebear.com/7.x/shapes/svg?seed=machine&backgroundColor=60a5fa" },
+    { name: "Thread", url: "https://api.dicebear.com/7.x/icons/svg?seed=scroll&backgroundColor=4ade80" },
+
+    // Nature & Space
+    { name: "Rocket", url: "https://api.dicebear.com/7.x/icons/svg?seed=rocket&backgroundColor=ffdfbf" },
+    { name: "Moon", url: "https://api.dicebear.com/7.x/icons/svg?seed=moon&backgroundColor=c0aede" },
+    { name: "Sun", url: "https://api.dicebear.com/7.x/icons/svg?seed=sun&backgroundColor=d1d4f9" },
+];
+
 interface BillingData {
     id: string;
     type: "individual" | "corporate";
@@ -232,6 +278,17 @@ interface BillingData {
 export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const router = useRouter();
     const t = texts[locale];
+
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get("verified") === "true") {
+            toast.success(t.profileVerified);
+            // Clean up URL
+            url.searchParams.delete("verified");
+            router.replace(url.pathname + url.search);
+        }
+    }, [t, router]);
+
     const [isLoading, setIsLoading] = useState(false);
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(user?.language || "en");
@@ -251,6 +308,19 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const [isEditingBilling, setIsEditingBilling] = useState(false);
     const [isBillingLoading, setIsBillingLoading] = useState(false);
     const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+
+    // Profile states
+    const [email, setEmail] = useState(user?.email || "");
+    const [firstName, setFirstName] = useState(user?.name?.split(" ")[0] || "");
+    const [lastName, setLastName] = useState(user?.name?.split(" ").slice(1).join(" ") || "");
+    const [isProfileLoading, setIsProfileLoading] = useState(false);
+
+    // Avatar states
+
+    // Avatar states
+    const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+    const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+    const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string | null>(null);
 
     // Parse existing billing addresses (handle single object or array)
     const savedAddresses: BillingData[] = user?.billingAddress ? (() => {
@@ -401,8 +471,117 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
         }
     }
 
+    async function handleAvatarSelect(url: string) {
+        setIsAvatarUploading(true);
+        try {
+            const response = await fetch("/api/user/profile", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: url }),
+            });
+
+            if (!response.ok) throw new Error("Failed to update avatar");
+
+            toast.success(t.avatarUpdated);
+            setIsAvatarModalOpen(false);
+            router.refresh();
+        } catch (error) {
+            toast.error(t.error);
+        } finally {
+            setIsAvatarUploading(false);
+        }
+    }
+
+    async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("File size exceeds 5MB limit");
+            return;
+        }
+
+        setIsAvatarUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/api/user/avatar/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Failed to upload avatar");
+            }
+
+            toast.success(t.avatarUpdated);
+            setIsAvatarModalOpen(false);
+            router.refresh();
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsAvatarUploading(false);
+        }
+    }
+
+    async function handleProfileUpdate() {
+        setIsProfileLoading(true);
+        try {
+            const response = await fetch("/api/user/profile", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: `${firstName} ${lastName}`.trim(),
+                    email,
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Failed to update profile");
+            }
+
+            toast.success(t.profileUpdated);
+            router.refresh();
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsProfileLoading(false);
+        }
+    }
+
     return (
         <div className="space-y-4">
+            {/* Pending Verification Notice */}
+            {user?.emailVerificationToken && (
+                <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-orange-500/20 text-orange-400">
+                                <Shield className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">
+                                    {t.pendingVerificationTitle}
+                                </h3>
+                                <p className="text-sm text-zinc-400">
+                                    {t.pendingVerificationDesc}
+                                    {(user.pendingEmail || user.pendingName) && (
+                                        <span className="block mt-1 text-xs text-orange-400/70 italic">
+                                            {user.pendingName && `${user.pendingName}`}
+                                            {user.pendingName && user.pendingEmail && " - "}
+                                            {user.pendingEmail && `${user.pendingEmail}`}
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Profile Information */}
             <Collapsible open={openProfile} onOpenChange={setOpenProfile}>
                 <Card className="bg-zinc-900 border-zinc-800">
@@ -426,22 +605,77 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <CardContent className="pt-0">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label className="text-zinc-300">{t.email}</Label>
-                                    <Input
-                                        value={user?.email}
-                                        disabled
-                                        className="bg-zinc-800/50 border-zinc-700 text-zinc-400"
-                                    />
+                            <div className="flex flex-col md:flex-row gap-6">
+                                {/* Avatar Display */}
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="relative group">
+                                        <Avatar className="h-24 w-24 border-2 border-zinc-800 shadow-xl group-hover:opacity-75 transition-opacity">
+                                            {user?.image ? (
+                                                <AvatarImage src={user.image} alt={user.name || ""} />
+                                            ) : (
+                                                <AvatarFallback className="bg-zinc-800 text-zinc-400 text-2xl font-bold">
+                                                    {(user?.name || user?.email || "U")[0].toUpperCase()}
+                                                </AvatarFallback>
+                                            )}
+                                        </Avatar>
+                                        <Button
+                                            onClick={() => setIsAvatarModalOpen(true)}
+                                            size="icon"
+                                            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-violet-600 hover:bg-violet-500 border-2 border-zinc-900 shadow-lg scale-0 group-hover:scale-100 transition-all duration-200"
+                                        >
+                                            <Camera className="h-4 w-4 text-white" />
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setIsAvatarModalOpen(true)}
+                                            className="text-xs text-violet-400 hover:text-white hover:bg-violet-600/20 h-7 px-3 rounded-full transition-all"
+                                        >
+                                            {t.changeAvatar}
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-zinc-300">{t.fullName}</Label>
-                                    <Input
-                                        value={user?.name || ""}
-                                        disabled
-                                        className="bg-zinc-800/50 border-zinc-700 text-zinc-400"
-                                    />
+
+                                {/* Form Fields */}
+                                <div className="flex-1 space-y-4">
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label className="text-zinc-300">{t.firstName}</Label>
+                                            <Input
+                                                value={firstName}
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-zinc-300">{t.lastName}</Label>
+                                            <Input
+                                                value={lastName}
+                                                onChange={(e) => setLastName(e.target.value)}
+                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-zinc-300">{t.email}</Label>
+                                        <Input
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                        />
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <Button
+                                            onClick={handleProfileUpdate}
+                                            disabled={isProfileLoading || (email === user?.email && `${firstName} ${lastName}`.trim() === user?.name)}
+                                            className="bg-violet-600 hover:bg-violet-500 text-white"
+                                        >
+                                            {isProfileLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            {t.save}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -928,6 +1162,92 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                     </CollapsibleContent>
                 </Card>
             </Collapsible>
+
+            {/* Avatar Selection Modal */}
+            <Dialog open={isAvatarModalOpen} onOpenChange={setIsAvatarModalOpen}>
+                <DialogContent className="bg-zinc-900/90 backdrop-blur-2xl border-zinc-800 text-white max-w-xl p-0 overflow-hidden shadow-2xl">
+                    <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                <User className="h-5 w-5 text-violet-400" />
+                                {t.avatarModalTitle}
+                            </DialogTitle>
+                            <DialogDescription className="text-zinc-400 text-xs">
+                                {t.avatarModalDesc}
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 p-6 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        {PRESET_AVATARS.map((avatar, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setSelectedAvatarUrl(avatar.url)}
+                                disabled={isAvatarUploading}
+                                className={cn(
+                                    "relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all p-0.5 bg-zinc-950/30 active:scale-95 duration-200",
+                                    selectedAvatarUrl === avatar.url
+                                        ? "border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105"
+                                        : "border-zinc-800 hover:border-violet-500/50 hover:scale-105"
+                                )}
+                            >
+                                <img
+                                    src={avatar.url}
+                                    alt={avatar.name}
+                                    className="w-full h-full object-cover rounded-[14px]"
+                                />
+                                {selectedAvatarUrl === avatar.url && (
+                                    <div className="absolute top-1 right-1 bg-violet-500 rounded-full p-0.5">
+                                        <Check className="h-3 w-3 text-white" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+
+                        {/* Upload Button in Grid */}
+                        <div className="relative group aspect-square">
+                            <input
+                                type="file"
+                                id="avatar-upload-grid"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleAvatarUpload}
+                                disabled={isAvatarUploading}
+                            />
+                            <label
+                                htmlFor="avatar-upload-grid"
+                                className="w-full h-full flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-800/20 hover:border-violet-500 hover:bg-violet-500/5 hover:scale-105 transition-all cursor-pointer group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] active:scale-95 duration-200"
+                            >
+                                {isAvatarUploading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+                                ) : (
+                                    <>
+                                        <Plus className="h-8 w-8 text-violet-400 group-hover:scale-110 transition-transform" />
+                                        <span className="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-wider group-hover:text-violet-400 text-center">
+                                            UPLOAD
+                                        </span>
+                                    </>
+                                )}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="p-4 border-t border-zinc-800 bg-zinc-950/40 flex flex-col gap-3">
+                        <div className="flex justify-center items-center gap-4">
+                            <span className="text-[11px] font-bold text-zinc-400 px-4 py-1.5 rounded-full border border-zinc-700/50 bg-zinc-800/80 shadow-inner">
+                                MAX 5MB
+                            </span>
+                            <Button
+                                onClick={() => selectedAvatarUrl && handleAvatarSelect(selectedAvatarUrl)}
+                                disabled={!selectedAvatarUrl || isAvatarUploading}
+                                className="bg-violet-600 hover:bg-violet-500 text-white min-w-[120px] font-bold"
+                            >
+                                {isAvatarUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : t.save}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

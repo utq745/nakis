@@ -6,6 +6,9 @@ import { z } from "zod";
 const profileSchema = z.object({
     language: z.enum(["en", "tr"]).optional(),
     billingAddress: z.string().optional(),
+    image: z.string().optional(),
+    name: z.string().optional(),
+    email: z.string().email("Geçerli bir e-posta adresi girin").optional(),
 });
 
 export async function GET() {
@@ -17,7 +20,18 @@ export async function GET() {
 
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { id: true, email: true, name: true, role: true, language: true, billingAddress: true },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                language: true,
+                billingAddress: true,
+                image: true,
+                pendingEmail: true,
+                pendingName: true,
+                emailVerificationToken: true
+            },
         });
 
         return NextResponse.json(user);
@@ -39,12 +53,47 @@ export async function PATCH(request: Request) {
         const body = await request.json();
         const validatedData = profileSchema.parse(body);
 
+        const currentProfile = await prisma.user.findUnique({
+            where: { id: session.user.id }
+        });
+
+        if (!currentProfile) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        const updateData: any = {};
+        if (validatedData.language) updateData.language = validatedData.language;
+        if (validatedData.billingAddress !== undefined) updateData.billingAddress = validatedData.billingAddress;
+        if (validatedData.image !== undefined) updateData.image = validatedData.image;
+
+        // Check if name or email is changing
+        const isNameChanging = validatedData.name && validatedData.name !== (currentProfile.pendingName || currentProfile.name);
+        const isEmailChanging = validatedData.email && validatedData.email !== (currentProfile.pendingEmail || currentProfile.email);
+
+        if (isEmailChanging && validatedData.email) {
+            const existingUser = await prisma.user.findUnique({
+                where: { email: validatedData.email }
+            });
+            if (existingUser && existingUser.id !== session.user.id) {
+                return NextResponse.json(
+                    { error: "Bu e-posta adresi zaten kullanımda" },
+                    { status: 400 }
+                );
+            }
+        }
+
+        if (isNameChanging || isEmailChanging) {
+            updateData.pendingName = validatedData.name || currentProfile.pendingName || currentProfile.name;
+            updateData.pendingEmail = validatedData.email || currentProfile.pendingEmail || currentProfile.email;
+            updateData.emailVerificationToken = crypto.randomUUID();
+            updateData.emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+            // TODO: Send verification email to validatedData.email || currentProfile.email
+        }
+
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },
-            data: {
-                ...(validatedData.language && { language: validatedData.language }),
-                ...(validatedData.billingAddress !== undefined && { billingAddress: validatedData.billingAddress }),
-            },
+            data: updateData,
         });
 
         return NextResponse.json(updatedUser);

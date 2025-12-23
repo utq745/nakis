@@ -27,6 +27,10 @@ model User {
   orders        Order[]   @relation("CustomerOrders")
   comments      Comment[]
   billingAddress String?   // JSON string or long text for billing details
+  pendingEmail              String?
+  pendingName               String?
+  emailVerificationToken    String?
+  emailVerificationTokenExpires DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }

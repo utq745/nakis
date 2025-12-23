@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Loader2, RefreshCw, MessageSquare, Paperclip, X, FileIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/components/providers/language-provider";
@@ -27,6 +27,7 @@ interface Comment {
         id: string;
         name: string | null;
         email: string;
+        image?: string | null;
         role: "CUSTOMER" | "ADMIN";
     };
 }
@@ -290,6 +291,9 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                             : "bg-zinc-800"
                                             }`}
                                     >
+                                        {comment.user.image && (
+                                            <AvatarImage src={comment.user.image} alt={comment.user.name || ""} />
+                                        )}
                                         <AvatarFallback className="text-xs text-zinc-100 font-medium">
                                             {getInitials(comment.user.name, comment.user.email)}
                                         </AvatarFallback>

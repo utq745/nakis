@@ -22,7 +22,7 @@ async function getRecentOrders(userId: string, isAdmin: boolean) {
         where,
         include: {
             customer: {
-                select: { name: true, email: true },
+                select: { name: true, email: true, image: true },
             },
         },
         orderBy: { createdAt: "desc" },

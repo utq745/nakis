@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 async function main() {
     const email = 'test@test.com';
     const newPassword = 'test123';
-    // Hash for 'test123' generated with bcryptjs (12 rounds)
-    const hashedPassword = '$2a$12$GupvXoYm9Vl/yIqN5D.jAuy8hN0g6Iu0A0.zXpU1C7p8G6G8G8G8G';
+    // Valid hash for 'test123'
+    const hashedPassword = '$2b$12$kVm3vWtifXePD3BkzBuTZu.y8Br.GO9jlFF08plNd2FkIOWrxawdG';
 
     console.log(`Updating user ${email}...`);
 

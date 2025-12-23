@@ -254,11 +254,15 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             if (!response.ok) throw new Error("Failed to approve price");
 
             toast.success(t.orders.priceApproved);
-            // Small delay to let user see the success message
+
+            // Update local state for immediate feedback
+            setStatus("PRICE_ACCEPTED");
+
+            // Small delay to let user see the success message then refresh server data
             setTimeout(() => {
                 router.refresh();
                 setIsApprovingPrice(false);
-            }, 500);
+            }, 1000);
         } catch (error) {
             toast.error(t.orders.updateError);
             console.error(error);
@@ -278,11 +282,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             if (!response.ok) throw new Error("Failed to approve preview");
 
             toast.success(t.orders.previewApproved);
-            // Small delay to let user see the success message
+
+            // Update local state for immediate feedback
+            setStatus("IN_PROGRESS");
+
             setTimeout(() => {
                 router.refresh();
                 setIsApprovingPreview(false);
-            }, 500);
+            }, 1000);
         } catch (error) {
             toast.error(t.orders.updateError);
             console.error(error);
@@ -302,11 +309,15 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             if (!response.ok) throw new Error("Failed to send preview");
 
             toast.success(t.orders.previewSent);
+
+            // Update local state for immediate feedback
+            setStatus("APPROVAL_AWAITING");
             setHasNewPreviewFiles(false); // Reset after sending
+
             setTimeout(() => {
                 router.refresh();
                 setIsSendingPreview(false);
-            }, 500);
+            }, 1000);
         } catch (error) {
             toast.error(t.orders.updateError);
             console.error(error);
@@ -728,8 +739,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Wilcom Design Data - Admin Only, visible after price approval */}
-                    {isAdmin && ["PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
+                    {/* Wilcom Design Data - Admin Only, visible after preview approval */}
+                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}

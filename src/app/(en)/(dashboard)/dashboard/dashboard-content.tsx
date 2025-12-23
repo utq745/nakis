@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { ORDER_STATUS_COLORS, OrderStatus } from "@/types";
 
@@ -102,13 +103,25 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                     href={`/orders/${order.id}`}
                                     className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
                                 >
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-white">{order.title}</h3>
+                                    <div className="flex items-center gap-4 flex-1">
                                         {isAdmin && (
-                                            <p className="text-sm text-zinc-400">
-                                                {order.customer.name || order.customer.email}
-                                            </p>
+                                            <Avatar className="h-10 w-10 border border-zinc-700">
+                                                {order.customer.image && (
+                                                    <AvatarImage src={order.customer.image} alt={order.customer.name || ""} />
+                                                )}
+                                                <AvatarFallback className="bg-zinc-700 text-zinc-300 text-xs font-bold">
+                                                    {(order.customer.name || order.customer.email || "U")[0].toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
                                         )}
+                                        <div className="min-w-0">
+                                            <h3 className="font-medium text-white truncate">{order.title}</h3>
+                                            {isAdmin && (
+                                                <p className="text-sm text-zinc-400 truncate">
+                                                    {order.customer.name || order.customer.email}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <Badge className={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
