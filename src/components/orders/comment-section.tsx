@@ -44,8 +44,14 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+    const [mounted, setMounted] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Solve hydration issues by only rendering client-specific parts after mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Translations
     const texts = {
@@ -260,7 +266,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                             {displayText}
                                         </span>
                                         <span className="text-[10px] text-amber-500/60">
-                                            {new Date(comment.createdAt).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {
+                                            {mounted && new Date(comment.createdAt).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {
                                                 month: "short",
                                                 day: "numeric",
                                                 hour: "2-digit",
@@ -307,7 +313,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                                 </span>
                                             )}
                                             <span className="text-[10px] text-zinc-500">
-                                                {new Date(comment.createdAt).toLocaleTimeString(language === "tr" ? "tr-TR" : "en-US", {
+                                                {mounted && new Date(comment.createdAt).toLocaleTimeString(language === "tr" ? "tr-TR" : "en-US", {
                                                     hour: "2-digit",
                                                     minute: "2-digit",
                                                 })}

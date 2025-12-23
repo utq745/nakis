@@ -106,6 +106,10 @@ export async function PATCH(
         // Check if user is customer or admin
         const isAdmin = session.user.role === "ADMIN";
 
+        console.log(`[PATCH_ORDER] User: ${session.user.email} (ID: ${session.user.id}, Role: ${session.user.role})`);
+        console.log(`[PATCH_ORDER] Order: ${id}`);
+        console.log(`[PATCH_ORDER] Data:`, JSON.stringify(validatedData));
+
         // Get current order to check if status changed and check permissions
         const currentOrder = await prisma.order.findUnique({
             where: { id },
@@ -113,11 +117,15 @@ export async function PATCH(
         });
 
         if (!currentOrder) {
+            console.error(`[PATCH_ORDER] Order not found: ${id}`);
             return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
 
+        console.log(`[PATCH_ORDER] Current Status: ${currentOrder.status}, OwnerID: ${currentOrder.customerId}`);
+
         // Only admin can update price
         if (!isAdmin && (validatedData.price !== undefined || validatedData.hidden !== undefined)) {
+            console.error(`[PATCH_ORDER] 403: Customer ${session.user.email} tried to update restricted fields`);
             return NextResponse.json({ error: "Only admins can update price or visibility" }, { status: 403 });
         }
 
@@ -126,8 +134,8 @@ export async function PATCH(
             if (!isAdmin) {
                 // Check if user owns the order
                 if (currentOrder.customerId !== session.user.id) {
-                    console.error(`[AUTH_ERROR] Order ownership mismatch. Order owner: ${currentOrder.customerId}, Current user: ${session.user.id}`);
-                    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+                    console.error(`[PATCH_ORDER] 403 OWNERSHIP MISMATCH! Owner=${currentOrder.customerId}, User=${session.user.id}`);
+                    return NextResponse.json({ error: "Unauthorized: Order belongs to another user." }, { status: 403 });
                 }
 
                 // Customer can transition:
@@ -137,13 +145,15 @@ export async function PATCH(
                 const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
 
                 if (!isAcceptingPrice && !isAcceptingPreview) {
-                    console.error(`[AUTH_ERROR] Invalid status transition for customer: ${currentOrder.status} -> ${validatedData.status}`);
-                    return NextResponse.json({ error: "You can only approve a priced order or preview." }, { status: 403 });
+                    console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
+                    return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
             }
         } else if (!isAdmin && Object.keys(validatedData).length > 0) {
             // No status change but other updates attempted by non-admin
+            console.log(`[PATCH_ORDER] Simple update by customer. Checking ownership...`);
             if (currentOrder.customerId !== session.user.id) {
+                console.error(`[PATCH_ORDER] 403 OWNERSHIP MISMATCH (non-status): Owner=${currentOrder.customerId}, User=${session.user.id}`);
                 return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
             }
         }
