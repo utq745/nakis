@@ -241,7 +241,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     }
 
     async function handleApprovePrice() {
-        setIsUpdating(true);
+        setIsApprovingPrice(true);
         try {
             const response = await fetch(`/api/orders/${order.id}`, {
                 method: "PATCH",
@@ -264,7 +264,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         } catch (error) {
             toast.error("İşlem sırasında hata oluştu");
             console.error(error);
-            setIsUpdating(false);
+            setIsApprovingPrice(false);
         }
     }
 

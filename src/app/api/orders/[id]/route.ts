@@ -124,17 +124,20 @@ export async function PATCH(
         // Status update rules:
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             if (!isAdmin) {
-                // Customer can transition:
-                // 1. PRICED -> PRICE_ACCEPTED (price approval)
-                // 2. APPROVAL_AWAITING -> IN_PROGRESS (preview approval)
-                const isAcceptingPrice = currentOrder.status === "PRICED" && validatedData.status === "PRICE_ACCEPTED";
-                const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
-
+                // Check if user owns the order
                 if (currentOrder.customerId !== session.user.id) {
+                    console.error(`[AUTH_ERROR] Order ownership mismatch. Order owner: ${currentOrder.customerId}, Current user: ${session.user.id}`);
                     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
                 }
 
+                // Customer can transition:
+                // 1. PRICED -> PRICE_ACCEPTED (price approval)
+                // 2. APPROVAL_AWAITING -> IN_PROGRESS (preview approval)
+                const isAcceptingPrice = (currentOrder.status === "PRICED" || currentOrder.status === "WAITING_PRICE") && validatedData.status === "PRICE_ACCEPTED";
+                const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
+
                 if (!isAcceptingPrice && !isAcceptingPreview) {
+                    console.error(`[AUTH_ERROR] Invalid status transition for customer: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: "You can only approve a priced order or preview." }, { status: 403 });
                 }
             }
