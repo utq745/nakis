@@ -61,8 +61,10 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
 
     return {
         ...order,
-        files: transformedFiles,
-        comments: transformedComments,
+        createdAt: order.createdAt.toISOString(),
+        updatedAt: order.updatedAt.toISOString(),
+        files: transformedFiles.map(f => ({ ...f, createdAt: f.createdAt.toISOString() })),
+        comments: transformedComments.map(c => ({ ...c, createdAt: c.createdAt.toISOString() })),
         wilcomData: transformedWilcomData,
     };
 }

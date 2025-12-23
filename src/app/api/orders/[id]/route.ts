@@ -124,9 +124,10 @@ export async function PATCH(
         // Status update rules:
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             if (!isAdmin) {
-                // Customer can transition from PRICED to IN_PROGRESS (price approval)
-                // OR from APPROVAL_AWAITING to IN_PROGRESS (preview approval)
-                const isAcceptingPrice = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
+                // Customer can transition:
+                // 1. PRICED -> PRICE_ACCEPTED (price approval)
+                // 2. APPROVAL_AWAITING -> IN_PROGRESS (preview approval)
+                const isAcceptingPrice = currentOrder.status === "PRICED" && validatedData.status === "PRICE_ACCEPTED";
                 const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
 
                 if (currentOrder.customerId !== session.user.id) {

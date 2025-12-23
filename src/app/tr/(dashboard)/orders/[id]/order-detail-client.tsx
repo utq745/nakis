@@ -105,14 +105,14 @@ interface OrderDetailClientProps {
             url: string;
             type: string;
             size: number | null;
-            createdAt: Date;
+            createdAt: string;
         }>;
         comments: Array<{
             id: string;
             content: string;
             orderId: string;
             userId: string;
-            createdAt: Date;
+            createdAt: string;
             user: {
                 id: string;
                 name: string | null;
@@ -121,8 +121,8 @@ interface OrderDetailClientProps {
             };
         }>;
         wilcomData: WilcomData | null;
-        createdAt: Date;
-        updatedAt: Date;
+        createdAt: string;
+        updatedAt: string;
     };
     isAdmin: boolean;
 }
@@ -316,10 +316,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
-    const formattedComments = order.comments.map((c) => ({
-        ...c,
-        createdAt: c.createdAt.toISOString(),
-    }));
+    const formattedComments = order.comments;
 
     return (
         <div className="space-y-6">
