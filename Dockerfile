@@ -70,6 +70,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy prisma folder for migrations and scripts for admin tools
 COPY --from=builder /app/prisma ./prisma/
 COPY --from=builder /app/scripts ./scripts/
+# Copy node_modules for scripts (bcryptjs, etc.)
+COPY --from=builder /app/node_modules ./node_modules/
 
 # Ensure the uploads directory exists and has correct permissions
 RUN mkdir -p uploads && chown nextjs:nodejs uploads
