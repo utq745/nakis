@@ -86,13 +86,13 @@ export async function POST(
         await prisma.comment.createMany({
             data: [
                 {
-                    content: `🚀 Approval cards published to Final section. | 🚀 Onay kartları Final bölümüne gönderildi.`,
+                    content: `Approval cards published to Final section. | Onay kartları Final bölümüne gönderildi.`,
                     orderId,
                     userId: session.user.id,
                     isSystem: true,
                 },
                 {
-                    content: `📋 Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`,
+                    content: `Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`,
                     orderId,
                     userId: session.user.id,
                     isSystem: true,

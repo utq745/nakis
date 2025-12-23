@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { createCommentNotification } from "@/lib/notifications";
+import { sanitizeString } from "@/lib/sanitize";
 
 const createCommentSchema = z.object({
     content: z.string().min(1, "Comment cannot be empty"),
@@ -19,6 +20,9 @@ export async function POST(request: Request) {
 
         const body = await request.json();
         const validatedData = createCommentSchema.parse(body);
+
+        // Sanitize comment content
+        const sanitizedContent = sanitizeString(validatedData.content);
 
         // Check order access
         const order = await prisma.order.findUnique({
@@ -42,13 +46,13 @@ export async function POST(request: Request) {
         // Create comment
         const comment = await prisma.comment.create({
             data: {
-                content: validatedData.content,
+                content: sanitizedContent,
                 orderId: validatedData.orderId,
                 userId: session.user.id,
             },
             include: {
                 user: {
-                    select: { id: true, name: true, email: true, role: true },
+                    select: { id: true, name: true, email: true, role: true, image: true },
                 },
                 files: {
                     select: { id: true, name: true, url: true, size: true },
@@ -74,7 +78,7 @@ export async function POST(request: Request) {
                 where: { id: comment.id },
                 include: {
                     user: {
-                        select: { id: true, name: true, email: true, role: true },
+                        select: { id: true, name: true, email: true, role: true, image: true },
                     },
                     files: {
                         select: { id: true, name: true, url: true, size: true },
@@ -112,7 +116,7 @@ export async function POST(request: Request) {
                             admin.id,
                             "New Message | Yeni Mesaj",
                             `${senderName}: ${validatedData.content}`,
-                            `/admin/orders/${order.id}`
+                            `/orders/${order.id}`
                         );
                     }
                 }
@@ -156,7 +160,7 @@ export async function POST(request: Request) {
                     admin.id,
                     "New Message | Yeni Mesaj",
                     `${senderName}: ${validatedData.content}`,
-                    `/admin/orders/${order.id}`
+                    `/orders/${order.id}`
                 );
             }
         }

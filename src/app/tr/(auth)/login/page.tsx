@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Header } from "@/components/header";
 
 import { useLanguage } from "@/components/providers/language-provider";
@@ -115,9 +116,9 @@ export default function LoginPage() {
                         </p>
                         <div className="flex gap-4 mt-8">
                             <div className="flex -space-x-2">
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-1.webp" />
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-2.webp" />
-                                <img alt="User Avatar" className="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-3.webp" />
+                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-1.webp" width={40} height={40} />
+                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-2.webp" width={40} height={40} />
+                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-3.webp" width={40} height={40} />
                             </div>
                             <div className="flex flex-col justify-center">
                                 <span className="text-white text-sm font-semibold">{lp.professionals}</span>

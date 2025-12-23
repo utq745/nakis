@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Package, Search, EyeOff, Eye, Rocket } from "lucide-react";
+import { Plus, Package, Search, EyeOff, Eye, Rocket, Filter, ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_LABELS_TR, ORDER_STATUS_COLORS } from "@/types";
 import { useState, useMemo } from "react";
@@ -52,6 +55,19 @@ const texts = {
         updateFailed: "Failed to update order",
         showOrder: "Show order",
         hideOrder: "Hide order",
+        filters: "Filters",
+        status: "Status",
+        priority: "Priority",
+        dateRange: "Date Range",
+        minPrice: "Min Price",
+        maxPrice: "Max Price",
+        clearFilters: "Clear",
+        allStatuses: "All Statuses",
+        allPriorities: "All Priorities",
+        urgent: "Urgent",
+        normal: "Normal",
+        startDate: "Start",
+        endDate: "End",
     },
     tr: {
         allOrders: "Tüm Siparişler",
@@ -74,6 +90,19 @@ const texts = {
         updateFailed: "Sipariş güncellenemedi",
         showOrder: "Siparişi göster",
         hideOrder: "Siparişi gizle",
+        filters: "Filtreler",
+        status: "Durum",
+        priority: "Öncelik",
+        dateRange: "Tarih Aralığı",
+        minPrice: "Min Fiyat",
+        maxPrice: "Max Fiyat",
+        clearFilters: "Temizle",
+        allStatuses: "Tüm Durumlar",
+        allPriorities: "Tüm Öncelikler",
+        urgent: "Acil",
+        normal: "Normal",
+        startDate: "Başlangıç",
+        endDate: "Bitiş",
     },
 };
 
@@ -82,18 +111,48 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
     const statusLabels = locale === "tr" ? ORDER_STATUS_LABELS_TR : ORDER_STATUS_LABELS;
     const [searchQuery, setSearchQuery] = useState("");
     const [localOrders, setLocalOrders] = useState(orders);
+    const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [priorityFilter, setPriorityFilter] = useState<string>("all");
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+    const [minPrice, setMinPrice] = useState<string>("");
+    const [maxPrice, setMaxPrice] = useState<string>("");
 
     // Filter orders by tab and search
     const { allOrders: allOrdersFiltered, completedOrders, cancelledOrders, hiddenOrders } = useMemo(() => {
         const filtered = localOrders.filter((order) => {
-            if (!searchQuery) return true;
-            const query = searchQuery.toLowerCase();
-            return (
-                (order.title?.toLowerCase().includes(query) ?? false) ||
-                order.id.toLowerCase().includes(query) ||
-                order.customer.name?.toLowerCase().includes(query) ||
-                order.customer.email.toLowerCase().includes(query)
-            );
+            // Search Query
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const matchesSearch = (order.title?.toLowerCase().includes(query) ?? false) ||
+                    order.id.toLowerCase().includes(query) ||
+                    order.customer.name?.toLowerCase().includes(query) ||
+                    order.customer.email.toLowerCase().includes(query);
+                if (!matchesSearch) return false;
+            }
+
+            // Status Filter (Manual selection in popover)
+            if (statusFilter !== "all" && order.status !== statusFilter) return false;
+
+            // Priority Filter
+            if (priorityFilter !== "all" && order.priority !== priorityFilter) return false;
+
+            // Date Range Filter
+            if (startDate) {
+                const sDate = new Date(startDate);
+                if (new Date(order.createdAt) < sDate) return false;
+            }
+            if (endDate) {
+                const eDate = new Date(endDate);
+                eDate.setHours(23, 59, 59, 999);
+                if (new Date(order.createdAt) > eDate) return false;
+            }
+
+            // Price Range Filter
+            if (minPrice && (order.price === null || order.price < parseFloat(minPrice))) return false;
+            if (maxPrice && (order.price === null || order.price > parseFloat(maxPrice))) return false;
+
+            return true;
         });
 
         // Sort function to prioritize WAITING_PRICE and PRICE_ACCEPTED for admin
@@ -177,7 +236,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                     </h3>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs font-mono text-muted-foreground">
-                                            #{order.id.slice(0, 8)}
+                                            #{order.id.slice(-8)}
                                         </span>
                                         {!isPriced && !isOrangeAlert && !isAdminPriority && (isAdmin || order.status !== "WAITING_PRICE") && (
                                             <Badge
@@ -250,6 +309,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                         }}
                         className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-all text-muted-foreground hover:text-foreground hover:bg-accent"
                         title={order.hidden ? t.showOrder : t.hideOrder}
+                        aria-label={order.hidden ? t.showOrder : t.hideOrder}
                     >
                         {order.hidden ? (
                             <Eye className="h-4 w-4" />
@@ -284,24 +344,144 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                         {isAdmin ? t.allOrders : t.myOrders}
                     </h1>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder={t.search}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 w-48 bg-background border-border h-9 text-sm text-foreground placeholder:text-muted-foreground"
+                            className="pl-9 w-40 sm:w-48 bg-background border-border h-9 text-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={`h-9 border-border bg-background relative ${(statusFilter !== "all" || priorityFilter !== "all" || startDate || endDate || minPrice || maxPrice)
+                                    ? "border-violet-500/50 text-violet-400 bg-violet-500/5"
+                                    : ""
+                                    }`}
+                            >
+                                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                                <span className="hidden sm:inline">{t.filters}</span>
+                                {(statusFilter !== "all" || priorityFilter !== "all" || startDate || endDate || minPrice || maxPrice) && (
+                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-background" />
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-4 bg-popover border-border shadow-xl">
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                                        <Filter className="h-4 w-4" />
+                                        {t.filters}
+                                    </h4>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            setStatusFilter("all");
+                                            setPriorityFilter("all");
+                                            setStartDate("");
+                                            setEndDate("");
+                                            setMinPrice("");
+                                            setMaxPrice("");
+                                        }}
+                                        className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                                    >
+                                        {t.clearFilters}
+                                    </Button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">{t.status}</Label>
+                                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                            <SelectTrigger className="h-8 text-xs bg-background border-border">
+                                                <SelectValue placeholder={t.allStatuses} />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-popover border-border">
+                                                <SelectItem value="all">{t.allStatuses}</SelectItem>
+                                                {Object.entries(statusLabels).map(([key, label]) => (
+                                                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">{t.priority}</Label>
+                                        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                                            <SelectTrigger className="h-8 text-xs bg-background border-border">
+                                                <SelectValue placeholder={t.allPriorities} />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-popover border-border">
+                                                <SelectItem value="all">{t.allPriorities}</SelectItem>
+                                                <SelectItem value="NORMAL">{t.normal}</SelectItem>
+                                                <SelectItem value="URGENT">{t.urgent}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">{t.dateRange}</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="relative">
+                                            <Input
+                                                type="date"
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                className="h-8 text-[10px] pl-2 pr-1 bg-background border-border"
+                                            />
+                                            <span className="absolute -top-4 right-1 text-[8px] text-muted-foreground">{t.startDate}</span>
+                                        </div>
+                                        <div className="relative">
+                                            <Input
+                                                type="date"
+                                                value={endDate}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                                className="h-8 text-[10px] pl-2 pr-1 bg-background border-border"
+                                            />
+                                            <span className="absolute -top-4 right-1 text-[8px] text-muted-foreground">{t.endDate}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">{t.minPrice} / {t.maxPrice} ($)</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Input
+                                            type="number"
+                                            placeholder="0"
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(e.target.value)}
+                                            className="h-8 text-xs bg-background border-border"
+                                        />
+                                        <Input
+                                            type="number"
+                                            placeholder="1000+"
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(e.target.value)}
+                                            className="h-8 text-xs bg-background border-border"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+
                     {!isAdmin && (
                         <Link href={`${basePath}/orders/new`}>
                             <Button
                                 size="sm"
-                                className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
+                                className="h-9 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 shadow-md shadow-violet-500/10"
                             >
                                 <Plus className="mr-1 h-4 w-4" />
-                                {t.newOrder}
+                                <span className="hidden xs:inline">{t.newOrder}</span>
                             </Button>
                         </Link>
                     )}

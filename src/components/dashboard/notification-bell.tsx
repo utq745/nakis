@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Bell, MessageSquare, Package, Info, Trash2, CheckCircle2 } from "lucide-react";
 import {
     DropdownMenu,
@@ -16,6 +16,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Notification {
     id: string;
@@ -27,31 +28,87 @@ interface Notification {
     createdAt: string;
 }
 
+// Notification sound effect (base64 encoded short beep)
+const playNotificationSound = () => {
+    try {
+        const audio = new Audio("/notification.mp3");
+        audio.volume = 0.5;
+        audio.play().catch(() => {
+            // Audio play failed (browser policy), silently ignore
+        });
+    } catch (error) {
+        // Audio not supported
+    }
+};
+
 export function NotificationBell() {
     const { t, language } = useLanguage();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const prevUnreadCountRef = useRef<number>(0);
+    const isInitialLoad = useRef(true);
+
+    const getBilingualText = useCallback((text: string) => {
+        if (!text.includes(" | ")) return text;
+        const parts = text.split(" | ");
+        return language === "tr" ? parts[1].trim() : parts[0].trim();
+    }, [language]);
 
     const fetchNotifications = useCallback(async () => {
         try {
             const res = await fetch("/api/notifications");
             if (res.ok) {
                 const data = await res.json();
+                const newUnreadCount = data.unreadCount;
+
+                // Check if there are new notifications (not on initial load)
+                if (!isInitialLoad.current && newUnreadCount > prevUnreadCountRef.current) {
+                    const newNotifications = data.notifications.filter(
+                        (n: Notification) => !n.read
+                    );
+                    const latestNotification = newNotifications[0];
+
+                    // Play sound
+                    playNotificationSound();
+
+                    // Show toast notification
+                    if (latestNotification) {
+                        toast(getBilingualText(latestNotification.title), {
+                            description: getBilingualText(latestNotification.message),
+                            duration: 10000,
+                            position: "bottom-right",
+                            icon: latestNotification.type === "ORDER_UPDATE" ? "📦" :
+                                latestNotification.type === "COMMENT" ? "💬" : "ℹ️",
+                            action: latestNotification.link ? {
+                                label: language === "tr" ? "Görüntüle" : "View",
+                                onClick: () => {
+                                    window.location.href = language === "tr" && !latestNotification.link.startsWith("/tr")
+                                        ? `/tr${latestNotification.link}`
+                                        : latestNotification.link;
+                                },
+                            } : undefined,
+                        });
+                    }
+                }
+
+                prevUnreadCountRef.current = newUnreadCount;
+                isInitialLoad.current = false;
+
                 setNotifications(data.notifications);
-                setUnreadCount(data.unreadCount);
+                setUnreadCount(newUnreadCount);
             }
         } catch (error) {
             console.error("Failed to fetch notifications:", error);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [language]);
 
     useEffect(() => {
         fetchNotifications();
-        // Refresh every 60 seconds
-        const interval = setInterval(fetchNotifications, 60000);
+        // Refresh every 30 seconds for better real-time experience
+        const interval = setInterval(fetchNotifications, 30000);
         return () => clearInterval(interval);
     }, [fetchNotifications]);
 
@@ -149,6 +206,7 @@ export function NotificationBell() {
                     variant="ghost"
                     size="icon"
                     className="relative text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
                 >
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
@@ -160,7 +218,7 @@ export function NotificationBell() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-80 bg-popover border-border p-0 overflow-hidden shadow-2xl"
+                className="w-[420px] bg-popover border-border p-0 overflow-hidden shadow-2xl"
                 align="end"
             >
                 <div className="p-4 flex items-center justify-between bg-popover/50 backdrop-blur-md border-b border-border">
@@ -182,6 +240,7 @@ export function NotificationBell() {
                                 markAllRead();
                             }}
                             title={t.notifications.markAllRead}
+                            aria-label={t.notifications.markAllRead}
                         >
                             <CheckCircle2 className="h-4 w-4" />
                         </Button>
@@ -194,6 +253,7 @@ export function NotificationBell() {
                                 clearAll();
                             }}
                             title={t.notifications.clearAll}
+                            aria-label={t.notifications.clearAll}
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>
@@ -223,13 +283,13 @@ export function NotificationBell() {
                                             {getIcon(notification.type)}
                                         </div>
                                     </div>
-                                    <div className="flex-grow min-w-0">
+                                    <div className="flex-grow min-w-0 pr-8">
                                         <div className="flex justify-between items-start mb-1">
                                             <p className={cn(
-                                                "text-xs font-medium truncate pr-6",
+                                                "text-xs font-medium truncate pr-2",
                                                 notification.read ? "text-muted-foreground" : "text-foreground"
                                             )}>
-                                                {notification.title}
+                                                {getBilingualText(notification.title)}
                                             </p>
                                             <span className="text-[10px] text-muted-foreground/50 whitespace-nowrap">
                                                 {formatTime(notification.createdAt)}
@@ -239,7 +299,7 @@ export function NotificationBell() {
                                             "text-xs line-clamp-2",
                                             notification.read ? "text-muted-foreground/70" : "text-muted-foreground"
                                         )}>
-                                            {notification.message}
+                                            {getBilingualText(notification.message)}
                                         </p>
 
                                         {notification.link && (

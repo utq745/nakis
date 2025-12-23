@@ -722,7 +722,8 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         .color-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 2px;
+            column-gap: 12px;
+            row-gap: 2px;
             margin-bottom: 10px;
         }
         
@@ -891,7 +892,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     `;
 
     const visualContent = `
-        <div class="section-title">Visual Preview (Scaled)</div>
+        <div class="section-title" style="margin-top: 15px;">Visual Preview (Scaled)</div>
         <div class="ruler-section">
             <div class="ruler-area" style="height: ${containerHeight}px; min-height: 350px;">
                 <div class="corner-block"><div class="corner-label">inch</div></div>
@@ -1348,7 +1349,8 @@ export async function generatePdfFromHtml(html: string, outputPath: string): Pro
 export async function processWilcomPdf(
     wilcomPdfPath: string,
     orderId: string,
-    outputDir: string
+    outputDir: string,
+    orderTitle?: string | null
 ): Promise<{
     data: WilcomParsedData;
     operatorPdfPath: string;
@@ -1360,6 +1362,11 @@ export async function processWilcomPdf(
 
     // Parse Wilcom PDF
     const data = await parseWilcomPdf(wilcomPdfPath);
+
+    // If orderTitle is provided and not empty, use it as designName
+    if (orderTitle && orderTitle.trim()) {
+        data.designName = orderTitle.trim();
+    }
 
     // Extract images from PDF (using Python helper)
     let designImageBase64: string | undefined;

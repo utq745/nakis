@@ -14,8 +14,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useLanguage } from "@/components/providers/language-provider";
-import { CreditCard, Loader2, CheckCircle2, Building2, User, Landmark, ShieldCheck, Pencil, Plus, Trash2, CheckCircle, ArrowRight, Home, Download, FileText } from "lucide-react";
+import { CreditCard, Loader2, CheckCircle2, Building2, User, Landmark, ShieldCheck, Pencil, Plus, Trash2, CheckCircle, ArrowRight, Home, Download, FileText, Save, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ActionConfirmDialog } from "./action-confirm-dialog";
@@ -41,6 +43,101 @@ interface BillingData {
     taxOffice?: string;
     taxNumber?: string;
 }
+
+const COUNTRIES = [
+    { code: "AF", name: "Afghanistan" },
+    { code: "AL", name: "Albania" },
+    { code: "DZ", name: "Algeria" },
+    { code: "AD", name: "Andorra" },
+    { code: "AO", name: "Angola" },
+    { code: "AR", name: "Argentina" },
+    { code: "AM", name: "Armenia" },
+    { code: "AU", name: "Australia" },
+    { code: "AT", name: "Austria" },
+    { code: "AZ", name: "Azerbaijan" },
+    { code: "BS", name: "Bahamas" },
+    { code: "BH", name: "Bahrain" },
+    { code: "BD", name: "Bangladesh" },
+    { code: "BY", name: "Belarus" },
+    { code: "BE", name: "Belgium" },
+    { code: "BR", name: "Brazil" },
+    { code: "BG", name: "Bulgaria" },
+    { code: "CA", name: "Canada" },
+    { code: "CL", name: "Chile" },
+    { code: "CN", name: "China" },
+    { code: "CO", name: "Colombia" },
+    { code: "HR", name: "Croatia" },
+    { code: "CY", name: "Cyprus" },
+    { code: "CZ", name: "Czech Republic" },
+    { code: "DK", name: "Denmark" },
+    { code: "EG", name: "Egypt" },
+    { code: "EE", name: "Estonia" },
+    { code: "FI", name: "Finland" },
+    { code: "FR", name: "France" },
+    { code: "GE", name: "Georgia" },
+    { code: "DE", name: "Germany" },
+    { code: "GR", name: "Greece" },
+    { code: "HK", name: "Hong Kong" },
+    { code: "HU", name: "Hungary" },
+    { code: "IS", name: "Iceland" },
+    { code: "IN", name: "India" },
+    { code: "ID", name: "Indonesia" },
+    { code: "IR", name: "Iran" },
+    { code: "IQ", name: "Iraq" },
+    { code: "IE", name: "Ireland" },
+    { code: "IL", name: "Israel" },
+    { code: "IT", name: "Italy" },
+    { code: "JP", name: "Japan" },
+    { code: "JO", name: "Jordan" },
+    { code: "KZ", name: "Kazakhstan" },
+    { code: "KE", name: "Kenya" },
+    { code: "KR", name: "South Korea" },
+    { code: "KW", name: "Kuwait" },
+    { code: "LV", name: "Latvia" },
+    { code: "LB", name: "Lebanon" },
+    { code: "LT", name: "Lithuania" },
+    { code: "LU", name: "Luxembourg" },
+    { code: "MY", name: "Malaysia" },
+    { code: "MX", name: "Mexico" },
+    { code: "MA", name: "Morocco" },
+    { code: "NL", name: "Netherlands" },
+    { code: "NZ", name: "New Zealand" },
+    { code: "NG", name: "Nigeria" },
+    { code: "NO", name: "Norway" },
+    { code: "OM", name: "Oman" },
+    { code: "PK", name: "Pakistan" },
+    { code: "PA", name: "Panama" },
+    { code: "PE", name: "Peru" },
+    { code: "PH", name: "Philippines" },
+    { code: "PL", name: "Poland" },
+    { code: "PT", name: "Portugal" },
+    { code: "QA", name: "Qatar" },
+    { code: "RO", name: "Romania" },
+    { code: "RU", name: "Russia" },
+    { code: "SA", name: "Saudi Arabia" },
+    { code: "RS", name: "Serbia" },
+    { code: "SG", name: "Singapore" },
+    { code: "SK", name: "Slovakia" },
+    { code: "SI", name: "Slovenia" },
+    { code: "ZA", name: "South Africa" },
+    { code: "ES", name: "Spain" },
+    { code: "SE", name: "Sweden" },
+    { code: "CH", name: "Switzerland" },
+    { code: "TW", name: "Taiwan" },
+    { code: "TH", name: "Thailand" },
+    { code: "TR", name: "Türkiye" },
+    { code: "UA", name: "Ukraine" },
+    { code: "AE", name: "United Arab Emirates" },
+    { code: "GB", name: "United Kingdom" },
+    { code: "US", name: "United States" },
+    { code: "UY", name: "Uruguay" },
+    { code: "UZ", name: "Uzbekistan" },
+    { code: "VE", name: "Venezuela" },
+    { code: "VN", name: "Vietnam" },
+    { code: "YE", name: "Yemen" },
+    { code: "ZM", name: "Zambia" },
+    { code: "ZW", name: "Zimbabwe" },
+];
 
 export function PaymentForm({ orderId, orderTitle, price, locale, initialBillingAddress }: PaymentFormProps) {
     const router = useRouter();
@@ -158,16 +255,9 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
     const [cardExpiry, setCardExpiry] = useState("");
     const [cardCvc, setCardCvc] = useState("");
     const [isFlipped, setIsFlipped] = useState(false);
+    const [isCountryPopoverOpen, setIsCountryPopoverOpen] = useState(false);
 
-    const countries = [
-        { code: "TR", name: locale === "tr" ? "Türkiye" : "Turkey" },
-        { code: "US", name: "United States" },
-        { code: "GB", name: "United Kingdom" },
-        { code: "DE", name: "Germany" },
-        { code: "FR", name: "France" },
-        { code: "IT", name: "Italy" },
-        { code: "CA", name: "Canada" },
-    ];
+
 
     const formatCardNumber = (value: string) => {
         const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
@@ -316,130 +406,136 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                     <TabsTrigger
                                         value="individual"
                                         disabled={!isFormOpen}
-                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-colors"
+                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-all"
                                     >
-                                        <User className="h-4 w-4 mr-2" />
+                                        <User className="h-4 w-4 mr-1.5 transition-transform group-data-[state=active]:scale-110" />
                                         {t.payment.individual}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="corporate"
                                         disabled={!isFormOpen}
-                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-colors"
+                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-all"
                                     >
-                                        <Building2 className="h-4 w-4 mr-2" />
+                                        <Building2 className="h-4 w-4 mr-1.5 transition-transform group-data-[state=active]:scale-110" />
                                         {t.payment.corporate}
                                     </TabsTrigger>
                                 </TabsList>
                             </Tabs>
                         </div>
 
-                        <div className="pt-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-muted-foreground text-[10px] uppercase tracking-wider font-bold">
-                                    {locale === "tr" ? "Adres Seçimi" : "Address Selection"}
-                                </Label>
-                                {!isFormOpen && (
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={handleAddNewClick}
-                                        className="text-violet-400 hover:text-violet-300 text-xs h-7 gap-1"
-                                    >
-                                        <Plus className="h-3 w-3" />
-                                        {locale === "tr" ? "Yeni Adres" : "New Address"}
-                                    </Button>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-3">
-                                {savedAddresses.map((addr) => (
-                                    <div
-                                        key={addr.id}
-                                        onClick={() => {
-                                            if (!isFormOpen) setSelectedAddressId(addr.id);
-                                        }}
-                                        className={cn(
-                                            "relative p-4 rounded-xl border transition-all cursor-pointer group",
-                                            selectedAddressId === addr.id && !isFormOpen
-                                                ? "bg-violet-950/20 border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.1)]"
-                                                : "bg-accent/40 border-border hover:border-border/80",
-                                            isFormOpen && "opacity-50 cursor-not-allowed"
-                                        )}
-                                    >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex items-start gap-3">
-                                                <div className={cn(
-                                                    "mt-1 h-4 w-4 rounded-full border flex items-center justify-center transition-colors",
-                                                    selectedAddressId === addr.id && !isFormOpen
-                                                        ? "border-violet-500 bg-violet-600 text-white"
-                                                        : "border-border"
-                                                )}>
-                                                    {selectedAddressId === addr.id && !isFormOpen && (
-                                                        <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                                                    )}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-bold text-foreground leading-none mb-1">
-                                                        {addr.fullName}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground line-clamp-1">
-                                                        {addr.address}, {addr.city} / {addr.country}
-                                                    </p>
-                                                    {addr.type === 'corporate' && (
-                                                        <p className="text-[10px] text-muted-foreground/70 mt-1 uppercase">
-                                                            🏢 {addr.companyName}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    disabled={isFormOpen}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEditAddress(addr);
-                                                    }}
-                                                    className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-accent"
-                                                >
-                                                    <Pencil className="h-3 w-3" />
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    disabled={isFormOpen}
-                                                    onClick={(e) => handleDeleteAddressClick(addr.id, e)}
-                                                    className="h-7 w-7 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
-                                                >
-                                                    <Trash2 className="h-3 w-3" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {savedAddresses.length === 0 && !isFormOpen && (
-                                    <div className="p-8 border-2 border-dashed border-border rounded-xl text-center">
-                                        <p className="text-sm text-muted-foreground mb-4">
-                                            {locale === "tr" ? "Henüz kayıtlı adresiniz yok." : "No saved addresses yet."}
-                                        </p>
+                        {savedAddresses.length > 0 && (
+                            <div className="pt-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-muted-foreground text-[10px] uppercase tracking-wider font-bold">
+                                        {locale === "tr" ? "Adres Seçimi" : "Address Selection"}
+                                    </Label>
+                                    {!isFormOpen && (
                                         <Button
                                             type="button"
+                                            variant="ghost"
+                                            size="sm"
                                             onClick={handleAddNewClick}
-                                            variant="outline"
-                                            className="border-violet-500/50 text-violet-400 hover:bg-violet-500 hover:text-white"
+                                            className="text-violet-400 hover:text-violet-300 text-xs h-7 gap-1"
                                         >
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            {locale === "tr" ? "Yeni Adres Ekle" : "Add New Address"}
+                                            <Plus className="h-3 w-3" />
+                                            {locale === "tr" ? "Yeni Adres" : "New Address"}
                                         </Button>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    {savedAddresses.map((addr) => (
+                                        <div
+                                            key={addr.id}
+                                            onClick={() => {
+                                                if (!isFormOpen) setSelectedAddressId(addr.id);
+                                            }}
+                                            className={cn(
+                                                "relative p-4 rounded-xl border transition-all cursor-pointer group",
+                                                selectedAddressId === addr.id && !isFormOpen
+                                                    ? "bg-violet-950/20 border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.1)]"
+                                                    : "bg-accent/40 border-border hover:border-border/80",
+                                                isFormOpen && "opacity-50 cursor-not-allowed"
+                                            )}
+                                        >
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex items-start gap-3">
+                                                    <div className={cn(
+                                                        "mt-1 h-4 w-4 rounded-full border flex items-center justify-center transition-colors",
+                                                        selectedAddressId === addr.id && !isFormOpen
+                                                            ? "border-violet-500 bg-violet-600 text-white"
+                                                            : "border-border"
+                                                    )}>
+                                                        {selectedAddressId === addr.id && !isFormOpen && (
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                                                        )}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-bold text-foreground leading-none mb-1">
+                                                            {addr.fullName}
+                                                        </p>
+                                                        <p className="text-xs text-muted-foreground line-clamp-1">
+                                                            {addr.address}, {addr.city} / {addr.country}
+                                                        </p>
+                                                        {addr.type === 'corporate' && (
+                                                            <p className="text-[10px] text-muted-foreground/70 mt-1 uppercase">
+                                                                🏢 {addr.companyName}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        disabled={isFormOpen}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleEditAddress(addr);
+                                                        }}
+                                                        className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-accent"
+                                                        aria-label={locale === "tr" ? "Adresi Düzenle" : "Edit Address"}
+                                                    >
+                                                        <Pencil className="h-3 w-3" />
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        disabled={isFormOpen}
+                                                        onClick={(e) => handleDeleteAddressClick(addr.id, e)}
+                                                        className="h-7 w-7 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                                        aria-label={locale === "tr" ? "Adresi Sil" : "Delete Address"}
+                                                    >
+                                                        <Trash2 className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
+
+                        {savedAddresses.length === 0 && !isFormOpen && (
+                            <div className="pt-4">
+                                <div className="p-8 border-2 border-dashed border-border rounded-xl text-center">
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        {locale === "tr" ? "Henüz kayıtlı adresiniz yok." : "No saved addresses yet."}
+                                    </p>
+                                    <Button
+                                        type="button"
+                                        onClick={handleAddNewClick}
+                                        variant="outline"
+                                        className="border-violet-500/50 text-violet-400 hover:bg-violet-500 hover:text-white"
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        {locale === "tr" ? "Yeni Adres Ekle" : "Add New Address"}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </CardHeader>
 
                     {isFormOpen && (
@@ -450,21 +546,6 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                         ? (locale === "tr" ? "Adresi Düzenle" : "Edit Address")
                                         : (locale === "tr" ? "Yeni Adres Bilgileri" : "New Address Details")}
                                 </h3>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                        setIsFormOpen(false);
-                                        setEditingId(null);
-                                        if (savedAddresses.length > 0 && !selectedAddressId) {
-                                            setSelectedAddressId(savedAddresses[0].id);
-                                        }
-                                    }}
-                                    className="text-muted-foreground hover:text-foreground h-7"
-                                >
-                                    {locale === "tr" ? "İptal" : "Cancel"}
-                                </Button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -533,22 +614,59 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                 <div className="flex flex-col md:flex-row gap-4">
                                     <div className="space-y-2 w-full md:w-1/2">
                                         <Label className="text-muted-foreground">{t.payment.country}</Label>
-                                        <Select
-                                            value={billingData.country}
-                                            onValueChange={(v) => setBillingData({ ...billingData, country: v })}
-                                            required
-                                        >
-                                            <SelectTrigger className="w-full bg-background border-border text-foreground focus:border-violet-500 h-10">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-popover border-border text-foreground">
-                                                {countries.map((c) => (
-                                                    <SelectItem key={c.code} value={c.code} className="focus:bg-accent focus:text-foreground">
-                                                        {c.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <Popover open={isCountryPopoverOpen} onOpenChange={setIsCountryPopoverOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={isCountryPopoverOpen}
+                                                    className="w-full justify-between bg-background border-border text-foreground hover:bg-accent hover:text-foreground h-10 font-normal focus:ring-1 focus:ring-violet-500"
+                                                >
+                                                    {billingData.country
+                                                        ? COUNTRIES.find((c) => c.code === billingData.country)?.name
+                                                        : (locale === "tr" ? "Ülke seçin..." : "Select country...")}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                                className="p-0 bg-popover border-border animate-in fade-in zoom-in duration-200 shadow-xl"
+                                                align="start"
+                                                style={{ width: "var(--radix-popover-trigger-width)" }}
+                                            >
+                                                <Command className="bg-popover text-foreground">
+                                                    <CommandInput
+                                                        placeholder={locale === "tr" ? "Ülke ara..." : "Search country..."}
+                                                        className="h-9 border-none focus:ring-0 text-foreground"
+                                                    />
+                                                    <CommandList>
+                                                        <CommandEmpty className="py-2 text-center text-sm text-muted-foreground">
+                                                            {locale === "tr" ? "Ülke bulunamadı." : "No country found."}
+                                                        </CommandEmpty>
+                                                        <CommandGroup className="max-h-[250px] overflow-auto">
+                                                            {COUNTRIES.map((c) => (
+                                                                <CommandItem
+                                                                    key={c.code}
+                                                                    value={c.name}
+                                                                    onSelect={() => {
+                                                                        setBillingData({ ...billingData, country: c.code });
+                                                                        setIsCountryPopoverOpen(false);
+                                                                    }}
+                                                                    className="text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer flex items-center gap-2"
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "h-4 w-4",
+                                                                            billingData.country === c.code ? "opacity-100 text-violet-400" : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                    {c.name}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                     <div className="space-y-2 w-full md:w-1/2">
                                         <Label htmlFor="city" className="text-muted-foreground">{t.payment.city}</Label>
@@ -588,27 +706,13 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-4 gap-3">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        setIsFormOpen(false);
-                                        setEditingId(null);
-                                        if (savedAddresses.length > 0 && !selectedAddressId) {
-                                            setSelectedAddressId(savedAddresses[0].id);
-                                        }
-                                    }}
-                                    className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-                                >
-                                    {locale === "tr" ? "Vazgeç" : "Cancel"}
-                                </Button>
+                            <div className="flex justify-end pt-4">
                                 <Button
                                     type="button"
                                     onClick={handleSaveAddress}
-                                    className="bg-violet-600 hover:bg-violet-500 text-white px-8"
+                                    className="bg-violet-600 hover:bg-violet-500 text-white px-8 h-10 rounded-xl transition-all shadow-lg shadow-violet-500/10"
                                 >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                    <Save className="h-4 w-4 mr-1.5" />
                                     {editingId ? (locale === "tr" ? "Güncelle" : "Update") : (locale === "tr" ? "Kaydet" : "Save")}
                                 </Button>
                             </div>
@@ -811,6 +915,6 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                 cancelText={locale === "tr" ? "Vazgeç" : "Cancel"}
                 variant="destructive"
             />
-        </form>
+        </form >
     );
 }

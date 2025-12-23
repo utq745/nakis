@@ -34,6 +34,8 @@ import {
     ClipboardList,
     X,
     Archive,
+    RefreshCcw,
+    FilePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -41,6 +43,14 @@ import { WilcomSection } from "@/components/orders/wilcom-section";
 import { ORDER_STATUS_LABELS_TR as ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
 import { useLanguage } from "@/components/providers/language-provider";
 import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface WilcomColor {
     code: string;
@@ -147,6 +157,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [isApprovingPreview, setIsApprovingPreview] = useState(false);
     const [isSendingPreview, setIsSendingPreview] = useState(false);
     const [hasNewPreviewFiles, setHasNewPreviewFiles] = useState(false);
+    const [isRevisionDialogOpen, setIsRevisionDialogOpen] = useState(false);
+    const [revisionMessage, setRevisionMessage] = useState("");
+    const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
+    const [selectedRevisionFiles, setSelectedRevisionFiles] = useState<File[]>([]);
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
@@ -203,7 +217,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
             // Kullanıcının başarı mesajını görmesi için 2 saniye bekleyelim
             setTimeout(() => {
-                router.refresh();
+                window.location.reload();
                 setIsUpdating(false);
             }, 2000);
         } catch (error) {
@@ -240,8 +254,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.success("Dosyalar yüklendi");
             if (type === "preview") {
                 setHasNewPreviewFiles(true);
+                router.refresh();
+            } else if (type === "final") {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                router.refresh();
             }
-            router.refresh();
         } catch (error) {
             toast.error("Dosya yüklenirken hata oluştu");
             console.error(error);
@@ -331,6 +351,74 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.error("İşlem sırasında hata oluştu");
             console.error(error);
             setIsApprovingPreview(false);
+        }
+    }
+
+    async function handleRevisionRequest() {
+        if (!revisionMessage.trim()) {
+            toast.error("Lütfen revizyon notlarınızı girin.");
+            return;
+        }
+
+        setIsSubmittingRevision(true);
+        try {
+            let uploadedFileIds: string[] = [];
+
+            // 1. Upload files if any
+            if (selectedRevisionFiles.length > 0) {
+                const formData = new FormData();
+                selectedRevisionFiles.forEach((file) => {
+                    formData.append("files", file);
+                });
+                formData.append("orderId", order.id);
+                formData.append("type", "comment");
+
+                const uploadRes = await fetch("/api/files/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (uploadRes.ok) {
+                    const uploadData = await uploadRes.json();
+                    uploadedFileIds = uploadData.files.map((f: any) => f.id);
+                }
+            }
+
+            // 2. Create comment
+            const commentRes = await fetch("/api/comments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    content: revisionMessage,
+                    orderId: order.id,
+                    fileIds: uploadedFileIds,
+                }),
+            });
+
+            if (!commentRes.ok) throw new Error("Mesaj gönderilemedi");
+
+            // 3. Update order status to REVISION
+            const orderRes = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "REVISION" }),
+            });
+
+            if (!orderRes.ok) throw new Error("Durum güncellenemedi");
+
+            toast.success("Revizyon talebiniz başarıyla iletildi.");
+            setIsRevisionDialogOpen(false);
+
+            // Reload to show new status and message
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+        } catch (error) {
+            toast.error("Hata oluştu, lütfen tekrar deneyin.");
+            console.error(error);
+        } finally {
+            setIsSubmittingRevision(false);
         }
     }
 
@@ -501,6 +589,27 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
+            {/* Admin Revision Requested Banner */}
+            {isAdmin && status === "REVISION" && (
+                <Card className="border-red-500/50 bg-red-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-red-500/20 text-red-400">
+                                <RefreshCcw className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Müşteri revizyon talep etti
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Müşteriden gelen mesajı kontrol edin ve gerekli güncellemeleri yaparak yeni önizleme dosyalarını yükleyin.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Admin Final Files Upload Warning Banner */}
             {isAdmin && status === "IN_PROGRESS" && (
                 <Card className="border-purple-500/50 bg-purple-500/5 overflow-hidden">
@@ -594,23 +703,33 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     </p>
                                 </div>
                             </div>
-                            <Button
-                                onClick={handlePreviewApproval}
-                                disabled={isApprovingPreview}
-                                className="w-full md:w-auto bg-orange-600 hover:bg-orange-500 text-white gap-2"
-                            >
-                                {isApprovingPreview ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        {t.common.loading}
-                                    </>
-                                ) : (
-                                    <>
-                                        <ImageIcon className="h-4 w-4" />
-                                        {t.orders.approvePreview}
-                                    </>
-                                )}
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    onClick={() => setIsRevisionDialogOpen(true)}
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-orange-500/50 text-orange-500 hover:bg-orange-600 hover:text-white dark:hover:bg-orange-500 transition-all gap-2"
+                                >
+                                    <RefreshCcw className="h-4 w-4" />
+                                    {t.orders.requestRevision}
+                                </Button>
+                                <Button
+                                    onClick={handlePreviewApproval}
+                                    disabled={isApprovingPreview}
+                                    className="w-full sm:w-auto bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-500/20 transition-all gap-2"
+                                >
+                                    {isApprovingPreview ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            {t.common.loading}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ImageIcon className="h-4 w-4" />
+                                            {t.orders.approvePreview}
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -835,7 +954,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             )}
                             <div className="flex justify-between items-center py-1.5 border-b border-border">
                                 <span className="text-foreground font-medium">Sipariş No</span>
-                                <span className="text-sm text-muted-foreground font-mono">{order.id.slice(0, 8)}</span>
+                                <span className="text-sm text-muted-foreground font-mono">{order.id.slice(-8)}</span>
                             </div>
                             <div className="flex justify-between items-center py-1.5 border-b border-border">
                                 <span className="text-foreground font-medium">Oluşturulma</span>
@@ -938,6 +1057,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                             onChange={(e) => setPrice(e.target.value)}
                                             placeholder="0.00"
                                             className="bg-accent border-border text-foreground h-9"
+                                            disabled={order.status !== "WAITING_PRICE" && order.status !== "PRICED" && order.status !== "REVISION"}
                                         />
                                     </div>
                                 </div>
@@ -1043,6 +1163,101 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 cancelText="Vazgeç"
                 variant="destructive"
             />
+
+            <Dialog open={isRevisionDialogOpen} onOpenChange={setIsRevisionDialogOpen}>
+                <DialogContent className="sm:max-w-xl bg-popover border-border overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <RefreshCcw className="h-5 w-5 text-orange-500" />
+                            {t.orders.revisionTitle}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                {language === "tr" ? "Revizyon Detayları" : "Revision Details"}
+                            </Label>
+                            <Textarea
+                                value={revisionMessage}
+                                onChange={(e) => setRevisionMessage(e.target.value)}
+                                placeholder={t.orders.revisionPlaceholder}
+                                className="min-h-[120px] bg-accent/50 border-border focus:ring-orange-500/20 text-foreground"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                {language === "tr" ? "Dosya Ekle (Opsiyonel)" : "Attach Files (Optional)"}
+                            </Label>
+                            <div className="flex flex-col gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => document.getElementById("revision-file-upload")?.click()}
+                                    className="w-full border-dashed border-border hover:border-orange-500/50 hover:bg-orange-500/5 text-muted-foreground hover:text-orange-500 gap-2 h-12"
+                                >
+                                    <FilePlus className="h-4 w-4" />
+                                    {language === "tr" ? "Dosya Seç" : "Select Files"}
+                                </Button>
+                                <input
+                                    id="revision-file-upload"
+                                    type="file"
+                                    multiple
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        if (e.target.files) {
+                                            setSelectedRevisionFiles(Array.from(e.target.files));
+                                        }
+                                    }}
+                                />
+                                {selectedRevisionFiles.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {selectedRevisionFiles.map((file, i) => (
+                                            <Badge key={i} variant="secondary" className="bg-accent text-foreground gap-1 pr-1">
+                                                <span className="truncate max-w-[150px]">{file.name}</span>
+                                                <button
+                                                    onClick={() => setSelectedRevisionFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                                    className="hover:text-red-500 ml-1"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsRevisionDialogOpen(false)}
+                            className="text-muted-foreground hover:text-foreground hover:bg-zinc-800"
+                        >
+                            {t.common.cancel}
+                        </Button>
+                        <Button
+                            onClick={handleRevisionRequest}
+                            disabled={isSubmittingRevision || !revisionMessage.trim()}
+                            className="bg-orange-600 hover:bg-orange-500 text-white min-w-[120px] shadow-lg shadow-orange-500/20"
+                        >
+                            {isSubmittingRevision ? (
+                                <>
+                                    <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
+                                    {language === "tr" ? "Gönderiliyor..." : "Sending..."}
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="mr-2 h-4 w-4" />
+                                    {t.orders.sendRevision}
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

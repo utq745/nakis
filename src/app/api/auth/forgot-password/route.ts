@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import crypto from "crypto";
+import { passwordResetRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting
+        const clientIP = getClientIP(request);
+        const rateLimitResult = await checkRateLimit(passwordResetRateLimiter, clientIP);
+        if (!rateLimitResult.success) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                {
+                    status: 429,
+                    headers: { "Retry-After": String(rateLimitResult.retryAfter) }
+                }
+            );
+        }
+
         const { email } = await request.json();
 
         if (!email) {

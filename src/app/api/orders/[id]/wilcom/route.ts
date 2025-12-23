@@ -32,8 +32,14 @@ export async function POST(
         const buffer = Buffer.from(bytes);
         await fs.writeFile(pdfPath, buffer);
 
+        // Fetch order to check for user-provided title
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            select: { title: true }
+        });
+
         // Process the PDF
-        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir);
+        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title);
 
         // Save/Update in database
         const wilcomData = await prisma.wilcomData.upsert({

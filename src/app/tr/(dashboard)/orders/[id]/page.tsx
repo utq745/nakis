@@ -9,7 +9,7 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
         where: { id },
         include: {
             customer: {
-                select: { id: true, name: true, email: true, role: true },
+                select: { id: true, name: true, email: true, role: true, image: true },
             },
             files: {
                 orderBy: { createdAt: "desc" },
@@ -17,7 +17,7 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
             comments: {
                 include: {
                     user: {
-                        select: { id: true, name: true, email: true, role: true },
+                        select: { id: true, name: true, email: true, role: true, image: true },
                     },
                     files: {
                         select: { id: true, name: true, size: true },

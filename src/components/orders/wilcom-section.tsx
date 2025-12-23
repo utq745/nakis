@@ -144,7 +144,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
             setIsPublishDialogOpen(false);
 
             setTimeout(() => {
-                router.refresh();
+                window.location.reload();
             }, 500);
         } catch (error) {
             toast.error(t.orders.publishError || 'Failed to publish cards');

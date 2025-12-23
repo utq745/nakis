@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { sanitizeString } from "@/lib/sanitize";
 
 const createOrderSchema = z.object({
     title: z.string().optional(),
@@ -16,15 +17,28 @@ const createOrderSchema = z.object({
     priority: z.enum(["NORMAL", "URGENT"]).default("NORMAL"),
 });
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const session = await auth();
         if (!session?.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "50");
+        const status = searchParams.get("status");
+        const priority = searchParams.get("priority");
+
         const isAdmin = session.user.role === "ADMIN";
-        const where = isAdmin ? {} : { customerId: session.user.id };
+        const where: Record<string, unknown> = isAdmin ? {} : { customerId: session.user.id };
+
+        // Add optional filters
+        if (status) where.status = status;
+        if (priority) where.priority = priority;
+
+        // Get total count for pagination
+        const total = await prisma.order.count({ where });
 
         const orders = await prisma.order.findMany({
             where,
@@ -37,9 +51,20 @@ export async function GET() {
                 },
             },
             orderBy: { createdAt: "desc" },
+            skip: (page - 1) * limit,
+            take: limit,
         });
 
-        return NextResponse.json(orders);
+        return NextResponse.json({
+            orders,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasMore: page * limit < total,
+            }
+        });
     } catch (error) {
         console.error("Error fetching orders:", error);
         return NextResponse.json(
@@ -59,20 +84,25 @@ export async function POST(request: Request) {
         const body = await request.json();
         const validatedData = createOrderSchema.parse(body);
 
+        // Sanitize user inputs
+        const sanitizedTitle = validatedData.title ? sanitizeString(validatedData.title) : undefined;
+        const sanitizedDescription = validatedData.description ? sanitizeString(validatedData.description) : undefined;
+        const sanitizedCustomProduct = validatedData.customProduct ? sanitizeString(validatedData.customProduct) : undefined;
+
         // Calculate estimated delivery (default 24-48h, but let's say 48h for safety)
         const estimatedDelivery = new Date();
         estimatedDelivery.setHours(estimatedDelivery.getHours() + 48);
 
         let order = await prisma.order.create({
             data: {
-                title: validatedData.title || "Yeni Sipariş",
-                description: validatedData.description,
+                title: sanitizedTitle || "Yeni Sipariş",
+                description: sanitizedDescription,
                 machineBrand: validatedData.machineBrand,
                 serviceType: validatedData.serviceType,
                 productType: validatedData.productType,
                 garmentType: validatedData.garmentType,
                 isNotSure: validatedData.isNotSure,
-                customProduct: validatedData.customProduct,
+                customProduct: sanitizedCustomProduct,
                 addKnockdownStitch: validatedData.addKnockdownStitch,
                 priority: validatedData.priority,
                 estimatedDelivery: estimatedDelivery,

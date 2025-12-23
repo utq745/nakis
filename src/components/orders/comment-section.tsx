@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Send, Loader2, RefreshCw, MessageSquare, Paperclip, X, FileIcon } from "lucide-react";
+import { Send, Loader2, RefreshCw, MessageSquare, Paperclip, X, FileIcon, Package } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/components/providers/language-provider";
 
@@ -224,6 +224,7 @@ export function CommentSection({ orderId, initialComments, status }: CommentSect
                         disabled={isRefreshing}
                         className="text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 gap-1.5"
                         title={txt.refreshMessages}
+                        aria-label={txt.refreshMessages}
                     >
                         <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
                         <span className="hidden sm:inline text-xs">{txt.refreshMessages}</span>
@@ -257,6 +258,7 @@ export function CommentSection({ orderId, initialComments, status }: CommentSect
                             return (
                                 <div key={comment.id} className="flex justify-center my-4">
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                        <Package className="h-3.5 w-3.5 text-amber-500" />
                                         <span className="text-sm text-amber-600 dark:text-amber-400">
                                             {displayText}
                                         </span>
@@ -371,6 +373,7 @@ export function CommentSection({ orderId, initialComments, status }: CommentSect
                                         onClick={() => removeFile(index)}
                                         className="text-muted-foreground hover:text-red-500 transition-colors"
                                         title={txt.removeFile}
+                                        aria-label={txt.removeFile}
                                     >
                                         <X className="h-4 w-4" />
                                     </button>
@@ -405,6 +408,7 @@ export function CommentSection({ orderId, initialComments, status }: CommentSect
                                 onClick={() => fileInputRef.current?.click()}
                                 className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 h-[38px] w-[38px] rounded-xl shrink-0"
                                 title={txt.attachFile}
+                                aria-label={txt.attachFile}
                             >
                                 <Paperclip className="h-5 w-5" />
                             </Button>

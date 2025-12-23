@@ -127,7 +127,7 @@ export async function POST(request: Request) {
             });
 
             // Create system message
-            const systemMessageContent = `📋 Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`;
+            const systemMessageContent = `Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`;
             await prisma.comment.create({
                 data: {
                     content: systemMessageContent,

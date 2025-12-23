@@ -85,6 +85,11 @@ model Order {
   files              File[]
   customer           User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
   wilcomData         WilcomData?
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([priority])
 }
 
 model WilcomData {
@@ -140,6 +145,10 @@ model File {
   createdAt     DateTime @default(now())
   comment       Comment? @relation(fields: [commentId], references: [id])
   order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([type])
+  @@index([uploadedBy])
 }
 
 model Comment {
@@ -152,6 +161,10 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   files     File[]
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Notification {
@@ -164,4 +177,8 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
 }

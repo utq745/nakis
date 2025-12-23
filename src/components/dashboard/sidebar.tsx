@@ -187,19 +187,35 @@ export function Sidebar() {
                     </div>
 
                     {/* Back to Site Button */}
-                    <Link href={homeUrl} className="block mt-3">
+                    <Link href={homeUrl} className="block mt-4">
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground hover:text-foreground hover:bg-accent"
-                        >
-                            <Home className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
-                            {!isCollapsed && (
-                                <span className="ml-2">{language === 'tr' ? 'Siteye Dön' : 'Back to Site'}</span>
+                            className={cn(
+                                "relative w-full overflow-hidden transition-all duration-300 group/back",
+                                isCollapsed
+                                    ? "h-10 w-10 p-0 rounded-xl bg-violet-500/5 hover:bg-violet-500/10 border border-violet-500/10 hover:border-violet-500/30"
+                                    : "h-11 px-4 rounded-xl bg-violet-500/5 hover:bg-violet-500/10 border border-violet-500/10 hover:border-violet-500/30 justify-start"
                             )}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/10 via-transparent to-transparent opacity-0 group-hover/back:opacity-100 transition-opacity" />
+
+                            <div className={cn(
+                                "relative flex items-center transition-all duration-300",
+                                isCollapsed ? "justify-center w-full" : "gap-3"
+                            )}>
+                                <div className="p-1.5 rounded-lg bg-violet-500/10 group-hover/back:bg-violet-500/20 transition-colors">
+                                    <Home className="h-3.5 w-3.5 text-violet-400 group-hover/back:scale-110 transition-transform" />
+                                </div>
+                                {!isCollapsed && (
+                                    <span className="text-xs font-bold text-violet-400/80 group-hover/back:text-violet-400 tracking-wide uppercase">
+                                        {language === 'tr' ? 'Siteye Dön' : 'Back to Site'}
+                                    </span>
+                                )}
+                            </div>
+
                             {isCollapsed && (
-                                <div className="absolute left-full ml-4 px-3 py-2 bg-popover backdrop-blur-md text-foreground text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
-                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-popover/90 backdrop-blur-md text-foreground text-[10px] font-bold uppercase tracking-widest rounded-xl opacity-0 translate-x-[-10px] group-hover/back:opacity-100 group-hover/back:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
                                     {language === 'tr' ? 'Siteye Dön' : 'Back to Site'}
                                 </div>
                             )}

@@ -13,9 +13,10 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff, Camera, Upload, X } from "lucide-react";
+import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff, Camera, Upload, X, Palette, Sun, Moon, Monitor } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 interface SettingsFormProps {
@@ -45,13 +46,17 @@ const texts = {
         profileVerified: "Profile changes verified successfully",
         passwordUpdated: "Password updated successfully",
         error: "An error occurred",
-        languageTitle: "Language Preferences",
-        languageDesc: "Choose your preferred language for the dashboard.",
+        languageTitle: "Interface Preferences",
+        languageDesc: "Customize how the dashboard looks and feels.",
         language: "Language",
         english: "English",
         turkish: "Türkçe",
-        languageUpdated: "Language preference saved",
-        updateLanguage: "Update Language",
+        languageUpdated: "Preferences saved",
+        updateLanguage: "Save Preferences",
+        theme: "Theme",
+        themeLight: "Light",
+        themeDark: "Dark",
+        themeSystem: "System",
         billingTitle: "Billing Address",
         billingDesc: "Manage your billing address for invoices.",
         billingPlaceholder: "Street address...",
@@ -109,13 +114,17 @@ const texts = {
         profileVerified: "Profil değişiklikleri başarıyla onaylandı",
         passwordUpdated: "Şifre başarıyla güncellendi",
         error: "Bir hata oluştu",
-        languageTitle: "Dil Tercihleri",
-        languageDesc: "Panel için tercih ettiğiniz dili seçin.",
+        languageTitle: "Arayüz Tercihleri",
+        languageDesc: "Panelin görünümünü ve hissini özelleştirin.",
         language: "Dil",
         english: "English",
         turkish: "Türkçe",
-        languageUpdated: "Dil tercihi kaydedildi",
-        updateLanguage: "Dili Güncelle",
+        languageUpdated: "Tercihler kaydedildi",
+        updateLanguage: "Tercihleri Kaydet",
+        theme: "Tema",
+        themeLight: "Açık",
+        themeDark: "Koyu",
+        themeSystem: "Sistem",
         billingTitle: "Fatura Adresi",
         billingDesc: "Faturalarınız için adres bilgilerinizi yönetin.",
         billingPlaceholder: "Sokak adresi...",
@@ -448,6 +457,8 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(user?.language || "en");
+    const { theme, setTheme } = useTheme();
+    const [selectedTheme, setSelectedTheme] = useState<string>(theme || "system");
 
     // Password visibility states
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -567,13 +578,16 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
         setIsLanguageLoading(true);
 
         try {
+            // Save theme preference
+            setTheme(selectedTheme);
+
             const response = await fetch("/api/user/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ language: selectedLanguage }),
             });
 
-            if (!response.ok) throw new Error("Failed to update language");
+            if (!response.ok) throw new Error("Failed to update preferences");
 
             toast.success(t.languageUpdated);
 
@@ -1293,15 +1307,15 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                 </Card>
             </Collapsible>
 
-            {/* Language Preferences */}
+            {/* Interface Preferences */}
             <Collapsible open={openSection === "language"} onOpenChange={(open) => setOpenSection(open ? "language" : null)}>
                 <Card className="bg-card border-border overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <CardHeader className="cursor-pointer hover:bg-accent transition-all duration-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-blue-500/10">
-                                        <Globe className="h-5 w-5 text-blue-400" />
+                                    <div className="p-2 rounded-lg bg-violet-500/10">
+                                        <Palette className="h-5 w-5 text-violet-400" />
                                     </div>
                                     <div>
                                         <CardTitle className="text-foreground">{t.languageTitle}</CardTitle>
@@ -1315,28 +1329,80 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                         </CardHeader>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                        <CardContent className="pt-0">
-                            <div className="flex items-end justify-between gap-4">
-                                <div className="space-y-2 max-w-xs">
-                                    <Label className="text-muted-foreground">{t.language}</Label>
+                        <CardContent className="pt-0 space-y-6">
+                            {/* Theme and Language Row */}
+                            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+                                {/* Theme Selection - Left */}
+                                <div className="space-y-2.5 flex-1">
+                                    <Label className="text-muted-foreground text-sm font-medium">{t.theme}</Label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedTheme("light")}
+                                            className={cn(
+                                                "flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all duration-200",
+                                                selectedTheme === "light"
+                                                    ? "bg-violet-500/10 border-violet-500/50 text-violet-400"
+                                                    : "bg-accent/50 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30"
+                                            )}
+                                        >
+                                            <Sun className="h-4 w-4" />
+                                            <span className="text-sm font-medium">{t.themeLight}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedTheme("dark")}
+                                            className={cn(
+                                                "flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all duration-200",
+                                                selectedTheme === "dark"
+                                                    ? "bg-violet-500/10 border-violet-500/50 text-violet-400"
+                                                    : "bg-accent/50 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30"
+                                            )}
+                                        >
+                                            <Moon className="h-4 w-4" />
+                                            <span className="text-sm font-medium">{t.themeDark}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedTheme("system")}
+                                            className={cn(
+                                                "flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all duration-200",
+                                                selectedTheme === "system"
+                                                    ? "bg-violet-500/10 border-violet-500/50 text-violet-400"
+                                                    : "bg-accent/50 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30"
+                                            )}
+                                        >
+                                            <Monitor className="h-4 w-4" />
+                                            <span className="text-sm font-medium">{t.themeSystem}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Language Selection - Right */}
+                                <div className="space-y-2.5">
+                                    <Label className="text-muted-foreground text-sm font-medium">{t.language}</Label>
                                     <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                                        <SelectTrigger className="bg-accent/50 border-border text-foreground">
+                                        <SelectTrigger className="w-[160px] bg-accent/50 border-border text-foreground hover:bg-accent hover:border-violet-500/30 transition-all duration-200">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-card border-border">
-                                            <SelectItem value="en" className="text-foreground focus:bg-accent">
-                                                {t.english}
+                                            <SelectItem value="en" className="text-foreground focus:bg-violet-500/10 focus:text-violet-400">
+                                                🇺🇸 {t.english}
                                             </SelectItem>
-                                            <SelectItem value="tr" className="text-foreground focus:bg-accent">
-                                                {t.turkish}
+                                            <SelectItem value="tr" className="text-foreground focus:bg-violet-500/10 focus:text-violet-400">
+                                                🇹🇷 {t.turkish}
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            </div>
+
+                            {/* Save Button */}
+                            <div className="flex justify-end pt-2">
                                 <Button
                                     onClick={handleLanguageUpdate}
-                                    disabled={isLanguageLoading || selectedLanguage === user?.language}
-                                    className="bg-violet-600 hover:bg-violet-500 text-white"
+                                    disabled={isLanguageLoading || (selectedLanguage === user?.language && selectedTheme === theme)}
+                                    className="bg-violet-600 hover:bg-violet-500 text-white transition-all duration-200"
                                 >
                                     {isLanguageLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     {t.updateLanguage}

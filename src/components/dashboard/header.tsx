@@ -48,6 +48,7 @@ export function Header() {
                             variant="ghost"
                             size="icon"
                             className="text-muted-foreground hover:text-foreground hover:bg-accent"
+                            aria-label={language === "tr" ? "Dil Seç" : "Select Language"}
                         >
                             <Globe className="h-5 w-5" />
                         </Button>
@@ -99,6 +100,7 @@ export function Header() {
                             <Button
                                 variant="ghost"
                                 className="relative h-10 w-10 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500"
+                                aria-label={language === "tr" ? "Profil Menüsü" : "Profile Menu"}
                             >
                                 <Avatar className="h-10 w-10">
                                     {session?.user?.image && (
@@ -155,6 +157,7 @@ export function Header() {
                     <Button
                         variant="ghost"
                         className="relative h-10 w-10 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500"
+                        aria-label={language === "tr" ? "Profil Menüsü" : "Profile Menu"}
                     >
                         <Avatar className="h-10 w-10">
                             {session?.user?.image && (

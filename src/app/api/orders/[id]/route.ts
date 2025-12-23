@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createOrderNotification } from "@/lib/notifications";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
     title: z.string().optional(),
@@ -145,12 +145,13 @@ export async function PATCH(
                 // 3. Any stage before work starts -> CANCELLED (customer declines or cancels)
                 const isAcceptingPrice = (currentOrder.status === "PRICED" || currentOrder.status === "WAITING_PRICE") && validatedData.status === "PRICE_ACCEPTED";
                 const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
+                const isRequestingRevision = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "REVISION";
                 const isCancelling = validatedData.status === "CANCELLED" && ["WAITING_PRICE", "PRICED"].includes(currentOrder.status);
 
-                console.log(`[PATCH_ORDER] isAcceptingPrice=${isAcceptingPrice}, isAcceptingPreview=${isAcceptingPreview}, isCancelling=${isCancelling}`);
+                console.log(`[PATCH_ORDER] isAcceptingPrice=${isAcceptingPrice}, isAcceptingPreview=${isAcceptingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}`);
                 console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
 
-                if (!isAcceptingPrice && !isAcceptingPreview && !isCancelling) {
+                if (!isAcceptingPrice && !isAcceptingPreview && !isRequestingRevision && !isCancelling) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
@@ -198,6 +199,7 @@ export async function PATCH(
                 PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
                 PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
+                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
@@ -207,7 +209,7 @@ export async function PATCH(
             const newStatusLabel = statusLabels[validatedData.status] || { en: validatedData.status, tr: validatedData.status };
 
             // Create bilingual system message
-            const systemMessageContent = `📋 Order Status Changed: ${newStatusLabel.en} | Sipariş Durumu Değişti: ${newStatusLabel.tr}`;
+            const systemMessageContent = `Order Status Changed: ${newStatusLabel.en} | Sipariş Durumu Değişti: ${newStatusLabel.tr}`;
 
             await prisma.comment.create({
                 data: {
@@ -236,6 +238,7 @@ export async function PATCH(
                 PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
                 PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
+                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
@@ -259,7 +262,7 @@ export async function PATCH(
                         admin.id,
                         "Order Update | Sipariş Güncellemesi",
                         `Customer ${order.customer.name || order.customer.email} updated order to ${newStatusLabel.en}`,
-                        `/admin/orders/${id}`
+                        `/orders/${id}`
                     );
                 }
             }
