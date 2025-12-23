@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { copyFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { createOrderNotification } from "@/lib/notifications";
 
 export async function POST(
     request: Request,
@@ -98,6 +99,14 @@ export async function POST(
                 }
             ],
         });
+
+        // Create In-App Notification
+        await createOrderNotification(
+            order.customerId,
+            "Approval Cards Ready | Onay Kartları Hazır",
+            "Your approval cards have been published. Please review and proceed to payment. | Onay kartlarınız yayınlandı. Lütfen kontrol edip ödemeye geçiniz.",
+            `/orders/${orderId}`
+        );
 
         return NextResponse.json({ success: true });
     } catch (error) {

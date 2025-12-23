@@ -44,7 +44,7 @@ export function ActionConfirmDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-zinc-900 border-zinc-800 sm:max-w-md">
+            <DialogContent className="bg-card border-border sm:max-w-md">
                 <DialogHeader>
                     <div className="flex items-center gap-3 mb-2">
                         <div className={cn(
@@ -53,11 +53,11 @@ export function ActionConfirmDialog({
                         )}>
                             {icon || (isDestructive ? <AlertTriangle className="h-6 w-6" /> : <Send className="h-6 w-6" />)}
                         </div>
-                        <DialogTitle className="text-white">
+                        <DialogTitle className="text-foreground">
                             {title || (isDestructive ? t.common?.confirmDelete : "İşlemi Onayla")}
                         </DialogTitle>
                     </div>
-                    <DialogDescription className="text-zinc-400">
+                    <DialogDescription className="text-muted-foreground">
                         {description}
                     </DialogDescription>
                 </DialogHeader>
@@ -65,7 +65,7 @@ export function ActionConfirmDialog({
                     <Button
                         variant="ghost"
                         onClick={() => onOpenChange(false)}
-                        className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        className="text-muted-foreground hover:text-foreground hover:bg-accent"
                         disabled={isPending}
                     >
                         {cancelText || t.common?.cancel || "İptal"}

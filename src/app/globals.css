@@ -82,46 +82,49 @@
 }
 
 .dark {
-  --background: #172136;
-  --foreground: #F4F6FA;
-  --card: #2D3953;
-  --card-foreground: #FFFFFF;
-  --popover: #2D3953;
-  --popover-foreground: #FFFFFF;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #09090b;
+  --card-foreground: #fafafa;
+  --popover: #09090b;
+  --popover-foreground: #fafafa;
   --primary: #145BEC;
-  --primary-foreground: #FFFFFF;
-  --secondary: #2D3953;
-  --secondary-foreground: #FFFFFF;
-  --muted: #2D3953;
-  --muted-foreground: #DEE3ED;
-  --accent: #2D3953;
-  --accent-foreground: #FFFFFF;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #47536B;
-  --input: #47536B;
-  --ring: #104DC9;
+  --primary-foreground: #fafafa;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  --destructive: #7f1d1d;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #145BEC;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #172136;
-  --sidebar-foreground: #F4F6FA;
+  --sidebar: #09090b;
+  --sidebar-foreground: #fafafa;
   --sidebar-primary: #145BEC;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2D3953;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #47536B;
-  --sidebar-ring: #104DC9;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #18181b;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #145BEC;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   /* Headings */
@@ -208,7 +211,7 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #2D3953;
+  background: var(--muted);
   border-radius: 10px;
 }
 

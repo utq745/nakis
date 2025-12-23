@@ -90,17 +90,17 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
         <div className="p-6 space-y-8 max-w-7xl mx-auto min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white">
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
                         {language === 'tr' ? 'Finansal Raporlar' : 'Financial Reports'}
                     </h1>
-                    <p className="text-zinc-400 mt-1">
+                    <p className="text-muted-foreground mt-1">
                         {language === 'tr' ? 'İşletme performansınız ve sipariş istatistiklerine genel bakış.' : 'Overview of your business performance and order statistics.'}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-[180px] bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all group px-4 flex justify-between">
+                            <Button variant="outline" className="w-[180px] bg-card text-muted-foreground border-border hover:bg-accent hover:text-foreground transition-all group px-4 flex justify-between">
                                 <span className="flex items-center">
                                     <Calendar className="mr-2 h-4 w-4 text-violet-400 group-hover:scale-110 transition-transform" />
                                     {RANGE_LABELS[language][range]}
@@ -108,14 +108,14 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                                 <ChevronDown className="h-4 w-4 opacity-50" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[180px] bg-zinc-900 border-zinc-800 text-zinc-300">
+                        <DropdownMenuContent align="end" className="w-[180px] bg-card border-border text-muted-foreground">
                             {[3, 6, 12].map((r) => (
                                 <DropdownMenuItem
                                     key={r}
                                     onClick={() => setRange(r as any)}
                                     className={cn(
-                                        "focus:bg-zinc-800 focus:text-white cursor-pointer",
-                                        range === r && "bg-zinc-800 text-white"
+                                        "focus:bg-accent focus:text-foreground cursor-pointer",
+                                        range === r && "bg-accent text-foreground"
                                     )}
                                 >
                                     {RANGE_LABELS[language][r as 3 | 6 | 12]}
@@ -128,19 +128,19 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
 
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-zinc-900 border-zinc-800 relative overflow-hidden group shadow-sm">
+                <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <ShoppingCart className="h-24 w-24 text-violet-400" />
                     </div>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {language === 'tr' ? 'Toplam Sipariş' : 'Total Orders'}
                         </CardTitle>
                         <ShoppingCart className="h-4 w-4 text-violet-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.totalOrders}</div>
-                        <p className="text-xs text-zinc-500 mt-1 flex items-center gap-1">
+                        <div className="text-3xl font-bold text-foreground">{stats.totalOrders}</div>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             <span className="text-violet-400 flex items-center font-medium">
                                 <ArrowUpRight className="h-3 w-3" /> %12
                             </span>
@@ -149,37 +149,37 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800 relative overflow-hidden group shadow-sm">
+                <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <CreditCard className="h-24 w-24 text-emerald-500" />
                     </div>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {language === 'tr' ? 'Ödenen Siparişler' : 'Paid Orders'}
                         </CardTitle>
                         <CreditCard className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.paidOrdersCount}</div>
-                        <p className="text-xs text-zinc-500 mt-1">
+                        <div className="text-3xl font-bold text-foreground">{stats.paidOrdersCount}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
                             %{((stats.paidOrdersCount / (stats.totalOrders || 1)) * 100).toFixed(1)} {language === 'tr' ? 'dönüşüm oranı' : 'conversion rate'}
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800 relative overflow-hidden group shadow-sm">
+                <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <TrendingUp className="h-24 w-24 text-fuchsia-500" />
                     </div>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {language === 'tr' ? 'Toplam Gelir' : 'Total Revenue'}
                         </CardTitle>
                         <TrendingUp className="h-4 w-4 text-fuchsia-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">${stats.totalRevenue.toLocaleString()}</div>
-                        <p className="text-xs text-zinc-500 mt-1 flex items-center gap-1">
+                        <div className="text-3xl font-bold text-foreground">${stats.totalRevenue.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             <span className="text-fuchsia-500 flex items-center font-medium">
                                 <ArrowUpRight className="h-3 w-3" /> $2.4k
                             </span>
@@ -191,17 +191,17 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 {/* Chart Section */}
-                <Card className="lg:col-span-8 bg-zinc-900 border-zinc-800 h-fit shadow-sm">
-                    <CardHeader className="flex flex-row items-center justify-between border-b border-zinc-800/50 pb-2">
+                <Card className="lg:col-span-8 bg-card border-border h-fit shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 pb-2">
                         <div>
-                            <CardTitle className="text-lg font-semibold text-white">
+                            <CardTitle className="text-lg font-semibold text-foreground">
                                 {language === 'tr' ? 'Gelir Trendi' : 'Revenue Trend'}
                             </CardTitle>
-                            <p className="text-sm text-zinc-500">
+                            <p className="text-sm text-muted-foreground">
                                 {language === 'tr' ? 'Aylık gelir dağılımı' : 'Monthly revenue distribution'}
                             </p>
                         </div>
-                        <div className="flex gap-1 bg-zinc-800/50 p-1 rounded-lg">
+                        <div className="flex gap-1 bg-accent/50 p-1 rounded-lg">
                             <Button
                                 onClick={() => setChartMode('monthly')}
                                 variant="ghost"
@@ -209,8 +209,8 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                                 className={cn(
                                     "h-7 text-xs px-3 transition-all duration-200",
                                     chartMode === 'monthly'
-                                        ? "bg-zinc-700 text-white shadow-sm"
-                                        : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/80"
+                                        ? "bg-accent text-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-accent/80"
                                 )}
                             >
                                 {language === 'tr' ? 'Aylık' : 'Monthly'}
@@ -222,8 +222,8 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                                 className={cn(
                                     "h-7 text-xs px-3 transition-all duration-200",
                                     chartMode === 'yearly'
-                                        ? "bg-zinc-700 text-white shadow-sm"
-                                        : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/80"
+                                        ? "bg-accent text-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-accent/80"
                                 )}
                             >
                                 {language === 'tr' ? 'Yıllık' : 'Yearly'}
@@ -237,14 +237,14 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                                 const height = (m.revenue / maxRevenue) * 100;
                                 return (
                                     <div key={i} className="flex-1 flex flex-col items-center group relative">
-                                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap shadow-xl">
+                                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-violet-600 text-foreground text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap shadow-xl">
                                             ${m.revenue.toLocaleString()}
                                         </div>
                                         <div
                                             className="w-full bg-gradient-to-t from-violet-600/20 to-violet-500/80 group-hover:to-violet-400 transition-all duration-300 rounded-t-sm"
                                             style={{ height: `${Math.max(height, 5)}%` }}
                                         />
-                                        <div className="text-[10px] text-zinc-500 mt-3 rotate-[-45deg] md:rotate-0 group-hover:text-zinc-300 transition-colors">{m.label}</div>
+                                        <div className="text-[10px] text-muted-foreground mt-3 rotate-[-45deg] md:rotate-0 group-hover:text-foreground transition-colors">{m.label}</div>
                                     </div>
                                 );
                             })}
@@ -253,10 +253,10 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                 </Card>
 
                 {/* Recent Orders Section */}
-                <Card className="lg:col-span-4 bg-zinc-900 border-zinc-800 shadow-sm">
-                    <CardHeader className="border-b border-zinc-800/50 pb-2">
+                <Card className="lg:col-span-4 bg-card border-border shadow-sm">
+                    <CardHeader className="border-b border-border/50 pb-2">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg font-semibold text-white">
+                            <CardTitle className="text-lg font-semibold text-foreground">
                                 {language === 'tr' ? 'Son Siparişler' : 'Recent Orders'}
                             </CardTitle>
                             <Link href={`${language === 'tr' ? '/tr' : ''}/orders`} className="text-sm text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group">
@@ -271,30 +271,30 @@ export function ReportsClient({ stats, language }: ReportsClientProps) {
                                 <Link
                                     key={order.id}
                                     href={`${language === 'tr' ? '/tr' : ''}/orders/${order.id}`}
-                                    className="flex items-center justify-between group bg-zinc-800/20 hover:bg-zinc-800/50 p-3 rounded-lg transition-all border border-zinc-800/50 hover:border-violet-500/20"
+                                    className="flex items-center justify-between group bg-accent/20 hover:bg-accent/50 p-3 rounded-lg transition-all border border-border/50 hover:border-violet-500/20"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <Avatar className="h-9 w-9 border border-zinc-800 shrink-0">
+                                        <Avatar className="h-9 w-9 border border-border shrink-0">
                                             {order.customer.image && (
                                                 <AvatarImage src={order.customer.image} alt={order.customer.name || ""} />
                                             )}
-                                            <AvatarFallback className="bg-zinc-900 text-[10px] font-bold text-zinc-400">
+                                            <AvatarFallback className="bg-card text-[10px] font-bold text-muted-foreground">
                                                 {(order.customer.name || order.customer.email || "U")[0].toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-medium text-zinc-100 group-hover:text-white transition-colors truncate">
+                                            <p className="text-sm font-medium text-foreground group-hover:text-foreground transition-colors truncate">
                                                 {order.title || (language === 'tr' ? `Sipariş #${order.id.slice(-6).toUpperCase()}` : `Order #${order.id.slice(-6).toUpperCase()}`)}
                                             </p>
-                                            <p className="text-xs text-zinc-500 truncate">{order.customer.email}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{order.customer.email}</p>
                                         </div>
                                     </div>
                                     <div className="text-right shrink-0 ml-4">
-                                        <p className="text-sm font-bold text-white">${order.price || 0}</p>
+                                        <p className="text-sm font-bold text-foreground">${order.price || 0}</p>
                                         <Badge
                                             variant="outline"
                                             className={cn(
-                                                "text-[9px] px-1 py-0 border-zinc-800 font-medium",
+                                                "text-[9px] px-1 py-0 border-border font-medium",
                                                 order.status === "COMPLETED" ? "text-emerald-400 bg-emerald-400/5" :
                                                     order.status === "CANCELLED" ? "text-red-400 bg-red-400/5" : "text-amber-400 bg-amber-400/5"
                                             )}

@@ -10,6 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
     const { language, setLanguage, t } = useLanguage();
@@ -112,6 +113,8 @@ export function Header() {
                             )}
                         </DropdownMenuContent>
                     </DropdownMenu>
+
+                    <ThemeToggle />
                 </div>
             </div>
         </header>

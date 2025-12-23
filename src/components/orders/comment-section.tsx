@@ -35,9 +35,10 @@ interface Comment {
 interface CommentSectionProps {
     orderId: string;
     initialComments: Comment[];
+    status?: string;
 }
 
-export function CommentSection({ orderId, initialComments }: CommentSectionProps) {
+export function CommentSection({ orderId, initialComments, status }: CommentSectionProps) {
     const { data: session } = useSession();
     const { t, language } = useLanguage();
     const [comments, setComments] = useState<Comment[]>(initialComments);
@@ -49,7 +50,9 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     const scrollRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Solve hydration issues by only rendering client-specific parts after mount
+    const isCancelled = status === "CANCELLED";
+
+    // ... (hydration useEffect remains same) ...
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -63,6 +66,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             noMessages: "No messages yet. Send the first message!",
             supportTeam: "Support Team",
             writeMessage: "Write a message...",
+            orderCancelled: "Order is cancelled. Messaging disabled.",
             messagesUpdated: "Messages updated",
             noNewMessages: "No new messages",
             failedToLoad: "Failed to load messages",
@@ -77,6 +81,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             noMessages: "Henüz mesaj yok. İlk mesajı siz gönderin!",
             supportTeam: "Destek Ekibi",
             writeMessage: "Bir mesaj yazın...",
+            orderCancelled: "Sipariş iptal edildi. Mesajlaşma kapatıldı.",
             messagesUpdated: "Mesajlar güncellendi",
             noNewMessages: "Yeni mesaj yok",
             failedToLoad: "Mesajlar yüklenemedi",
@@ -88,10 +93,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
 
     const txt = texts[language as keyof typeof texts] || texts.en;
 
-    // Scroll to bottom when new comments arrive
-    useEffect(() => {
-        scrollToBottom();
-    }, [comments]);
+    // ... (fetch and handlers remain same) ...
 
     const scrollToBottom = () => {
         if (scrollRef.current) {
@@ -120,12 +122,9 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
         }
     };
 
-    // Removed auto-refresh - users can manually refresh with button
-
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         setAttachedFiles(prev => [...prev, ...files]);
-        // Reset input so same file can be selected again
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -137,12 +136,11 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if ((!newComment.trim() && attachedFiles.length === 0) || isLoading) return;
+        if ((!newComment.trim() && attachedFiles.length === 0) || isLoading || isCancelled) return;
 
         setIsLoading(true);
 
         try {
-            // First upload files if any
             let uploadedFileIds: string[] = [];
 
             if (attachedFiles.length > 0) {
@@ -166,7 +164,6 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                 uploadedFileIds = uploadResult.files?.map((f: { id: string }) => f.id) || [];
             }
 
-            // Then create comment
             const response = await fetch("/api/comments", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -212,11 +209,11 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
     };
 
     return (
-        <div className="flex flex-col h-[500px] overflow-hidden bg-zinc-900/50">
+        <div className="flex flex-col h-[500px] overflow-hidden bg-card border border-border rounded-xl">
             {/* Header */}
-            <div className="p-4 border-b border-zinc-800 bg-zinc-900/80 flex items-center justify-between backdrop-blur-sm">
-                <div className="flex items-center gap-2 text-zinc-100">
-                    <MessageSquare className="h-5 w-5 text-violet-400" />
+            <div className="p-4 border-b border-border bg-card/80 flex items-center justify-between backdrop-blur-sm">
+                <div className="flex items-center gap-2 text-foreground">
+                    <MessageSquare className="h-5 w-5 text-violet-600" />
                     <h5 className="font-semibold">{txt.supportMessages}</h5>
                 </div>
                 <div className="flex items-center gap-2">
@@ -225,7 +222,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                         size="sm"
                         onClick={() => fetchComments(true)}
                         disabled={isRefreshing}
-                        className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 gap-1.5"
+                        className="text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 gap-1.5"
                         title={txt.refreshMessages}
                     >
                         <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -237,10 +234,10 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             {/* Comments List */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto space-y-6 p-4 bg-zinc-950/30"
+                className="flex-1 overflow-y-auto space-y-6 p-4 bg-muted/5"
             >
                 {comments.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-zinc-500 space-y-2">
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-2">
                         <MessageSquare className="h-10 w-10 opacity-20" />
                         <p>{txt.noMessages}</p>
                     </div>
@@ -250,10 +247,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                         const isAdmin = comment.user.role === "ADMIN";
                         const isSequence = index > 0 && comments[index - 1].userId === comment.userId && !comment.isSystem && !comments[index - 1].isSystem;
 
-                        // System message - display centered with special styling
                         if (comment.isSystem) {
-                            // Extract the appropriate language text from bilingual message
-                            // Format: "📋 Order Status Changed: In Progress | Sipariş Durumu Değişti: İşleniyor"
                             let displayText = comment.content;
                             if (comment.content.includes(" | ")) {
                                 const parts = comment.content.split(" | ");
@@ -263,7 +257,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                             return (
                                 <div key={comment.id} className="flex justify-center my-4">
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20">
-                                        <span className="text-sm text-amber-400">
+                                        <span className="text-sm text-amber-600 dark:text-amber-400">
                                             {displayText}
                                         </span>
                                         <span className="text-[10px] text-amber-500/60">
@@ -286,15 +280,15 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                             >
                                 {!isSequence ? (
                                     <Avatar
-                                        className={`h-8 w-8 mt-1 border border-zinc-800 shadow-sm ${isAdmin
+                                        className={`h-8 w-8 mt-1 border border-border shadow-sm ${isAdmin
                                             ? "bg-gradient-to-tr from-violet-600 to-fuchsia-600"
-                                            : "bg-zinc-800"
+                                            : "bg-background"
                                             }`}
                                     >
                                         {comment.user.image && (
                                             <AvatarImage src={comment.user.image} alt={comment.user.name || ""} />
                                         )}
-                                        <AvatarFallback className="text-xs text-zinc-100 font-medium">
+                                        <AvatarFallback className="text-xs text-foreground font-medium bg-accent">
                                             {getInitials(comment.user.name, comment.user.email)}
                                         </AvatarFallback>
                                     </Avatar>
@@ -308,15 +302,15 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                 >
                                     {!isSequence && (
                                         <div className="flex items-center gap-2 mb-1 px-1">
-                                            <span className="text-xs font-medium text-zinc-300">
+                                            <span className="text-xs font-medium text-foreground">
                                                 {comment.user.name || comment.user.email}
                                             </span>
                                             {isAdmin && !isOwn && (
-                                                <span className="text-[10px] px-1.5 py-px rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                                                <span className="text-[10px] px-1.5 py-px rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20">
                                                     {txt.supportTeam}
                                                 </span>
                                             )}
-                                            <span className="text-[10px] text-zinc-500">
+                                            <span className="text-[10px] text-muted-foreground">
                                                 {mounted && new Date(comment.createdAt).toLocaleTimeString(language === "tr" ? "tr-TR" : "en-US", {
                                                     hour: "2-digit",
                                                     minute: "2-digit",
@@ -326,13 +320,12 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                     )}
                                     <div
                                         className={`relative rounded-2xl px-4 py-2.5 shadow-sm text-sm leading-relaxed ${isOwn
-                                            ? "bg-gradient-to-br from-violet-600 to-fuchsia-700 text-white rounded-tr-sm"
-                                            : "bg-zinc-800 text-zinc-100 border border-zinc-700/50 rounded-tl-sm"
+                                            ? "bg-violet-600 text-white rounded-tr-sm"
+                                            : "bg-accent/50 text-foreground border border-border/50 rounded-tl-sm"
                                             }`}
                                     >
                                         <p className="whitespace-pre-wrap break-words">{comment.content}</p>
 
-                                        {/* Attachments */}
                                         {comment.attachments && comment.attachments.length > 0 && (
                                             <div className="mt-2 space-y-1">
                                                 {comment.attachments.map((file) => (
@@ -343,7 +336,7 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
                                                         rel="noopener noreferrer"
                                                         className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${isOwn
                                                             ? "bg-white/10 hover:bg-white/20"
-                                                            : "bg-zinc-700/50 hover:bg-zinc-700"
+                                                            : "bg-background/50 hover:bg-background"
                                                             }`}
                                                     >
                                                         <FileIcon className="h-4 w-4 shrink-0" />
@@ -362,78 +355,83 @@ export function CommentSection({ orderId, initialComments }: CommentSectionProps
             </div>
 
             {/* Input Form */}
-            <div className="p-4 bg-zinc-900 border-t border-zinc-800">
-                {/* Attached Files Preview */}
-                {attachedFiles.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                        {attachedFiles.map((file, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 rounded-lg text-sm text-zinc-300"
-                            >
-                                <FileIcon className="h-4 w-4 text-violet-400" />
-                                <span className="truncate max-w-[150px]">{file.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => removeFile(index)}
-                                    className="text-zinc-500 hover:text-red-400 transition-colors"
-                                    title={txt.removeFile}
+            {!isCancelled ? (
+                <div className="p-4 bg-card border-t border-border">
+                    {attachedFiles.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {attachedFiles.map((file, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-lg text-sm text-foreground"
                                 >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                                    <FileIcon className="h-4 w-4 text-violet-600" />
+                                    <span className="truncate max-w-[150px]">{file.name}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeFile(index)}
+                                        className="text-muted-foreground hover:text-red-500 transition-colors"
+                                        title={txt.removeFile}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                <form onSubmit={handleSubmit} className="flex gap-3 items-end">
-                    <div className="flex-1 relative">
-                        <Textarea
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder={txt.writeMessage}
-                            className="min-h-[80px] max-h-[160px] bg-zinc-950/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500/50 focus:ring-violet-500/20 resize-none py-3 pr-10 rounded-xl"
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit} className="flex gap-3 items-end">
+                        <div className="flex-1 relative">
+                            <Textarea
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder={txt.writeMessage}
+                                className="min-h-[80px] max-h-[160px] bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-violet-500/50 focus:ring-violet-500/20 resize-none py-3 pr-10 rounded-xl"
+                            />
+                        </div>
 
-                    {/* Buttons Column: Attachment on top, Send below */}
-                    <div className="flex flex-col gap-2">
-                        {/* File Attach Button */}
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            multiple
-                            onChange={handleFileSelect}
-                            className="hidden"
-                            accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg,.zip,.rar"
-                        />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 h-[38px] w-[38px] rounded-xl shrink-0"
-                            title={txt.attachFile}
-                        >
-                            <Paperclip className="h-5 w-5" />
-                        </Button>
+                        <div className="flex flex-col gap-2">
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                multiple
+                                onChange={handleFileSelect}
+                                className="hidden"
+                                accept=".dst,.dts,image/*,.pdf,.ai,.eps,.svg,.zip,.rar"
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 h-[38px] w-[38px] rounded-xl shrink-0"
+                                title={txt.attachFile}
+                            >
+                                <Paperclip className="h-5 w-5" />
+                            </Button>
 
-                        {/* Send Button */}
-                        <Button
-                            type="submit"
-                            size="icon"
-                            disabled={isLoading || (!newComment.trim() && attachedFiles.length === 0)}
-                            className="bg-violet-600 text-white hover:bg-violet-500 h-[38px] w-[38px] rounded-xl shrink-0 shadow-sm transition-all active:scale-95 disabled:opacity-50"
-                        >
-                            {isLoading ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <Send className="h-5 w-5 ml-0.5" />
-                            )}
-                        </Button>
+                            <Button
+                                type="submit"
+                                size="icon"
+                                disabled={isLoading || (!newComment.trim() && attachedFiles.length === 0)}
+                                className="bg-violet-600 text-white hover:bg-violet-500 h-[38px] w-[38px] rounded-xl shrink-0 shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <Send className="h-5 w-5 ml-0.5" />
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            ) : (
+                <div className="p-6 bg-accent/20 border-t border-border flex items-center justify-center text-center">
+                    <div className="bg-background/50 px-4 py-2 rounded-full border border-border shadow-sm flex items-center gap-2">
+                        <X className="h-4 w-4 text-red-500" />
+                        <span className="text-xs font-medium text-muted-foreground">{txt.orderCancelled}</span>
                     </div>
-                </form>
-            </div>
+                </div>
+            )}
         </div>
     );
 }

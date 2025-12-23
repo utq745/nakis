@@ -10,7 +10,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
-        <div className="h-screen bg-zinc-950 overflow-hidden">
+        <div className="h-screen bg-background text-foreground overflow-hidden">
             <Sidebar />
             <div className={cn(
                 "h-full flex flex-col transition-all duration-300",

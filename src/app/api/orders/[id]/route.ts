@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { createOrderNotification } from "@/lib/notifications";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
     title: z.string().optional(),
@@ -141,10 +142,15 @@ export async function PATCH(
                 // Customer can transition:
                 // 1. PRICED -> PRICE_ACCEPTED (price approval)
                 // 2. APPROVAL_AWAITING -> IN_PROGRESS (preview approval)
+                // 3. Any stage before work starts -> CANCELLED (customer declines or cancels)
                 const isAcceptingPrice = (currentOrder.status === "PRICED" || currentOrder.status === "WAITING_PRICE") && validatedData.status === "PRICE_ACCEPTED";
                 const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
+                const isCancelling = validatedData.status === "CANCELLED" && ["WAITING_PRICE", "PRICED"].includes(currentOrder.status);
 
-                if (!isAcceptingPrice && !isAcceptingPreview) {
+                console.log(`[PATCH_ORDER] isAcceptingPrice=${isAcceptingPrice}, isAcceptingPreview=${isAcceptingPreview}, isCancelling=${isCancelling}`);
+                console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
+
+                if (!isAcceptingPrice && !isAcceptingPreview && !isCancelling) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
@@ -165,9 +171,19 @@ export async function PATCH(
             validatedData.status = "PRICED";
         }
 
+        // Handle cancelledAt timestamp
+        const finalData: any = { ...validatedData };
+        if (validatedData.status === "CANCELLED" && currentOrder.status !== "CANCELLED") {
+            finalData.cancelledAt = new Date();
+        } else if (validatedData.status && validatedData.status !== "CANCELLED" && currentOrder.status === "CANCELLED") {
+            finalData.cancelledAt = null;
+        }
+
+        console.log(`[PATCH_ORDER] Final data to update:`, JSON.stringify(finalData));
+
         const order = await prisma.order.update({
             where: { id },
-            data: validatedData,
+            data: finalData,
             include: {
                 customer: {
                     select: { email: true, name: true }
@@ -202,7 +218,6 @@ export async function PATCH(
                 },
             });
         }
-
         // Send email notification to customer
         if (order.customer.email && (validatedData.status || validatedData.price)) {
             const { sendOrderStatusUpdatedEmail } = await import("@/lib/mail");
@@ -212,6 +227,42 @@ export async function PATCH(
                 order.status,
                 validatedData.price ?? undefined
             ).catch(console.error);
+        }
+
+        // Create In-App Notification
+        if (validatedData.status && validatedData.status !== currentOrder.status) {
+            const statusLabels: Record<string, { en: string; tr: string }> = {
+                WAITING_PRICE: { en: "Price Pending", tr: "Fiyat Bekleniyor" },
+                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
+                PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
+                APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
+                IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
+                PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
+                COMPLETED: { en: "Completed", tr: "Tamamlandı" },
+                CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
+            };
+            const newStatusLabel = statusLabels[validatedData.status] || { en: validatedData.status, tr: validatedData.status };
+
+            if (isAdmin) {
+                // Notify Customer
+                await createOrderNotification(
+                    order.customerId,
+                    "Order Update | Sipariş Güncellemesi",
+                    `Order status changed to: ${newStatusLabel.en} | Sipariş durumu değişti: ${newStatusLabel.tr}`,
+                    `/orders/${id}`
+                );
+            } else {
+                // User is customer, notify Admins
+                const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+                for (const admin of admins) {
+                    await createOrderNotification(
+                        admin.id,
+                        "Order Update | Sipariş Güncellemesi",
+                        `Customer ${order.customer.name || order.customer.email} updated order to ${newStatusLabel.en}`,
+                        `/admin/orders/${id}`
+                    );
+                }
+            }
         }
 
         return NextResponse.json(order);

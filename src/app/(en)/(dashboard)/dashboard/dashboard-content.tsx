@@ -27,65 +27,64 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
         <div className="space-y-8">
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {t.dashboard.totalOrders}
                         </CardTitle>
                         <Package className="h-5 w-5 text-violet-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.total}</div>
+                        <div className="text-3xl font-bold text-foreground">{stats.total}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {t.dashboard.pending}
                         </CardTitle>
                         <Clock className="h-5 w-5 text-yellow-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.pending}</div>
+                        <div className="text-3xl font-bold text-foreground">{stats.pending}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {t.dashboard.inProgress}
                         </CardTitle>
                         <AlertCircle className="h-5 w-5 text-purple-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.inProgress}</div>
+                        <div className="text-3xl font-bold text-foreground">{stats.inProgress}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-400">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             {t.dashboard.completed}
                         </CardTitle>
                         <CheckCircle2 className="h-5 w-5 text-green-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-white">{stats.completed}</div>
+                        <div className="text-3xl font-bold text-foreground">{stats.completed}</div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Recent Orders */}
-            <Card className="bg-zinc-900 border-zinc-800">
+            <Card>
                 <CardHeader>
-                    <CardTitle className="text-white">{t.dashboard.recentOrders}</CardTitle>
+                    <CardTitle className="text-foreground">{t.dashboard.recentOrders}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {recentOrders.length === 0 ? (
                         <div className="text-center py-8">
-                            <Package className="mx-auto h-12 w-12 text-zinc-600" />
-                            <p className="mt-4 text-zinc-400">{t.dashboard.noOrders}</p>
+                            <p className="mt-4 text-muted-foreground">{t.dashboard.noOrders}</p>
                             {!isAdmin && (
                                 <Link
                                     href="/orders/new"
@@ -101,7 +100,7 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                 <Link
                                     key={order.id}
                                     href={`/orders/${order.id}`}
-                                    className="flex items-center justify-between p-4 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
+                                    className="flex items-center justify-between p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors"
                                 >
                                     <div className="flex items-center gap-4 flex-1">
                                         {isAdmin && (
@@ -109,15 +108,15 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                                 {order.customer.image && (
                                                     <AvatarImage src={order.customer.image} alt={order.customer.name || ""} />
                                                 )}
-                                                <AvatarFallback className="bg-zinc-700 text-zinc-300 text-xs font-bold">
+                                                <AvatarFallback className="bg-accent text-muted-foreground text-xs font-bold">
                                                     {(order.customer.name || order.customer.email || "U")[0].toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
                                         )}
                                         <div className="min-w-0">
-                                            <h3 className="font-medium text-white truncate">{order.title}</h3>
+                                            <h3 className="font-medium text-foreground truncate">{order.title}</h3>
                                             {isAdmin && (
-                                                <p className="text-sm text-zinc-400 truncate">
+                                                <p className="text-sm text-muted-foreground truncate">
                                                     {order.customer.name || order.customer.email}
                                                 </p>
                                             )}
@@ -127,7 +126,7 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                         <Badge className={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
                                             {(t.status as any)[order.status] || order.status}
                                         </Badge>
-                                        <span className="text-sm text-zinc-500">
+                                        <span className="text-sm text-muted-foreground">
                                             {new Date(order.createdAt).toLocaleDateString(dateLocale)}
                                         </span>
                                     </div>

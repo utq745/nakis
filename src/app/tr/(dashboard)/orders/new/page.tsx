@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
     Loader2, Upload, X, FileIcon, ArrowLeft,
     Check, ChevronRight, Scissors,
-    Layers, Shirt, ClipboardList, Info, ChevronDown
+    Layers, Shirt, ClipboardList, Info, ChevronDown, Rocket, Clock
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -37,6 +37,7 @@ export default function NewOrderPage() {
     const [addKnockdownStitch, setAddKnockdownStitch] = useState(false);
     const [projectName, setProjectName] = useState("");
     const [notes, setNotes] = useState("");
+    const [priority, setPriority] = useState<"NORMAL" | "URGENT">("NORMAL");
 
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,6 +73,7 @@ export default function NewOrderPage() {
                     isNotSure,
                     customProduct,
                     addKnockdownStitch,
+                    priority,
                 }),
             });
 
@@ -152,7 +154,7 @@ export default function NewOrderPage() {
     return (
         <div className="max-w-4xl mx-auto py-10 px-4">
             <UploadOverlay isVisible={isLoading} message="Siparişiniz gönderiliyor..." />
-            <h1 className="text-3xl font-bold text-white mb-8">Yeni Nakış Siparişi</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-8">Yeni Nakış Siparişi</h1>
 
             {/* Stepper */}
             <div className="flex items-start justify-between mb-12 relative">
@@ -161,10 +163,10 @@ export default function NewOrderPage() {
                         {/* Step Circle */}
                         <div
                             className={cn(
-                                "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 relative bg-zinc-900",
+                                "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 relative bg-card",
                                 step >= s.id
                                     ? "border-violet-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.3)]"
-                                    : "border-zinc-800 text-zinc-500"
+                                    : "border-border text-muted-foreground"
                             )}
                         >
                             <div className={cn(
@@ -179,7 +181,7 @@ export default function NewOrderPage() {
                         {/* Label */}
                         <span className={cn(
                             "text-[10px] mt-2 font-medium uppercase tracking-wider text-center max-w-[80px]",
-                            step >= s.id ? "text-violet-400" : "text-zinc-500"
+                            step >= s.id ? "text-violet-500" : "text-muted-foreground"
                         )}>
                             {idx + 1}. {s.name}
                         </span>
@@ -189,7 +191,7 @@ export default function NewOrderPage() {
                             <div className="absolute top-5 left-[calc(50%+20px)] right-[-50%] flex items-center -z-10">
                                 <div className={cn(
                                     "w-full border-t-2 border-dashed transition-colors duration-500",
-                                    step > s.id ? "border-violet-600/80" : "border-zinc-800"
+                                    step > s.id ? "border-violet-600/80" : "border-border"
                                 )} />
                             </div>
                         )}
@@ -197,13 +199,13 @@ export default function NewOrderPage() {
                 ))}
             </div>
 
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl p-8 relative overflow-hidden">
+            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 relative overflow-hidden">
                 {/* Step Content */}
                 {step === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center font-bold">1</div>
-                            <h2 className="text-xl font-semibold text-white">Dosya Yükleme</h2>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">1</div>
+                            <h2 className="text-xl font-semibold text-foreground">Dosya Yükleme</h2>
                         </div>
                         <div
                             onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
@@ -217,7 +219,7 @@ export default function NewOrderPage() {
                             }}
                             className={cn(
                                 "border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer",
-                                isDragOver ? "border-violet-500 bg-violet-500/5" : "border-zinc-800 hover:border-zinc-700 bg-zinc-900/50"
+                                isDragOver ? "border-violet-500 bg-violet-500/5" : "border-border hover:border-violet-500/50 bg-accent/30"
                             )}
                             onClick={() => fileInputRef.current?.click()}
                         >
@@ -229,39 +231,39 @@ export default function NewOrderPage() {
                                 accept=".dst,.emb,.ai,.pdf"
                                 onChange={handleFileChange}
                             />
-                            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Upload className="h-8 w-8 text-violet-400" />
+                            <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Upload className="h-8 w-8 text-violet-500" />
                             </div>
                             <div className="flex justify-center gap-2 mb-2">
-                                <Button variant="secondary" size="sm" className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-xs text-white">Dosya Seç</Button>
-                                <span className="text-zinc-500 text-sm py-1">Dosya seçilmedi</span>
+                                <Button variant="secondary" size="sm" className="bg-accent border-border hover:bg-accent/80 text-xs text-foreground">Dosya Seç</Button>
+                                <span className="text-muted-foreground text-sm py-1">Dosya seçilmedi</span>
                             </div>
-                            <p className="text-zinc-500 text-xs">veya DST, EMB, AI, veya PDF dosyanızı buraya sürükleyin (maks 50MB)</p>
+                            <p className="text-muted-foreground text-xs">veya DST, EMB, AI, veya PDF dosyanızı buraya sürükleyin (maks 50MB)</p>
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="projectName" className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Proje İsmi (Opsiyonel)</Label>
+                                <Label htmlFor="projectName" className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Proje İsmi (Opsiyonel)</Label>
                                 <Input
                                     id="projectName"
                                     placeholder="Bu proje için bir isim girin..."
-                                    className="bg-zinc-800 border-zinc-700 text-zinc-200 focus-visible:ring-violet-500 focus-visible:border-violet-500 placeholder:text-zinc-500 h-12 rounded-xl"
+                                    className="bg-background border-border text-foreground focus-visible:ring-violet-500 focus-visible:border-violet-500 placeholder:text-muted-foreground h-12 rounded-xl"
                                     value={projectName}
                                     onChange={(e) => setProjectName(e.target.value)}
                                 />
-                                <p className="text-[10px] text-zinc-500 italic">Boş bırakılırsa, sipariş numarası proje ismi olarak kullanılacaktır.</p>
+                                <p className="text-[10px] text-muted-foreground italic">Boş bırakılırsa, sipariş numarası proje ismi olarak kullanılacaktır.</p>
                             </div>
                         </div>
 
                         {files.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-6">
                                 {files.map((file, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg group hover:border-zinc-600 transition-colors">
-                                        <FileIcon className="h-4 w-4 text-violet-400" />
-                                        <span className="text-sm text-zinc-200 truncate max-w-[200px]">{file.name}</span>
+                                    <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-accent/30 border border-border rounded-lg group hover:border-violet-500/50 transition-colors">
+                                        <FileIcon className="h-4 w-4 text-violet-500" />
+                                        <span className="text-sm text-foreground truncate max-w-[200px]">{file.name}</span>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); setFiles(files.filter((_, i) => i !== idx)); }}
-                                            className="text-white bg-zinc-700/50 hover:bg-red-500/80 rounded-md p-1 transition-all"
+                                            className="text-foreground bg-accent hover:bg-red-500 hover:text-white rounded-md p-1 transition-all"
                                             title="Dosyayı kaldır"
                                         >
                                             <X className="h-3 w-3" />
@@ -279,8 +281,8 @@ export default function NewOrderPage() {
                 {step === 2 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center font-bold">2</div>
-                            <h2 className="text-xl font-semibold text-white">Makine Seçimi</h2>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">2</div>
+                            <h2 className="text-xl font-semibold text-foreground">Makine Seçimi</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,10 +292,10 @@ export default function NewOrderPage() {
                                     onClick={() => setMachine(m)}
                                     className={cn(
                                         "p-6 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between",
-                                        machine === m ? "border-violet-600 bg-violet-600/10 shadow-[0_0_20px_rgba(124,58,237,0.1)]" : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
+                                        machine === m ? "border-violet-600 bg-violet-600/10 shadow-[0_0_20px_rgba(124,58,237,0.1)]" : "border-border bg-accent/30 hover:border-violet-500/50"
                                     )}
                                 >
-                                    <span className={cn("text-lg font-medium", machine === m ? "text-violet-400" : "text-zinc-400")}>{m}</span>
+                                    <span className={cn("text-lg font-medium", machine === m ? "text-violet-500" : "text-muted-foreground")}>{m}</span>
                                     <div className={cn(
                                         "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
                                         machine === m ? "border-violet-600 bg-violet-600" : "border-zinc-800"
@@ -305,7 +307,7 @@ export default function NewOrderPage() {
                         </div>
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-white hover:bg-zinc-800/50 hover:text-white transition-colors">Geri</Button>
+                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -314,8 +316,8 @@ export default function NewOrderPage() {
                 {step === 3 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center font-bold">3</div>
-                            <h2 className="text-xl font-semibold text-white">Servis Tipi Seçimi</h2>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">3</div>
+                            <h2 className="text-xl font-semibold text-foreground">Servis Tipi Seçimi</h2>
                         </div>
 
                         <div className="space-y-3">
@@ -329,28 +331,28 @@ export default function NewOrderPage() {
                                     onClick={() => setServiceType(s.id)}
                                     className={cn(
                                         "p-5 rounded-xl border-2 transition-all cursor-pointer flex flex-col gap-1",
-                                        serviceType === s.id ? "border-violet-600 bg-violet-600/10" : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
+                                        serviceType === s.id ? "border-violet-600 bg-violet-600/10" : "border-border bg-accent/30 hover:border-violet-500/50"
                                     )}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className={cn(
                                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                                                serviceType === s.id ? "border-violet-600 bg-violet-600" : "border-zinc-800"
+                                                serviceType === s.id ? "border-violet-600 bg-violet-600" : "border-border"
                                             )}>
                                                 {serviceType === s.id && <div className="w-2 h-2 rounded-full bg-white" />}
                                             </div>
-                                            <span className={cn("font-medium", serviceType === s.id ? "text-violet-400" : "text-zinc-300")}>{s.label}</span>
+                                            <span className={cn("font-medium", serviceType === s.id ? "text-violet-500" : "text-foreground")}>{s.label}</span>
                                         </div>
                                         <span className="text-emerald-500 font-bold text-xs">{s.price}</span>
                                     </div>
-                                    <p className="text-zinc-500 text-xs ml-8">{s.desc}</p>
+                                    <p className="text-muted-foreground text-xs ml-8">{s.desc}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-white hover:bg-zinc-800/50 hover:text-white transition-colors">Geri</Button>
+                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -359,8 +361,8 @@ export default function NewOrderPage() {
                 {step === 4 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center font-bold">4</div>
-                            <h2 className="text-xl font-semibold text-white">Ürün Tipi Seçimi</h2>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">4</div>
+                            <h2 className="text-xl font-semibold text-foreground">Ürün Tipi Seçimi</h2>
                         </div>
 
                         <div className="flex flex-wrap gap-4 mb-6">
@@ -370,12 +372,12 @@ export default function NewOrderPage() {
                                     onClick={() => setProductType(p)}
                                     className={cn(
                                         "flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all cursor-pointer",
-                                        productType === p ? "border-violet-600 bg-violet-600 text-white" : "border-zinc-800 bg-zinc-900 text-zinc-500"
+                                        productType === p ? "border-violet-600 bg-violet-600 text-white" : "border-border bg-accent/30 text-muted-foreground hover:border-violet-500/50"
                                     )}
                                 >
                                     <div className={cn(
                                         "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                                        productType === p ? "border-white" : "border-zinc-700"
+                                        productType === p ? "border-white" : "border-border"
                                     )}>
                                         {productType === p && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                     </div>
@@ -385,8 +387,8 @@ export default function NewOrderPage() {
                         </div>
 
                         {productType === "Garment" && (
-                            <div className="p-6 bg-zinc-900/80 border border-zinc-800 rounded-2xl space-y-4">
-                                <Label className="text-zinc-300 text-sm font-semibold uppercase tracking-wider mb-4 block">Giyim Türü:</Label>
+                            <div className="p-6 bg-card border border-border rounded-2xl space-y-4">
+                                <Label className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-4 block">Giyim Türü:</Label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
                                     {[
                                         "T-Shirt / Jersey", "Twill // İş Kıyafeti",
@@ -396,11 +398,11 @@ export default function NewOrderPage() {
                                         <div key={idx} onClick={() => { setGarmentType(g); setIsNotSure(false); setCustomProduct(""); setAddKnockdownStitch(false); }} className="flex items-center gap-3 cursor-pointer group">
                                             <div className={cn(
                                                 "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                                garmentType === g && !isNotSure && !customProduct ? "border-violet-500 bg-violet-500" : "border-zinc-700 group-hover:border-zinc-500"
+                                                garmentType === g && !isNotSure && !customProduct ? "border-violet-500 bg-violet-500" : "border-border group-hover:border-violet-500/50"
                                             )}>
                                                 {garmentType === g && !isNotSure && !customProduct && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                             </div>
-                                            <span className={cn("text-sm", garmentType === g && !isNotSure && !customProduct ? "text-violet-400" : "text-zinc-500 hover:text-zinc-400")}>{g}</span>
+                                            <span className={cn("text-sm", garmentType === g && !isNotSure && !customProduct ? "text-violet-500" : "text-muted-foreground hover:text-foreground")}>{g}</span>
                                         </div>
                                     ))}
 
@@ -411,11 +413,11 @@ export default function NewOrderPage() {
                                     >
                                         <div className={cn(
                                             "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                            isNotSure ? "border-violet-500 bg-violet-500" : "border-zinc-700 group-hover:border-zinc-500"
+                                            isNotSure ? "border-violet-500 bg-violet-500" : "border-border group-hover:border-violet-500/50"
                                         )}>
                                             {isNotSure && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                         </div>
-                                        <span className={cn("text-sm", isNotSure ? "text-violet-400" : "text-zinc-500 hover:text-zinc-400")}>Emin değilim → Kararı ApprovalStitch&apos;e bırak</span>
+                                        <span className={cn("text-sm", isNotSure ? "text-violet-500" : "text-muted-foreground hover:text-foreground")}>Emin değilim → Kararı ApprovalStitch&apos;e bırak</span>
                                     </div>
 
                                     {/* Tüylü (Fluffy) Option */}
@@ -426,29 +428,29 @@ export default function NewOrderPage() {
                                         >
                                             <div className={cn(
                                                 "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                                garmentType === "Fluffy" ? "border-violet-500 bg-violet-500" : "border-zinc-700 group-hover:border-zinc-500"
+                                                garmentType === "Fluffy" ? "border-violet-500 bg-violet-500" : "border-border group-hover:border-violet-500/50"
                                             )}>
                                                 {garmentType === "Fluffy" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                             </div>
-                                            <span className={cn("text-sm", garmentType === "Fluffy" ? "text-violet-400" : "text-zinc-500 hover:text-zinc-400")}>Tüylü (Havlu, Sherpa vb.)</span>
+                                            <span className={cn("text-sm", garmentType === "Fluffy" ? "text-violet-500" : "text-muted-foreground hover:text-foreground")}>Tüylü (Havlu, Sherpa vb.)</span>
                                         </div>
 
                                         {/* Knockdown stitch sub-option - only shows when Fluffy is selected */}
                                         {garmentType === "Fluffy" && (
-                                            <div className="ml-7 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <div className="ml-7 p-3 bg-accent/50 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2 duration-200">
                                                 <div
                                                     onClick={() => setAddKnockdownStitch(!addKnockdownStitch)}
                                                     className="flex items-center gap-3 cursor-pointer group"
                                                 >
                                                     <div className={cn(
                                                         "w-5 h-5 rounded flex items-center justify-center border-2 transition-all",
-                                                        addKnockdownStitch ? "bg-emerald-500 border-emerald-500" : "border-zinc-600 group-hover:border-zinc-500"
+                                                        addKnockdownStitch ? "bg-emerald-500 border-emerald-500" : "border-border group-hover:border-violet-500/50"
                                                     )}>
                                                         {addKnockdownStitch && <Check className="h-3 w-3 text-white" />}
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className={cn("text-sm font-medium", addKnockdownStitch ? "text-emerald-400" : "text-zinc-300")}>Knockdown dikişi eklensin mi?</span>
-                                                        <span className="text-xs text-zinc-500">Tüylü kumaşlarda daha iyi kaplama için önerilir</span>
+                                                        <span className={cn("text-sm font-medium", addKnockdownStitch ? "text-emerald-500" : "text-foreground")}>Knockdown dikişi eklensin mi?</span>
+                                                        <span className="text-xs text-muted-foreground">Tüylü kumaşlarda daha iyi kaplama için önerilir</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -462,15 +464,15 @@ export default function NewOrderPage() {
                                         >
                                             <div className={cn(
                                                 "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                                !garmentType && !isNotSure && customProduct.length >= 0 ? "border-violet-500 bg-violet-500" : "border-zinc-700 group-hover:border-zinc-500"
+                                                !garmentType && !isNotSure && customProduct.length >= 0 ? "border-violet-500 bg-violet-500" : "border-border group-hover:border-violet-500/50"
                                             )}>
                                                 {!garmentType && !isNotSure && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                             </div>
-                                            <span className={cn("text-sm", !garmentType && !isNotSure ? "text-violet-400" : "text-zinc-500 hover:text-zinc-400")}>Diğer</span>
+                                            <span className={cn("text-sm", !garmentType && !isNotSure ? "text-violet-500" : "text-muted-foreground hover:text-foreground")}>Diğer</span>
                                         </div>
                                         <Input
                                             placeholder="Örn: önlük, battaniye, atkı, havlu, özel ürün..."
-                                            className="bg-zinc-800 border-zinc-700 text-sm h-10 text-zinc-300 focus-visible:ring-violet-500 focus-visible:border-violet-500 placeholder:text-zinc-500"
+                                            className="bg-background border-border text-sm h-10 text-foreground focus-visible:ring-violet-500 focus-visible:border-violet-500 placeholder:text-muted-foreground"
                                             value={customProduct}
                                             onFocus={() => {
                                                 setGarmentType("");
@@ -485,7 +487,7 @@ export default function NewOrderPage() {
                         )}
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-white hover:bg-zinc-800/50 hover:text-white transition-colors">Geri</Button>
+                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -494,23 +496,72 @@ export default function NewOrderPage() {
                 {step === 5 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 flex items-center justify-center font-bold">5</div>
-                            <h2 className="text-xl font-semibold text-white">Not Ekleme (opsiyonel)</h2>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">5</div>
+                            <h2 className="text-xl font-semibold text-foreground">Not Ekleme (opsiyonel)</h2>
                         </div>
 
                         <Textarea
                             placeholder="Ek notlar, talimatlar veya tercihler girin..."
-                            className="bg-zinc-900/50 border-zinc-800 text-white min-h-[200px] rounded-xl focus:border-violet-500"
+                            className="bg-background border-border text-foreground min-h-[200px] rounded-xl focus:border-violet-500"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                         />
 
+                        {/* Öncelik Seçimi */}
+                        <div className="bg-accent/30 border border-border rounded-xl p-5 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-violet-500" />
+                                        Sipariş Önceliği
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground">Normal teslimat süresi 24-48 saattir</p>
+                                </div>
+                                <div className="flex bg-background p-1 rounded-lg border border-border">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPriority("NORMAL")}
+                                        className={cn(
+                                            "px-4 py-1.5 rounded-md text-xs font-medium transition-all",
+                                            priority === "NORMAL" ? "bg-accent text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                        )}
+                                    >
+                                        Normal
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPriority("URGENT")}
+                                        className={cn(
+                                            "px-4 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5",
+                                            priority === "URGENT" ? "bg-violet-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                        )}
+                                    >
+                                        <Rocket className="w-3 h-3" />
+                                        Acil
+                                    </button>
+                                </div>
+                            </div>
+
+                            {priority === "URGENT" && (
+                                <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Acil İşlem Seçildi</p>
+                                        <p className="text-xs text-amber-600/80 dark:text-amber-500/80 leading-relaxed">
+                                            Acil öncelik seçmek, siparişinizi kuyruğumuzun en üstüne yerleştirir.
+                                            <span className="font-bold"> Lütfen bunun daha yüksek bir fiyat teklifiyle sonuçlanabileceğini unutmayın.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-white hover:bg-zinc-800/50 hover:text-white transition-colors">Geri</Button>
+                            <Button variant="ghost" onClick={prevStep} className="text-muted-foreground hover:bg-accent transition-colors">Geri</Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={isLoading}
-                                className="bg-violet-600 hover:bg-violet-700 hover:scale-[1.02] active:scale-[0.98] transition-all px-14 py-3 h-auto rounded-xl font-bold shadow-lg shadow-violet-900/20"
+                                className="bg-violet-600 hover:bg-violet-700 hover:scale-[1.02] active:scale-[0.98] transition-all px-14 py-3 h-auto rounded-xl font-bold shadow-lg shadow-violet-600/20 text-white"
                             >
                                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Siparişi Gönder"}
                             </Button>
@@ -521,59 +572,59 @@ export default function NewOrderPage() {
 
             {/* SSS Bölümü */}
             <div className="mt-8 mb-12">
-                <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800 overflow-hidden">
-                    <CardHeader className="pb-3 border-b border-zinc-800/50">
-                        <CardTitle className="text-white text-lg flex items-center gap-2">
-                            <span className="text-violet-400">?</span>
+                <Card className="bg-card/50 backdrop-blur-sm border-border overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-border/50">
+                        <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                            <span className="text-violet-500">?</span>
                             Sıkça Sorulan Sorular
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0">
-                        <div className="divide-y divide-zinc-800/50">
+                        <div className="divide-y divide-border/50">
                             <details className="group py-4">
                                 <summary className="flex items-center justify-between cursor-pointer list-none">
-                                    <span className="text-zinc-200 group-hover:text-white transition-colors pr-2 font-medium">
+                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors pr-2 font-medium">
                                         Siparişim ne zaman hazır olur?
                                     </span>
-                                    <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
-                                <div className="mt-3 text-zinc-400 leading-relaxed bg-zinc-800/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                                     Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir.
                                 </div>
                             </details>
 
                             <details className="group py-4">
                                 <summary className="flex items-center justify-between cursor-pointer list-none">
-                                    <span className="text-zinc-200 group-hover:text-white transition-colors pr-2 font-medium">
+                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors pr-2 font-medium">
                                         Süreç nasıl işliyor?
                                     </span>
-                                    <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
-                                <div className="mt-3 text-zinc-400 leading-relaxed bg-zinc-800/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                                     1) Dosya Yükle → 2) Fiyatlandırma → 3) Fiyat Onayı → 4) Önizleme Onayı → 5) Ödeme → 6) İndir
                                 </div>
                             </details>
 
                             <details className="group py-4">
                                 <summary className="flex items-center justify-between cursor-pointer list-none">
-                                    <span className="text-zinc-200 group-hover:text-white transition-colors pr-2 font-medium">
+                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors pr-2 font-medium">
                                         Revizyon talep edebilir miyim?
                                     </span>
-                                    <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
-                                <div className="mt-3 text-zinc-400 leading-relaxed bg-zinc-800/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                                     Evet! Önizleme aldıktan sonra "Mesajlar ve Sipariş Durumu" bölümünden revizyon talebinde bulunabilirsiniz.
                                 </div>
                             </details>
 
                             <details className="group py-4">
                                 <summary className="flex items-center justify-between cursor-pointer list-none">
-                                    <span className="text-zinc-200 group-hover:text-white transition-colors pr-2 font-medium">
+                                    <span className="text-muted-foreground group-hover:text-foreground transition-colors pr-2 font-medium">
                                         Hangi dosya formatlarını kabul ediyorsunuz?
                                     </span>
-                                    <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
-                                <div className="mt-3 text-zinc-400 leading-relaxed bg-zinc-800/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                                     DST, EMB, AI, veya PDF
                                 </div>
                             </details>
@@ -585,25 +636,25 @@ export default function NewOrderPage() {
             {/* Success Modal */}
             {showSuccessModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-black/60 animate-in fade-in duration-300">
-                    <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl max-w-md w-full text-center shadow-2xl shadow-violet-900/20 animate-in zoom-in-95 duration-300">
+                    <div className="bg-card border border-border p-8 rounded-3xl max-w-md w-full text-center shadow-2xl shadow-violet-900/20 animate-in zoom-in-95 duration-300">
                         <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-ring">
                             <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
                                 <Check className="h-8 w-8 text-white" />
                             </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Siparişiniz Başarıyla Oluşturuldu!</h2>
-                        <p className="text-zinc-400 mb-8">Nakış siparişiniz alındı ve işleme konuldu.</p>
+                        <h2 className="text-2xl font-bold text-foreground mb-2">Siparişiniz Başarıyla Oluşturuldu!</h2>
+                        <p className="text-muted-foreground mb-8">Nakış siparişiniz alındı ve işleme konuldu.</p>
 
                         <div className="grid grid-cols-2 gap-4">
                             <Button
                                 onClick={() => router.push(`/tr/orders/${createdOrderId}`)}
-                                className="bg-violet-600 hover:bg-violet-700 py-6 rounded-xl font-semibold"
+                                className="bg-violet-600 hover:bg-violet-700 py-6 rounded-xl font-semibold text-white shadow-lg shadow-violet-600/20"
                             >
                                 Siparişi Göster
                             </Button>
                             <Button
                                 onClick={() => router.push('/tr/orders')}
-                                className="bg-zinc-700 hover:bg-zinc-600 text-white py-6 rounded-xl font-semibold"
+                                className="bg-accent hover:bg-accent/80 text-foreground py-6 rounded-xl font-semibold"
                             >
                                 Siparişlerim
                             </Button>

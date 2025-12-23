@@ -42,12 +42,23 @@ export async function GET(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // PAYMENT PROTECTION: If it's a final file and payment is pending, block download for customer
-        if (file.type === "final" && file.order.status === "PAYMENT_PENDING" && !isAdmin) {
-            return NextResponse.json(
-                { error: "Payment required to access final files" },
-                { status: 402 }
-            );
+        // PAYMENT PROTECTION: If it's a final file, check if payment is done
+        if (file.type === "final" && !isAdmin) {
+            const allowedStatuses = ["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"];
+            if (!allowedStatuses.includes(file.order.status)) {
+                return NextResponse.json(
+                    { error: "Payment required to access final files" },
+                    { status: 402 }
+                );
+            }
+
+            // DELIVERED tracking: Update status if not already delivered/completed
+            if (file.order.status === "PAYMENT_COMPLETED") {
+                await prisma.order.update({
+                    where: { id: file.orderId },
+                    data: { status: "DELIVERED" }
+                }).catch(err => console.error("DELIVERED_UPDATE_ERROR:", err));
+            }
         }
 
         // Determine file path - check both old (public) and new (uploads) locations

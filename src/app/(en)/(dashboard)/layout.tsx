@@ -13,5 +13,9 @@ export default async function DashboardLayout({
         redirect("/login");
     }
 
-    return <DashboardWrapper>{children}</DashboardWrapper>;
+    return (
+        <div suppressHydrationWarning>
+            <DashboardWrapper>{children}</DashboardWrapper>
+        </div>
+    );
 }

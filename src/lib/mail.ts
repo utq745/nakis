@@ -39,3 +39,37 @@ export async function sendNewCommentEmail(to: string, orderTitle: string, commen
     -------------------------------------------
     `);
 }
+
+export async function sendDeleteAccountEmail(to: string, token: string, locale: "en" | "tr") {
+    const confirmUrl = `${process.env.NEXTAUTH_URL}/api/user/delete-account/confirm?token=${token}`;
+
+    if (locale === "tr") {
+        console.log(`
+        📧 [MOCK EMAIL SERVICE]
+        To: ${to}
+        Subject: Hesap Silme Onayı
+        -------------------------------------------
+        Merhaba,
+        Hesabınızı silme talebiniz alınmıştır. Bu işlemi onaylamak için lütfen aşağıdaki bağlantıya tıklayın:
+        
+        ${confirmUrl}
+        
+        Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın.
+        -------------------------------------------
+        `);
+    } else {
+        console.log(`
+        📧 [MOCK EMAIL SERVICE]
+        To: ${to}
+        Subject: Account Deletion Confirmation
+        -------------------------------------------
+        Hello,
+        We received a request to delete your account. To confirm this action, please click the link below:
+        
+        ${confirmUrl}
+        
+        If you did not make this request, please ignore this email.
+        -------------------------------------------
+        `);
+    }
+}

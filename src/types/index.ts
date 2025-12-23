@@ -1,6 +1,6 @@
 export type Role = "CUSTOMER" | "ADMIN";
 
-export type OrderStatus = "WAITING_PRICE" | "PRICED" | "PRICE_ACCEPTED" | "APPROVAL_AWAITING" | "IN_PROGRESS" | "PAYMENT_PENDING" | "COMPLETED" | "CANCELLED";
+export type OrderStatus = "WAITING_PRICE" | "PRICED" | "PRICE_ACCEPTED" | "APPROVAL_AWAITING" | "IN_PROGRESS" | "PAYMENT_PENDING" | "PAYMENT_COMPLETED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
 
 export interface SafeUser {
     id: string;
@@ -52,6 +52,8 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
     APPROVAL_AWAITING: "Awaiting Preview Approval",
     IN_PROGRESS: "In Progress",
     PAYMENT_PENDING: "Payment Pending",
+    PAYMENT_COMPLETED: "Payment Completed",
+    DELIVERED: "Delivered",
     COMPLETED: "Completed",
     CANCELLED: "Cancelled",
 };
@@ -63,6 +65,8 @@ export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
     APPROVAL_AWAITING: "Önizleme Onayı Bekleniyor",
     IN_PROGRESS: "Sipariş Hazırlanıyor",
     PAYMENT_PENDING: "Ödeme Bekleniyor",
+    PAYMENT_COMPLETED: "Ödeme Tamamlandı",
+    DELIVERED: "Teslim Edildi",
     COMPLETED: "Tamamlandı",
     CANCELLED: "İptal Edildi",
 };
@@ -74,6 +78,8 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
     APPROVAL_AWAITING: "bg-orange-500/10 text-orange-500",
     IN_PROGRESS: "bg-purple-500/10 text-purple-500",
     PAYMENT_PENDING: "bg-fuchsia-500/10 text-fuchsia-500",
+    PAYMENT_COMPLETED: "bg-emerald-500/10 text-emerald-500",
+    DELIVERED: "bg-blue-600/10 text-blue-600",
     COMPLETED: "bg-green-500/10 text-green-500",
     CANCELLED: "bg-red-500/10 text-red-500",
 };

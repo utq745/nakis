@@ -34,34 +34,51 @@ async function main() {
     });
     console.log("Customer user created:", customer.email);
 
-    // Create a sample order
-    const existingOrder = await prisma.order.findFirst({
-        where: { customerId: customer.id },
+    // Create sample orders
+    const order1 = await prisma.order.create({
+        data: {
+            title: "Logo Nakış Tasarımı",
+            description: "Şirket logomuzu nakış formatına çevirmenizi istiyoruz. Logo boyutu yaklaşık 10x10 cm olacak. Renkler: Mavi ve beyaz.",
+            status: "WAITING_PRICE",
+            customerId: customer.id,
+            priority: "NORMAL",
+        },
     });
+    console.log("Sample order 1 created:", order1.title);
 
-    if (!existingOrder) {
-        const order = await prisma.order.create({
-            data: {
-                title: "Logo Nakış Tasarımı",
-                description: "Şirket logomuzu nakış formatına çevirmenizi istiyoruz. Logo boyutu yaklaşık 10x10 cm olacak. Renkler: Mavi ve beyaz.",
-                status: "PENDING",
-                customerId: customer.id,
-            },
-        });
-        console.log("Sample order created:", order.title);
+    const order2 = await prisma.order.create({
+        data: {
+            title: "3D Puff Nakış - Şapka",
+            description: "Beyzbol şapkası için 3D kabartma nakış tasarımı. Logo ekli.",
+            status: "PRICED",
+            price: 45.00,
+            customerId: customer.id,
+            priority: "URGENT",
+        },
+    });
+    console.log("Sample order 2 created:", order2.title);
 
-        // Add a comment
-        await prisma.comment.create({
-            data: {
-                content: "Merhaba, logoyu inceledim. 2 gün içinde önizleme gönderebilirim.",
-                orderId: order.id,
-                userId: admin.id,
-            },
-        });
-        console.log("Sample comment added");
-    } else {
-        console.log("Sample order already exists");
-    }
+    const order3 = await prisma.order.create({
+        data: {
+            title: "Özel Arma Tasarımı",
+            description: "Ceket için merrow kenarlı özel arma tasarımı gerekiyor.",
+            status: "IN_PROGRESS",
+            price: 65.00,
+            customerId: customer.id,
+            priority: "NORMAL",
+        },
+    });
+    console.log("Sample order 3 created:", order3.title);
+
+    // Add a comment to first order
+    await prisma.comment.create({
+        data: {
+            content: "Merhaba, logoyu inceledim. 2 gün içinde önizleme gönderebilirim.",
+            orderId: order1.id,
+            userId: admin.id,
+        },
+    });
+    console.log("Sample comment added");
 
     console.log("Seeding completed!");
 }

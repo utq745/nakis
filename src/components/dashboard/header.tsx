@@ -15,6 +15,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, Settings, Globe, LayoutDashboard, Package, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 import Link from "next/link";
+import { NotificationBell } from "./notification-bell";
+import { ThemeToggle } from "../theme-toggle";
 
 export function Header() {
     const { data: session } = useSession();
@@ -36,7 +38,7 @@ export function Header() {
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-end border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-end border-b border-border bg-background/80 backdrop-blur-sm px-6">
 
             <div className="flex items-center gap-2">
                 {/* Language Switcher */}
@@ -45,24 +47,24 @@ export function Header() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+                            className="text-muted-foreground hover:text-foreground hover:bg-accent"
                         >
                             <Globe className="h-5 w-5" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-32 bg-zinc-900 border-zinc-800"
+                        className="w-32 bg-popover border-border"
                         align="end"
                     >
                         {language === 'tr' ? (
                             <>
                                 <DropdownMenuItem
-                                    className="text-white bg-zinc-800 cursor-default font-semibold flex items-center justify-between"
+                                    className="text-foreground bg-accent cursor-default font-semibold flex items-center justify-between"
                                 >
                                     Türkçe <Check className="h-3 w-3" />
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                    className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                                    className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer"
                                     onClick={() => setLanguage("en")}
                                 >
                                     English
@@ -71,12 +73,12 @@ export function Header() {
                         ) : (
                             <>
                                 <DropdownMenuItem
-                                    className="text-white bg-zinc-800 cursor-default font-semibold flex items-center justify-between"
+                                    className="text-foreground bg-accent cursor-default font-semibold flex items-center justify-between"
                                 >
                                     English <Check className="h-3 w-3" />
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                    className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                                    className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer"
                                     onClick={() => setLanguage("tr")}
                                 >
                                     Türkçe
@@ -85,6 +87,10 @@ export function Header() {
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <ThemeToggle />
+
+                <NotificationBell />
 
                 {/* User Menu */}
                 {mounted ? (
@@ -105,39 +111,39 @@ export function Header() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-56 bg-zinc-900 border-zinc-800"
+                            className="w-56 bg-popover border-border"
                             align="end"
                         >
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium text-white">
+                                    <p className="text-sm font-medium text-foreground">
                                         {session?.user?.name}
                                     </p>
-                                    <p className="text-xs text-zinc-400">{session?.user?.email}</p>
+                                    <p className="text-xs text-muted-foreground">{session?.user?.email}</p>
                                 </div>
                             </DropdownMenuLabel>
-                            <DropdownMenuSeparator className="bg-zinc-800" />
+                            <DropdownMenuSeparator className="bg-border" />
                             <Link href={language === 'tr' ? '/tr/dashboard' : '/dashboard'}>
-                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <LayoutDashboard className="mr-2 h-4 w-4" />
                                     {t.sidebar.dashboard}
                                 </DropdownMenuItem>
                             </Link>
                             <Link href={language === 'tr' ? '/tr/orders' : '/orders'}>
-                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <Package className="mr-2 h-4 w-4" />
                                     {t.sidebar.orders}
                                 </DropdownMenuItem>
                             </Link>
                             <Link href={language === 'tr' ? '/tr/settings' : '/settings'}>
-                                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer">
+                                <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <Settings className="mr-2 h-4 w-4" />
                                     {t.common.settings}
                                 </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuSeparator className="bg-zinc-800" />
+                            <DropdownMenuSeparator className="bg-border" />
                             <DropdownMenuItem
-                                className="text-red-400 focus:text-red-300 focus:bg-zinc-800 cursor-pointer"
+                                className="text-red-400 dark:text-red-400 focus:text-red-500 dark:focus:text-red-300 focus:bg-accent cursor-pointer"
                                 onClick={() => signOut({ callbackUrl: language === 'tr' ? "/tr/login" : "/login" })}
                             >
                                 <LogOut className="mr-2 h-4 w-4" />

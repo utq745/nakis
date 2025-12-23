@@ -9,7 +9,7 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
         where: { id },
         include: {
             customer: {
-                select: { id: true, name: true, email: true, role: true },
+                select: { id: true, name: true, email: true, role: true, notes: true },
             },
             files: {
                 orderBy: { createdAt: "desc" },
@@ -36,37 +36,7 @@ async function getOrder(id: string, userId: string, isAdmin: boolean) {
         return null;
     }
 
-    // Transform file URLs to secure API format
-    const transformedFiles = order.files.map(file => ({
-        ...file,
-        url: `/api/files/${file.id}`,
-    }));
-
-    const transformedComments = order.comments.map(comment => ({
-        ...comment,
-        files: comment.files?.map(file => ({
-            ...file,
-            url: `/api/files/${file.id}`,
-        })) || [],
-    }));
-
-    // Transform wilcom data if exists
-    const transformedWilcomData = order.wilcomData ? {
-        ...order.wilcomData,
-        colors: JSON.parse(order.wilcomData.colors),
-        colorSequence: JSON.parse(order.wilcomData.colorSequence),
-        createdAt: order.wilcomData.createdAt.toISOString(),
-        updatedAt: order.wilcomData.updatedAt.toISOString(),
-    } : null;
-
-    return {
-        ...order,
-        createdAt: order.createdAt.toISOString(),
-        updatedAt: order.updatedAt.toISOString(),
-        files: transformedFiles.map(f => ({ ...f, createdAt: f.createdAt.toISOString() })),
-        comments: transformedComments.map(c => ({ ...c, createdAt: c.createdAt.toISOString() })),
-        wilcomData: transformedWilcomData,
-    };
+    return order;
 }
 
 export default async function OrderDetailPage({
@@ -81,34 +51,63 @@ export default async function OrderDetailPage({
 
     const { id } = await params;
     const isAdmin = session.user.role === "ADMIN";
-    const order = await getOrder(id, session.user.id, isAdmin);
+    const orderData = await getOrder(id, session.user.id, isAdmin);
 
-    if (!order) {
+    if (!orderData) {
         return notFound();
     }
 
-    // Cast status to OrderStatus type and ensure title is never null
-    const typedOrder = {
-        ...order,
-        title: order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
-        status: order.status as import("@/types").OrderStatus,
-        customer: {
-            ...order.customer,
-            role: order.customer.role as "ADMIN" | "CUSTOMER"
+    // Transform file URLs to secure API format and serialize dates
+    const transformedFiles = orderData.files.map(file => ({
+        ...file,
+        url: `/api/files/${file.id}`,
+        createdAt: file.createdAt.toISOString(),
+    }));
+
+    const transformedComments = orderData.comments.map(comment => ({
+        ...comment,
+        createdAt: comment.createdAt.toISOString(),
+        user: {
+            ...comment.user,
+            role: comment.user.role as "ADMIN" | "CUSTOMER"
         },
-        comments: order.comments.map((c: typeof order.comments[number]) => ({
-            ...c,
-            user: {
-                ...c.user,
-                role: c.user.role as "ADMIN" | "CUSTOMER"
-            }
-        })),
-        wilcomData: order.wilcomData,
+        files: comment.files?.map(file => ({
+            ...file,
+            url: `/api/files/${file.id}`,
+        })) || [],
+    }));
+
+    const transformedWilcomData = orderData.wilcomData ? {
+        ...orderData.wilcomData,
+        colors: JSON.parse(orderData.wilcomData.colors),
+        colorSequence: JSON.parse(orderData.wilcomData.colorSequence),
+        createdAt: orderData.wilcomData.createdAt.toISOString(),
+        updatedAt: orderData.wilcomData.updatedAt.toISOString(),
+    } : null;
+
+    const typedOrder = {
+        id: orderData.id,
+        title: orderData.title || `Order #${orderData.id.slice(-6).toUpperCase()}`,
+        description: orderData.description,
+        status: orderData.status as any, // Cast later in component if needed
+        price: orderData.price,
+        customerId: orderData.customerId,
+        priority: orderData.priority,
+        estimatedDelivery: orderData.estimatedDelivery ? orderData.estimatedDelivery.toISOString() : null,
+        createdAt: orderData.createdAt.toISOString(),
+        updatedAt: orderData.updatedAt.toISOString(),
+        customer: {
+            ...orderData.customer,
+            role: orderData.customer.role as "ADMIN" | "CUSTOMER"
+        },
+        files: transformedFiles,
+        comments: transformedComments,
+        wilcomData: transformedWilcomData,
     };
 
     return (
         <Providers>
-            <OrderDetailClient order={typedOrder} isAdmin={isAdmin} />
+            <OrderDetailClient order={typedOrder as any} isAdmin={isAdmin} />
         </Providers>
     );
 }

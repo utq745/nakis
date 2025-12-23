@@ -30,6 +30,10 @@ import {
     Trash2,
     Eye,
     Send,
+    DollarSign,
+    ClipboardList,
+    X,
+    Archive,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -138,6 +142,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [fileToDelete, setFileToDelete] = useState<string | null>(null);
     const [isDeletingFile, setIsDeletingFile] = useState(false);
     const [isApprovingPrice, setIsApprovingPrice] = useState(false);
+    const [isDecliningPrice, setIsDecliningPrice] = useState(false);
+    const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
     const [isApprovingPreview, setIsApprovingPreview] = useState(false);
     const [isSendingPreview, setIsSendingPreview] = useState(false);
     const [hasNewPreviewFiles, setHasNewPreviewFiles] = useState(false);
@@ -194,11 +200,15 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             }
 
             toast.success("Sipariş güncellendi");
-            router.refresh();
+
+            // Kullanıcının başarı mesajını görmesi için 2 saniye bekleyelim
+            setTimeout(() => {
+                router.refresh();
+                setIsUpdating(false);
+            }, 2000);
         } catch (error) {
             toast.error("Güncelleme sırasında hata oluştu");
             console.error(error);
-        } finally {
             setIsUpdating(false);
         }
     }
@@ -257,10 +267,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
             toast.success("Fiyat onaylandı, sipariş işleme alındı.");
 
-            // Update local state for immediate feedback
             setStatus("PRICE_ACCEPTED");
 
-            // Small delay to let user see the success message
             setTimeout(() => {
                 router.refresh();
                 setIsApprovingPrice(false);
@@ -269,6 +277,33 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.error("İşlem sırasında hata oluştu");
             console.error(error);
             setIsApprovingPrice(false);
+        }
+    }
+
+    async function handlePriceDecline() {
+        setIsDecliningPrice(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "CANCELLED" }),
+            });
+
+            if (!response.ok) throw new Error("İptal işlemi başarısız");
+
+            toast.success("Sipariş iptal edildi.");
+
+            setStatus("CANCELLED");
+            setIsDeclineDialogOpen(false);
+
+            setTimeout(() => {
+                router.refresh();
+                setIsDecliningPrice(false);
+            }, 1000);
+        } catch (error) {
+            toast.error("İşlem sırasında hata oluştu");
+            console.error(error);
+            setIsDecliningPrice(false);
         }
     }
 
@@ -336,19 +371,156 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 <div>
                     <Link
                         href="/tr/orders"
-                        className="inline-flex items-center text-zinc-400 hover:text-white transition-colors mb-4"
+                        className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-4"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Siparişlere Dön
                     </Link>
                     <div className="flex items-center gap-4">
-                        <h1 className="text-2xl font-bold text-white">{order.title}</h1>
+                        <h1 className="text-2xl font-bold text-foreground">{order.title}</h1>
                         <Badge className={ORDER_STATUS_COLORS[order.status]}>
                             {ORDER_STATUS_LABELS[order.status]}
                         </Badge>
                     </div>
                 </div>
             </div>
+
+            {/* Admin Price Warning Banner */}
+            {isAdmin && status === "WAITING_PRICE" && (
+                <Card className="border-yellow-500/50 bg-yellow-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-yellow-500/20 text-yellow-400">
+                                <DollarSign className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Siparişe fiyat teklifi vermeniz bekleniyor
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Bu sipariş için fiyat belirleyin. Fiyat girildikten sonra müşteri onay bekleyecektir.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Customer Waiting Price Banner */}
+            {!isAdmin && status === "WAITING_PRICE" && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground">
+                                        Fiyat Teklifi Bekleniyor
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Siparişiniz inceleniyor, fiyat teklifi hazırlandığında size bildirilecektir.
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => setIsDeclineDialogOpen(true)}
+                                disabled={isDecliningPrice}
+                                variant="outline"
+                                className="w-full md:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all gap-2"
+                            >
+                                <X className="h-4 w-4" />
+                                Siparişi İptal Et
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Waiting for Price Approval Banner */}
+            {isAdmin && status === "PRICED" && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                <CreditCard className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Müşterinin fiyatı onaylaması bekleniyor
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Fiyat müşteriye iletildi. Müşterinin onayı bekleniyor.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Preview Upload Warning Banner */}
+            {isAdmin && status === "PRICE_ACCEPTED" && (
+                <Card className="border-emerald-500/50 bg-emerald-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-emerald-500/20 text-emerald-400">
+                                <ImageIcon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Önizleme dosyası yüklemeniz bekleniyor
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Müşteri fiyatı onayladı. Şimdi önizleme dosyalarını yükleyin ve müşteriye gönderin.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Waiting for Preview Approval Banner */}
+            {isAdmin && status === "APPROVAL_AWAITING" && (
+                <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-orange-500/20 text-orange-400">
+                                <ImageIcon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Müşteri önizlemeyi inceliyor
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Önizleme dosyaları gönderildi. Müşterinin onayı bekleniyor.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Admin Final Files Upload Warning Banner */}
+            {isAdmin && status === "IN_PROGRESS" && (
+                <Card className="border-purple-500/50 bg-purple-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-purple-500/20 text-purple-400">
+                                <Send className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Final dosyalarını göndermeniz bekleniyor
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Müşteri önizlemeyi onayladı. Şimdi final dosyalarını yükleyin.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Price Approval Banner for Customer */}
             {!isAdmin && status === "PRICED" && order.price && (
@@ -360,10 +532,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <CreditCard className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.priceApprovalTitle}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.priceApprovalDesc}
                                     </p>
                                     <p className="text-2xl font-bold text-blue-400 mt-2">
@@ -371,23 +543,34 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     </p>
                                 </div>
                             </div>
-                            <Button
-                                onClick={handleApprovePrice}
-                                disabled={isApprovingPrice}
-                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white gap-2"
-                            >
-                                {isApprovingPrice ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        {t.common.loading}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CreditCard className="h-4 w-4" />
-                                        {t.orders.approvePrice}
-                                    </>
-                                )}
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    onClick={() => setIsDeclineDialogOpen(true)}
+                                    disabled={isDecliningPrice || isApprovingPrice}
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all gap-2"
+                                >
+                                    <X className="h-4 w-4" />
+                                    Teklifi Reddet
+                                </Button>
+                                <Button
+                                    onClick={handleApprovePrice}
+                                    disabled={isApprovingPrice || isDecliningPrice}
+                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 transition-all gap-2"
+                                >
+                                    {isApprovingPrice ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            {t.common.loading}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            {t.orders.approvePrice}
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -403,10 +586,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <ImageIcon className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.previewApprovalTitle}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.previewApprovalDesc}
                                     </p>
                                 </div>
@@ -435,7 +618,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
             {/* Payment Banner for Customer */}
             {!isAdmin && status === "PAYMENT_PENDING" && (
-                <Card className="border-fuchsia-500/50 bg-fuchsia-500/05 overflow-hidden">
+                <Card className="border-fuchsia-500/50 bg-fuchsia-500/5 overflow-hidden">
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="flex items-center gap-4 text-center md:text-left">
@@ -443,10 +626,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <CreditCard className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.payButton}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.paymentPendingDesc}
                                     </p>
                                 </div>
@@ -466,20 +649,21 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Files */}
-                    <Card className="bg-zinc-900 border-zinc-800">
+                    {/* Files */}
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">Dosyalar</CardTitle>
+                            <CardTitle className="text-foreground text-lg">Dosyalar</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Tabs defaultValue="original" className="w-full">
-                                <TabsList className="bg-zinc-800 w-full justify-start">
-                                    <TabsTrigger value="original" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                <TabsList className="bg-accent w-full justify-start">
+                                    <TabsTrigger value="original" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         Müşteri Dosyaları ({originalFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="preview" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                    <TabsTrigger value="preview" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         Önizleme ({previewFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="final" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                    <TabsTrigger value="final" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         Final ({finalFiles.length})
                                     </TabsTrigger>
                                 </TabsList>
@@ -501,8 +685,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
                                     />
                                     {isAdmin && (
-                                        <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-300 text-sm">
+                                        <div className="pt-4 border-t border-border">
+                                            <Label className="text-muted-foreground text-sm">
                                                 Önizleme Dosyası Yükle
                                             </Label>
                                             <input
@@ -557,14 +741,35 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <TabsContent value="final" className="mt-4 space-y-4">
                                     <FileList
                                         files={finalFiles}
-                                        isLocked={!isAdmin && status !== "COMPLETED"}
+                                        isLocked={!isAdmin && !["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status)}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                        canDelete={isAdmin && !["PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status)}
                                     />
+                                    {/* Müşteri Toplu İndirme Butonu */}
+                                    {!isAdmin && finalFiles.length > 1 && ["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status) && (
+                                        <div className="pt-4 border-t border-border">
+                                            <Button
+                                                onClick={() => {
+                                                    const link = document.createElement('a');
+                                                    link.href = `/api/orders/${order.id}/download-finals`;
+                                                    link.download = `${order.title || 'Sipariş'}_Finals.zip`;
+                                                    document.body.appendChild(link);
+                                                    link.click();
+                                                    document.body.removeChild(link);
+                                                    toast.success("Dosyalar indiriliyor...");
+                                                }}
+                                                variant="outline"
+                                                className="w-full border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:text-white"
+                                            >
+                                                <Archive className="mr-2 h-4 w-4" />
+                                                Tümünü İndir (ZIP)
+                                            </Button>
+                                        </div>
+                                    )}
                                     {isAdmin && (
-                                        <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-300 text-sm">
+                                        <div className="pt-4 border-t border-border">
+                                            <Label className="text-muted-foreground text-sm">
                                                 Final Dosyası Yükle
                                             </Label>
                                             <input
@@ -601,7 +806,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </Card>
 
                     {/* Wilcom Design Data - Admin Only, visible after preview approval */}
-                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
+                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}
@@ -611,34 +816,30 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     )}
 
                     {/* Comments */}
-                    <Card className="bg-zinc-900 border-zinc-800">
-                        <CardContent className="p-0">
-                            <CommentSection orderId={order.id} initialComments={formattedComments} />
-                        </CardContent>
-                    </Card>
+                    <CommentSection orderId={order.id} initialComments={formattedComments} status={status} />
                 </div>
 
                 {/* Sidebar */}
                 <div className="space-y-6">
                     {/* Order Info */}
-                    <Card className="bg-zinc-900 border-zinc-800">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">Sipariş Bilgileri</CardTitle>
+                            <CardTitle className="text-foreground text-lg">Sipariş Bilgileri</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-0">
                             {isAdmin && (
-                                <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                    <span className="text-white font-medium">Müşteri</span>
-                                    <span className="text-sm text-zinc-400">{order.customer.name || order.customer.email}</span>
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium">Müşteri</span>
+                                    <span className="text-sm text-muted-foreground">{order.customer.name || order.customer.email}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">Sipariş No</span>
-                                <span className="text-sm text-zinc-400 font-mono">{order.id.slice(0, 8)}</span>
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">Sipariş No</span>
+                                <span className="text-sm text-muted-foreground font-mono">{order.id.slice(0, 8)}</span>
                             </div>
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">Oluşturulma</span>
-                                <span className="text-sm text-zinc-400">
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">Oluşturulma</span>
+                                <span className="text-sm text-muted-foreground">
                                     {new Date(order.createdAt).toLocaleDateString("tr-TR", {
                                         month: "short",
                                         day: "numeric",
@@ -647,9 +848,9 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     })}
                                 </span>
                             </div>
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">Son Güncelleme</span>
-                                <span className="text-sm text-zinc-400">
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">Son Güncelleme</span>
+                                <span className="text-sm text-muted-foreground">
                                     {new Date(order.updatedAt).toLocaleDateString("tr-TR", {
                                         month: "short",
                                         day: "numeric",
@@ -658,10 +859,23 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     })}
                                 </span>
                             </div>
+                            {finalFiles.length > 0 && (
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium">Sipariş Teslimi</span>
+                                    <span className="text-sm text-muted-foreground">
+                                        {new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))).toLocaleDateString("tr-TR", {
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </span>
+                                </div>
+                            )}
                             {order.price && (
                                 <div className="flex justify-between items-center py-1.5">
-                                    <span className="text-white font-medium">Fiyat</span>
-                                    <span className="text-lg font-bold text-violet-400">
+                                    <span className="text-foreground font-medium">Fiyat</span>
+                                    <span className="text-lg font-bold text-violet-500">
                                         ${Number(order.price).toLocaleString("en-US")}
                                     </span>
                                 </div>
@@ -671,12 +885,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* Description - Moved to sidebar */}
                     {order.description && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-lg">Açıklama</CardTitle>
+                                <CardTitle className="text-foreground text-lg">Açıklama</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-zinc-300 whitespace-pre-wrap text-sm">
+                                <p className="text-muted-foreground whitespace-pre-wrap text-sm">
                                     {order.description}
                                 </p>
                             </CardContent>
@@ -685,30 +899,30 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* Admin Controls */}
                     {isAdmin && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-lg">
+                                <CardTitle className="text-foreground text-lg">
                                     Sipariş Yönetimi
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="grid grid-cols-6 gap-3">
                                     <div className="col-span-4 space-y-1">
-                                        <Label className="text-zinc-400 text-xs">Durum</Label>
+                                        <Label className="text-muted-foreground text-xs">Durum</Label>
                                         <Select
                                             value={status}
                                             onValueChange={(value) => setStatus(value as OrderStatus)}
                                             disabled={order.status === "COMPLETED"}
                                         >
-                                            <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white h-9">
+                                            <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-zinc-800 border-zinc-700">
+                                            <SelectContent className="bg-popover border-border">
                                                 {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
                                                     <SelectItem
                                                         key={key}
                                                         value={key}
-                                                        className="text-white focus:bg-zinc-700"
+                                                        className="text-foreground focus:bg-accent"
                                                     >
                                                         {label}
                                                     </SelectItem>
@@ -717,13 +931,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         </Select>
                                     </div>
                                     <div className="col-span-2 space-y-1">
-                                        <Label className="text-zinc-400 text-xs">Fiyat ($)</Label>
+                                        <Label className="text-muted-foreground text-xs">Fiyat ($)</Label>
                                         <Input
                                             type="number"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
                                             placeholder="0.00"
-                                            className="bg-zinc-800 border-zinc-700 text-white h-9"
+                                            className="bg-accent border-border text-foreground h-9"
                                         />
                                     </div>
                                 </div>
@@ -748,59 +962,59 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* FAQ Section - Only for customers */}
                     {!isAdmin && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-white text-lg flex items-center gap-2">
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
                                     <span className="text-violet-400">?</span>
                                     Sıkça Sorulan Sorular
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-0">
-                                <div className="divide-y divide-zinc-800">
+                                <div className="divide-y divide-border">
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 Siparişim ne zaman hazır olur?
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 Süreç nasıl işliyor?
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 Revizyon talep edebilir miyim?
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             Evet! Önizleme aldıktan sonra "Mesajlar ve Sipariş Durumu" bölümünden revizyon talebinde bulunabilirsiniz.
                                         </div>
                                     </details>
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 Hangi formatları destekliyorsunuz?
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             Giriş: JPG, PNG, PDF, AI, EPS, SVG. Çıkış: DST, PES, JEF ve diğer nakış formatları.
                                         </div>
                                     </details>
@@ -817,6 +1031,17 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 onConfirm={performDelete}
                 isPending={isDeletingFile}
                 description="Bu dosya kalıcı olarak silinecektir. Bu işlemi geri alamazsınız."
+            />
+            <ActionConfirmDialog
+                isOpen={isDeclineDialogOpen}
+                onOpenChange={setIsDeclineDialogOpen}
+                onConfirm={handlePriceDecline}
+                isPending={isDecliningPrice}
+                title="Teklifi Reddet"
+                description="Fiyat teklifini reddetmek istediğinizden emin misiniz? Bu işlem siparişi kalıcı olarak iptal edecektir."
+                confirmText="İptal Et"
+                cancelText="Vazgeç"
+                variant="destructive"
             />
         </div>
     );
@@ -835,6 +1060,7 @@ function FileList({
         name: string;
         url: string;
         size: number | null;
+        version?: number;
     }>;
     showPreview?: boolean;
     isLocked?: boolean;
@@ -844,7 +1070,7 @@ function FileList({
 }) {
     if (files.length === 0) {
         return (
-            <div className="text-center py-8 text-zinc-500">
+            <div className="text-center py-8 text-muted-foreground">
                 Henüz dosya yüklenmemiş
             </div>
         );
@@ -855,7 +1081,7 @@ function FileList({
             {files.map((file) => (
                 <div key={file.id}>
                     {showPreview && file.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
-                        <div className="mb-2 rounded-lg overflow-hidden bg-zinc-800">
+                        <div className="mb-2 rounded-lg overflow-hidden bg-accent">
                             <img
                                 src={file.url}
                                 alt={file.name}
@@ -863,7 +1089,7 @@ function FileList({
                             />
                         </div>
                     )}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-800/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
                         <div className="flex items-center gap-3">
                             {showPreview ? (
                                 <ImageIcon className="h-5 w-5 text-violet-400" />
@@ -871,9 +1097,16 @@ function FileList({
                                 <FileIcon className="h-5 w-5 text-violet-400" />
                             )}
                             <div>
-                                <p className="text-sm text-white">{file.name}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm text-foreground">{file.name}</p>
+                                    {file.version && file.version > 1 && (
+                                        <span className="px-2 py-0.5 text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full">
+                                            v{file.version}
+                                        </span>
+                                    )}
+                                </div>
                                 {file.size && (
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {(file.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
                                 )}
@@ -886,7 +1119,7 @@ function FileList({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                                            className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
                                             title="Önizle"
                                         >
                                             <Eye className="h-4 w-4" />
@@ -896,7 +1129,7 @@ function FileList({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                            className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 transition-colors"
                                             title="İndir"
                                         >
                                             <Download className="h-4 w-4" />
@@ -909,13 +1142,13 @@ function FileList({
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => onDelete(file.id)}
-                                    className="text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             )}
                             {isLocked && (
-                                <div className="p-2 rounded-lg bg-zinc-800/50 text-zinc-500" title="Ödeme gerekli">
+                                <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Ödeme gerekli">
                                     <Lock className="h-4 w-4" />
                                 </div>
                             )}

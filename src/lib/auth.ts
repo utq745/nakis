@@ -96,8 +96,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.role = (user as any).role || "CUSTOMER";
                 token.image = user.image;
             }
-            if (trigger === "update" && session?.role) {
-                token.role = session.role;
+            if (trigger === "update" && session) {
+                if (session.role) token.role = session.role;
+                if (session.image !== undefined) token.image = session.image;
+                if (session.name !== undefined) token.name = session.name;
             }
             return token;
         },

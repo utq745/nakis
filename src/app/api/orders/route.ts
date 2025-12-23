@@ -13,6 +13,7 @@ const createOrderSchema = z.object({
     isNotSure: z.boolean().default(false),
     customProduct: z.string().optional(),
     addKnockdownStitch: z.boolean().default(false),
+    priority: z.enum(["NORMAL", "URGENT"]).default("NORMAL"),
 });
 
 export async function GET() {
@@ -58,6 +59,10 @@ export async function POST(request: Request) {
         const body = await request.json();
         const validatedData = createOrderSchema.parse(body);
 
+        // Calculate estimated delivery (default 24-48h, but let's say 48h for safety)
+        const estimatedDelivery = new Date();
+        estimatedDelivery.setHours(estimatedDelivery.getHours() + 48);
+
         let order = await prisma.order.create({
             data: {
                 title: validatedData.title || "Yeni Sipariş",
@@ -69,6 +74,8 @@ export async function POST(request: Request) {
                 isNotSure: validatedData.isNotSure,
                 customProduct: validatedData.customProduct,
                 addKnockdownStitch: validatedData.addKnockdownStitch,
+                priority: validatedData.priority,
+                estimatedDelivery: estimatedDelivery,
                 customerId: session.user.id,
                 status: "WAITING_PRICE",
             },
@@ -99,6 +106,18 @@ export async function POST(request: Request) {
                 "admin@nakis.com",
                 `YENİ SİPARİŞ: ${projectTitle}`
             ).catch((err) => console.error("Failed to send admin email:", err));
+        }
+
+        // Create In-App Notification for Admins
+        const { createOrderNotification } = await import("@/lib/notifications");
+        const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+        for (const admin of admins) {
+            await createOrderNotification(
+                admin.id,
+                "New Order | Yeni Sipariş",
+                `${session.user.name || session.user.email} placed a new order: ${projectTitle}`,
+                `/orders/${order.id}`
+            );
         }
 
         return NextResponse.json(order, { status: 201 });

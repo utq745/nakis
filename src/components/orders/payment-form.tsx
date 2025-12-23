@@ -192,7 +192,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
             const response = await fetch(`/api/orders/${orderId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "COMPLETED" }),
+                body: JSON.stringify({ status: "PAYMENT_COMPLETED" }),
             });
 
             if (!response.ok) throw new Error("Payment failed");
@@ -219,46 +219,46 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
             <div className="max-w-2xl mx-auto py-12 px-4 text-center">
                 <div className="relative mb-8 flex justify-center">
                     <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full scale-150 animate-pulse" />
-                    <div className="relative bg-zinc-900 border-2 border-green-500/50 p-6 rounded-3xl shadow-[0_0_50px_rgba(34,197,94,0.2)]">
+                    <div className="relative bg-card border-2 border-green-500/50 p-6 rounded-3xl shadow-[0_0_50px_rgba(34,197,94,0.2)]">
                         <CheckCircle2 className="h-16 w-16 text-green-500 animate-in zoom-in duration-500 fill-green-500/10" />
                     </div>
                 </div>
 
-                <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight">
+                <h2 className="text-4xl font-extrabold text-foreground mb-4 tracking-tight">
                     {t.payment.success}
                 </h2>
-                <p className="text-zinc-400 text-lg mb-12 max-w-md mx-auto leading-relaxed">
+                <p className="text-muted-foreground text-lg mb-12 max-w-md mx-auto leading-relaxed">
                     {t.payment.successDesc}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-                    <div className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl text-left">
-                        <div className="flex items-center gap-3 mb-4 text-zinc-400">
+                    <div className="bg-card/50 border border-border p-6 rounded-2xl text-left">
+                        <div className="flex items-center gap-3 mb-4 text-muted-foreground">
                             <FileText className="h-5 w-5" />
                             <span className="font-semibold">{locale === 'tr' ? 'Sipariş Özeti' : 'Order Summary'}</span>
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span className="text-zinc-500">{locale === 'tr' ? 'Sipariş:' : 'Order:'}</span>
-                                <span className="text-white font-medium">{orderTitle}</span>
+                                <span className="text-muted-foreground">{locale === 'tr' ? 'Sipariş:' : 'Order:'}</span>
+                                <span className="text-foreground font-medium">{orderTitle}</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-zinc-500">{locale === 'tr' ? 'Tutar:' : 'Amount:'}</span>
-                                <span className="text-white font-medium">{price.toFixed(2)} €</span>
+                                <span className="text-muted-foreground">{locale === 'tr' ? 'Tutar:' : 'Amount:'}</span>
+                                <span className="text-foreground font-medium">{price.toFixed(2)} €</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-zinc-500">{locale === 'tr' ? 'Durum:' : 'Status:'}</span>
-                                <span className="text-green-500 font-bold uppercase">{t.status.COMPLETED}</span>
+                                <span className="text-muted-foreground">{locale === 'tr' ? 'Durum:' : 'Status:'}</span>
+                                <span className="text-green-500 font-bold uppercase">{t.status.PAYMENT_COMPLETED}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl text-left">
-                        <div className="flex items-center gap-3 mb-4 text-zinc-400">
+                    <div className="bg-card/50 border border-border p-6 rounded-2xl text-left">
+                        <div className="flex items-center gap-3 mb-4 text-muted-foreground">
                             <ShieldCheck className="h-5 w-5" />
                             <span className="font-semibold">{locale === 'tr' ? 'Sonraki Adım' : 'Next Step'}</span>
                         </div>
-                        <p className="text-sm text-zinc-500 leading-relaxed">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                             {locale === 'tr'
                                 ? 'Final dosyalarınız hazırlandı. Sipariş detay sayfasından tüm dosyaları indirebilirsiniz.'
                                 : 'Your final files are ready. You can download all files from the order details page.'}
@@ -277,15 +277,15 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                     <Button
                         variant="ghost"
                         onClick={() => router.push(locale === 'tr' ? '/tr/orders' : '/orders')}
-                        className="w-full sm:w-auto h-12 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-xl flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto h-12 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center gap-2"
                     >
                         <Home className="h-4 w-4" />
                         {locale === 'tr' ? 'Panele Dön' : 'Back to Dashboard'}
                     </Button>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-zinc-800">
-                    <p className="text-zinc-600 text-xs">
+                <div className="mt-12 pt-8 border-t border-border">
+                    <p className="text-muted-foreground/60 text-xs">
                         {locale === 'tr'
                             ? 'Herhangi bir sorun yaşarsanız destek ekibimizle iletişime geçebilirsiniz.'
                             : 'If you experience any issues, please contact our support team.'}
@@ -298,12 +298,12 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
     return (
         <form onSubmit={handlePayment} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card className="bg-card border-border shadow-sm">
                     <CardHeader>
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <CardTitle className="text-white">{t.payment.billingInfo}</CardTitle>
-                                <CardDescription className="text-zinc-400">
+                                <CardTitle className="text-foreground">{t.payment.billingInfo}</CardTitle>
+                                <CardDescription className="text-muted-foreground">
                                     {locale === "tr" ? "Fatura için adres ve iletişim bilgilerinizi girin." : "Enter your address and contact details for the invoice."}
                                 </CardDescription>
                             </div>
@@ -312,11 +312,11 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                 onValueChange={(v) => setBillingData({ ...billingData, type: v as any })}
                                 className="w-full md:w-auto"
                             >
-                                <TabsList className="bg-zinc-800 border-zinc-700 h-11 p-1">
+                                <TabsList className="bg-accent border-border h-11 p-1">
                                     <TabsTrigger
                                         value="individual"
                                         disabled={!isFormOpen}
-                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-zinc-300 hover:text-white transition-colors"
+                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         <User className="h-4 w-4 mr-2" />
                                         {t.payment.individual}
@@ -324,7 +324,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                     <TabsTrigger
                                         value="corporate"
                                         disabled={!isFormOpen}
-                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-zinc-300 hover:text-white transition-colors"
+                                        className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         <Building2 className="h-4 w-4 mr-2" />
                                         {t.payment.corporate}
@@ -335,7 +335,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
 
                         <div className="pt-4 space-y-3">
                             <div className="flex items-center justify-between">
-                                <Label className="text-zinc-400 text-xs uppercase tracking-wider font-bold">
+                                <Label className="text-muted-foreground text-[10px] uppercase tracking-wider font-bold">
                                     {locale === "tr" ? "Adres Seçimi" : "Address Selection"}
                                 </Label>
                                 {!isFormOpen && (
@@ -363,7 +363,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                             "relative p-4 rounded-xl border transition-all cursor-pointer group",
                                             selectedAddressId === addr.id && !isFormOpen
                                                 ? "bg-violet-950/20 border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.1)]"
-                                                : "bg-zinc-800/40 border-zinc-700 hover:border-zinc-600",
+                                                : "bg-accent/40 border-border hover:border-border/80",
                                             isFormOpen && "opacity-50 cursor-not-allowed"
                                         )}
                                     >
@@ -373,21 +373,21 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                                     "mt-1 h-4 w-4 rounded-full border flex items-center justify-center transition-colors",
                                                     selectedAddressId === addr.id && !isFormOpen
                                                         ? "border-violet-500 bg-violet-600 text-white"
-                                                        : "border-zinc-600"
+                                                        : "border-border"
                                                 )}>
                                                     {selectedAddressId === addr.id && !isFormOpen && (
                                                         <div className="h-1.5 w-1.5 rounded-full bg-white" />
                                                     )}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-sm font-bold text-white leading-none mb-1">
+                                                    <p className="text-sm font-bold text-foreground leading-none mb-1">
                                                         {addr.fullName}
                                                     </p>
-                                                    <p className="text-xs text-zinc-400 line-clamp-1">
+                                                    <p className="text-xs text-muted-foreground line-clamp-1">
                                                         {addr.address}, {addr.city} / {addr.country}
                                                     </p>
                                                     {addr.type === 'corporate' && (
-                                                        <p className="text-[10px] text-zinc-500 mt-1 uppercase">
+                                                        <p className="text-[10px] text-muted-foreground/70 mt-1 uppercase">
                                                             🏢 {addr.companyName}
                                                         </p>
                                                     )}
@@ -403,7 +403,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                                         e.stopPropagation();
                                                         handleEditAddress(addr);
                                                     }}
-                                                    className="h-7 w-7 text-zinc-500 hover:text-white hover:bg-zinc-700"
+                                                    className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-accent"
                                                 >
                                                     <Pencil className="h-3 w-3" />
                                                 </Button>
@@ -413,7 +413,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                                     size="icon"
                                                     disabled={isFormOpen}
                                                     onClick={(e) => handleDeleteAddressClick(addr.id, e)}
-                                                    className="h-7 w-7 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                                    className="h-7 w-7 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                                 >
                                                     <Trash2 className="h-3 w-3" />
                                                 </Button>
@@ -423,8 +423,8 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                 ))}
 
                                 {savedAddresses.length === 0 && !isFormOpen && (
-                                    <div className="p-8 border-2 border-dashed border-zinc-800 rounded-xl text-center">
-                                        <p className="text-sm text-zinc-500 mb-4">
+                                    <div className="p-8 border-2 border-dashed border-border rounded-xl text-center">
+                                        <p className="text-sm text-muted-foreground mb-4">
                                             {locale === "tr" ? "Henüz kayıtlı adresiniz yok." : "No saved addresses yet."}
                                         </p>
                                         <Button
@@ -443,9 +443,9 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                     </CardHeader>
 
                     {isFormOpen && (
-                        <CardContent className="space-y-6 pt-4 border-t border-zinc-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <CardContent className="space-y-6 pt-4 border-t border-border animate-in fade-in slide-in-from-top-4 duration-500">
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
                                     {editingId
                                         ? (locale === "tr" ? "Adresi Düzenle" : "Edit Address")
                                         : (locale === "tr" ? "Yeni Adres Bilgileri" : "New Address Details")}
@@ -461,25 +461,25 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                             setSelectedAddressId(savedAddresses[0].id);
                                         }
                                     }}
-                                    className="text-zinc-500 hover:text-white h-7"
+                                    className="text-muted-foreground hover:text-foreground h-7"
                                 >
                                     {locale === "tr" ? "İptal" : "Cancel"}
                                 </Button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="fullName" className="text-zinc-300">{t.payment.fullName}</Label>
+                                    <Label htmlFor="fullName" className="text-muted-foreground">{t.payment.fullName}</Label>
                                     <Input
                                         id="fullName"
                                         required
                                         value={billingData.fullName}
                                         onChange={(e) => setBillingData({ ...billingData, fullName: e.target.value })}
                                         placeholder="John Doe"
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                        className="bg-background border-border text-foreground focus:border-violet-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone" className="text-zinc-300">{t.payment.phone}</Label>
+                                    <Label htmlFor="phone" className="text-muted-foreground">{t.payment.phone}</Label>
                                     <Input
                                         id="phone"
                                         type="tel"
@@ -487,63 +487,63 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                         value={billingData.phone}
                                         onChange={(e) => setBillingData({ ...billingData, phone: e.target.value })}
                                         placeholder="+1..."
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                        className="bg-background border-border text-foreground focus:border-violet-500"
                                     />
                                 </div>
                             </div>
 
                             {billingData.type === "corporate" && (
-                                <div className="space-y-4 pt-4 border-t border-zinc-800 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="space-y-4 pt-4 border-t border-border animate-in fade-in slide-in-from-top-2 duration-300">
                                     <div className="space-y-2">
-                                        <Label htmlFor="companyName" className="text-zinc-300">{t.payment.companyName}</Label>
+                                        <Label htmlFor="companyName" className="text-muted-foreground">{t.payment.companyName}</Label>
                                         <Input
                                             id="companyName"
                                             required
                                             value={billingData.companyName || ""}
                                             onChange={(e) => setBillingData({ ...billingData, companyName: e.target.value })}
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            className="bg-background border-border text-foreground focus:border-violet-500"
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="taxOffice" className="text-zinc-300">{t.payment.taxOffice}</Label>
+                                            <Label htmlFor="taxOffice" className="text-muted-foreground">{t.payment.taxOffice}</Label>
                                             <Input
                                                 id="taxOffice"
                                                 required
                                                 value={billingData.taxOffice || ""}
                                                 onChange={(e) => setBillingData({ ...billingData, taxOffice: e.target.value })}
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-background border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="taxNumber" className="text-zinc-300">{t.payment.taxNumber}</Label>
+                                            <Label htmlFor="taxNumber" className="text-muted-foreground">{t.payment.taxNumber}</Label>
                                             <Input
                                                 id="taxNumber"
                                                 required
                                                 value={billingData.taxNumber || ""}
                                                 onChange={(e) => setBillingData({ ...billingData, taxNumber: e.target.value })}
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-background border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="space-y-4 pt-4 border-t border-zinc-800">
+                            <div className="space-y-4 pt-4 border-t border-border">
                                 <div className="flex flex-col md:flex-row gap-4">
                                     <div className="space-y-2 w-full md:w-1/2">
-                                        <Label className="text-zinc-300">{t.payment.country}</Label>
+                                        <Label className="text-muted-foreground">{t.payment.country}</Label>
                                         <Select
                                             value={billingData.country}
                                             onValueChange={(v) => setBillingData({ ...billingData, country: v })}
                                             required
                                         >
-                                            <SelectTrigger className="w-full bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 h-10">
+                                            <SelectTrigger className="w-full bg-background border-border text-foreground focus:border-violet-500 h-10">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                                            <SelectContent className="bg-popover border-border text-foreground">
                                                 {countries.map((c) => (
-                                                    <SelectItem key={c.code} value={c.code} className="focus:bg-zinc-800 focus:text-white">
+                                                    <SelectItem key={c.code} value={c.code} className="focus:bg-accent focus:text-foreground">
                                                         {c.name}
                                                     </SelectItem>
                                                 ))}
@@ -551,38 +551,38 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                         </Select>
                                     </div>
                                     <div className="space-y-2 w-full md:w-1/2">
-                                        <Label htmlFor="city" className="text-zinc-300">{t.payment.city}</Label>
+                                        <Label htmlFor="city" className="text-muted-foreground">{t.payment.city}</Label>
                                         <Input
                                             id="city"
                                             required
                                             value={billingData.city}
                                             onChange={(e) => setBillingData({ ...billingData, city: e.target.value })}
                                             placeholder="Istanbul"
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            className="bg-background border-border text-foreground focus:border-violet-500"
                                         />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-2 space-y-2">
-                                        <Label htmlFor="address" className="text-zinc-300">{t.payment.address}</Label>
+                                        <Label htmlFor="address" className="text-muted-foreground">{t.payment.address}</Label>
                                         <Input
                                             id="address"
                                             required
                                             value={billingData.address}
                                             onChange={(e) => setBillingData({ ...billingData, address: e.target.value })}
                                             placeholder={t.payment.addressPlaceholder}
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            className="bg-background border-border text-foreground focus:border-violet-500"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="zipCode" className="text-zinc-300">{t.payment.zipCode}</Label>
+                                        <Label htmlFor="zipCode" className="text-muted-foreground">{t.payment.zipCode}</Label>
                                         <Input
                                             id="zipCode"
                                             required
                                             value={billingData.zipCode}
                                             onChange={(e) => setBillingData({ ...billingData, zipCode: e.target.value })}
                                             placeholder="34000"
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            className="bg-background border-border text-foreground focus:border-violet-500"
                                         />
                                     </div>
                                 </div>
@@ -599,7 +599,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                             setSelectedAddressId(savedAddresses[0].id);
                                         }
                                     }}
-                                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                    className="border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                                 >
                                     {locale === "tr" ? "Vazgeç" : "Cancel"}
                                 </Button>
@@ -616,13 +616,13 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                     )}
                 </Card>
 
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card className="bg-card border-border shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
+                        <CardTitle className="text-foreground flex items-center gap-2">
                             <ShieldCheck className="h-5 w-5 text-green-500" />
                             {t.payment.title}
                         </CardTitle>
-                        <CardDescription className="text-zinc-400">
+                        <CardDescription className="text-muted-foreground">
                             Demo payment. Use any credit card details.
                         </CardDescription>
                     </CardHeader>
@@ -685,18 +685,18 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="cardName" className="text-zinc-300">{t.auth.fullName}</Label>
+                                    <Label htmlFor="cardName" className="text-muted-foreground">{t.auth.fullName}</Label>
                                     <Input
                                         id="cardName"
                                         required
                                         placeholder="JOHN DOE"
                                         value={cardName}
                                         onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                        className="bg-background border-border text-foreground focus:border-violet-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="cardNumber" className="text-zinc-300">{t.payment.cardNumber}</Label>
+                                    <Label htmlFor="cardNumber" className="text-muted-foreground">{t.payment.cardNumber}</Label>
                                     <Input
                                         id="cardNumber"
                                         required
@@ -704,13 +704,13 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                         maxLength={19}
                                         value={cardNumber}
                                         onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 font-mono"
+                                        className="bg-background border-border text-foreground focus:border-violet-500 font-mono"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="expiry" className="text-zinc-300">{t.payment.expiry}</Label>
+                                    <Label htmlFor="expiry" className="text-muted-foreground">{t.payment.expiry}</Label>
                                     <Input
                                         id="expiry"
                                         required
@@ -725,11 +725,11 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                                 setCardExpiry(v);
                                             }
                                         }}
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                        className="bg-background border-border text-foreground focus:border-violet-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="cvc" className="text-zinc-300">{t.payment.cvc}</Label>
+                                    <Label htmlFor="cvc" className="text-muted-foreground">{t.payment.cvc}</Label>
                                     <Input
                                         id="cvc"
                                         required
@@ -740,7 +740,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                         onChange={(e) => setCardCvc(e.target.value.replace(/[^0-9]/g, ""))}
                                         onFocus={() => setIsFlipped(true)}
                                         onBlur={() => setIsFlipped(false)}
-                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 font-mono"
+                                        className="bg-background border-border text-foreground focus:border-violet-500 font-mono"
                                     />
                                 </div>
                             </div>
@@ -751,29 +751,29 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
 
             {/* Right: Order Info */}
             <div className="space-y-6">
-                <Card className="bg-zinc-900 border-zinc-800 sticky top-24">
+                <Card className="bg-card border-border sticky top-24 shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-white">{t.payment.orderSummary}</CardTitle>
+                        <CardTitle className="text-foreground">{t.payment.orderSummary}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-1">
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold">Project</p>
-                            <p className="text-sm text-white font-medium">{orderTitle}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Project</p>
+                            <p className="text-sm text-foreground font-medium">{orderTitle}</p>
                         </div>
                         <div className="space-y-1">
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold">Order ID</p>
-                            <p className="text-sm text-zinc-300 font-mono">{orderId}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Order ID</p>
+                            <p className="text-sm text-muted-foreground font-mono">{orderId}</p>
                         </div>
-                        <div className="border-t border-zinc-800 pt-4 mt-4 space-y-4">
+                        <div className="border-t border-border pt-4 mt-4 space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-zinc-400">{t.payment.totalAmount}</span>
-                                <span className="text-2xl font-bold text-white">${price.toFixed(2)}</span>
+                                <span className="text-muted-foreground">{t.payment.totalAmount}</span>
+                                <span className="text-2xl font-bold text-foreground">${price.toFixed(2)}</span>
                             </div>
 
                             <Button
                                 type="submit"
                                 disabled={isProcessing}
-                                className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white py-4 text-base font-bold shadow-lg shadow-violet-500/20 mt-2"
+                                className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white py-4 h-12 text-base font-bold shadow-lg shadow-violet-500/20 mt-2 rounded-xl"
                             >
                                 {isProcessing ? (
                                     <>
@@ -785,7 +785,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                                 )}
                             </Button>
 
-                            <div className="flex items-center gap-2 text-[10px] text-zinc-500 bg-zinc-800/20 p-2.5 rounded-lg border border-zinc-800/50">
+                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground bg-accent/30 p-2.5 rounded-lg border border-border/50">
                                 <ShieldCheck className="h-3 w-3 text-green-500 flex-shrink-0" />
                                 <span>{locale === "tr" ? "Ödemeniz 128-bit SSL ile korunmaktadır." : "Your payment is secured with 128-bit SSL encryption."}</span>
                             </div>

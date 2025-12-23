@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Package, Search, EyeOff, Eye } from "lucide-react";
+import { Plus, Package, Search, EyeOff, Eye, Rocket } from "lucide-react";
 import Link from "next/link";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_LABELS_TR, ORDER_STATUS_COLORS } from "@/types";
 import { useState, useMemo } from "react";
@@ -20,6 +20,7 @@ interface Order {
     hidden: boolean;
     createdAt: string;
     customer: { name: string | null; email: string };
+    priority: string;
     _count: { files: number; comments: number };
 }
 
@@ -155,32 +156,35 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                 <Link href={`${basePath}/orders/${order.id}`}>
                     <Card
                         className={`border transition-all cursor-pointer duration-200 hover:scale-[1.01] ${isPriced
-                            ? "bg-blue-950/30 border-blue-500/50 hover:border-blue-400 hover:bg-blue-900/40 shadow-lg shadow-blue-500/10 animate-pulse"
+                            ? "bg-blue-500/5 border-blue-500/50 hover:border-blue-400 hover:bg-blue-500/10 shadow-lg shadow-blue-500/10 animate-pulse"
                             : isOrangeAlert
-                                ? "bg-orange-950/30 border-orange-500/50 hover:border-orange-400 hover:bg-orange-900/40 shadow-lg shadow-orange-500/10 animate-pulse"
+                                ? "bg-orange-500/5 border-orange-500/50 hover:border-orange-400 hover:bg-orange-500/10 shadow-lg shadow-orange-500/10 animate-pulse"
                                 : isAdminPriority
-                                    ? "bg-violet-950/30 border-violet-500/50 hover:border-violet-400 hover:bg-violet-900/40 shadow-lg shadow-violet-500/10 animate-pulse"
+                                    ? "bg-violet-500/5 border-violet-500/50 hover:border-violet-400 hover:bg-violet-500/10 shadow-lg shadow-violet-500/10 animate-pulse"
                                     : needsPrice
-                                        ? "bg-amber-950/30 border-amber-700/50 hover:border-amber-600 hover:bg-amber-900/40"
-                                        : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80"
+                                        ? "bg-amber-500/5 border-amber-700/50 hover:border-amber-600 hover:bg-amber-500/10"
+                                        : "bg-card border-border hover:border-violet-500/40 hover:bg-accent/30"
                             }`}
                     >
                         <CardContent className="py-3 px-4">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-medium text-white transition-colors truncate mb-1">
+                                    <h3 className="font-medium text-foreground transition-colors truncate mb-1 flex items-center gap-2">
                                         {order.title || `Order #${order.id.slice(-6).toUpperCase()}`}
+                                        {order.priority === "URGENT" && (
+                                            <Rocket className="w-3.5 h-3.5 text-red-500 fill-red-500/20" />
+                                        )}
                                     </h3>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs font-mono text-zinc-500">
+                                        <span className="text-xs font-mono text-muted-foreground">
                                             #{order.id.slice(0, 8)}
                                         </span>
-                                        {!isPriced && !isOrangeAlert && (isAdmin || order.status !== "WAITING_PRICE") && (
+                                        {!isPriced && !isOrangeAlert && !isAdminPriority && (isAdmin || order.status !== "WAITING_PRICE") && (
                                             <Badge
                                                 className={`text-xs ${ORDER_STATUS_COLORS[
                                                     order.status as keyof typeof ORDER_STATUS_COLORS
                                                 ]
-                                                    } ${isAdminPriority ? "animate-pulse" : ""}`}
+                                                    }`}
                                             >
                                                 {
                                                     statusLabels[
@@ -210,7 +214,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                             </Badge>
                                         )}
                                         {isAdmin && (
-                                            <span className="text-xs text-zinc-500">
+                                            <span className="text-xs text-muted-foreground">
                                                 • {order.customer.name || order.customer.email}
                                             </span>
                                         )}
@@ -222,7 +226,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                             ${Number(order.price).toLocaleString("en-US")}
                                         </p>
                                     )}
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {new Date(order.createdAt).toLocaleDateString(
                                             locale === "tr" ? "tr-TR" : "en-US",
                                             {
@@ -244,7 +248,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                             e.preventDefault();
                             toggleHidden(order.id, order.hidden);
                         }}
-                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-all text-zinc-400 hover:text-white hover:bg-zinc-700/80"
+                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-all text-muted-foreground hover:text-foreground hover:bg-accent"
                         title={order.hidden ? t.showOrder : t.hideOrder}
                     >
                         {order.hidden ? (
@@ -260,10 +264,10 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
 
     function EmptyState({ message }: { message: string }) {
         return (
-            <Card className="bg-zinc-900 border-zinc-800">
+            <Card className="bg-card border-border">
                 <CardContent className="flex flex-col items-center justify-center py-12">
-                    <Package className="h-12 w-12 text-zinc-600" />
-                    <p className="mt-3 text-sm text-zinc-400">{message}</p>
+                    <Package className="h-12 w-12 text-muted-foreground/50" />
+                    <p className="mt-3 text-sm text-muted-foreground">{message}</p>
                 </CardContent>
             </Card>
         );
@@ -276,18 +280,18 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             {/* Header */}
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-white">
+                    <h1 className="text-xl font-bold text-foreground">
                         {isAdmin ? t.allOrders : t.myOrders}
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder={t.search}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 w-48 bg-zinc-900 border-zinc-700 h-9 text-sm"
+                            className="pl-9 w-48 bg-background border-border h-9 text-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
                     {!isAdmin && (
@@ -306,29 +310,29 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
 
             {/* Tabs */}
             <Tabs defaultValue="orders" className="w-full">
-                <TabsList className="bg-zinc-800 w-full justify-start">
+                <TabsList className="bg-muted w-full justify-start p-1 rounded-xl">
                     <TabsTrigger
                         value="orders"
-                        className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                        className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground text-muted-foreground"
                     >
                         {t.orders} ({allOrdersFiltered.length})
                     </TabsTrigger>
                     <TabsTrigger
                         value="completed"
-                        className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                        className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground text-muted-foreground"
                     >
                         {t.completed} ({completedOrders.length})
                     </TabsTrigger>
                     <TabsTrigger
                         value="cancelled"
-                        className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                        className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground text-muted-foreground"
                     >
                         {t.cancelled} ({cancelledOrders.length})
                     </TabsTrigger>
                     {isAdmin && (
                         <TabsTrigger
                             value="hidden"
-                            className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white"
+                            className="rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground text-muted-foreground"
                         >
                             {t.hidden} ({hiddenOrders.length})
                         </TabsTrigger>

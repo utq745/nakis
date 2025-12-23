@@ -35,9 +35,9 @@ export function CustomersContent({ customers }: CustomersContentProps) {
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
 
     return (
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-card border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                     <Users className="h-6 w-6 text-violet-400" />
                     {t.customers.title}
                 </CardTitle>
@@ -45,39 +45,39 @@ export function CustomersContent({ customers }: CustomersContentProps) {
             <CardContent>
                 <Table>
                     <TableHeader>
-                        <TableRow className="border-zinc-800 hover:bg-zinc-800/50">
-                            <TableHead className="text-zinc-400">{t.customers.name}</TableHead>
-                            <TableHead className="text-zinc-400">{t.customers.email}</TableHead>
-                            <TableHead className="text-zinc-400">{t.customers.role}</TableHead>
-                            <TableHead className="text-zinc-400">{t.customers.orderCount}</TableHead>
-                            <TableHead className="text-right text-zinc-400">{t.customers.joinedAt}</TableHead>
+                        <TableRow className="border-border hover:bg-accent/50">
+                            <TableHead className="text-muted-foreground">{t.customers.name}</TableHead>
+                            <TableHead className="text-muted-foreground">{t.customers.email}</TableHead>
+                            <TableHead className="text-muted-foreground">{t.customers.role}</TableHead>
+                            <TableHead className="text-muted-foreground">{t.customers.orderCount}</TableHead>
+                            <TableHead className="text-right text-muted-foreground">{t.customers.joinedAt}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {customers.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center text-zinc-500 py-8">
+                                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                                     {t.customers.noCustomers}
                                 </TableCell>
                             </TableRow>
                         ) : (
                             customers.map((customer) => (
-                                <TableRow key={customer.id} className="border-zinc-800 hover:bg-zinc-800/50">
-                                    <TableCell className="font-medium text-white">
+                                <TableRow key={customer.id} className="border-border hover:bg-accent/50">
+                                    <TableCell className="font-medium text-foreground">
                                         <div className="flex items-center gap-3">
-                                            <Avatar className="h-8 w-8 border border-zinc-800">
+                                            <Avatar className="h-8 w-8 border border-border">
                                                 {customer.image && (
                                                     <AvatarImage src={customer.image} alt={customer.name || ""} />
                                                 )}
-                                                <AvatarFallback className="bg-zinc-800 text-zinc-400 text-xs font-bold">
+                                                <AvatarFallback className="bg-accent text-muted-foreground text-xs font-bold">
                                                     {(customer.name || customer.email || "U")[0].toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <span>{customer.name || "-"}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-zinc-300">{customer.email}</TableCell>
-                                    <TableCell className="text-zinc-300">
+                                    <TableCell className="text-muted-foreground">{customer.email}</TableCell>
+                                    <TableCell className="text-muted-foreground">
                                         <span className={cn(
                                             "px-2 py-1 rounded-full text-xs border",
                                             customer.role === 'ADMIN'
@@ -87,10 +87,10 @@ export function CustomersContent({ customers }: CustomersContentProps) {
                                             {customer.role}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="text-zinc-300 pl-8">
+                                    <TableCell className="text-muted-foreground pl-8">
                                         {customer._count.orders}
                                     </TableCell>
-                                    <TableCell className="text-right text-zinc-400">
+                                    <TableCell className="text-right text-muted-foreground">
                                         {new Date(customer.createdAt).toLocaleDateString(dateLocale)}
                                     </TableCell>
                                 </TableRow>

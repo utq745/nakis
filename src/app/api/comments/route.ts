@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { createCommentNotification } from "@/lib/notifications";
 
 const createCommentSchema = z.object({
     content: z.string().min(1, "Comment cannot be empty"),
@@ -96,6 +97,26 @@ export async function POST(request: Request) {
                     ).catch(console.error);
                 }
 
+                // Create In-App Notification
+                if (isAdmin) {
+                    await createCommentNotification(
+                        order.customerId,
+                        "New Message | Yeni Mesaj",
+                        `${senderName}: ${validatedData.content}`,
+                        `/orders/${order.id}`
+                    );
+                } else {
+                    const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+                    for (const admin of admins) {
+                        await createCommentNotification(
+                            admin.id,
+                            "New Message | Yeni Mesaj",
+                            `${senderName}: ${validatedData.content}`,
+                            `/admin/orders/${order.id}`
+                        );
+                    }
+                }
+
                 return NextResponse.json({
                     ...updatedComment,
                     attachments: updatedComment.files.map((file: { id: string; name: string; url: string; size: number | null }) => ({
@@ -105,8 +126,6 @@ export async function POST(request: Request) {
                 }, { status: 201 });
             }
         }
-
-        // Note: REVISION status has been removed from the workflow
 
         // Send Email Notification
         const { sendNewCommentEmail } = await import("@/lib/mail");
@@ -120,6 +139,26 @@ export async function POST(request: Request) {
                 senderName,
                 validatedData.content
             ).catch(console.error);
+        }
+
+        // Create In-App Notification
+        if (isAdmin) {
+            await createCommentNotification(
+                order.customerId,
+                "New Message | Yeni Mesaj",
+                `${senderName}: ${validatedData.content}`,
+                `/orders/${order.id}`
+            );
+        } else {
+            const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+            for (const admin of admins) {
+                await createCommentNotification(
+                    admin.id,
+                    "New Message | Yeni Mesaj",
+                    `${senderName}: ${validatedData.content}`,
+                    `/admin/orders/${order.id}`
+                );
+            }
         }
 
         return NextResponse.json({

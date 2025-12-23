@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -82,6 +83,10 @@ const texts = {
         maxSizeInfo: "Max 5MB (PNG, JPG)",
         uploading: "Uploading...",
         avatarUpdated: "Avatar updated successfully",
+        dangerTitle: "Danger Zone",
+        dangerDesc: "Permanently delete your account and all associated data.",
+        deletePendingTitle: "Deletion Pending",
+        deletePendingDesc: "You have requested to delete your account. Please check your email and click the confirmation link to complete the deletion.",
     },
     tr: {
         profileTitle: "Profil Bilgileri",
@@ -142,6 +147,10 @@ const texts = {
         maxSizeInfo: "Maks 5MB (PNG, JPG)",
         uploading: "Yükleniyor...",
         avatarUpdated: "Avatar başarıyla güncellendi",
+        dangerTitle: "Tehlikeli Bölge",
+        dangerDesc: "Hesabınızı kalıcı olarak silmek için bu bölümü kullanın.",
+        deletePendingTitle: "Silme İşlemi Bekleniyor",
+        deletePendingDesc: "Hesabınızı silme talebinde bulundunuz. İşlemi tamamlamak için lütfen e-postanızı kontrol edin ve onay bağlantısına tıklayın.",
     },
 };
 
@@ -261,6 +270,152 @@ const PRESET_AVATARS = [
     { name: "Sun", url: "https://api.dicebear.com/7.x/icons/svg?seed=sun&backgroundColor=d1d4f9" },
 ];
 
+function DeleteAccountSection({ locale, hasPassword }: { locale: "en" | "tr"; hasPassword: boolean }) {
+    const router = useRouter();
+    const [isOpen, setIsOpen] = useState(false);
+    const [password, setPassword] = useState("");
+    const [confirmation, setConfirmation] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const deleteTexts = {
+        en: {
+            deleteAccount: "Delete Account",
+            deleteWarning: "This action cannot be undone. This will permanently delete your account and remove all your data from our servers.",
+            confirmText: 'Type "DELETE MY ACCOUNT" to confirm',
+            passwordRequired: "Enter your password to confirm",
+            deleting: "Deleting...",
+            cancel: "Cancel",
+            deleteButton: "Delete My Account",
+            success: "Account deleted successfully",
+            error: "Failed to delete account",
+        },
+        tr: {
+            deleteAccount: "Hesabı Sil",
+            deleteWarning: "Bu işlem geri alınamaz. Hesabınız ve tüm verileriniz sunucularımızdan kalıcı olarak silinecektir.",
+            confirmText: 'Onaylamak için "DELETE MY ACCOUNT" yazın',
+            passwordRequired: "Onaylamak için şifrenizi girin",
+            deleting: "Siliniyor...",
+            cancel: "İptal",
+            deleteButton: "Hesabımı Sil",
+            success: "Hesap başarıyla silindi",
+            error: "Hesap silinemedi",
+        },
+    };
+
+    const dt = deleteTexts[locale];
+
+    async function handleDelete() {
+        setIsDeleting(true);
+        try {
+            const response = await fetch("/api/user/delete-account", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: hasPassword ? password : undefined, confirmation }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || dt.error);
+            }
+
+            const data = await response.json();
+            toast.success(data.message || dt.success);
+            setIsOpen(false);
+            router.refresh();
+        } catch (error: any) {
+            toast.error(error.message || dt.error);
+        } finally {
+            setIsDeleting(false);
+        }
+    }
+
+    return (
+        <>
+            <Button
+                variant="outline"
+                onClick={() => setIsOpen(true)}
+                className="w-full border-red-500/30 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-600 transition-all duration-200 font-semibold"
+            >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {dt.deleteAccount}
+            </Button>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent className="bg-card border-border text-foreground max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-red-400 flex items-center gap-2">
+                            <Trash2 className="h-5 w-5" />
+                            {dt.deleteAccount}
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground">
+                            {dt.deleteWarning}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        {hasPassword && (
+                            <div className="space-y-2">
+                                <Label className="text-muted-foreground">{dt.passwordRequired}</Label>
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="bg-accent/50 border-border text-foreground pr-10"
+                                        placeholder="••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-muted-foreground"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <Label className="text-muted-foreground">{dt.confirmText}</Label>
+                            <Input
+                                value={confirmation}
+                                onChange={(e) => setConfirmation(e.target.value)}
+                                className="bg-accent/50 border-border text-foreground font-mono"
+                                placeholder="DELETE MY ACCOUNT"
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsOpen(false)}
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            {dt.cancel}
+                        </Button>
+                        <Button
+                            onClick={handleDelete}
+                            disabled={isDeleting || confirmation !== "DELETE MY ACCOUNT" || (hasPassword && !password)}
+                            className="bg-red-600 hover:bg-red-500 text-white font-semibold shadow-lg shadow-red-500/20 transition-all active:scale-95"
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {dt.deleting}
+                                </>
+                            ) : (
+                                dt.deleteButton
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+}
+
 interface BillingData {
     id: string;
     type: "individual" | "corporate";
@@ -277,6 +432,7 @@ interface BillingData {
 
 export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const router = useRouter();
+    const { update: updateSession } = useSession();
     const t = texts[locale];
 
     useEffect(() => {
@@ -298,11 +454,8 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Accordion states
-    const [openProfile, setOpenProfile] = useState(true);
-    const [openSecurity, setOpenSecurity] = useState(false);
-    const [openBilling, setOpenBilling] = useState(false);
-    const [openLanguage, setOpenLanguage] = useState(false);
+    // Accordion state
+    const [openSection, setOpenSection] = useState<string | null>("profile");
 
     // Billing states
     const [isEditingBilling, setIsEditingBilling] = useState(false);
@@ -482,6 +635,9 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
 
             if (!response.ok) throw new Error("Failed to update avatar");
 
+            // Update the session with the new image
+            await updateSession({ image: url });
+
             toast.success(t.avatarUpdated);
             setIsAvatarModalOpen(false);
             router.refresh();
@@ -514,6 +670,13 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             if (!response.ok) {
                 const data = await response.json();
                 throw new Error(data.error || "Failed to upload avatar");
+            }
+
+            const data = await response.json();
+
+            // Update the session with the new image
+            if (data.url) {
+                await updateSession({ image: data.url });
             }
 
             toast.success(t.avatarUpdated);
@@ -563,10 +726,10 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 <Shield className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     {t.pendingVerificationTitle}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {t.pendingVerificationDesc}
                                     {(user.pendingEmail || user.pendingName) && (
                                         <span className="block mt-1 text-xs text-orange-400/70 italic">
@@ -582,24 +745,45 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                 </Card>
             )}
 
+            {/* Pending Deletion Notice */}
+            {user?.deleteAccountToken && (
+                <Card className="border-red-500/50 bg-red-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-red-500/20 text-red-500">
+                                <Trash2 className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    {t.deletePendingTitle}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {t.deletePendingDesc}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Profile Information */}
-            <Collapsible open={openProfile} onOpenChange={setOpenProfile}>
-                <Card className="bg-zinc-900 border-zinc-800">
+            <Collapsible open={openSection === "profile"} onOpenChange={(open) => setOpenSection(open ? "profile" : null)}>
+                <Card className="bg-card border-border overflow-hidden">
                     <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-zinc-800/50 transition-colors rounded-t-lg">
+                        <CardHeader className="cursor-pointer hover:bg-accent transition-all duration-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-violet-500/10">
                                         <User className="h-5 w-5 text-violet-400" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-white">{t.profileTitle}</CardTitle>
-                                        <CardDescription className="text-zinc-400">
+                                        <CardTitle className="text-foreground">{t.profileTitle}</CardTitle>
+                                        <CardDescription className="text-muted-foreground">
                                             {t.profileDesc}
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-200 ${openProfile ? "rotate-180" : ""}`} />
+                                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${openSection === "profile" ? "rotate-180" : ""}`} />
                             </div>
                         </CardHeader>
                     </CollapsibleTrigger>
@@ -609,11 +793,11 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 {/* Avatar Display */}
                                 <div className="flex flex-col items-center gap-4">
                                     <div className="relative group">
-                                        <Avatar className="h-24 w-24 border-2 border-zinc-800 shadow-xl group-hover:opacity-75 transition-opacity">
+                                        <Avatar className="h-24 w-24 border-2 border-border shadow-xl group-hover:opacity-75 transition-opacity">
                                             {user?.image ? (
                                                 <AvatarImage src={user.image} alt={user.name || ""} />
                                             ) : (
-                                                <AvatarFallback className="bg-zinc-800 text-zinc-400 text-2xl font-bold">
+                                                <AvatarFallback className="bg-accent text-muted-foreground text-2xl font-bold">
                                                     {(user?.name || user?.email || "U")[0].toUpperCase()}
                                                 </AvatarFallback>
                                             )}
@@ -621,9 +805,9 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                         <Button
                                             onClick={() => setIsAvatarModalOpen(true)}
                                             size="icon"
-                                            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-violet-600 hover:bg-violet-500 border-2 border-zinc-900 shadow-lg scale-0 group-hover:scale-100 transition-all duration-200"
+                                            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-violet-600 hover:bg-violet-500 border-2 border-card shadow-lg scale-0 group-hover:scale-100 transition-all duration-200"
                                         >
-                                            <Camera className="h-4 w-4 text-white" />
+                                            <Camera className="h-4 w-4 text-foreground" />
                                         </Button>
                                     </div>
                                     <div className="flex flex-col items-center gap-1">
@@ -631,7 +815,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setIsAvatarModalOpen(true)}
-                                            className="text-xs text-violet-400 hover:text-white hover:bg-violet-600/20 h-7 px-3 rounded-full transition-all"
+                                            className="text-xs text-violet-400 hover:text-foreground hover:bg-violet-600/20 h-7 px-3 rounded-full transition-all"
                                         >
                                             {t.changeAvatar}
                                         </Button>
@@ -642,28 +826,28 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 <div className="flex-1 space-y-4">
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.firstName}</Label>
+                                            <Label className="text-muted-foreground">{t.firstName}</Label>
                                             <Input
                                                 value={firstName}
                                                 onChange={(e) => setFirstName(e.target.value)}
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.lastName}</Label>
+                                            <Label className="text-muted-foreground">{t.lastName}</Label>
                                             <Input
                                                 value={lastName}
                                                 onChange={(e) => setLastName(e.target.value)}
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-zinc-300">{t.email}</Label>
+                                        <Label className="text-muted-foreground">{t.email}</Label>
                                         <Input
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                            className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                         />
                                     </div>
                                     <div className="flex justify-end">
@@ -684,23 +868,23 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             </Collapsible>
 
             {/* Billing Address */}
-            <Collapsible open={openBilling} onOpenChange={setOpenBilling}>
-                <Card className="bg-zinc-900 border-zinc-800">
+            <Collapsible open={openSection === "billing"} onOpenChange={(open) => setOpenSection(open ? "billing" : null)}>
+                <Card className="bg-card border-border overflow-hidden">
                     <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-zinc-800/50 transition-colors rounded-t-lg">
+                        <CardHeader className="cursor-pointer hover:bg-accent transition-all duration-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-green-500/10">
                                         <MapPin className="h-5 w-5 text-green-400" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-white">{t.billingTitle}</CardTitle>
-                                        <CardDescription className="text-zinc-400">
+                                        <CardTitle className="text-foreground">{t.billingTitle}</CardTitle>
+                                        <CardDescription className="text-muted-foreground">
                                             {t.billingDesc}
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-200 ${openBilling ? "rotate-180" : ""}`} />
+                                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${openSection === "billing" ? "rotate-180" : ""}`} />
                             </div>
                         </CardHeader>
                     </CollapsibleTrigger>
@@ -709,18 +893,18 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                             {!isEditingBilling ? (
                                 <div className="space-y-4">
                                     {savedAddresses.map((addr) => (
-                                        <div key={addr.id} className="bg-zinc-800/50 rounded-lg p-4 space-y-3 border border-transparent hover:border-zinc-700 transition-colors">
+                                        <div key={addr.id} className="bg-accent/50 rounded-lg p-4 space-y-3 border border-transparent hover:border-border transition-colors">
                                             <div className="flex items-start justify-between">
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="text-white font-medium">{addr.fullName}</p>
+                                                        <p className="text-foreground font-medium">{addr.fullName}</p>
                                                         {addr.type === "corporate" && (
                                                             <span className="text-[10px] bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider border border-violet-500/20">
                                                                 {t.corporate}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-zinc-400 text-sm">{addr.phone}</p>
+                                                    <p className="text-muted-foreground text-sm">{addr.phone}</p>
                                                 </div>
                                                 <div className="flex gap-1">
                                                     <Button
@@ -730,7 +914,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                             setBillingData(addr);
                                                             setIsEditingBilling(true);
                                                         }}
-                                                        className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
@@ -738,13 +922,13 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => setAddressToDelete(addr.id)}
-                                                        className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </div>
-                                            <div className="text-zinc-300 text-sm space-y-1">
+                                            <div className="text-muted-foreground text-sm space-y-1">
                                                 {addr.type === "corporate" && addr.companyName && (
                                                     <div className="flex items-center gap-2 text-violet-400 font-medium pb-1">
                                                         <Building2 className="h-4 w-4" />
@@ -752,7 +936,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                     </div>
                                                 )}
                                                 {addr.type === "corporate" && (addr.taxOffice || addr.taxNumber) && (
-                                                    <p className="text-zinc-500 text-xs">
+                                                    <p className="text-muted-foreground text-xs">
                                                         {addr.taxOffice && `${addr.taxOffice}`}
                                                         {addr.taxOffice && addr.taxNumber && " - "}
                                                         {addr.taxNumber && addr.taxNumber}
@@ -760,17 +944,17 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                 )}
                                                 <p>{addr.address}</p>
                                                 <p>{addr.city}, {addr.zipCode}</p>
-                                                <p className="text-zinc-400">{countries.find(c => c.code === addr.country)?.name || addr.country}</p>
+                                                <p className="text-muted-foreground">{countries.find(c => c.code === addr.country)?.name || addr.country}</p>
                                             </div>
                                         </div>
                                     ))}
 
                                     {savedAddresses.length === 0 && (
-                                        <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-zinc-800 rounded-xl">
-                                            <div className="p-3 rounded-full bg-zinc-800/50 mb-3">
-                                                <MapPin className="h-6 w-6 text-zinc-600" />
+                                        <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-border rounded-xl">
+                                            <div className="p-3 rounded-full bg-accent/50 mb-3">
+                                                <MapPin className="h-6 w-6 text-muted-foreground" />
                                             </div>
-                                            <p className="text-zinc-400 text-sm">{t.noAddress}</p>
+                                            <p className="text-muted-foreground text-sm">{t.noAddress}</p>
                                         </div>
                                     )}
 
@@ -780,7 +964,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             setIsEditingBilling(true);
                                         }}
                                         variant="ghost"
-                                        className="w-full border-2 border-dashed border-zinc-800 hover:border-violet-500/50 hover:bg-violet-500/5 text-zinc-300 hover:text-white h-20 rounded-xl transition-all group"
+                                        className="w-full border-2 border-dashed border-border hover:border-violet-500/50 hover:bg-violet-500/5 text-muted-foreground hover:text-foreground h-20 rounded-xl transition-all group"
                                     >
                                         <div className="flex flex-col items-center gap-1">
                                             <Plus className="h-6 w-6 mb-1 text-violet-400 group-hover:scale-110 group-hover:text-violet-300 transition-all" />
@@ -797,17 +981,17 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                         onValueChange={(v) => setBillingData({ ...billingData, type: v as "individual" | "corporate" })}
                                         className="w-full"
                                     >
-                                        <TabsList className="bg-zinc-800 border-zinc-700 h-11 p-1 w-full md:w-auto">
+                                        <TabsList className="bg-accent border-border h-11 p-1 w-full md:w-auto">
                                             <TabsTrigger
                                                 value="individual"
-                                                className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-zinc-300 hover:text-white transition-colors"
+                                                className="data-[state=active]:bg-violet-600 data-[state=active]:text-foreground text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <User className="h-4 w-4 mr-2" />
                                                 {t.individual}
                                             </TabsTrigger>
                                             <TabsTrigger
                                                 value="corporate"
-                                                className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-zinc-300 hover:text-white transition-colors"
+                                                className="data-[state=active]:bg-violet-600 data-[state=active]:text-foreground text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <Building2 className="h-4 w-4 mr-2" />
                                                 {t.corporate}
@@ -817,54 +1001,54 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.billingFullName}</Label>
+                                            <Label className="text-muted-foreground">{t.billingFullName}</Label>
                                             <Input
                                                 value={billingData.fullName}
                                                 onChange={(e) => setBillingData({ ...billingData, fullName: e.target.value })}
                                                 placeholder="John Doe"
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.billingPhone}</Label>
+                                            <Label className="text-muted-foreground">{t.billingPhone}</Label>
                                             <Input
                                                 value={billingData.phone}
                                                 onChange={(e) => setBillingData({ ...billingData, phone: e.target.value })}
                                                 placeholder="+1..."
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Corporate Fields */}
                                     {billingData.type === "corporate" && (
-                                        <div className="space-y-4 pt-4 border-t border-zinc-800 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="space-y-4 pt-4 border-t border-border animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="space-y-2">
-                                                <Label className="text-zinc-300">{t.companyName}</Label>
+                                                <Label className="text-muted-foreground">{t.companyName}</Label>
                                                 <Input
                                                     value={billingData.companyName || ""}
                                                     onChange={(e) => setBillingData({ ...billingData, companyName: e.target.value })}
                                                     placeholder={locale === "tr" ? "Şirket adı..." : "Company name..."}
-                                                    className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                    className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="text-zinc-300">{t.taxOffice}</Label>
+                                                    <Label className="text-muted-foreground">{t.taxOffice}</Label>
                                                     <Input
                                                         value={billingData.taxOffice || ""}
                                                         onChange={(e) => setBillingData({ ...billingData, taxOffice: e.target.value })}
                                                         placeholder={locale === "tr" ? "Vergi dairesi..." : "Tax office..."}
-                                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                        className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="text-zinc-300">{t.taxNumber}</Label>
+                                                    <Label className="text-muted-foreground">{t.taxNumber}</Label>
                                                     <Input
                                                         value={billingData.taxNumber || ""}
                                                         onChange={(e) => setBillingData({ ...billingData, taxNumber: e.target.value })}
                                                         placeholder={locale === "tr" ? "Vergi numarası..." : "Tax number..."}
-                                                        className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                        className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                                     />
                                                 </div>
                                             </div>
@@ -873,13 +1057,13 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.billingCountry}</Label>
+                                            <Label className="text-muted-foreground">{t.billingCountry}</Label>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
                                                         variant="outline"
                                                         role="combobox"
-                                                        className="w-full justify-between bg-zinc-800/50 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
+                                                        className="w-full justify-between bg-accent/50 border-border text-foreground hover:bg-accent hover:text-foreground"
                                                     >
                                                         {billingData.country
                                                             ? countries.find((c) => c.code === billingData.country)?.name
@@ -888,17 +1072,17 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                     </Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent
-                                                    className="p-0 bg-zinc-900 border-zinc-800"
+                                                    className="p-0 bg-card border-border"
                                                     style={{ width: "var(--radix-popover-trigger-width)" }}
                                                     align="start"
                                                 >
-                                                    <Command className="bg-zinc-900">
+                                                    <Command className="bg-card">
                                                         <CommandInput
                                                             placeholder={locale === 'tr' ? "Ülke ara..." : "Search country..."}
-                                                            className="text-white placeholder:text-zinc-400"
+                                                            className="text-foreground placeholder:text-muted-foreground"
                                                         />
                                                         <CommandList>
-                                                            <CommandEmpty className="text-zinc-400 text-sm py-6 text-center">
+                                                            <CommandEmpty className="text-muted-foreground text-sm py-6 text-center">
                                                                 {locale === 'tr' ? "Ülke bulunamadı." : "No country found."}
                                                             </CommandEmpty>
                                                             <CommandGroup className="max-h-64 overflow-auto">
@@ -909,7 +1093,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                                                         onSelect={() => {
                                                                             setBillingData({ ...billingData, country: c.code });
                                                                         }}
-                                                                        className="text-zinc-300 hover:bg-zinc-800 hover:text-white cursor-pointer"
+                                                                        className="text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
                                                                     >
                                                                         <Check
                                                                             className={cn(
@@ -927,32 +1111,32 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             </Popover>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.billingCity}</Label>
+                                            <Label className="text-muted-foreground">{t.billingCity}</Label>
                                             <Input
                                                 value={billingData.city}
                                                 onChange={(e) => setBillingData({ ...billingData, city: e.target.value })}
                                                 placeholder="Istanbul"
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="md:col-span-2 space-y-2">
-                                            <Label className="text-zinc-300">{t.billingAddress}</Label>
+                                            <Label className="text-muted-foreground">{t.billingAddress}</Label>
                                             <Input
                                                 value={billingData.address}
                                                 onChange={(e) => setBillingData({ ...billingData, address: e.target.value })}
                                                 placeholder={t.billingPlaceholder}
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-zinc-300">{t.billingZipCode}</Label>
+                                            <Label className="text-muted-foreground">{t.billingZipCode}</Label>
                                             <Input
                                                 value={billingData.zipCode}
                                                 onChange={(e) => setBillingData({ ...billingData, zipCode: e.target.value })}
                                                 placeholder="34000"
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500"
                                             />
                                         </div>
                                     </div>
@@ -961,7 +1145,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             type="button"
                                             variant="ghost"
                                             onClick={() => setIsEditingBilling(false)}
-                                            className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+                                            className="text-muted-foreground hover:text-foreground hover:bg-accent"
                                         >
                                             {t.cancel}
                                         </Button>
@@ -983,10 +1167,10 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!addressToDelete} onOpenChange={(open) => !open && setAddressToDelete(null)}>
-                <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+                <DialogContent className="bg-card border-border text-foreground">
                     <DialogHeader>
                         <DialogTitle>{t.deleteConfirmTitle}</DialogTitle>
-                        <DialogDescription className="text-zinc-400">
+                        <DialogDescription className="text-muted-foreground">
                             {t.deleteConfirmDesc}
                         </DialogDescription>
                     </DialogHeader>
@@ -994,7 +1178,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                         <Button
                             variant="ghost"
                             onClick={() => setAddressToDelete(null)}
-                            className="text-zinc-400 hover:text-white"
+                            className="text-muted-foreground hover:text-foreground"
                         >
                             {t.cancel}
                         </Button>
@@ -1011,23 +1195,23 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             </Dialog>
 
             {/* Security */}
-            <Collapsible open={openSecurity} onOpenChange={setOpenSecurity}>
-                <Card className="bg-zinc-900 border-zinc-800">
+            <Collapsible open={openSection === "security"} onOpenChange={(open) => setOpenSection(open ? "security" : null)}>
+                <Card className="bg-card border-border overflow-hidden">
                     <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-zinc-800/50 transition-colors rounded-t-lg">
+                        <CardHeader className="cursor-pointer hover:bg-accent transition-all duration-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-orange-500/10">
                                         <Shield className="h-5 w-5 text-orange-400" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-white">{t.securityTitle}</CardTitle>
-                                        <CardDescription className="text-zinc-400">
+                                        <CardTitle className="text-foreground">{t.securityTitle}</CardTitle>
+                                        <CardDescription className="text-muted-foreground">
                                             {t.securityDesc}
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-200 ${openSecurity ? "rotate-180" : ""}`} />
+                                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${openSection === "security" ? "rotate-180" : ""}`} />
                             </div>
                         </CardHeader>
                     </CollapsibleTrigger>
@@ -1035,19 +1219,19 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                         <CardContent className="pt-0">
                             <form onSubmit={handlePasswordUpdate} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="currentPassword" className="text-zinc-300">{t.currentPassword}</Label>
+                                    <Label htmlFor="currentPassword" className="text-muted-foreground">{t.currentPassword}</Label>
                                     <div className="relative">
                                         <Input
                                             id="currentPassword"
                                             name="currentPassword"
                                             type={showCurrentPassword ? "text" : "password"}
                                             required
-                                            className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 pr-10"
+                                            className="bg-accent/50 border-border text-foreground focus:border-violet-500 pr-10"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-violet-400 transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-violet-400 transition-colors"
                                         >
                                             {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                         </button>
@@ -1055,38 +1239,38 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 </div>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="newPassword" className="text-zinc-300">{t.newPassword}</Label>
+                                        <Label htmlFor="newPassword" className="text-muted-foreground">{t.newPassword}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="newPassword"
                                                 name="newPassword"
                                                 type={showNewPassword ? "text" : "password"}
                                                 required
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 pr-10"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500 pr-10"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-violet-400 transition-colors"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-violet-400 transition-colors"
                                             >
                                                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                             </button>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="confirmPassword" className="text-zinc-300">{t.confirmPassword}</Label>
+                                        <Label htmlFor="confirmPassword" className="text-muted-foreground">{t.confirmPassword}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="confirmPassword"
                                                 name="confirmPassword"
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 required
-                                                className="bg-zinc-800/50 border-zinc-700 text-white focus:border-violet-500 pr-10"
+                                                className="bg-accent/50 border-border text-foreground focus:border-violet-500 pr-10"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-violet-400 transition-colors"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-violet-400 transition-colors"
                                             >
                                                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                             </button>
@@ -1110,23 +1294,23 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             </Collapsible>
 
             {/* Language Preferences */}
-            <Collapsible open={openLanguage} onOpenChange={setOpenLanguage}>
-                <Card className="bg-zinc-900 border-zinc-800">
+            <Collapsible open={openSection === "language"} onOpenChange={(open) => setOpenSection(open ? "language" : null)}>
+                <Card className="bg-card border-border overflow-hidden">
                     <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-zinc-800/50 transition-colors rounded-t-lg">
+                        <CardHeader className="cursor-pointer hover:bg-accent transition-all duration-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-blue-500/10">
                                         <Globe className="h-5 w-5 text-blue-400" />
                                     </div>
                                     <div>
-                                        <CardTitle className="text-white">{t.languageTitle}</CardTitle>
-                                        <CardDescription className="text-zinc-400">
+                                        <CardTitle className="text-foreground">{t.languageTitle}</CardTitle>
+                                        <CardDescription className="text-muted-foreground">
                                             {t.languageDesc}
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <ChevronDown className={`h-5 w-5 text-zinc-400 transition-transform duration-200 ${openLanguage ? "rotate-180" : ""}`} />
+                                <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${openSection === "language" ? "rotate-180" : ""}`} />
                             </div>
                         </CardHeader>
                     </CollapsibleTrigger>
@@ -1134,16 +1318,16 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                         <CardContent className="pt-0">
                             <div className="flex items-end justify-between gap-4">
                                 <div className="space-y-2 max-w-xs">
-                                    <Label className="text-zinc-300">{t.language}</Label>
+                                    <Label className="text-muted-foreground">{t.language}</Label>
                                     <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                                        <SelectTrigger className="bg-zinc-800/50 border-zinc-700 text-white">
+                                        <SelectTrigger className="bg-accent/50 border-border text-foreground">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-zinc-800 border-zinc-700">
-                                            <SelectItem value="en" className="text-white focus:bg-zinc-700">
+                                        <SelectContent className="bg-card border-border">
+                                            <SelectItem value="en" className="text-foreground focus:bg-accent">
                                                 {t.english}
                                             </SelectItem>
-                                            <SelectItem value="tr" className="text-white focus:bg-zinc-700">
+                                            <SelectItem value="tr" className="text-foreground focus:bg-accent">
                                                 {t.turkish}
                                             </SelectItem>
                                         </SelectContent>
@@ -1163,16 +1347,49 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                 </Card>
             </Collapsible>
 
+            {/* Danger Zone - Account Deletion */}
+            <Collapsible open={openSection === "danger"} onOpenChange={(open) => setOpenSection(open ? "danger" : null)}>
+                <Card className="bg-card border-red-500/20 overflow-hidden">
+                    <CollapsibleTrigger asChild>
+                        <CardHeader className="cursor-pointer hover:bg-red-500/5 transition-all duration-200">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-red-500/10">
+                                        <Trash2 className="h-5 w-5 text-red-500" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-red-500">
+                                            {t.dangerTitle}
+                                        </CardTitle>
+                                        <CardDescription className="text-muted-foreground">
+                                            {t.dangerDesc}
+                                        </CardDescription>
+                                    </div>
+                                </div>
+                                <ChevronDown className={`h-5 w-5 text-red-500/50 transition-transform duration-200 ${openSection === "danger" ? "rotate-180" : ""}`} />
+                            </div>
+                        </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <CardContent>
+                            <div className="pt-2">
+                                <DeleteAccountSection locale={locale} hasPassword={!!user?.password} />
+                            </div>
+                        </CardContent>
+                    </CollapsibleContent>
+                </Card>
+            </Collapsible>
+
             {/* Avatar Selection Modal */}
             <Dialog open={isAvatarModalOpen} onOpenChange={setIsAvatarModalOpen}>
-                <DialogContent className="bg-zinc-900/90 backdrop-blur-2xl border-zinc-800 text-white max-w-xl p-0 overflow-hidden shadow-2xl">
-                    <div className="p-6 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl">
+                <DialogContent className="bg-card/90 backdrop-blur-2xl border-border text-foreground max-w-xl p-0 overflow-hidden shadow-2xl">
+                    <div className="p-6 border-b border-border bg-card/50 backdrop-blur-xl">
                         <DialogHeader>
                             <DialogTitle className="text-xl font-bold flex items-center gap-2">
                                 <User className="h-5 w-5 text-violet-400" />
                                 {t.avatarModalTitle}
                             </DialogTitle>
-                            <DialogDescription className="text-zinc-400 text-xs">
+                            <DialogDescription className="text-muted-foreground text-xs">
                                 {t.avatarModalDesc}
                             </DialogDescription>
                         </DialogHeader>
@@ -1185,10 +1402,10 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 onClick={() => setSelectedAvatarUrl(avatar.url)}
                                 disabled={isAvatarUploading}
                                 className={cn(
-                                    "relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all p-0.5 bg-zinc-950/30 active:scale-95 duration-200",
+                                    "relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all p-0.5 bg-accent/10 active:scale-95 duration-200",
                                     selectedAvatarUrl === avatar.url
                                         ? "border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105"
-                                        : "border-zinc-800 hover:border-violet-500/50 hover:scale-105"
+                                        : "border-border hover:border-violet-500/50 hover:scale-105"
                                 )}
                             >
                                 <img
@@ -1198,7 +1415,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                 />
                                 {selectedAvatarUrl === avatar.url && (
                                     <div className="absolute top-1 right-1 bg-violet-500 rounded-full p-0.5">
-                                        <Check className="h-3 w-3 text-white" />
+                                        <Check className="h-3 w-3 text-foreground" />
                                     </div>
                                 )}
                             </button>
@@ -1216,14 +1433,14 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                             />
                             <label
                                 htmlFor="avatar-upload-grid"
-                                className="w-full h-full flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-700 bg-zinc-800/20 hover:border-violet-500 hover:bg-violet-500/5 hover:scale-105 transition-all cursor-pointer group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] active:scale-95 duration-200"
+                                className="w-full h-full flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-accent/20 hover:border-violet-500 hover:bg-violet-500/5 hover:scale-105 transition-all cursor-pointer group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] active:scale-95 duration-200"
                             >
                                 {isAvatarUploading ? (
                                     <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
                                 ) : (
                                     <>
                                         <Plus className="h-8 w-8 text-violet-400 group-hover:scale-110 transition-transform" />
-                                        <span className="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-wider group-hover:text-violet-400 text-center">
+                                        <span className="text-[10px] font-bold text-muted-foreground mt-1 uppercase tracking-wider group-hover:text-violet-400 text-center">
                                             UPLOAD
                                         </span>
                                     </>
@@ -1232,9 +1449,9 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                         </div>
                     </div>
 
-                    <div className="p-4 border-t border-zinc-800 bg-zinc-950/40 flex flex-col gap-3">
+                    <div className="p-4 border-t border-border bg-card/40 flex flex-col gap-3">
                         <div className="flex justify-center items-center gap-4">
-                            <span className="text-[11px] font-bold text-zinc-400 px-4 py-1.5 rounded-full border border-zinc-700/50 bg-zinc-800/80 shadow-inner">
+                            <span className="text-[11px] font-bold text-muted-foreground px-4 py-1.5 rounded-full border border-border/50 bg-accent/80 shadow-inner">
                                 MAX 5MB
                             </span>
                             <Button

@@ -230,7 +230,7 @@ export default function LoginPage() {
                                 <div className="flex items-center justify-between mb-1.5">
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="password">{lp.password}</label>
                                     {activeTab === 'signin' && (
-                                        <a href="#" className="text-sm font-semibold text-[#135bec] hover:text-[#135bec]/80 transition-colors">{lp.forgotPassword}</a>
+                                        <a href="/forgot-password" className="text-sm font-semibold text-[#135bec] hover:text-[#135bec]/80 transition-colors">{lp.forgotPassword}</a>
                                     )}
                                 </div>
                                 <div className="relative">

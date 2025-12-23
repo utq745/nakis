@@ -86,13 +86,13 @@ export function Sidebar() {
 
     return (
         <aside className={cn(
-            "fixed left-0 top-0 z-40 h-screen bg-zinc-900 border-r border-zinc-800 transition-all duration-300",
+            "fixed left-0 top-0 z-40 h-screen bg-background border-r border-border transition-all duration-300",
             isCollapsed ? "w-16" : "w-64"
         )}>
             <div className="flex h-full flex-col">
                 {/* Logo */}
                 <div className={cn(
-                    "flex h-16 items-center gap-2 border-b border-zinc-800 transition-all duration-300",
+                    "flex h-16 items-center gap-2 border-b border-border transition-all duration-300",
                     isCollapsed ? "justify-center px-2" : "px-6"
                 )}>
                     <div className="p-2 rounded-lg bg-gradient-to-tr from-violet-500 to-fuchsia-500 shrink-0">
@@ -120,8 +120,8 @@ export function Sidebar() {
                                     "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all group relative",
                                     isCollapsed ? "justify-center px-2" : "px-3",
                                     isActive
-                                        ? "bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white border border-violet-500/30"
-                                        : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                                        ? "bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-foreground border border-violet-500/30 font-bold"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                                 )}
                             >
                                 <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", isActive && "text-violet-400")} />
@@ -129,7 +129,7 @@ export function Sidebar() {
 
                                 {/* Custom Tooltip */}
                                 {isCollapsed && (
-                                    <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                    <div className="absolute left-full ml-4 px-3 py-2 bg-popover backdrop-blur-md text-foreground text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
                                         <div className="w-1 h-1 rounded-full bg-violet-500" />
                                         {item.title}
                                     </div>
@@ -141,7 +141,7 @@ export function Sidebar() {
 
                 {/* Footer */}
                 <div className={cn(
-                    "border-t border-zinc-800 transition-all duration-300",
+                    "border-t border-border transition-all duration-300",
                     isCollapsed ? "p-2" : "p-4"
                 )}>
                     {/* User Info */}
@@ -160,10 +160,10 @@ export function Sidebar() {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0">
-                                    <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mb-0.5">
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
                                         {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
                                     </p>
-                                    <p className="text-sm text-white font-medium truncate">
+                                    <p className="text-sm text-foreground font-medium truncate">
                                         {session?.user?.name || session?.user?.email?.split('@')[0]}
                                     </p>
                                 </div>
@@ -178,7 +178,7 @@ export function Sidebar() {
                                         {(session?.user?.name || session?.user?.email || "U")[0].toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-popover backdrop-blur-md text-foreground text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
                                     <div className="w-1 h-1 rounded-full bg-violet-500" />
                                     {session?.user?.name || session?.user?.email}
                                 </div>
@@ -190,17 +190,15 @@ export function Sidebar() {
                     <Link href={homeUrl} className="block mt-3">
                         <Button
                             variant="ghost"
-                            className={cn(
-                                "w-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors group relative",
-                                isCollapsed ? "justify-center px-2" : "justify-start"
-                            )}
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground hover:bg-accent"
                         >
                             <Home className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
                             {!isCollapsed && (
                                 <span className="ml-2">{language === 'tr' ? 'Siteye Dön' : 'Back to Site'}</span>
                             )}
                             {isCollapsed && (
-                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-popover backdrop-blur-md text-foreground text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
                                     <div className="w-1 h-1 rounded-full bg-violet-500" />
                                     {language === 'tr' ? 'Siteye Dön' : 'Back to Site'}
                                 </div>
@@ -210,17 +208,17 @@ export function Sidebar() {
                 </div>
 
                 {/* Collapse Button */}
-                <div className="border-t border-zinc-800 p-2">
+                <div className="border-t border-border p-2">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={toggle}
-                        className="w-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors group relative"
+                        className="w-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors group relative"
                     >
                         {isCollapsed ? (
                             <>
                                 <ChevronRight className="h-4 w-4 transition-transform group-hover:scale-110" />
-                                <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900/95 backdrop-blur-md text-white text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-zinc-800/50 flex items-center gap-2">
+                                <div className="absolute left-full ml-4 px-3 py-2 bg-popover backdrop-blur-md text-foreground text-xs font-semibold rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-border flex items-center gap-2">
                                     <div className="w-1 h-1 rounded-full bg-violet-500" />
                                     {language === 'tr' ? 'Genişlet' : 'Expand'}
                                 </div>

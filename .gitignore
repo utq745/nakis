@@ -44,3 +44,7 @@ next-env.d.ts
 
 # Secure file uploads (not in public)
 /uploads
+
+# prisma
+*.db
+*.db-journal

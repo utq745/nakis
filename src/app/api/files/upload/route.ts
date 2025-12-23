@@ -85,12 +85,29 @@ export async function POST(request: Request) {
             // Store API URL path (not public path)
             const apiUrl = `/api/files`;  // Will be: /api/files/{fileId}
 
+            // Check if file with same name and type already exists for versioning
+            const existingFile = await prisma.file.findFirst({
+                where: {
+                    orderId,
+                    name: file.name,
+                    type,
+                },
+                orderBy: {
+                    version: 'desc'
+                }
+            });
+
+            const newVersion = existingFile ? existingFile.version + 1 : 1;
+            const replacesFileId = existingFile?.id || null;
+
             const dbFile = await prisma.file.create({
                 data: {
                     name: file.name,
                     url: fileName,  // Store just filename, URL will be constructed via API
                     type,
                     size: file.size,
+                    version: newVersion,
+                    replacesFileId: replacesFileId,
                     orderId,
                     uploadedBy: session.user.id,
                 },

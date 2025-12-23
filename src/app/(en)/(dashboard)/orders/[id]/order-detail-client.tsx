@@ -29,6 +29,10 @@ import {
     Trash2,
     Send,
     DollarSign,
+    ClipboardList,
+    X,
+    CheckCircle2,
+    Archive,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -98,7 +102,10 @@ interface OrderDetailClientProps {
             name: string | null;
             email: string;
             role: "CUSTOMER" | "ADMIN";
+            notes: string | null;
         };
+        priority: string;
+        estimatedDelivery: string | null;
         files: Array<{
             id: string;
             name: string;
@@ -140,9 +147,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [fileToDelete, setFileToDelete] = useState<string | null>(null);
     const [isDeletingFile, setIsDeletingFile] = useState(false);
     const [isApprovingPrice, setIsApprovingPrice] = useState(false);
+    const [isDecliningPrice, setIsDecliningPrice] = useState(false);
+    const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
     const [isApprovingPreview, setIsApprovingPreview] = useState(false);
     const [isSendingPreview, setIsSendingPreview] = useState(false);
     const [hasNewPreviewFiles, setHasNewPreviewFiles] = useState(false);
+    const [customerNotes, setCustomerNotes] = useState(order.customer.notes || "");
+    const [isUpdatingNotes, setIsUpdatingNotes] = useState(false);
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
@@ -196,11 +207,15 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             }
 
             toast.success(t.orders.updateSuccess);
-            router.refresh();
+
+            // Wait 2 seconds before refreshing to let user see success message
+            setTimeout(() => {
+                router.refresh();
+                setIsUpdating(false);
+            }, 2000);
         } catch (error) {
             toast.error(t.orders.updateError);
             console.error(error);
-        } finally {
             setIsUpdating(false);
         }
     }
@@ -255,10 +270,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
             toast.success(t.orders.priceApproved);
 
-            // Update local state for immediate feedback
             setStatus("PRICE_ACCEPTED");
 
-            // Small delay to let user see the success message then refresh server data
             setTimeout(() => {
                 router.refresh();
                 setIsApprovingPrice(false);
@@ -267,6 +280,33 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.error(t.orders.updateError);
             console.error(error);
             setIsApprovingPrice(false);
+        }
+    }
+
+    async function handlePriceDecline() {
+        setIsDecliningPrice(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "CANCELLED" }),
+            });
+
+            if (!response.ok) throw new Error("Failed to decline price");
+
+            toast.success(language === "tr" ? "Sipariş iptal edildi." : "Order cancelled.");
+
+            setStatus("CANCELLED");
+            setIsDeclineDialogOpen(false);
+
+            setTimeout(() => {
+                router.refresh();
+                setIsDecliningPrice(false);
+            }, 1000);
+        } catch (error) {
+            toast.error(t.orders.updateError);
+            console.error(error);
+            setIsDecliningPrice(false);
         }
     }
 
@@ -325,6 +365,27 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
+    async function handleUpdateCustomerNotes() {
+        setIsUpdatingNotes(true);
+        try {
+            const response = await fetch(`/api/admin/users/${order.customer.id}/notes`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notes: customerNotes }),
+            });
+
+            if (!response.ok) throw new Error("Failed to update notes");
+
+            toast.success(language === "tr" ? "Müşteri notları güncellendi" : "Customer notes updated");
+            router.refresh();
+        } catch (error) {
+            toast.error(language === "tr" ? "Notlar güncellenemedi" : "Failed to update notes");
+            console.error(error);
+        } finally {
+            setIsUpdatingNotes(false);
+        }
+    }
+
     const formattedComments = order.comments;
 
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
@@ -347,13 +408,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 <div>
                     <Link
                         href={`${prefix}/orders`}
-                        className="inline-flex items-center text-zinc-400 hover:text-white transition-colors mb-4"
+                        className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-4"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         {t.orders.backToOrders}
                     </Link>
                     <div className="flex items-center gap-4">
-                        <h1 className="text-2xl font-bold text-white">{order.title}</h1>
+                        <h1 className="text-2xl font-bold text-foreground">{order.title}</h1>
                         <Badge className={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS]}>
                             {language === "tr"
                                 ? ORDER_STATUS_LABELS_TR[order.status as keyof typeof ORDER_STATUS_LABELS_TR]
@@ -372,15 +433,49 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <DollarSign className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
-                                    {language === "tr" ? "Siparişe fiyat vermeniz bekleniyor" : "Price entry required"}
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    {language === "tr" ? "Siparişe fiyat teklifi vermeniz bekleniyor" : "Price entry required"}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {language === "tr"
                                         ? "Bu sipariş için fiyat belirleyin. Fiyat girildikten sonra müşteri onay bekleyecektir."
                                         : "Set a price for this order. Customer will be notified for approval once you set the price."}
                                 </p>
                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Customer Waiting Price Banner */}
+            {!isAdmin && status === "WAITING_PRICE" && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground">
+                                        {language === "tr" ? "Fiyat Teklifi Bekleniyor" : "Waiting for Price Quote"}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {language === "tr"
+                                            ? "Siparişiniz inceleniyor, fiyat teklifi hazırlandığında size bildirilecektir."
+                                            : "Your order is being reviewed. You will be notified when the price quote is ready."}
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => setIsDeclineDialogOpen(true)}
+                                disabled={isDecliningPrice}
+                                variant="outline"
+                                className="w-full md:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all gap-2"
+                            >
+                                <X className="h-4 w-4" />
+                                {language === "tr" ? "Siparişi İptal Et" : "Cancel Order"}
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -395,10 +490,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <CreditCard className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     {language === "tr" ? "Müşterinin fiyatı onaylaması bekleniyor" : "Waiting for customer price approval"}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {language === "tr"
                                         ? "Fiyat müşteriye iletildi. Müşterinin onayı bekleniyor."
                                         : "Price has been sent to the customer. Waiting for approval."}
@@ -418,10 +513,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <ImageIcon className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     {language === "tr" ? "Önizleme dosyası yüklemeniz bekleniyor" : "Preview file upload required"}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {language === "tr"
                                         ? "Müşteri fiyatı onayladı. Şimdi önizleme dosyalarını yükleyin ve müşteriye gönderin."
                                         : "Customer approved the price. Upload preview files and send them to the customer."}
@@ -441,10 +536,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <ImageIcon className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     {language === "tr" ? "Müşteri önizlemeyi inceliyor" : "Customer is reviewing preview"}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {language === "tr"
                                         ? "Önizleme dosyaları gönderildi. Müşterinin onayı bekleniyor."
                                         : "Preview files have been sent. Waiting for customer approval."}
@@ -464,10 +559,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <Send className="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-white">
+                                <h3 className="text-lg font-semibold text-foreground">
                                     {language === "tr" ? "Final dosyalarını göndermeniz bekleniyor" : "Final files upload required"}
                                 </h3>
-                                <p className="text-sm text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {language === "tr"
                                         ? "Müşteri önizlemeyi onayladı. Şimdi final dosyalarını yükleyin."
                                         : "Customer approved the preview. Upload the final files now."}
@@ -488,10 +583,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <CreditCard className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.payButton}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.paymentPendingDesc}
                                     </p>
                                 </div>
@@ -517,10 +612,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <CreditCard className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.priceApprovalTitle}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.priceApprovalDesc}
                                     </p>
                                     <p className="text-2xl font-bold text-blue-400 mt-2">
@@ -528,23 +623,34 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     </p>
                                 </div>
                             </div>
-                            <Button
-                                onClick={handlePriceApproval}
-                                disabled={isApprovingPrice}
-                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white gap-2"
-                            >
-                                {isApprovingPrice ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        {t.common.loading}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CreditCard className="h-4 w-4" />
-                                        {t.orders.approvePrice}
-                                    </>
-                                )}
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    onClick={() => setIsDeclineDialogOpen(true)}
+                                    disabled={isDecliningPrice || isApprovingPrice}
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all gap-2"
+                                >
+                                    <X className="h-4 w-4" />
+                                    {language === "tr" ? "Teklifi Reddet" : "Decline Quote"}
+                                </Button>
+                                <Button
+                                    onClick={handlePriceApproval}
+                                    disabled={isApprovingPrice || isDecliningPrice}
+                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 transition-all gap-2"
+                                >
+                                    {isApprovingPrice ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            {t.common.loading}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            {t.orders.approvePrice}
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -560,10 +666,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <ImageIcon className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         {t.orders.previewApprovalTitle}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.previewApprovalDesc}
                                     </p>
                                 </div>
@@ -594,20 +700,20 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Files */}
-                    <Card className="bg-zinc-900 border-zinc-800">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">{t.orders.files}</CardTitle>
+                            <CardTitle className="text-foreground text-lg">{t.orders.files}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Tabs defaultValue="original" className="w-full">
-                                <TabsList className="bg-zinc-800 w-full justify-start">
-                                    <TabsTrigger value="original" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                <TabsList className="bg-accent w-full justify-start">
+                                    <TabsTrigger value="original" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         {language === "tr" ? "Müşteri Dosyaları" : "Customer's File(s)"} ({originalFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="preview" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                    <TabsTrigger value="preview" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         {t.orders.preview} ({previewFiles.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="final" className="text-zinc-300 data-[state=active]:bg-zinc-700 data-[state=active]:text-white">
+                                    <TabsTrigger value="final" className="text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground">
                                         {t.orders.final} ({finalFiles.length})
                                     </TabsTrigger>
                                 </TabsList>
@@ -633,14 +739,14 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         />
                                     )}
                                     {!isAdmin && status !== "APPROVAL_AWAITING" && previewFiles.length > 0 && (
-                                        <div className="text-center py-8 text-zinc-500">
+                                        <div className="text-center py-8 text-muted-foreground">
                                             <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
                                             <p>Preview files are being prepared by admin</p>
                                         </div>
                                     )}
                                     {isAdmin && (
-                                        <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-300 text-sm">
+                                        <div className="pt-4 border-t border-border">
+                                            <Label className="text-muted-foreground text-sm">
                                                 {t.orders.previewUploadLabel}
                                             </Label>
                                             <input
@@ -696,14 +802,35 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <FileList
                                         files={finalFiles}
                                         emptyText={t.orders.noFiles}
-                                        isLocked={!isAdmin && status !== "COMPLETED"}
+                                        isLocked={!isAdmin && !["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status)}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                        canDelete={isAdmin && !["PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status)}
                                     />
+                                    {/* Customer Download All Button */}
+                                    {!isAdmin && finalFiles.length > 1 && ["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status) && (
+                                        <div className="pt-4 border-t border-border">
+                                            <Button
+                                                onClick={() => {
+                                                    const link = document.createElement('a');
+                                                    link.href = `/api/orders/${order.id}/download-finals`;
+                                                    link.download = `${order.title || 'Order'}_Finals.zip`;
+                                                    document.body.appendChild(link);
+                                                    link.click();
+                                                    document.body.removeChild(link);
+                                                    toast.success(language === "tr" ? "Dosyalar indiriliyor..." : "Downloading files...");
+                                                }}
+                                                variant="outline"
+                                                className="w-full border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:text-white"
+                                            >
+                                                <Archive className="mr-2 h-4 w-4" />
+                                                {language === "tr" ? "Tümünü İndir (ZIP)" : "Download All (ZIP)"}
+                                            </Button>
+                                        </div>
+                                    )}
                                     {isAdmin && (
-                                        <div className="pt-4 border-t border-zinc-800">
-                                            <Label className="text-zinc-300 text-sm">
+                                        <div className="pt-4 border-t border-border">
+                                            <Label className="text-muted-foreground text-sm">
                                                 {t.orders.finalUploadLabel}
                                             </Label>
                                             <input
@@ -740,7 +867,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </Card>
 
                     {/* Wilcom Design Data - Admin Only, visible after preview approval */}
-                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED"].includes(order.status) && (
+                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}
@@ -750,34 +877,30 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     )}
 
                     {/* Comments */}
-                    <Card className="bg-zinc-900 border-zinc-800">
-                        <CardContent className="p-0">
-                            <CommentSection orderId={order.id} initialComments={formattedComments} />
-                        </CardContent>
-                    </Card>
+                    <CommentSection orderId={order.id} initialComments={formattedComments} status={status} />
                 </div>
 
                 {/* Sidebar */}
                 <div className="space-y-6">
                     {/* Order Info */}
-                    <Card className="bg-zinc-900 border-zinc-800">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-white text-lg">{t.orders.orderInfo}</CardTitle>
+                            <CardTitle className="text-foreground text-lg">{t.orders.orderInfo}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-0">
                             {isAdmin && (
-                                <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                    <span className="text-white font-medium">{t.orders.customerName}</span>
-                                    <span className="text-sm text-zinc-400">{order.customer.name || order.customer.email}</span>
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium">{t.orders.customerName}</span>
+                                    <span className="text-sm text-muted-foreground">{order.customer.name || order.customer.email}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">{t.orders.orderNo}</span>
-                                <span className="text-sm text-zinc-400 font-mono">{order.id.slice(0, 8)}</span>
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">{t.orders.orderNo}</span>
+                                <span className="text-sm text-muted-foreground font-mono">{order.id.slice(0, 8)}</span>
                             </div>
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">{t.orders.created}</span>
-                                <span className="text-sm text-zinc-400">
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">{t.orders.created}</span>
+                                <span className="text-sm text-muted-foreground">
                                     {new Date(order.createdAt).toLocaleDateString(dateLocale, {
                                         month: "short",
                                         day: "numeric",
@@ -786,9 +909,25 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     })}
                                 </span>
                             </div>
-                            <div className="flex justify-between items-center py-1.5 border-b border-zinc-800">
-                                <span className="text-white font-medium">{t.orders.updated}</span>
-                                <span className="text-sm text-zinc-400">
+                            {/* Priority & Delivery */}
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">{language === "tr" ? "Öncelik" : "Priority"}</span>
+                                <Badge className={order.priority === "URGENT" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-accent text-muted-foreground border-border"}>
+                                    {order.priority === "URGENT" ? (language === "tr" ? "ACİL" : "URGENT") : (language === "tr" ? "NORMAL" : "NORMAL")}
+                                </Badge>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">{language === "tr" ? "Tahmini Teslim" : "Est. Delivery"}</span>
+                                <span className="text-sm text-muted-foreground">
+                                    {order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString(dateLocale, {
+                                        month: "short",
+                                        day: "numeric",
+                                    }) : "24-48h"}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                <span className="text-foreground font-medium">{t.orders.updated}</span>
+                                <span className="text-sm text-muted-foreground">
                                     {new Date(order.updatedAt).toLocaleDateString(dateLocale, {
                                         month: "short",
                                         day: "numeric",
@@ -797,10 +936,23 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     })}
                                 </span>
                             </div>
+                            {finalFiles.length > 0 && (
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium">{t.orders.delivered}</span>
+                                    <span className="text-sm text-muted-foreground">
+                                        {new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))).toLocaleDateString(dateLocale, {
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </span>
+                                </div>
+                            )}
                             {order.price && (
                                 <div className="flex justify-between items-center py-1.5">
-                                    <span className="text-white font-medium">{t.orders.price}</span>
-                                    <span className="text-lg font-bold text-violet-400">
+                                    <span className="text-foreground font-medium">{t.orders.price}</span>
+                                    <span className="text-lg font-bold text-violet-500">
                                         ${Number(order.price).toLocaleString("en-US")}
                                     </span>
                                 </div>
@@ -810,12 +962,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* Description - Moved to sidebar */}
                     {order.description && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-lg">{t.orders.description}</CardTitle>
+                                <CardTitle className="text-foreground text-lg">{t.orders.description}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-zinc-300 whitespace-pre-wrap text-sm">
+                                <p className="text-muted-foreground whitespace-pre-wrap text-sm">
                                     {order.description}
                                 </p>
                             </CardContent>
@@ -824,30 +976,30 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                     {/* Admin Controls */}
                     {isAdmin && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-lg">
+                                <CardTitle className="text-foreground text-lg">
                                     {t.orders.management}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="grid grid-cols-6 gap-3">
                                     <div className="col-span-4 space-y-1">
-                                        <Label className="text-zinc-400 text-xs">{t.orders.status}</Label>
+                                        <Label className="text-muted-foreground text-xs">{t.orders.status}</Label>
                                         <Select
                                             value={status}
                                             onValueChange={(value) => setStatus(value as OrderStatus)}
                                             disabled={order.status === "COMPLETED"}
                                         >
-                                            <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white h-9">
+                                            <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-zinc-800 border-zinc-700">
+                                            <SelectContent className="bg-popover border-border">
                                                 {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
                                                     <SelectItem
                                                         key={key}
                                                         value={key}
-                                                        className="text-white focus:bg-zinc-700"
+                                                        className="text-foreground focus:bg-accent"
                                                     >
                                                         {label}
                                                     </SelectItem>
@@ -856,13 +1008,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         </Select>
                                     </div>
                                     <div className="col-span-2 space-y-1">
-                                        <Label className="text-zinc-400 text-xs">{t.orders.price} ($)</Label>
+                                        <Label className="text-muted-foreground text-xs">{t.orders.price} ($)</Label>
                                         <Input
                                             type="number"
                                             value={price}
                                             onChange={(e) => setPrice(e.target.value)}
                                             placeholder="0.00"
-                                            className="bg-zinc-800 border-zinc-700 text-white h-9"
+                                            className="bg-accent border-border text-foreground h-9"
                                         />
                                     </div>
                                 </div>
@@ -885,25 +1037,56 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                         </Card>
                     )}
 
+                    {/* Customer Notes - Admin Only */}
+                    {isAdmin && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                                    <ClipboardList className="h-5 w-5 text-violet-400" />
+                                    {language === "tr" ? "Müşteri Notları (CRM)" : "Customer Notes (CRM)"}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <textarea
+                                    value={customerNotes}
+                                    onChange={(e) => setCustomerNotes(e.target.value)}
+                                    placeholder={language === "tr" ? "Müşteri hakkında notlar..." : "Internal notes about this customer..."}
+                                    className="w-full bg-accent border-border text-foreground text-sm rounded-lg p-3 min-h-[100px] focus:ring-violet-500 focus:border-violet-500"
+                                />
+                                <Button
+                                    onClick={handleUpdateCustomerNotes}
+                                    disabled={isUpdatingNotes}
+                                    className="w-full bg-accent hover:bg-accent/80 text-foreground border border-border"
+                                >
+                                    {isUpdatingNotes ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        language === "tr" ? "Notları Kaydet" : "Save Notes"
+                                    )}
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {/* FAQ Section - Only for customers */}
                     {!isAdmin && (
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-white text-lg flex items-center gap-2">
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
                                     <span className="text-violet-400">?</span>
                                     {language === "tr" ? "Sıkça Sorulan Sorular" : "FAQ"}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-0">
-                                <div className="divide-y divide-zinc-800">
+                                <div className="divide-y divide-border">
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 {language === "tr" ? "Siparişim ne zaman hazır olur?" : "When will my order be ready?"}
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "Standart siparişler genellikle 24-48 saat içinde tamamlanır. Karmaşık tasarımlar daha uzun sürebilir."
                                                 : "Standard orders are typically completed within 24-48 hours. Complex designs may take longer."}
@@ -912,12 +1095,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 {language === "tr" ? "Süreç nasıl işliyor?" : "How does the process work?"}
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "1) Dosya Yükle → 2) Fiyatlandırma → 3) Fiyat Onayı → 4) Önizleme Onayı → 5) Ödeme → 6) İndir"
                                                 : "1) Upload File → 2) Pricing → 3) Price Approval → 4) Preview Approval → 5) Payment → 6) Download"}
@@ -926,12 +1109,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 {language === "tr" ? "Revizyon talep edebilir miyim?" : "Can I request revisions?"}
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? 'Evet! Önizleme aldıktan sonra "Mesajlar ve Sipariş Durumu" bölümünden revizyon talebinde bulunabilirsiniz.'
                                                 : 'Yes! After receiving your preview, request revisions through the "Messages & Order Status" section.'}
@@ -940,12 +1123,12 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                     <details className="group py-3">
                                         <summary className="flex items-center justify-between cursor-pointer">
-                                            <span className="body-big text-zinc-200 group-hover:text-white transition-colors pr-2">
+                                            <span className="body-big text-foreground group-hover:text-foreground transition-colors pr-2">
                                                 {language === "tr" ? "Hangi dosya formatlarını kabul ediyorsunuz?" : "Which file formats are supported?"}
                                             </span>
-                                            <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                                            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
-                                        <div className="mt-2 ml-0 body text-zinc-400 leading-relaxed bg-zinc-800/50 rounded-lg p-3">
+                                        <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
                                             {language === "tr"
                                                 ? "DST, EMB, AI, veya PDF"
                                                 : "DST, EMB, AI, or PDF"}
@@ -965,6 +1148,19 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 isPending={isDeletingFile}
                 description="This file will be permanently deleted. You cannot undo this action."
             />
+            <ActionConfirmDialog
+                isOpen={isDeclineDialogOpen}
+                onOpenChange={setIsDeclineDialogOpen}
+                onConfirm={handlePriceDecline}
+                isPending={isDecliningPrice}
+                title={language === "tr" ? "Teklifi Reddet" : "Decline Quote"}
+                description={language === "tr"
+                    ? "Fiyat teklifini reddetmek istediğinizden emin misiniz? Bu işlem siparişi kalıcı olarak iptal edecektir."
+                    : "Are you sure you want to decline this price quote? This will permanently cancel the order."}
+                confirmText={language === "tr" ? "İptal Et" : "Cancel Order"}
+                cancelText={language === "tr" ? "Vazgeç" : "Go Back"}
+                variant="destructive"
+            />
         </div>
     );
 }
@@ -983,6 +1179,7 @@ function FileList({
         name: string;
         url: string;
         size: number | null;
+        version?: number;
     }>;
     showPreview?: boolean;
     emptyText: string;
@@ -993,7 +1190,7 @@ function FileList({
 }) {
     if (files.length === 0) {
         return (
-            <div className="text-center py-8 text-zinc-500">
+            <div className="text-center py-8 text-muted-foreground">
                 {emptyText}
             </div>
         );
@@ -1004,7 +1201,7 @@ function FileList({
             {files.map((file) => (
                 <div key={file.id}>
                     {showPreview && file.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
-                        <div className="mb-2 rounded-lg overflow-hidden bg-zinc-800">
+                        <div className="mb-2 rounded-lg overflow-hidden bg-accent">
                             <img
                                 src={file.url}
                                 alt={file.name}
@@ -1012,7 +1209,7 @@ function FileList({
                             />
                         </div>
                     )}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-800/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
                         <div className="flex items-center gap-3">
                             {showPreview ? (
                                 <ImageIcon className="h-5 w-5 text-violet-400" />
@@ -1020,9 +1217,16 @@ function FileList({
                                 <FileIcon className="h-5 w-5 text-violet-400" />
                             )}
                             <div>
-                                <p className="text-sm text-white">{file.name}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm text-foreground">{file.name}</p>
+                                    {file.version && file.version > 1 && (
+                                        <span className="px-2 py-0.5 text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full">
+                                            v{file.version}
+                                        </span>
+                                    )}
+                                </div>
                                 {file.size && (
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {(file.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
                                 )}
@@ -1034,7 +1238,7 @@ function FileList({
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 transition-colors"
+                                        className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 transition-colors"
                                     >
                                         <Download className="h-4 w-4" />
                                     </Button>
@@ -1045,13 +1249,13 @@ function FileList({
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => onDelete(file.id)}
-                                    className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all duration-300"
+                                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.1)] transition-all duration-300"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             )}
                             {isLocked && (
-                                <div className="p-2 rounded-lg bg-zinc-800/50 text-zinc-500" title="Payment required">
+                                <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Payment required">
                                     <Lock className="h-4 w-4" />
                                 </div>
                             )}

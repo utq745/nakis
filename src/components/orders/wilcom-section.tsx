@@ -172,7 +172,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
     };
 
     return (
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card>
             <UploadOverlay
                 isVisible={isUploading}
                 message={language === 'tr' ? "Wilcom dosyası işleniyor..." : "Processing Wilcom file..."}
@@ -181,22 +181,22 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
             {!wilcomData && isAdmin ? (
                 <>
                     <CardHeader>
-                        <CardTitle className="text-white text-lg flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-violet-400" />
+                        <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                            <FileText className="h-5 w-5 text-violet-500" />
                             {t.orders.wilcomUpload}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center">
+                        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="p-4 rounded-full bg-violet-500/10">
-                                    <Upload className="h-8 w-8 text-violet-400" />
+                                    <Upload className="h-8 w-8 text-violet-500" />
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-medium mb-1">
+                                    <h3 className="text-foreground font-medium mb-1">
                                         {t.orders.wilcom.uploadTitle}
                                     </h3>
-                                    <p className="text-sm text-zinc-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {t.orders.wilcom.uploadDesc}
                                     </p>
                                 </div>
@@ -228,8 +228,8 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                 <>
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-white text-lg flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-violet-400" />
+                            <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                                <FileText className="h-5 w-5 text-violet-500" />
                                 {isAdmin ? t.orders.wilcomUpload : (language === 'tr' ? 'Tasarım Detayları' : 'Design Details')}
                             </CardTitle>
                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
@@ -241,39 +241,39 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                     <CardContent className="space-y-4">
                         {/* Design Info Summary */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div className="bg-zinc-800/50 rounded-lg p-3">
-                                <div className="text-xs text-zinc-400 mb-1">{t.orders.wilcom.designName}</div>
-                                <div className="text-white font-medium text-sm">{wilcomData.designName}</div>
+                            <div className="bg-accent/40 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1">{t.orders.wilcom.designName}</div>
+                                <div className="text-foreground font-medium text-sm">{wilcomData.designName}</div>
                             </div>
-                            <div className="bg-zinc-800/50 rounded-lg p-3">
-                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                            <div className="bg-accent/40 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                                     <Ruler className="h-3 w-3" /> {t.orders.wilcom.size}
                                 </div>
-                                <div className="text-white font-medium text-sm">
+                                <div className="text-foreground font-medium text-sm">
                                     {(wilcomData.widthMm / 25.4).toFixed(2)}" × {(wilcomData.heightMm / 25.4).toFixed(2)}"
                                 </div>
                             </div>
-                            <div className="bg-zinc-800/50 rounded-lg p-3">
-                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                            <div className="bg-accent/40 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                                     <Scissors className="h-3 w-3" /> {t.orders.wilcom.stitches}
                                 </div>
-                                <div className="text-white font-medium text-sm">
+                                <div className="text-foreground font-medium text-sm">
                                     {new Intl.NumberFormat(language === 'tr' ? 'tr-TR' : 'en-US').format(wilcomData.stitchCount)}
                                 </div>
                             </div>
-                            <div className="bg-zinc-800/50 rounded-lg p-3">
-                                <div className="text-xs text-zinc-400 mb-1 flex items-center gap-1">
+                            <div className="bg-accent/40 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                                     <Clock className="h-3 w-3" /> {t.orders.wilcom.runtime}
                                 </div>
-                                <div className="text-white font-medium text-sm">
+                                <div className="text-foreground font-medium text-sm">
                                     {wilcomData.machineRuntime || t.common.notAvailable}
                                 </div>
                             </div>
                         </div>
 
                         {/* Color Preview */}
-                        <div className="bg-zinc-800/50 rounded-lg p-3">
-                            <div className="text-xs text-zinc-400 mb-2 flex items-center gap-1">
+                        <div className="bg-accent/40 rounded-lg p-3">
+                            <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                                 <Palette className="h-3 w-3" /> {t.orders.wilcom.colors} ({wilcomData.colorCount})
                             </div>
                             <div className="flex flex-wrap gap-1">
@@ -293,9 +293,9 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
 
                         {/* Design Image */}
                         {wilcomData.designImageUrl && (
-                            <div className="bg-zinc-800/50 rounded-lg p-3">
-                                <div className="text-xs text-zinc-400 mb-2">{t.orders.wilcom.designPreview}</div>
-                                <div className="flex justify-center bg-white/5 rounded-lg p-4">
+                            <div className="bg-accent/40 rounded-lg p-3">
+                                <div className="text-xs text-muted-foreground mb-2">{t.orders.wilcom.designPreview}</div>
+                                <div className="flex justify-center bg-background/50 rounded-lg p-4">
                                     <img
                                         src={`${wilcomData.designImageUrl}?v=${new Date(wilcomData.updatedAt).getTime()}`}
                                         alt="Design Preview"
@@ -351,7 +351,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                            className="bg-transparent border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                                         >
                                             <Download className="mr-2 h-4 w-4" />
                                             {t.orders.wilcom.originalPdf}
@@ -374,7 +374,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                                 asChild
                                                 variant="outline"
                                                 size="sm"
-                                                className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                                className="bg-transparent border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                                                 disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
                                             >
                                                 <span>
@@ -418,61 +418,61 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="w-full mt-4 bg-zinc-800/30 hover:bg-zinc-800/70 text-zinc-400 hover:text-white border border-zinc-700/50 hover:border-zinc-600 transition-all"
+                                    className="w-full mt-4 bg-accent/30 hover:bg-accent/70 text-muted-foreground hover:text-foreground border border-border/50 hover:border-border transition-all"
                                     onClick={() => setShowDetails(!showDetails)}
                                 >
                                     {showDetails ? t.orders.wilcom.hideDetails : t.orders.wilcom.showDetails}
                                 </Button>
 
                                 {showDetails && (
-                                    <div className="border-t border-zinc-800 pt-4 space-y-3">
+                                    <div className="border-t border-border pt-4 space-y-3">
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.machineFormat}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.machineFormat || t.common.notAvailable}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.machineFormat}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.machineFormat || t.common.notAvailable}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.colorChanges}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.colorChanges || 0}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.colorChanges}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.colorChanges || 0}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.stops}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.stops || 0}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.stops}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.stops || 0}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.trims}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.trims || 0}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.trims}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.trims || 0}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.totalThread}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.totalThreadM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalThreadM ? 'm' : ''}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.totalThread}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.totalThreadM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalThreadM ? 'm' : ''}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.totalBobbin}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.totalBobbinM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalBobbinM ? 'm' : ''}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.totalBobbin}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.totalBobbinM?.toFixed(2) || t.common.notAvailable}{wilcomData.totalBobbinM ? 'm' : ''}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.maxStitch}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.maxStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxStitchMm ? 'mm' : ''}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.maxStitch}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.maxStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxStitchMm ? 'mm' : ''}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.minStitch}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.minStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.minStitchMm ? 'mm' : ''}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.minStitch}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.minStitchMm?.toFixed(1) || t.common.notAvailable}{wilcomData.minStitchMm ? 'mm' : ''}</span>
                                             </div>
                                             <div>
-                                                <span className="text-zinc-500">{t.orders.wilcom.maxJump}:</span>
-                                                <span className="text-zinc-300 ml-2">{wilcomData.maxJumpMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxJumpMm ? 'mm' : ''}</span>
+                                                <span className="text-muted-foreground">{t.orders.wilcom.maxJump}:</span>
+                                                <span className="text-foreground ml-2">{wilcomData.maxJumpMm?.toFixed(1) || t.common.notAvailable}{wilcomData.maxJumpMm ? 'mm' : ''}</span>
                                             </div>
                                         </div>
 
                                         {/* Color Sequence */}
                                         <div>
-                                            <div className="text-xs text-zinc-500 mb-2">{t.orders.wilcom.colorSequence}:</div>
+                                            <div className="text-xs text-muted-foreground mb-2">{t.orders.wilcom.colorSequence}:</div>
                                             <div className="flex flex-wrap gap-1">
                                                 {wilcomData.colorSequence.map((item, index) => (
                                                     <div
                                                         key={index}
-                                                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border border-zinc-600"
+                                                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border border-border"
                                                         style={{ backgroundColor: item.hex, color: getContrastColor(item.hex) }}
                                                         title={`Stop ${item.stop}: ${item.colorName} (${item.colorCode})`}
                                                     >
