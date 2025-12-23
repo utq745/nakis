@@ -63,6 +63,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy necessary files from builder
+# Copy node_modules FIRST (before standalone overwrites it)
+COPY --from=builder /app/node_modules ./node_modules/
 # We use standalone mode to only include what's needed for runtime
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -70,8 +72,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy prisma folder for migrations and scripts for admin tools
 COPY --from=builder /app/prisma ./prisma/
 COPY --from=builder /app/scripts ./scripts/
-# Copy node_modules for scripts (bcryptjs, etc.)
-COPY --from=builder /app/node_modules ./node_modules/
+
+# Install bcryptjs for password scripts (standalone doesn't include it)
+RUN npm install --omit=dev bcryptjs@3.0.3
 
 # Ensure the uploads directory exists and has correct permissions
 RUN mkdir -p uploads && chown nextjs:nodejs uploads
