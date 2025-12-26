@@ -1,4 +1,5 @@
 import { LanguageProvider } from "@/components/providers/language-provider";
+import { CookieBanner } from "@/components/cookie-banner";
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/get-dictionary";
 import { Providers } from "@/components/providers";
@@ -47,6 +48,7 @@ export default function EnLayout({
                 <Providers>
                     <LanguageProvider initialLang="en">
                         {children}
+                        <CookieBanner />
                     </LanguageProvider>
                     <Toaster richColors position="top-right" />
                 </Providers>

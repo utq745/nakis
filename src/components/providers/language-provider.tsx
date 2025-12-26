@@ -26,13 +26,25 @@ export function LanguageProvider({
     const setLanguage = (lang: Locale) => {
         setLanguageState(lang);
 
-        // Update URL based on language
+        // Specialized path mapping for non-matching slugs
+        const pathMappings: Record<string, { en: string; tr: string }> = {
+            'mesafelisatis': {
+                en: '/distance-sales-agreement',
+                tr: '/tr/mesafeli-satis-sozlesmesi'
+            }
+        };
+
+        // Check for special cases
+        if (pathname.includes('mesafeli-satis-sozlesmesi') || pathname.includes('distance-sales-agreement')) {
+            router.push(lang === 'en' ? pathMappings.mesafelisatis.en : pathMappings.mesafelisatis.tr);
+            return;
+        }
+
+        // Default logic for matching slugs
         if (lang === 'en') {
-            // Remove /tr prefix if exists
             const newPath = pathname.replace(/^\/tr/, '') || '/';
             router.push(newPath);
         } else {
-            // Add /tr prefix if not exists
             const newPath = pathname.startsWith('/tr') ? pathname : `/tr${pathname}`;
             router.push(newPath);
         }

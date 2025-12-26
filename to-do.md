@@ -1,4 +1,4 @@
-# Proje Geliştirme Yol Haritası (To-Do List)
+# Proje'deki Panel Geliştirme Yol Haritası (To-Do List)
 
 ## 🔴 Kritik Eksiklikler & Mantık Hataları
 - [ ] **E-posta Entegrasyonu:** (Resend, Nodemailer vb.)
@@ -18,6 +18,9 @@
         - [x] İptal edilen siparişler 30 gün sonra silinir.
 
 ## 🟡 Önemli Geliştirmeler
+- [x] **Wilcom Entegrasyonu:**
+    - [x] Wilcom PDF'i eklendiğinde eğer müşteri tarafından sipariş ismi verilmediyse PDF'deki ismi alıp sipariş ismi olarak kaydet.
+    - [x] Operator ve customer PDF'lerinde kozmetik değişiklikler.
 - [x] **Bildirim Sistemi:**
     - [x] Push notifications veya in-app bildirim sistemi.
     - [x] Bildirimler için ses efekti eklenecek.
