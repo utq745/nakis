@@ -22,7 +22,7 @@ export function Hero() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="flex flex-col gap-8 p-8 md:p-12 rounded-[2.5rem] bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-2xl relative overflow-hidden group"
+                        className="flex flex-col gap-8 p-6 sm:p-8 md:p-12 rounded-[2.5rem] bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-2xl relative overflow-hidden group"
                     >
                         {/* Subtle inner highlight */}
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
@@ -40,7 +40,7 @@ export function Hero() {
                                 <span className="text-white font-semibold text-xs uppercase tracking-wider">{t.landing.hero.badge}</span>
                             </motion.div>
 
-                            <h1 className="text-[clamp(2.5rem,5vw,3.75rem)] font-black tracking-tight text-white leading-[1.1]">
+                            <h1 className="text-[clamp(1.75rem,5vw,3.75rem)] font-black tracking-tight text-white leading-[1.1] break-words">
                                 {t.landing.hero.titleLine1} <br />
                                 <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                                     {t.landing.hero.titleLine2}
