@@ -12,20 +12,29 @@ import {
 import { Check } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header() {
+export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
     const { language, setLanguage, t } = useLanguage();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const [isAtTop, setIsAtTop] = useState(true);
+    const [isAtTop, setIsAtTop] = useState(!forceSolid);
     const [mounted, setMounted] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
+        if (forceSolid) {
+            setIsAtTop(false);
+            return;
+        }
         setMounted(true);
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
             // Track if we are at the very top
             setIsAtTop(currentScrollY < 20);
+
+            // Threshold to prevent flickering on small scrolls
+            const scrollDistance = Math.abs(currentScrollY - lastScrollY);
+            if (scrollDistance < 10 && currentScrollY > 100) return;
 
             // Show header if:
             // 1. At the top of the page (scrollY < 100)
@@ -52,90 +61,202 @@ export function Header() {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid transition-all duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${isAtTop
-                ? 'bg-transparent border-transparent py-5 px-6 lg:px-12'
-                : 'bg-white/80 backdrop-blur-md border-b-[#e5e7eb] px-4 lg:px-10 py-3 shadow-sm dark:bg-[#18212f]/80 dark:border-b-[#2a3441]'
+            className={`fixed top-0 left-0 right-0 z-50 whitespace-nowrap border-b border-solid transition-all duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${isAtTop
+                ? 'bg-transparent border-transparent py-5'
+                : 'bg-white/80 backdrop-blur-md border-b-[#e5e7eb] py-3 shadow-sm dark:bg-[#18212f]/80 dark:border-b-[#2a3441]'
                 }`}
         >
-            <div className={`flex items-center gap-4 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`}>
-                <Link href="/" className="flex items-center gap-4">
-                    <div className={`size-6 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#135bec]'}`}>
-                        <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
-                        </svg>
-                    </div>
-                    <h2 className="text-lg font-bold leading-tight tracking-[-0.015em]">Approval Stitch</h2>
-                </Link>
-            </div>
-            <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
-                <div className="hidden lg:flex items-center gap-6 xl:gap-9">
-                    <Link className={`text-sm font-medium leading-normal hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
-                    <Link className={`text-sm font-medium leading-normal hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`} href={language === 'tr' ? '/tr/about' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
-                    <Link className={`text-sm font-medium leading-normal hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`} href={language === 'tr' ? '/tr/services' : '/services'}>{t.header.services}</Link>
-                    <Link className={`text-sm font-medium leading-normal hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`} href={language === 'tr' ? '/tr/pricing' : '/pricing'}>{t.header.pricing}</Link>
-                    <Link className={`text-sm font-medium leading-normal hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`} href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.header.contact}</Link>
+            <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+                <div className={`flex items-center gap-4 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`}>
+                    <Link href={language === 'tr' ? '/tr' : '/'} className="flex items-center gap-4">
+                        <div className={`size-6 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary'}`}>
+                            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+                            </svg>
+                        </div>
+                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em]">Approval Stitch</h2>
+                    </Link>
                 </div>
+                <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
+                    <div className="hidden lg:flex items-center gap-6 xl:gap-9">
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/about' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/services' : '/services'}>{t.header.services}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/pricing' : '/pricing'}>{t.header.pricing}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.header.contact}</Link>
+                    </div>
 
-                <div className="flex gap-2 items-center">
-                    <Link href={language === 'tr' ? '/tr/login' : '/login'} className="hidden sm:inline-block">
-                        <button className={`h-10 px-4 text-sm font-bold hover:text-[#135bec] transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-[#111318] dark:text-white'}`}>
-                            {t.header.signIn}
-                        </button>
-                    </Link>
+                    <div className="flex gap-2 items-center">
+                        <Link href={language === 'tr' ? '/tr/login' : '/login'} className="hidden sm:inline-block">
+                            <button className={`h-10 px-4 text-sm font-bold hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`}>
+                                {t.header.signIn}
+                            </button>
+                        </Link>
 
-                    <Link href={language === 'tr' ? '/tr/login' : '/login'} className="hidden sm:inline-block">
-                        <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#135bec] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-md">
-                            <span className="truncate">{t.header.startOrder}</span>
-                        </button>
-                    </Link>
+                        <Link href={language === 'tr' ? '/tr/register' : '/register'} className="hidden sm:inline-block">
+                            <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-colors shadow-md">
+                                <span className="truncate">{t.header.startOrder}</span>
+                            </button>
+                        </Link>
 
-                    {!mounted ? (
-                        <button className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f4] text-[#111318] hover:bg-[#e2e4e8] dark:bg-[#2a3441] dark:text-white dark:hover:bg-[#374151] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-colors">
-                            <span className="material-symbols-outlined text-[20px]">language</span>
-                            <span className="text-sm font-medium hidden sm:inline-block">
-                                {language === 'tr' ? 'TR' : 'EN'}
-                            </span>
-                        </button>
-                    ) : (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-all duration-300 ${isAtTop
+                        {!mounted ? (
+                            <button className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f4] text-[#111318] hover:bg-[#e2e4e8] dark:bg-[#2a3441] dark:text-white dark:hover:bg-[#374151] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-colors">
+                                <span className="material-symbols-outlined text-[20px]">language</span>
+                                <span className="text-sm font-medium hidden sm:inline-block">
+                                    {language === 'tr' ? 'TR' : 'EN'}
+                                </span>
+                            </button>
+                        ) : (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-all duration-300 ${isAtTop
                                         ? 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm'
                                         : 'bg-[#f0f2f4] text-[#111318] hover:bg-[#e2e4e8] dark:bg-[#2a3441] dark:text-white dark:hover:bg-[#374151]'
-                                    }`}>
-                                    <span className="material-symbols-outlined text-[20px]">language</span>
-                                    <span className="text-sm font-medium hidden sm:inline-block">
-                                        {language === 'tr' ? 'TR' : 'EN'}
-                                    </span>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-white dark:bg-[#2a3441] border-[#e5e7eb] dark:border-[#374151]">
-                                {language === 'tr' ? (
-                                    <>
-                                        <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
-                                            Türkçe <Check className="h-3 w-3" />
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">
-                                            English
-                                        </DropdownMenuItem>
-                                    </>
-                                ) : (
-                                    <>
-                                        <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
-                                            English <Check className="h-3 w-3" />
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => setLanguage("tr")} className="cursor-pointer">
-                                            Türkçe
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
+                                        }`}>
+                                        <span className="material-symbols-outlined text-[20px]">language</span>
+                                        <span className="text-sm font-medium hidden sm:inline-block">
+                                            {language === 'tr' ? 'TR' : 'EN'}
+                                        </span>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-white dark:bg-[#2a3441] border-[#e5e7eb] dark:border-[#374151]">
+                                    {language === 'tr' ? (
+                                        <>
+                                            <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
+                                                Türkçe <Check className="h-3 w-3" />
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">
+                                                English
+                                            </DropdownMenuItem>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
+                                                English <Check className="h-3 w-3" />
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setLanguage("tr")} className="cursor-pointer">
+                                                Türkçe
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
 
-                    <ThemeToggle />
+                        <ThemeToggle isAtTop={isAtTop} />
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            onClick={() => setMobileMenuOpen(true)}
+                            className={`lg:hidden flex items-center justify-center size-10 rounded-lg transition-colors ${isAtTop
+                                ? 'text-white hover:bg-white/10'
+                                : 'text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441]'
+                                }`}
+                            aria-label="Open menu"
+                        >
+                            <span className="material-symbols-outlined">menu</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {/* Mobile Menu Dialog */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setMobileMenuOpen(false)}
+                    />
+
+                    {/* Menu Panel */}
+                    <div className="absolute top-0 right-0 h-screen w-[85vw] max-w-[400px] bg-white dark:bg-[#18212f] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                        {/* Logo and Close Button */}
+                        <div className="flex items-center justify-between p-6 border-b border-[#e5e7eb] dark:border-[#2a3441]">
+                            <div className="flex items-center gap-3">
+                                <div className="size-7 text-primary">
+                                    <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+                                    </svg>
+                                </div>
+                                <span className="font-black text-lg text-[#111318] dark:text-white">Approval Stitch</span>
+                            </div>
+                            <button
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="size-10 flex items-center justify-center rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] transition-colors"
+                                aria-label="Close menu"
+                            >
+                                <span className="material-symbols-outlined text-[#111318] dark:text-white">close</span>
+                            </button>
+                        </div>
+
+                        {/* Navigation Links - Centered */}
+                        <nav className="flex-1 flex items-center justify-center px-6">
+                            <div className="flex flex-col gap-3 w-full">
+                                <Link
+                                    href={language === 'tr' ? '/tr' : '/'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {t.header.home}
+                                </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/about' : '/about'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {language === 'tr' ? 'Hakkımızda' : 'About'}
+                                </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/services' : '/services'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {t.header.services}
+                                </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/pricing' : '/pricing'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {t.header.pricing}
+                                </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/contact' : '/contact'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {t.header.contact}
+                                </Link>
+
+                                <div className="my-4 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
+
+                                <Link
+                                    href={language === 'tr' ? '/tr/login' : '/login'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                >
+                                    {t.header.signIn}
+                                </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/register' : '/register'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-4 bg-primary text-white hover:bg-primary-dark rounded-xl transition-colors font-bold text-center text-lg shadow-lg"
+                                >
+                                    {t.header.startOrder}
+                                </Link>
+                            </div>
+                        </nav>
+
+                        {/* Copyright - Bottom */}
+                        <div className="pb-[3vh] px-6 text-center border-t border-[#e5e7eb] dark:border-[#2a3441] pt-6">
+                            <p className="text-xs text-[#616f89] dark:text-gray-500">
+                                © {new Date().getFullYear()} Approval Stitch. All rights reserved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
     const { language } = useLanguage();
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)]">
+        <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]">
             <Header />
 
             <main className="flex-grow">
@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -57,12 +57,12 @@ export default function PrivacyPolicyPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
-                            className="max-w-4xl mx-auto bg-white dark:bg-[#18181b] rounded-[2.5rem] p-8 md:p-16 border border-[#e5e7eb] dark:border-[#27272a] shadow-2xl"
+                            className="max-w-4xl mx-auto bg-card rounded-[2.5rem] p-8 md:p-16 border border-border shadow-2xl"
                         >
-                            <div className="prose prose-blue dark:prose-invert max-w-none text-[#616f89] dark:text-gray-300">
-                                <p className="text-sm mb-8 italic">Son Güncelleme: Ekim 2023</p>
+                            <div className="prose prose-blue dark:prose-invert max-w-none text-muted-foreground">
+                                <p className="text-sm mb-8 italic">Son Güncelleme: 26 Aralık 2025</p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">1. Topladığımız Bilgiler</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">1. Topladığımız Bilgiler</h2>
                                 <p className="mb-6">
                                     Hesap oluşturduğunuzda, tasarım yüklediğinizde veya bizimle iletişim kurduğunuzda bize doğrudan verdiğiniz bilgileri topluyoruz:
                                 </p>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
                                     <li>Şirket bilgileri</li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">2. Verilerinizi Nasıl Kullanıyoruz</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">2. Verilerinizi Nasıl Kullanıyoruz</h2>
                                 <p className="mb-6">
                                     Verileriniz yalnızca hizmetlerimizi sunmak ve geliştirmek için kullanılır:
                                 </p>
@@ -84,25 +84,25 @@ export default function PrivacyPolicyPage() {
                                     <li>Yasal yükümlülüklere uyum</li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">3. Tasarım Gizliliği</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">3. Tasarım Gizliliği</h2>
                                 <p className="mb-8 leading-relaxed">
                                     Size ait tasarımlar hiçbir koşulda satılmaz veya paylaşılmaz. Çizimleriniz sizin fikri mülkiyetiniz olarak kalır. Dahili ekibimiz dosyalarınıza yalnızca talep edilen dijitalleştirme ve dikiş hizmetlerini gerçekleştirmek için erişir.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">4. Veri Güvenliği</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">4. Veri Güvenliği</h2>
                                 <p className="mb-8 leading-relaxed">
                                     Dijital tasarımlarınızı ve kişisel bilgilerinizi korumak için endüstriyel düzeyde güvenlik önlemleri uyguluyoruz. Buna SSL şifreleme, güvenli sunucu ortamları ve kısıtlı erişim protokolleri dahildir.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">5. Haklarınız</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">5. Haklarınız</h2>
                                 <p className="mb-8 leading-relaxed">
                                     Kişisel verilerinize erişme, bunları düzeltme veya silme hakkına sahipsiniz. Bu işlemlerin çoğunu doğrudan kullanıcı panelinizden yönetebilir veya yardım için bizimle iletişime geçebilirsiniz.
                                 </p>
 
-                                <div className="mt-16 p-8 bg-[#f4f6fa] dark:bg-[#0a0a0a] rounded-2xl border border-[#145BEC]/20">
-                                    <h3 className="text-lg font-bold text-[#111318] dark:text-white mb-2 underline">Sorularınız mı Var?</h3>
-                                    <p className="text-[#616f89] dark:text-gray-400">
-                                        Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, lütfen <a href="mailto:privacy@approvalstitch.com" className="text-[#145BEC] font-bold">privacy@approvalstitch.com</a> adresinden bizimle iletişime geçin.
+                                <div className="mt-16 p-8 bg-muted/50 dark:bg-muted/10 rounded-2xl border border-primary/20">
+                                    <h3 className="text-lg font-bold text-foreground mb-2 underline">Sorularınız mı Var?</h3>
+                                    <p className="text-muted-foreground">
+                                        Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, lütfen <a href="mailto:contact@approvalstitch.com" className="text-primary font-bold">contact@approvalstitch.com</a> adresinden bizimle iletişime geçin.
                                     </p>
                                 </div>
                             </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Header } from "@/components/header";
 
 import { useLanguage } from "@/components/providers/language-provider";
@@ -95,7 +96,7 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f6f6f8] dark:bg-[#101622] font-[family-name:var(--font-inter)]">
-            <Header />
+            <Header forceSolid />
 
             <main className="flex-grow flex flex-col lg:flex-row w-full animate-in fade-in duration-500 min-h-screen pt-16">
                 {/* Left Side: Visual Sidebar */}
@@ -136,13 +137,13 @@ export default function LoginPage() {
                             <div className="flex border-b border-slate-200 dark:border-slate-700 w-full">
                                 <button
                                     onClick={() => { setActiveTab('signin'); setError(""); }}
-                                    className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signin' ? 'text-[#135bec] border-b-2 border-[#135bec]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                                    className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signin' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                 >
                                     {lp.signIn}
                                 </button>
                                 <button
                                     onClick={() => { setActiveTab('signup'); setError(""); }}
-                                    className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signup' ? 'text-[#135bec] border-b-2 border-[#135bec]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                                    className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signup' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                 >
                                     {lp.createAccount}
                                 </button>
@@ -161,9 +162,14 @@ export default function LoginPage() {
 
                         {/* Error Message */}
                         {error && (
-                            <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-                            </div>
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 flex items-center gap-3"
+                            >
+                                <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+                                <p className="text-sm font-medium text-red-600 dark:text-red-400">{error}</p>
+                            </motion.div>
                         )}
 
                         {/* Form */}
@@ -177,7 +183,7 @@ export default function LoginPage() {
                                                 <span className="material-symbols-outlined text-[20px]">person</span>
                                             </div>
                                             <input
-                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
                                                 id="firstName"
                                                 type="text"
                                                 placeholder={lp.firstName}
@@ -194,7 +200,7 @@ export default function LoginPage() {
                                                 <span className="material-symbols-outlined text-[20px]">person</span>
                                             </div>
                                             <input
-                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                                className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
                                                 id="lastName"
                                                 type="text"
                                                 placeholder={lp.lastName}
@@ -215,7 +221,7 @@ export default function LoginPage() {
                                         <span className="material-symbols-outlined text-[20px]">mail</span>
                                     </div>
                                     <input
-                                        className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                        className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
                                         id="email"
                                         type="email"
                                         placeholder={lp.emailPlaceholder}
@@ -231,7 +237,7 @@ export default function LoginPage() {
                                 <div className="flex items-center justify-between mb-1.5">
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="password">{lp.password}</label>
                                     {activeTab === 'signin' && (
-                                        <a href="#" className="text-sm font-semibold text-[#135bec] hover:text-[#135bec]/80 transition-colors">{lp.forgotPassword}</a>
+                                        <a href="#" className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">{lp.forgotPassword}</a>
                                     )}
                                 </div>
                                 <div className="relative">
@@ -239,7 +245,7 @@ export default function LoginPage() {
                                         <span className="material-symbols-outlined text-[20px]">lock</span>
                                     </div>
                                     <input
-                                        className="block w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#135bec] focus:ring-[#135bec] sm:text-sm shadow-sm"
+                                        className="block w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
@@ -261,7 +267,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex w-full justify-center items-center rounded-lg bg-[#135bec] py-3 px-4 text-sm font-bold text-white shadow-sm hover:bg-[#135bec]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#135bec] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex w-full justify-center items-center rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
@@ -319,9 +325,9 @@ export default function LoginPage() {
                         {/* Footer Legal */}
                         <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
                             {lp.termsText}
-                            <a href="#" className="font-medium text-[#135bec] hover:underline mx-1">{lp.termsOfService}</a>
+                            <a href="#" className="font-medium text-primary hover:underline mx-1">{lp.termsOfService}</a>
                             {lp.and}
-                            <a href="#" className="font-medium text-[#135bec] hover:underline mx-1">{lp.privacyPolicy}</a>{lp.agree}
+                            <a href="#" className="font-medium text-primary hover:underline mx-1">{lp.privacyPolicy}</a>{lp.agree}
                         </p>
                     </div>
                 </div>

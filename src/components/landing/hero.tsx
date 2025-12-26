@@ -11,7 +11,7 @@ export function Hero() {
         <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#135bec]/10 blur-[120px] rounded-full"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/10 blur-[120px] rounded-full"></div>
                 <div className="absolute top-1/4 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full"></div>
             </div>
@@ -34,15 +34,15 @@ export function Hero() {
                                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 w-fit"
                             >
                                 <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                                 </span>
                                 <span className="text-white font-semibold text-xs uppercase tracking-wider">{t.landing.hero.badge}</span>
                             </motion.div>
 
-                            <h1 className="font-extrabold tracking-tight text-white leading-[1.1]">
+                            <h1 className="text-[clamp(2.5rem,5vw,3.75rem)] font-black tracking-tight text-white leading-[1.1]">
                                 {t.landing.hero.titleLine1} <br />
-                                <span className="bg-gradient-to-r from-[#135bec] to-[#4f86f7] bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                                     {t.landing.hero.titleLine2}
                                 </span>
                             </h1>
@@ -57,13 +57,13 @@ export function Hero() {
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className="px-8 h-14 bg-[#135bec] text-white rounded-xl font-bold text-lg shadow-[0_10px_20px_-5px_rgba(19,91,236,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(19,91,236,0.4)] transition-all flex items-center gap-3 group"
+                                    className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
                                 >
                                     {t.landing.hero.uploadBtn}
                                     <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </motion.button>
                             </Link>
-                            <Link href="#pricing">
+                            <Link href={`/${language}/pricing`}>
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -101,10 +101,12 @@ export function Hero() {
                         className="relative lg:ml-10"
                     >
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/5 backdrop-blur-sm aspect-[4/3] group">
-                            <div
-                                className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                style={{ backgroundImage: 'url("/images/hero/embroidery-hero.webp")' }}
-                            ></div>
+                            <img
+                                src="/images/hero/embroidery-hero.webp"
+                                alt="Embroidery hero"
+                                loading="lazy"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent opacity-60"></div>
 
                             {/* Floating Badge on Image */}
@@ -117,14 +119,14 @@ export function Hero() {
                                     <span className="material-symbols-outlined text-white">magic_button</span>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-medium opacity-80 uppercase tracking-tighter">Precision</p>
-                                    <p className="text-sm font-bold">Stitched Reality</p>
+                                    <p className="text-xs font-medium opacity-80 uppercase tracking-tighter">{t.landing.hero.precisionBadge}</p>
+                                    <p className="text-sm font-bold">{t.landing.hero.stitchedReality}</p>
                                 </div>
                             </motion.div>
                         </div>
 
                         {/* Background blur shape behind image */}
-                        <div className="absolute -z-10 -top-10 -right-10 size-64 bg-[#135bec]/20 blur-3xl rounded-full"></div>
+                        <div className="absolute -z-10 -top-10 -right-10 size-64 bg-primary/20 blur-3xl rounded-full"></div>
                         <div className="absolute -z-10 -bottom-10 -left-10 size-64 bg-indigo-500/20 blur-3xl rounded-full"></div>
                     </motion.div>
                 </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,11 +105,11 @@ export default function RegisterPage() {
             <Card className="w-full max-w-md relative bg-zinc-900/80 border-zinc-800 backdrop-blur-sm">
                 <CardHeader className="space-y-1 text-center">
                     <div className="flex justify-center mb-4">
-                        <div className="p-3 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500">
+                        <div className="p-3 rounded-full bg-gradient-to-tr from-primary to-primary-dark">
                             <Sparkles className="h-8 w-8 text-white" />
                         </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                         {t.auth.register}
                     </CardTitle>
                     <CardDescription className="text-zinc-400">
@@ -119,9 +120,14 @@ export default function RegisterPage() {
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                         {error && (
-                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
-                                {error}
-                            </div>
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center gap-3"
+                            >
+                                <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+                                <p className="text-sm font-medium text-red-400">{error}</p>
+                            </motion.div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
@@ -134,7 +140,7 @@ export default function RegisterPage() {
                                     placeholder={t.auth.firstName}
                                     required
                                     disabled={isLoading}
-                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -146,7 +152,7 @@ export default function RegisterPage() {
                                     placeholder={t.auth.lastName}
                                     required
                                     disabled={isLoading}
-                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                                 />
                             </div>
                         </div>
@@ -160,7 +166,7 @@ export default function RegisterPage() {
                                 placeholder="ornek@email.com"
                                 required
                                 disabled={isLoading}
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                             />
                         </div>
 
@@ -174,7 +180,7 @@ export default function RegisterPage() {
                                 required
                                 minLength={6}
                                 disabled={isLoading}
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                             />
                         </div>
 
@@ -188,7 +194,7 @@ export default function RegisterPage() {
                                 required
                                 minLength={6}
                                 disabled={isLoading}
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500"
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                             />
                         </div>
                     </CardContent>
@@ -196,7 +202,7 @@ export default function RegisterPage() {
                     <CardFooter className="flex flex-col gap-4">
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium"
+                            className="w-full bg-gradient-to-r from-primary to-primary-dark hover:from-primary/90 hover:to-primary-dark/90 text-white font-medium"
                             disabled={isLoading}
                         >
                             {isLoading ? (
@@ -211,7 +217,7 @@ export default function RegisterPage() {
 
                         <p className="text-sm text-zinc-400 text-center">
                             {t.auth.haveAccount}{" "}
-                            <Link href="/login" className="text-violet-400 hover:text-violet-300 transition-colors">
+                            <Link href="/tr/login" className="text-primary hover:text-primary/80 transition-colors">
                                 {t.auth.login}
                             </Link>
                         </p>

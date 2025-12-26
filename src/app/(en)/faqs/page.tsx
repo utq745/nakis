@@ -3,64 +3,50 @@
 import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export default function FAQPage() {
-    const { language } = useLanguage();
+    const { t, language } = useLanguage();
+    const faqs = t.faqsPage;
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openIndex, setOpenIndex] = useState<string | null>("0-0");
 
     const faqCategories = [
         {
-            title: "Services & Pricing",
+            title: faqs.categories.services,
             questions: [
-                {
-                    q: "What is an 'Approval Card'?",
-                    a: "An Approval Card is a high-resolution scan of your design actually stitched on a Tajima embroidery machine. It includes precise measurements, color codes, stitch counts, and density technicals so you can be 100% sure of the result before mass production."
-                },
-                {
-                    q: "Do you offer bulk discounts?",
-                    a: "Yes! While our per-design pricing is transparent for single orders, we offer tailored pricing for companies with high-volume monthly digitizing needs. Please contact us for a corporate account."
-                },
-                {
-                    q: "How does the 'Fix Your DST' service work?",
-                    a: "If you have an existing DST file that isn't running well, you send it to us. We analyze it, fix the technical issues (density, underlay, pathing), and then stitch it to prove the fix. You pay for the solution, not the attempts."
-                }
+                { q: faqs.questions.q1, a: faqs.questions.a1 },
+                { q: faqs.questions.q2, a: faqs.questions.a2 },
+                { q: faqs.questions.q3, a: faqs.questions.a3 },
             ]
         },
         {
-            title: "Technical Details",
+            title: faqs.categories.technical,
             questions: [
-                {
-                    q: "What file formats do you accept?",
-                    a: "For new digitizing, we accept AI, PDF, PNG, JPG, and EPS. For editing/fixing, we primarily work with DST files, but can handle EMB, PES, JEF, and HUS as well."
-                },
-                {
-                    q: "What machines are used for samples?",
-                    a: "We only use Tajima industrial embroidery machines (TFMX and TMBR series) to ensure the highest possible precision that translates perfectly to your production floor."
-                },
-                {
-                    q: "Can you handle 3D Puff or specialty threads?",
-                    a: "Absolutely. We specialize in 3D Puff, appliqué, and specialty thread pathing (metallic, fire-resistant). Just specify your requirements when uploading."
-                }
+                { q: faqs.questions.q4, a: faqs.questions.a4 },
+                { q: faqs.questions.q5, a: faqs.questions.a5 },
+                { q: faqs.questions.q6, a: faqs.questions.a6 },
             ]
         },
         {
-            title: "Turnaround & Support",
+            title: faqs.categories.turnaround,
             questions: [
-                {
-                    q: "What is your standard turnaround time?",
-                    a: "Digital files and stitched scans are typically delivered within 24-48 hours. Rush service (12 hours) is available for an additional fee."
-                },
-                {
-                    q: "What if I'm not happy with the sample?",
-                    a: "Our goal is production-ready perfection. We offer revisions until the sample meets the high quality standards required for your specific fabric and machine type."
-                },
-                {
-                    q: "How do I receive my final files?",
-                    a: "Once you approve the digital scan and pay the balance, the production-ready DST files and technical sheets are immediately available for download in your dashboard."
-                }
+                { q: faqs.questions.q7, a: faqs.questions.a7 },
+                { q: faqs.questions.q8, a: faqs.questions.a8 },
+                { q: faqs.questions.q9, a: faqs.questions.a9 },
             ]
         }
     ];
+
+    const filteredCategories = faqCategories.map(category => ({
+        ...category,
+        questions: category.questions.filter(faq =>
+            faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            faq.a.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    })).filter(category => category.questions.length > 0);
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)]">
@@ -73,7 +59,7 @@ export default function FAQPage() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -90,15 +76,27 @@ export default function FAQPage() {
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
                                 <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>help</span>
-                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">Common Questions</span>
+                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">{faqs.hero.badge}</span>
                             </div>
 
                             <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,5vw,4.5rem)]">
-                                Frequently Asked Questions
+                                {faqs.hero.title}
                             </h1>
-                            <p className="text-white/70 text-lg md:text-xl max-w-[700px] mx-auto">
-                                Everything you need to know about our digitizing process, approval samples, and industrial embroidery standards.
+                            <p className="text-white/70 text-lg md:text-xl max-w-[700px] mx-auto mb-10">
+                                {faqs.hero.description}
                             </p>
+
+                            {/* Search Bar */}
+                            <div className="max-w-xl mx-auto relative">
+                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/50">search</span>
+                                <input
+                                    type="text"
+                                    placeholder={faqs.searchPlaceholder}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                                />
+                            </div>
                         </motion.div>
                     </div>
                 </section>
@@ -108,7 +106,7 @@ export default function FAQPage() {
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="max-w-4xl mx-auto">
                             <div className="grid grid-cols-1 gap-12">
-                                {faqCategories.map((category, catIndex) => (
+                                {filteredCategories.map((category, catIndex) => (
                                     <motion.div
                                         key={catIndex}
                                         initial={{ opacity: 0, y: 30 }}
@@ -117,45 +115,79 @@ export default function FAQPage() {
                                         transition={{ duration: 0.5, delay: catIndex * 0.1 }}
                                     >
                                         <h2 className={`text-2xl font-black mb-8 flex items-center gap-3 ${catIndex === 0 ? 'text-white' : 'text-[#172136] dark:text-white'}`}>
-                                            <span className="w-1.5 h-8 bg-[#145BEC] rounded-full"></span>
+                                            <span className="w-1.5 h-8 bg-primary rounded-full"></span>
                                             {category.title}
                                         </h2>
                                         <div className="space-y-4">
-                                            {category.questions.map((faq, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="bg-white dark:bg-[#18181b] rounded-2xl p-6 md:p-8 border border-[#e5e7eb] dark:border-[#27272a] shadow-lg hover:shadow-xl transition-all"
-                                                >
-                                                    <h3 className="font-bold text-lg text-[#111318] dark:text-white mb-4">
-                                                        {faq.q}
-                                                    </h3>
-                                                    <p className="text-[#616f89] dark:text-gray-400 leading-relaxed text-base">
-                                                        {faq.a}
-                                                    </p>
-                                                </div>
-                                            ))}
+                                            {category.questions.map((faq, index) => {
+                                                const itemKey = `${catIndex}-${index}`;
+                                                const isOpen = openIndex === itemKey;
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={`bg-white dark:bg-[#18181b] rounded-2xl border transition-all duration-300 ${isOpen ? 'border-primary shadow-xl' : 'border-[#e5e7eb] dark:border-[#27272a] shadow-lg'}`}
+                                                    >
+                                                        <button
+                                                            onClick={() => setOpenIndex(isOpen ? null : itemKey)}
+                                                            className="w-full p-6 md:p-8 text-left flex items-center justify-between gap-4"
+                                                        >
+                                                            <h3 className="font-bold text-lg text-[#111318] dark:text-white">
+                                                                {faq.q}
+                                                            </h3>
+                                                            <span className={`material-symbols-outlined transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : 'text-[#616f89]'}`}>
+                                                                expand_more
+                                                            </span>
+                                                        </button>
+                                                        <AnimatePresence>
+                                                            {isOpen && (
+                                                                <motion.div
+                                                                    initial={{ height: 0, opacity: 0 }}
+                                                                    animate={{ height: "auto", opacity: 1 }}
+                                                                    exit={{ height: 0, opacity: 0 }}
+                                                                    transition={{ duration: 0.3 }}
+                                                                    className="overflow-hidden"
+                                                                >
+                                                                    <div className="px-6 md:px-8 pb-8 pt-0 border-t border-[#f0f2f5] dark:border-[#27272a] mt-2">
+                                                                        <p className="text-[#616f89] dark:text-gray-400 leading-relaxed text-base pt-6">
+                                                                            {faq.a}
+                                                                        </p>
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </motion.div>
                                 ))}
+
+                                {filteredCategories.length === 0 && (
+                                    <div className="text-center py-20 bg-white dark:bg-[#18181b] rounded-[2.5rem] border border-[#e5e7eb] dark:border-[#27272a]">
+                                        <span className="material-symbols-outlined text-6xl text-[#616f89] mb-4">search_off</span>
+                                        <p className="text-[#616f89] dark:text-gray-400 text-lg">No results found for "{searchQuery}"</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </section>
 
                 {/* Still Have Questions? */}
-                <section className="py-24 bg-[#111114] text-white">
+                <section className="py-24 bg-[#111114] dark:bg-gradient-to-b dark:from-[#111318] dark:to-[#09090b] text-white">
                     <div className="container mx-auto px-4 md:px-6 text-center">
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="font-black text-white mb-4">Still Have Questions?</h2>
+                            <h2 className="font-black text-white mb-4">{faqs.stillQuestions.title}</h2>
                             <p className="text-white/70 mb-10 text-lg">
-                                Can't find the answer you're looking for? Reach out to our technical support team.
+                                {faqs.stillQuestions.description}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <a
-                                    href={language === 'tr' ? '/tr/contact' : '/contact'}
-                                    className="px-8 py-4 bg-[#145BEC] text-white rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
+                                    href={`/${language}/contact`}
+                                    className="px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
                                 >
-                                    Contact Support
+                                    {faqs.stillQuestions.contactBtn}
                                 </a>
                                 <a
                                     href="https://wa.me/905488588394"
@@ -163,7 +195,7 @@ export default function FAQPage() {
                                     rel="noopener noreferrer"
                                     className="px-8 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2"
                                 >
-                                    Chat with Us
+                                    {faqs.stillQuestions.whatsappBtn}
                                 </a>
                             </div>
                         </div>

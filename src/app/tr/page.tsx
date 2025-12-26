@@ -8,7 +8,7 @@ import { CTA } from "@/components/landing/cta";
 
 export default function LandingPage() {
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)] selection:bg-[#135bec] selection:text-white">
+    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)] selection:bg-primary selection:text-white">
       <Header />
       <main className="flex-grow flex flex-col items-center">
         <Hero />

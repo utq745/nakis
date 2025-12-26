@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function ThemeToggle() {
+export function ThemeToggle({ isAtTop = false }: { isAtTop?: boolean }) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = React.useState(false);
 
@@ -25,7 +25,7 @@ export function ThemeToggle() {
             <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                className={isAtTop ? "text-white hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"}
                 aria-label="Toggle theme"
             >
                 <Sun className="h-[1.2rem] w-[1.2rem]" />
@@ -53,7 +53,7 @@ export function ThemeToggle() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    className={isAtTop ? "text-white hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"}
                     aria-label="Toggle theme"
                 >
                     <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

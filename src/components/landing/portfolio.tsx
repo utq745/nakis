@@ -20,18 +20,23 @@ export function Portfolio() {
                 <div className="flex flex-col md:flex-row justify-between items-end gap-10">
                     <div className="flex flex-col gap-6 max-w-[700px]">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="px-4 py-1.5 rounded-full bg-[#135bec]/10 border border-[#135bec]/20 text-[#135bec] text-sm font-bold tracking-widest uppercase w-fit"
+                            transition={{ duration: 0.4 }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-white/10 border border-primary/20 dark:border-white/20 w-fit"
                         >
-                            {t.landing.portfolio.badge}
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-white opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-white"></span>
+                            </span>
+                            <span className="text-primary dark:text-white font-semibold text-xs uppercase tracking-wider">{t.landing.portfolio.badge}</span>
                         </motion.div>
                         <motion.h2
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="font-black tracking-tight text-[#172136] dark:text-[#fafafa]"
+                            className="tracking-tight text-[#172136] dark:text-[#fafafa]"
                         >
                             {t.landing.portfolio.title}
                         </motion.h2>
@@ -45,13 +50,7 @@ export function Portfolio() {
                             {t.landing.portfolio.description}
                         </motion.p>
                     </div>
-                    <Link
-                        className="group flex items-center gap-3 text-[#135bec] font-bold text-lg hover:underline transition-all"
-                        href="#"
-                    >
-                        {t.landing.portfolio.viewAll}
-                        <span className="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_right_alt</span>
-                    </Link>
+                    {/* View All link removed - no portfolio page exists */}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -77,7 +76,7 @@ export function Portfolio() {
                                 </motion.div>
 
                                 <div className="mt-6 flex items-center gap-2 text-white overflow-hidden max-h-0 group-hover:max-h-10 transition-all duration-500 ease-in-out">
-                                    <span className="text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-full border border-white/30 backdrop-blur-sm">View Design</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-full border border-white/30 backdrop-blur-sm">{t.landing.portfolio.viewDesign}</span>
                                 </div>
                             </div>
                         </motion.div>

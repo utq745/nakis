@@ -28,7 +28,7 @@ export function WhyUs() {
     ];
 
     return (
-        <section className="w-full bg-[#104DC9] py-24 md:py-32 relative overflow-hidden">
+        <section className="w-full bg-primary-dark py-24 md:py-32 relative overflow-hidden">
             {/* Decorative white lines with low opacity */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
                 <div className="absolute left-[10%] top-0 w-px h-full bg-white"></div>
@@ -40,12 +40,25 @@ export function WhyUs() {
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="flex flex-col items-center text-center mb-10 md:mb-14">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4 }}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 w-fit mb-6"
+                    >
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
+                        <span className="text-white font-semibold text-xs uppercase tracking-wider">{t.landing.why.badge}</span>
+                    </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="max-w-[800px] font-black tracking-tight text-white"
+                        className="max-w-[800px] tracking-tight text-white font-black"
                     >
                         {t.landing.why.title}
                     </motion.h2>
@@ -69,11 +82,11 @@ export function WhyUs() {
                             whileHover={{ y: -10 }}
                             className="group relative flex flex-col items-center text-center p-8 md:p-10 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 transition-all hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)]"
                         >
-                            <div className="mb-10 w-[100px] h-[100px] rounded-[2rem] bg-white text-[#104DC9] shadow-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 group-hover:rotate-6 shrink-0">
+                            <div className="mb-10 w-[100px] h-[100px] rounded-[2rem] bg-white text-primary shadow-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 group-hover:rotate-6 shrink-0">
                                 <span className="material-symbols-outlined leading-none select-none" style={{ fontSize: '40px' }}>{feature.icon}</span>
                             </div>
 
-                            <h3 className="font-bold text-white mb-4 tracking-tight">
+                            <h3 className="text-white mb-4 tracking-tight font-black">
                                 {feature.title}
                             </h3>
 

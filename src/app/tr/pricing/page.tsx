@@ -7,76 +7,47 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function PricingPage() {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
 
     const pricingPlans = [
         {
-            name: "Onay Örneği",
+            name: t.pricingPage.plans.plan1.name,
             price: "$25",
-            description: "İlk test veya hızlı kontrol",
-            features: [
-                "Mevcut DST dosyanızı gönderirsiniz",
-                "Olduğu gibi nakış yapılır",
-                "Onay kartı teslim edilir",
-            ],
-            notIncluded: [
-                "DST düzenleme yok",
-                "Onay sorumluluğu yok",
-            ],
-            bestFor: "İlk test veya hızlı kontrol",
+            description: t.pricingPage.plans.plan1.description,
+            features: t.pricingPage.plans.plan1.features,
+            notIncluded: t.pricingPage.plans.plan1.notIncluded,
+            bestFor: t.pricingPage.plans.plan1.bestFor,
             highlighted: false,
-            cta: "Sipariş Başlat",
+            cta: t.pricingPage.plans.plan1.cta,
         },
         {
-            name: "DST Düzeltme + Onay Örneği",
+            name: t.pricingPage.plans.plan2.name,
             price: "$35",
-            priceNote: "$25 zaten ödenmiş ise +$10 yükseltme",
-            description: "Onay odaklı veya titiz müşteriler",
-            features: [
-                "Mevcut DST dosyanızı gönderirsiniz",
-                "Onay değişiklik gerektirirse DST düzenlenir",
-                "Düzenleme sonrası yeniden nakış yapılır",
-                "Güncellenmiş onay kartı teslim edilir",
-            ],
-            keyLogic: "Deneme başına değil, sorumluluk için ödeme yaparsınız. Düzenleme ve yeniden nakış tek çözüm olarak ele alınır.",
-            bestFor: "Onay odaklı veya titiz müşteriler",
+            priceNote: t.pricingPage.plans.plan2.priceNote,
+            description: t.pricingPage.plans.plan2.description,
+            features: t.pricingPage.plans.plan2.features,
+            keyLogic: t.pricingPage.plans.plan2.keyLogic,
+            bestFor: t.pricingPage.plans.plan2.bestFor,
             highlighted: true,
-            popular: true,
-            cta: "Sipariş Başlat",
+            popular: t.pricingPage.plans.plan2.popular,
+            cta: t.pricingPage.plans.plan2.cta,
         },
         {
-            name: "Tam Dijitalleştirme + Onay Örneği",
+            name: t.pricingPage.plans.plan3.name,
             price: "$60",
-            description: "DST yok veya sıfırdan başlangıç",
-            features: [
-                "Çiziminizi gönderirsiniz (AI / PDF / PNG / JPG)",
-                "Sıfırdan yeni DST dijitalleştirilir",
-                "Onay örneği nakış yapılır",
-                "Onay kartı teslim edilir",
-            ],
-            bestFor: "DST yok veya sıfırdan başlangıç",
+            description: t.pricingPage.plans.plan3.description,
+            features: t.pricingPage.plans.plan3.features,
+            bestFor: t.pricingPage.plans.plan3.bestFor,
             highlighted: false,
-            cta: "Sipariş Başlat",
+            cta: t.pricingPage.plans.plan3.cta,
         },
     ];
 
     const faqs = [
-        {
-            q: "Hangi dosya formatlarını kabul ediyorsunuz?",
-            a: "Onay Örneği ve DST Düzeltme için mevcut DST dosyanıza ihtiyacımız var. Tam Dijitalleştirme için AI, PDF, PNG, JPG ve diğer yaygın görsel formatlarını kabul ediyoruz."
-        },
-        {
-            q: "'Onay Kartı' nedir?",
-            a: "Tasarımınızı gerçek bir Tajima nakış makinesinde çalıştırıyor ve size ölçümler, renk kodları ve dikiş detaylarıyla yüksek çözünürlüklü bir tarama gönderiyoruz; böylece seri üretimden önce onaylayabilirsiniz."
-        },
-        {
-            q: "$25'lık paketten $35'lık pakete yükseltebilir miyim?",
-            a: "Evet! Onay Örneği ($25) ile başladıysanız ve düzenleme gerekiyorsa, sadece $10 daha ödeyerek DST Düzeltme paketine yükseltebilirsiniz."
-        },
-        {
-            q: "Ne kadar sürer?",
-            a: "Standart siparişler 24-48 saat içinde tamamlanır. Acil siparişler ayarlanabilir, hızlandırılmış teslimat için bizimle iletişime geçin."
-        },
+        { q: t.pricingPage.faq.q1, a: t.pricingPage.faq.a1 },
+        { q: t.pricingPage.faq.q2, a: t.pricingPage.faq.a2 },
+        { q: t.pricingPage.faq.q3, a: t.pricingPage.faq.a3 },
+        { q: t.pricingPage.faq.q4, a: t.pricingPage.faq.a4 },
     ];
 
     return (
@@ -90,7 +61,7 @@ export default function PricingPage() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -107,14 +78,14 @@ export default function PricingPage() {
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
                                 <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>payments</span>
-                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">Şeffaf Fiyatlandırma</span>
+                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">{t.pricingPage.hero.badge}</span>
                             </div>
 
                             <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2rem,4vw,3.5rem)]">
-                                Basit, Dürüst Fiyatlandırma
+                                {t.pricingPage.hero.title}
                             </h1>
                             <p className="text-white/70 text-lg md:text-xl max-w-[600px] mx-auto">
-                                Gizli ücret yok. Sürpriz yok. İhtiyacınıza uygun paketi seçin.
+                                {t.pricingPage.hero.description}
                             </p>
                         </motion.div>
                     </div>
@@ -132,8 +103,8 @@ export default function PricingPage() {
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
                                     className={`relative rounded-3xl p-8 flex flex-col ${plan.highlighted
-                                        ? 'bg-gradient-to-br from-[#145BEC] to-[#0d47c9] text-white shadow-2xl shadow-blue-500/20 scale-105 z-10 -mt-8'
-                                        : 'bg-white dark:bg-[#18181b] border border-[#e5e7eb] dark:border-[#27272a] shadow-xl'
+                                        ? 'bg-gradient-to-br from-primary to-primary-dark text-white shadow-2xl shadow-primary/20 lg:scale-105 z-10 lg:-mt-8 xl:-mt-10'
+                                        : 'bg-white dark:bg-[#18181b] border border-border shadow-xl'
                                         }`}
                                 >
 
@@ -172,7 +143,7 @@ export default function PricingPage() {
                                     {plan.notIncluded && (
                                         <div className="mb-6">
                                             <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>
-                                                Dahil Değil:
+                                                {t.pricingPage.plans.notIncluded}:
                                             </p>
                                             <ul className="space-y-2">
                                                 {plan.notIncluded.map((item, nIndex) => (
@@ -192,8 +163,8 @@ export default function PricingPage() {
                                     {/* Key Logic */}
                                     {plan.keyLogic && (
                                         <div className={`mb-6 p-4 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
-                                            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${plan.highlighted ? 'text-white/80' : 'text-[#145BEC]'}`}>
-                                                Temel Mantık:
+                                            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${plan.highlighted ? 'text-white/80' : 'text-primary'}`}>
+                                                {language === 'tr' ? 'Temel Mantık:' : 'Core Logic:'}
                                             </p>
                                             <p className={`text-xs ${plan.highlighted ? 'text-white/80' : 'text-[#616f89] dark:text-gray-400'}`}>
                                                 {plan.keyLogic}
@@ -203,14 +174,14 @@ export default function PricingPage() {
 
                                     {/* Best For */}
                                     <div className={`mb-6 text-center py-3 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-[#0a0a0a]'}`}>
-                                        <p className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>En uygun:</p>
+                                        <p className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>{t.pricingPage.plans.bestForLabel}</p>
                                         <p className={`text-sm font-bold ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}>{plan.bestFor}</p>
                                     </div>
 
-                                    <Link href={language === 'tr' ? '/tr/login' : '/login'} className="block mt-auto">
+                                    <Link href={`/${language}/login`} className="block mt-auto">
                                         <button className={`w-full py-3 rounded-xl font-bold transition-all ${plan.highlighted
-                                            ? 'bg-white text-[#145BEC] hover:bg-gray-100 shadow-lg'
-                                            : 'bg-[#145BEC] text-white hover:bg-blue-600 shadow-lg shadow-blue-500/20'
+                                            ? 'bg-white text-primary hover:bg-gray-100 shadow-lg'
+                                            : 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/20'
                                             }`}>
                                             {plan.cta}
                                         </button>
@@ -222,11 +193,11 @@ export default function PricingPage() {
                 </section>
 
                 {/* FAQ Section */}
-                <section className="py-20 bg-[#eef2ff] dark:bg-[#0a0a0a]">
+                <section className="py-20 bg-[#eef2ff] dark:bg-gradient-to-b dark:from-[#09090b] dark:to-[#172136]">
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="text-center mb-16">
                             <h2 className="font-black text-[#111318] dark:text-white mb-4">
-                                Sıkça Sorulan Sorular
+                                {t.pricingPage.faq.title}
                             </h2>
                         </div>
 
@@ -241,8 +212,8 @@ export default function PricingPage() {
                                     className="bg-white dark:bg-[#18181b] rounded-2xl p-6 border border-[#e5e7eb] dark:border-[#27272a]"
                                 >
                                     <h4 className="font-bold text-[#111318] dark:text-white mb-2 flex items-center gap-3">
-                                        <span className="w-8 h-8 rounded-full bg-[#145BEC]/10 flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-outlined text-[#145BEC]" style={{ fontSize: '18px' }}>help</span>
+                                        <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                            <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>help</span>
                                         </span>
                                         {faq.q}
                                     </h4>
@@ -254,21 +225,21 @@ export default function PricingPage() {
                 </section>
 
                 {/* CTA Section */}
-                <section className="py-20 bg-[#172136]">
+                <section className="py-20 bg-[#172136] dark:bg-gradient-to-b dark:from-[#172136] dark:to-[#09090b]">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#145BEC] to-[#0d47c9] p-12 md:p-16 text-center">
+                        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary to-primary-dark p-12 md:p-16 text-center">
                             <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
                             <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
 
                             <div className="relative z-10">
-                                <h2 className="font-black text-white mb-4">Özel Teklif mi Gerekiyor?</h2>
+                                <h2 className="font-black text-white mb-4">{t.pricingPage.faq.customQuoteTitle}</h2>
                                 <p className="text-xl text-white/80 mb-8 max-w-[500px] mx-auto">
-                                    Benzersiz bir projeniz veya toplu siparişleriniz mi var? Kişiselleştirilmiş fiyatlandırma için bizimle iletişime geçin.
+                                    {t.pricingPage.faq.customQuoteDesc}
                                 </p>
-                                <Link href={language === 'tr' ? '/tr/contact' : '/contact'}>
-                                    <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-[#145BEC] font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl">
+                                <Link href={`/${language}/contact`}>
+                                    <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl">
                                         <span className="material-symbols-outlined">mail</span>
-                                        Bize Ulaşın
+                                        {t.pricingPage.faq.contactUs}
                                     </button>
                                 </Link>
                             </div>
@@ -278,6 +249,6 @@ export default function PricingPage() {
             </main>
 
             <Footer />
-        </div>
+        </div >
     );
 }

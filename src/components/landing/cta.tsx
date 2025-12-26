@@ -8,13 +8,13 @@ export function CTA() {
     const { t, language } = useLanguage();
 
     return (
-        <section className="w-full py-16 md:py-24">
+        <section className="w-full py-24 md:py-32 dark:bg-gradient-to-b dark:from-[#111318] dark:to-[#09090b]">
             <div className="container mx-auto px-4 md:px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="relative flex flex-col lg:flex-row items-center gap-12 rounded-[3rem] bg-[#135bec] p-8 md:p-14 lg:p-20 text-white shadow-[0_40px_100px_-20px_rgba(19,91,236,0.3)]"
+                    className="relative flex flex-col lg:flex-row items-center gap-12 rounded-[3rem] bg-primary p-8 md:p-14 lg:p-20 text-white shadow-[0_40px_100px_-20px_rgba(20,91,236,0.3)]"
                 >
                     {/* Abstract decor circles - Moved to a dedicated absolute wrapper with overflow-hidden to keep them contained while allowing testimonial box to overflow */}
                     <div className="absolute inset-0 rounded-[3rem] overflow-hidden pointer-events-none">
@@ -32,7 +32,7 @@ export function CTA() {
                             <span className="font-bold text-lg ml-2">{t.landing.cta.rating}</span>
                         </div>
 
-                        <h2 className="font-black leading-[1.1] tracking-tight text-white mb-2">
+                        <h2 className="leading-[1.1] tracking-tight text-white mb-2">
                             {t.landing.cta.title}
                         </h2>
 
@@ -45,12 +45,12 @@ export function CTA() {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="w-full h-14 px-10 bg-white text-[#135bec] rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all"
+                                    className="w-full h-14 px-10 bg-white text-primary rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all"
                                 >
                                     {t.landing.cta.startBtn}
                                 </motion.button>
                             </Link>
-                            <Link href="#" className="w-full sm:w-auto">
+                            <Link href={`/${language}/contact`} className="w-full sm:w-auto">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -68,7 +68,7 @@ export function CTA() {
                             className="bg-white/10 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-white/30 shadow-2xl relative lg:-my-24 lg:translate-x-4"
                         >
                             {/* Quote Icon */}
-                            <div className="absolute -top-6 -left-6 size-12 rounded-full bg-white flex items-center justify-center text-[#135bec] shadow-lg">
+                            <div className="absolute -top-6 -left-6 size-12 rounded-full bg-white flex items-center justify-center text-primary shadow-lg">
                                 <span className="material-symbols-outlined font-black">format_quote</span>
                             </div>
 

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function ServicesPage() {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
 
     const mainServices = [
         {
@@ -73,7 +73,7 @@ export default function ServicesPage() {
     const activeExpertise = language === 'tr' ? trTechnicalExpertise : technicalExpertise;
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)] selection:bg-[#145BEC] selection:text-white">
+        <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)] selection:bg-primary selection:text-white">
             <Header />
 
             <main className="flex-grow">
@@ -83,7 +83,7 @@ export default function ServicesPage() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -118,7 +118,7 @@ export default function ServicesPage() {
                 </section>
 
                 {/* Core Services Section */}
-                <section className="py-20 -mt-32 md:-mt-48 relative z-20">
+                <section className="py-24 md:py-32 -mt-32 md:-mt-48 relative z-20">
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                             {mainServices.map((service, index) => (
@@ -128,7 +128,7 @@ export default function ServicesPage() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className={`relative group bg-white dark:bg-[#18181b] rounded-[2.5rem] p-8 md:p-10 border border-[#e5e7eb] dark:border-[#27272a] shadow-xl hover:shadow-2xl transition-all ${service.highlighted ? 'md:scale-105 z-10 ring-2 ring-[#145BEC]' : ''}`}
+                                    className={`relative group bg-card dark:bg-[#172136] rounded-[2.5rem] p-8 md:p-10 border border-border dark:border-white/10 shadow-xl hover:shadow-2xl transition-all ${service.highlighted ? 'md:scale-105 z-10 ring-2 ring-primary' : ''}`}
                                 >
                                     <div className={`mb-8 w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${service.color === 'blue' ? 'bg-blue-50 text-blue-600' :
                                         service.color === 'indigo' ? 'bg-indigo-50 text-indigo-600' :
@@ -137,29 +137,29 @@ export default function ServicesPage() {
                                         <span className="material-symbols-outlined text-3xl font-bold">{service.icon}</span>
                                     </div>
 
-                                    <h3 className="text-2xl font-black text-[#172136] dark:text-white mb-4">
+                                    <h3 className="text-2xl font-black text-foreground mb-4">
                                         {service.title}
                                     </h3>
-                                    <p className="text-[#616f89] dark:text-gray-400 mb-8 leading-relaxed h-[80px]">
+                                    <p className="text-muted-foreground mb-8 leading-relaxed min-h-[80px]">
                                         {service.desc}
                                     </p>
 
                                     <ul className="space-y-3 mb-10">
                                         {service.includes.map((item, iIndex) => (
-                                            <li key={iIndex} className="flex items-center gap-3 text-sm font-bold text-[#172136] dark:text-gray-300">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#145BEC]"></span>
+                                            <li key={iIndex} className="flex items-center gap-3 text-sm font-bold text-foreground">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                                                 {item}
                                             </li>
                                         ))}
                                     </ul>
 
-                                    <div className="pt-8 border-t border-[#e5e7eb] dark:border-[#27272a] flex items-center justify-between">
+                                    <div className="pt-8 border-t border-border flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs font-bold text-[#616f89] dark:text-gray-500 uppercase tracking-wider">Starting at</p>
-                                            <p className="text-3xl font-black text-[#172136] dark:text-white tracking-tight">{service.price}</p>
+                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t.servicesPage.mainServices.approval.startingAt}</p>
+                                            <p className="text-3xl font-black text-foreground tracking-tight">{service.price}</p>
                                         </div>
                                         <Link href={`/${language}/login`}>
-                                            <button className="p-4 rounded-xl bg-[#145BEC] text-white hover:bg-blue-600 transition-colors shadow-lg">
+                                            <button className="p-4 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors shadow-lg">
                                                 <span className="material-symbols-outlined">arrow_forward</span>
                                             </button>
                                         </Link>
@@ -171,13 +171,13 @@ export default function ServicesPage() {
                 </section>
 
                 {/* Technical Expertise */}
-                <section className="py-24 bg-white dark:bg-[#0f0f0f]">
+                <section className="py-24 md:py-32 bg-background dark:bg-gradient-to-b dark:from-[#09090b] dark:to-[#172136]">
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="text-center mb-20">
-                            <h2 className="text-4xl md:text-5xl font-black text-[#172136] dark:text-white mb-6">
+                            <h2 className="text-4xl md:text-5xl font-black text-foreground mb-6">
                                 {language === 'tr' ? "Teknik Uzmanlık" : "Technical Expertise"}
                             </h2>
-                            <p className="text-lg text-[#616f89] dark:text-gray-400 max-w-[600px] mx-auto">
+                            <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
                                 {language === 'tr'
                                     ? "35 yılı aşkın tecrübemizle nakışın tüm teknik detaylarına hakimiz."
                                     : "With over 35 years of experience, we master every technical detail of embroidery."}
@@ -192,13 +192,13 @@ export default function ServicesPage() {
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="p-8 rounded-3xl bg-[#f4f6fa] dark:bg-[#18181b] hover:bg-white dark:hover:bg-[#202024] hover:shadow-2xl transition-all border border-transparent hover:border-[#145BEC]/20"
+                                    className="p-8 rounded-3xl bg-muted/50 dark:bg-[#172136] hover:bg-card hover:shadow-2xl transition-all border border-transparent hover:border-primary/20"
                                 >
-                                    <div className="mb-6 flex items-center justify-center w-14 h-14 rounded-2xl bg-white dark:bg-[#111318] text-[#145BEC] dark:text-white shadow-inner">
+                                    <div className="mb-6 flex items-center justify-center w-14 h-14 rounded-2xl bg-card dark:bg-white/10 text-primary dark:text-white shadow-inner">
                                         <span className="material-symbols-outlined text-3xl">{item.icon}</span>
                                     </div>
-                                    <h4 className="text-xl font-bold dark:text-white mb-2">{item.title}</h4>
-                                    <p className="text-[#616f89] dark:text-gray-400">{item.desc}</p>
+                                    <h4 className="text-xl font-bold mb-2">{item.title}</h4>
+                                    <p className="text-muted-foreground">{item.desc}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -206,8 +206,8 @@ export default function ServicesPage() {
                 </section>
 
                 {/* Laboratory Section */}
-                <section className="py-24 bg-[#111318] text-white overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-[#145BEC]/5 skew-x-12 transform translate-x-1/2" />
+                <section className="py-24 md:py-32 bg-[#111318] text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 skew-x-12 transform translate-x-1/2" />
                     <div className="container mx-auto px-4 md:px-6 relative z-10">
                         <div className="flex flex-col lg:flex-row items-center gap-20">
                             <div className="flex-1">
@@ -222,16 +222,16 @@ export default function ServicesPage() {
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
                                         <h5 className="font-black text-3xl text-white mb-2">Tajima</h5>
-                                        <p className="text-[#616f89] text-sm uppercase font-bold tracking-widest">{language === 'tr' ? "Makine Parkuru" : "Calibrated Machines"}</p>
+                                        <p className="text-white/50 text-sm uppercase font-bold tracking-widest">{t.servicesPage.stitchLab.machinePark}</p>
                                     </div>
                                     <div>
                                         <h5 className="font-black text-3xl text-white mb-2">High-Res</h5>
-                                        <p className="text-[#616f89] text-sm uppercase font-bold tracking-widest">{language === 'tr' ? "Tarama Kalitesi" : "Lab Scanning"}</p>
+                                        <p className="text-white/50 text-sm uppercase font-bold tracking-widest">{t.servicesPage.stitchLab.scanQuality}</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex-1 w-full relative">
-                                <div className="absolute inset-0 bg-blue-500/20 blur-[80px] rounded-full" />
+                                <div className="absolute inset-0 bg-primary/20 blur-[80px] rounded-full" />
                                 <img
                                     src="/images/Stitching-machine.webp"
                                     alt="Industrial machine"
@@ -243,9 +243,9 @@ export default function ServicesPage() {
                 </section>
 
                 {/* Final CTA */}
-                <section className="py-24 bg-[#f4f6fa] dark:bg-[#0a0a0a]">
+                <section className="py-24 md:py-32 bg-muted/50 dark:bg-gradient-to-b dark:from-[#111318] dark:to-[#09090b]">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="rounded-[3rem] bg-gradient-to-br from-[#145BEC] to-indigo-700 p-12 md:p-20 text-center relative overflow-hidden">
+                        <div className="rounded-[3rem] bg-gradient-to-br from-primary to-primary-dark p-12 md:p-20 text-center relative overflow-hidden">
                             <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[1.1]">
                                 {language === 'tr' ? "Dosyanızı Test Etmeye Başlayın" : "Ready to Test Your Design?"}
                             </h2>
@@ -255,7 +255,7 @@ export default function ServicesPage() {
                                     : "Place your order today and receive your production approval within 24-48 hours."}
                             </p>
                             <Link href={`/${language}/login`}>
-                                <button className="px-10 py-5 bg-white text-[#145BEC] rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl">
+                                <button className="px-10 py-5 bg-white text-primary rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl">
                                     {language === 'tr' ? "Sipariş Ver" : "Get Started Now"}
                                 </button>
                             </Link>

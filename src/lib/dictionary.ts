@@ -254,9 +254,12 @@ export const translations = {
                 uploadBtn: "Tasarımını Yükle",
                 pricingBtn: "Fiyatları Gör",
                 labBadge: "Gerçek Nakış Laboratuvarı",
-                readyBadge: "Üretime Hazır"
+                readyBadge: "Üretime Hazır",
+                precisionBadge: "Hassasiyet",
+                stitchedReality: "Dikişli Gerçeklik"
             },
             why: {
+                badge: "Hikayemiz",
                 title: "Neden Approval Stitch?",
                 card1Title: "Gerçek Laboratuvar Hassasiyeti",
                 card1Desc: "Gerçek dikişler. Gerçek üretim davranışı. Simüle etmiyoruz. Dosyanızı en yüksek hassasiyet için Tajima tek kafalı makinede test ediyoruz.",
@@ -283,6 +286,7 @@ export const translations = {
                 title: "Son Başyapıtlar",
                 description: "Karmaşık kurumsal logolardan cesur kabartma nakışlara kadar, her dikişteki kaliteyi görün.",
                 viewAll: "Tüm Projeleri Gör",
+                viewDesign: "Tasarımı Görüntüle",
                 item1Title: "Kurumsal Logolar",
                 item1Sub: "Sol Göğüs & Şapka",
                 item2Title: "Özel Armalar",
@@ -295,7 +299,7 @@ export const translations = {
             cta: {
                 rating: "5.0 Puan",
                 title: "Bir sonraki projenizi işlemeye hazır mısınız?",
-                description: "Binlerce memnun müşteriye katılın. Tasarımınızı bugün yükleyin ve 2 saat içinde fiyat teklifi alın.",
+                description: "Binlerce memnun müşteriye katılın. Tasarımınızı bugün yükleyin ve 12 saat içinde fiyat teklifi alın.",
                 startBtn: "Siparişi Başlat",
                 contactBtn: "Satışla İletişime Geç",
                 testimonial: "\"Approval Stitch 3 yıldır vazgeçilmezimiz. Geri dönüş inanılmaz hızlı, ama asıl önemli olan dosyaların makinelerimizde her seferinde sorunsuz çalışması. İp kopması yok, mükemmel yoğunluk.\"",
@@ -317,6 +321,7 @@ export const translations = {
             CANCELLED: "İptal",
         },
         contactPage: {
+            heroBadge: "İletişime Geçin",
             title: "İletişim",
             subtitle: "Gerçek dikişli onay örnekleri, dijitalleştirme talepleri veya fiyat teklifleri için bize her zaman ulaşın.",
             quickContactTitle: "Hızlı İletişim",
@@ -346,8 +351,227 @@ export const translations = {
                 sample: "Onay Örneği",
                 support: "Teknik Destek",
                 other: "Diğer"
+            },
+            directComm: {
+                title: "Doğrudan İletişimi Tercih Ediyor musunuz?",
+                description: "Hızlı yanıtlar ve gerçek zamanlı destek için WhatsApp üzerinden bize anında ulaşın.",
+                button: "WhatsApp'ta Mesaj Gönder"
+            },
+            validation: {
+                nameRequired: "Adınızı girmeniz gerekiyor",
+                emailRequired: "E-posta adresinizi girmeniz gerekiyor",
+                emailInvalid: "Geçerli bir e-posta adresi girin",
+                subjectRequired: "Bir konu seçin",
+                messageRequired: "Mesajınızı yazın"
             }
         },
+        aboutPage: {
+            hero: {
+                badge: "Biz Kimiz",
+                title1: "Gerçek Nakış.",
+                title2: "Gerçek Sonuçlar.",
+                description: "Markalar, üreticiler ve promosyon şirketleri için dünya çapında gerçek dikişli onay örnekleri üretmeye odaklanmış uzman bir stüdyo.",
+                location: "İstanbul merkezli olarak ABD, Kanada ve Avrupa'daki müşterilere hizmet veriyoruz."
+            },
+            stats: {
+                yearsExp: "Yıllık Deneyim",
+                projectsCompleted: "Tamamlanan Proje",
+                avgTurnaround: "Ort. Teslim Süresi",
+                accuracyRate: "Doğruluk Oranı"
+            },
+            story: {
+                badge: "Hikayemiz",
+                title: "35+ Yıllık Nakış Mükemmelliği",
+                desc1: "Mevcut nakış dosyanızı kalibre edilmiş bir Tajima makinesinde çalıştırıyor, ardından gerçek dikiş sonucunu yansıtan temiz, detaylı bir yüksek çözünürlüklü tarama sağlıyoruz — bir tahmin veya simülasyon değil.",
+                desc2: "Onlarca yıllık uygulamalı deneyimimizle, dikişlerin gerçek koşullar altında nasıl davrandığını anlıyoruz. Her dosya test edilir, her sonuç doğrulanır."
+            },
+            expertise: {
+                badge: "Uzmanlığımız",
+                title: "Her Detayda Teknik Hassasiyet",
+                description: "Her dikişli örnek, tam makine performansını ortaya çıkarmak için hazırlanır ve taranır.",
+                item1Title: "Yoğunluk ve Alt Dikiş",
+                item1Desc: "Her kumaş türü için optimize edilmiş dikiş yoğunluğu ve alt dikiş yapısı",
+                item2Title: "İtme-Çekme Telafisi",
+                item2Desc: "Kumaş bozulmasını önlemek için hassas ayarlamalar",
+                item3Title: "İplik Seçimi",
+                item3Desc: "En iyi sonuçlar için uzman iplik ve iğne eşleştirmesi",
+                item4Title: "Tela Seçimi",
+                item4Desc: "Kumaşa özel tela önerileri",
+                item5Title: "Küçük Yazı Ayarı",
+                item5Desc: "İnce harfler için optimize edilmiş okunabilirlik",
+                item6Title: "Kumaş Analizi",
+                item6Desc: "Malzeme özelliklerine dayalı davranış tahmini"
+            },
+            delivery: {
+                badge: "Teslim Ettiklerimiz",
+                title: "Eksiksiz Onay Paketi",
+                description: "Seçtiğiniz onay kartı şablonu, nihai numunenizin yerleşimini, boyutunu, etiketlemesini ve ölçüm stilini tanımlar.",
+                cta: "Başlayın",
+                item1: "Kalibre edilmiş Tajima'da gerçek dikişli test",
+                item2: "Sonucun yüksek çözünürlüklü taraması",
+                item3: "Şablonunuzda onay kartı",
+                item4: "İplik renk listesi (Madeira / Robison-Anton / Isacord)",
+                item5: "İğne ve tela detayları",
+                item6: "Üretime hazır DST dosyası"
+            },
+            mission: {
+                title: "Misyonumuz",
+                description: "Misyonumuz nakış üretim sürecine kesinlik, netlik ve hassasiyet getirmektir. Seri üretimdeki çoğu problem varsayımlardan kaynaklanır: yoğunluk sorunları, iplik kırılmaları, okunamayan küçük metinler, yanlış telafi veya belirli kumaşlarda beklenmeyen bozulmalar.",
+                quote: "Gerçekten test edin, gerçekten doğrulayın ve tüm belirsizliği ortadan kaldıran bir sonuç gönderin.",
+                goal1: "Markalara güven",
+                goal2: "Üretim ekiplerine netlik",
+                goal3: "Fabrikalara tutarlılık"
+            },
+            finalCta: {
+                title: "Başlamaya Hazır mısınız?",
+                description: "DST dosyanızı üretime hazır dikişli onaya dönüştürün.",
+                cta: "Siparişinizi Başlatın"
+            }
+        },
+        pricingPage: {
+            hero: {
+                badge: "Fiyatlandırma",
+                title: "Saydamlık. Basitlik. Gerçek Değer.",
+                description: "Tahmini yok, sürpriz yok. Dikişli onay örnekleri için net, basit fiyatlandırma."
+            },
+            plans: {
+                plan1: {
+                    name: "Onay Örneği",
+                    description: "İlk test veya hızlı kontrol",
+                    features: ["Mevcut DST'nizi gönderirsiniz", "Sağlandığı gibi dikiliyor", "Onay kartı teslim edilir"],
+                    notIncluded: ["DST düzenleme yok", "Onay sorumluluğu yok"],
+                    bestFor: "İlk test veya hızlı kontrol için",
+                    cta: "Sipariş Başlat"
+                },
+                plan2: {
+                    name: "DST Düzeltme + Onay Örneği",
+                    priceNote: "+$10 yükseltme ($25 ödendiyse)",
+                    description: "Onay odaklı veya titiz müşteriler",
+                    features: ["Mevcut DST'nizi gönderirsiniz", "Onay değişiklik gerektiriyorsa DST düzenlenir", "Düzenleme sonrası yeniden dikiliyor", "Güncellenmiş onay kartı teslim edilir"],
+                    keyLogic: "Girişim değil, sorumluluk için ödeme yapıyorsunuz. Düzenleme ve yeniden dikiş tek çözüm olarak değerlendirilir.",
+                    bestFor: "Onay odaklı veya titiz müşteriler için",
+                    cta: "Sipariş Başlat",
+                    popular: "Popüler"
+                },
+                plan3: {
+                    name: "Tam Dijitalleştirme + Onay Örneği",
+                    description: "DST yok veya temiz başlangıç",
+                    features: ["Tasarımınızı gönderirsiniz (AI / PDF / PNG / JPG)", "Sıfırdan yeni DST dijitalleştirilir", "Onay örneği dikiliyor", "Onay kartı teslim edilir"],
+                    bestFor: "DST yok veya temiz başlangıç için",
+                    cta: "Sipariş Başlat"
+                },
+                included: "Dahil",
+                notIncluded: "Dahil Değil",
+                bestForLabel: "En iyisi:"
+            },
+            faq: {
+                title: "Sıkça Sorulan Sorular",
+                q1: "Hangi dosya formatlarını kabul ediyorsunuz?",
+                a1: "Onay Örneği ve DST Düzeltme için mevcut DST dosyanıza ihtiyacımız var. Tam Dijitalleştirme için AI, PDF, PNG, JPG ve diğer yaygın görüntü formatlarını kabul ediyoruz.",
+                q2: "'Onay Kartı' nedir?",
+                a2: "Tasarımınızı gerçek bir Tajima nakış makinesinde çalıştırıp, seri üretime geçmeden önce onaylamanız için ölçümler, renk kodları ve dikiş detaylarıyla yüksek çözünürlüklü bir tarama gönderiyoruz.",
+                q3: "$25'ten $35 pakete yükseltme yapabilir miyim?",
+                a3: "Evet! Onay Örneği ($25) ile başladıysanız ve düzenlemeye ihtiyacınız varsa, sadece $10 daha ödeyerek DST Düzeltme paketine yükseltebilirsiniz.",
+                q4: "Ne kadar sürer?",
+                a4: "Standart siparişler 24-48 saat içinde tamamlanır. Hızlandırılmış teslim için bizimle iletişime geçebilirsiniz.",
+                customQuoteTitle: "Özel Bir Teklif Mi Gerekiyor?",
+                customQuoteDesc: "Yüksek hacim, çoklu tasarımlar veya özel gereksinimler için bize ulaşın.",
+                contactUs: "Bize Ulaşın"
+            }
+        },
+        servicesPage: {
+            hero: {
+                badge: "Endüstriyel Standartlar",
+                title: "Hizmetlerimiz",
+                description: "Sadece dosya hazırlamıyor, sonucu Tajima makinelerimizde gerçek dikişle kanıtlıyoruz."
+            },
+            mainServices: {
+                approval: {
+                    title: "Onay Örneği (Stitch Proof)",
+                    desc: "Mevcut DST dosyanızı kalibre edilmiş Tajima makinelerimizde işliyor ve size yüksek çözünürlüklü taramasını gönderiyoruz.",
+                    includes: ["Gerçek dikiş testi", "Yüksek çözünürlüklü tarama", "İplik renk föyü", "Üretim föyü"],
+                    startingAt: "Şu fiyattan başlayan"
+                },
+                fix: {
+                    title: "Dosya Düzeltme & Çözüm",
+                    desc: "Sorunlu dosyalarınızı analiz eder, teknik hataları düzeltir ve sonucu dikiş yaparak kanıtlarız.",
+                    includes: ["Teknik hata analizi", "Yoğunluk & alt dikiş düzeltme", "Yeniden dikiş testi", "Düzenlenmiş DST teslimi"],
+                    startingAt: "Şu fiyattan başlayan"
+                },
+                digitizing: {
+                    title: "Tam Dijitalleştirme",
+                    desc: "Çizimlerinizi sıfırdan, endüstriyel standartlarda en temiz dikiş yollarıyla dijitalleştiriyoruz.",
+                    includes: ["Vektör/Görselden dijitalleştirme", "Kumaşa özel ayarlama", "Tüm makine formatları", "Kanıt dikişi dahil"],
+                    startingAt: "Şu fiyattan başlayan"
+                }
+            },
+            technicalExpertise: {
+                title: "Teknik Uzmanlık",
+                description: "35 yılı aşkın tecrübemizle nakışın tüm teknik detaylarına hakimiz.",
+                item1Title: "Yoğunluk ve Alt Dikiş",
+                item1Desc: "Her kumaş türü için optimize edilmiş yapı.",
+                item2Title: "Push-Pull Telafisi",
+                item2Desc: "Kumaş esnemesini önleyen hassas ayarlar.",
+                item3Title: "İplik ve İğne Seçimi",
+                item3Desc: "En iyi sonuçlar için uzman eşleşmeleri.",
+                item4Title: "Tela Seçimi",
+                item4Desc: "Kumaşa özel destekleme tavsiyeleri.",
+                item5Title: "Küçük Yazı Ayarı",
+                item5Desc: "Okunabilir ince yazı dijitalleştirmesi.",
+                item6Title: "Kumaş Analizi",
+                item6Desc: "Farklı materyaller için endüstriyel testler."
+            },
+            stitchLab: {
+                title: "Gerçek Stitch Lab Deneyimi",
+                description: "Simülasyonlar yanıltıcı olabilir. Biz tasarımlarınızı endüstriyel Tajima makinelerinde gerçek kumaşlara işleyerek tüm hataları üretimden önce eliyoruz.",
+                machinePark: "Makine Parkuru",
+                scanQuality: "Tarama Kalitesi"
+            },
+            finalCTA: {
+                title: "Dosyanızı Test Etmeye Başlayın",
+                description: "Bugün siparişinizi verin, 24-48 saat içinde üretim onayınızı alın.",
+                cta: "Sipariş Ver"
+            }
+        },
+        faqsPage: {
+            hero: {
+                badge: "Sıkça Sorulan Sorular",
+                title: "Sorularınızın Yanıtları Burada",
+                description: "Dijitalleştirme sürecimiz, onay numunelerimiz ve endüstriyel nakış standartlarımız hakkında bilmeniz gereken her şey."
+            },
+            categories: {
+                services: "Hizmetler ve Fiyatlandırma",
+                technical: "Teknik Detaylar",
+                turnaround: "Teslimat ve Destek"
+            },
+            questions: {
+                q1: "Onay Kartı (Approval Card) nedir?",
+                a1: "Onay Kartı, tasarımınızın gerçek bir Tajima nakış makinesinde dikilmiş yüksek çözünürlüklü taramasıdır. Hassas ölçümler, renk kodları, dikiş sayıları ve yoğunluk tekniklerini içerir; böylece seri üretime geçmeden önce sonuçtan %100 emin olabilirsiniz.",
+                q2: "Toplu sipariş indirimi sunuyor musunuz?",
+                a2: "Evet! Tekli siparişler için fiyatlandırmamız şeffaf olsa da, aylık yüksek hacimli dijitalleştirme ihtiyacı olan firmalar için özel fiyatlandırma sunuyoruz. Kurumsal hesap için lütfen bizimle iletişime geçin.",
+                q3: "'Fix Your DST' hizmeti nasıl çalışır?",
+                a3: "Eğer iyi çalışmayan mevcut bir DST dosyanız varsa, bize gönderirsiniz. Analiz eder, teknik sorunları (yoğunluk, alt dikiş, yol planlama) düzeltir ve ardından düzeltmeyi kanıtlamak için dikeriz. Denemeler için değil, çözüm için ödeme yaparsınız.",
+                q4: "Hangi dosya formatlarını kabul ediyorsunuz?",
+                a4: "Yeni dijitalleştirme için AI, PDF, PNG, JPG ve EPS kabul ediyoruz. Düzenleme/düzeltme için öncelikle DST dosyalarıyla çalışıyoruz, ancak EMB, PES, JEF ve HUS dosyalarını da işleyebiliriz.",
+                q5: "Numuneler için hangi makineler kullanılıyor?",
+                a5: "En yüksek hassasiyeti sağlamak ve üretim hattınıza mükemmel şekilde yansımasını garanti etmek için yalnızca Tajima endüstriyel nakış makinelerini (TFMX ve TMBR serisi) kullanıyoruz.",
+                q6: "3D Puff veya özel ipliklerle çalışabiliyor musunuz?",
+                a6: "Kesinlikle. 3D Puff, aplike ve özel iplik yolları (metalik, ateşe dayanıklı) konusunda uzmanız. Yükleme yaparken gereksinimlerinizi belirtmeniz yeterlidir.",
+                q7: "Standart teslimat süreniz nedir?",
+                a7: "Dijital dosyalar ve dikişli taramalar genellikle 24-48 saat içinde teslim edilir. Ek ücret karşılığında acil servis (12 saat) mevcuttur.",
+                q8: "Numuneden memnun kalmazsam ne olur?",
+                a8: "Hedefimiz üretime hazır mükemmelliktir. Numune, özel kumaşınız ve makine tipiniz için gereken yüksek kalite standartlarını karşılayana kadar revizyon sunuyoruz.",
+                q9: "Final dosyalarımı nasıl teslim alırım?",
+                a9: "Dijital taramayı onaylayıp bakiyeyi ödediğinizde, üretime hazır DST dosyaları ve teknik föyler panelinizde anında indirilmeye hazır hale gelir."
+            },
+            stillQuestions: {
+                title: "Hala Sorularınız mı Var?",
+                description: "Aradığınız cevabı bulamadınız mı? Teknik destek ekibimize ulaşın.",
+                contactBtn: "Destekle İletişime Geç",
+                whatsappBtn: "Bizimle Sohbet Edin"
+            },
+            searchPlaceholder: "Soruların içinde ara..."
+        }
     },
     en: {
         common: {
@@ -604,9 +828,12 @@ export const translations = {
                 uploadBtn: "Upload Your Design",
                 pricingBtn: "View Pricing",
                 labBadge: "Real Stitch Lab",
-                readyBadge: "Production Ready"
+                readyBadge: "Production Ready",
+                precisionBadge: "Precision",
+                stitchedReality: "Stitched Reality"
             },
             why: {
+                badge: "Our Story",
                 title: "Why Approval Stitch?",
                 card1Title: "Real Stitch Lab Accuracy",
                 card1Desc: "Real stitches. Real production behavior. We don't simulate. We test your file on a Tajima single-head machine for ultimate precision.",
@@ -633,6 +860,7 @@ export const translations = {
                 title: "Recent Masterpieces",
                 description: "From intricate corporate logos to bold puff embroidery, see the quality in every stitch.",
                 viewAll: "View All Projects",
+                viewDesign: "View Design",
                 item1Title: "Corporate Logos",
                 item1Sub: "Left Chest & Hat",
                 item2Title: "Custom Patches",
@@ -645,7 +873,7 @@ export const translations = {
             cta: {
                 rating: "5.0 Rating",
                 title: "Ready to stitch your next project?",
-                description: "Join thousands of satisfied customers. Upload your design today and get a quote within 2 hours.",
+                description: "Join thousands of satisfied customers. Upload your design today and get a quote within 12 hours.",
                 startBtn: "Start Order",
                 contactBtn: "Contact Sales",
                 testimonial: "\"Approval Stitch has been our go-to for 3 years. The turnaround is incredibly fast, but what really matters is that the files run smooth on our machines every single time. No thread breaks, perfect density.\"",
@@ -667,6 +895,7 @@ export const translations = {
             CANCELLED: "Cancelled",
         },
         contactPage: {
+            heroBadge: "Get In Touch",
             title: "Contact",
             subtitle: "For real stitched approval samples, digitizing requests, or quotes reach us anytime.",
             quickContactTitle: "Quick Contact",
@@ -696,7 +925,226 @@ export const translations = {
                 sample: "Approval Sample",
                 support: "Technical Support",
                 other: "Other"
+            },
+            directComm: {
+                title: "Prefer Direct Communication?",
+                description: "Reach us instantly via WhatsApp for quick responses and real-time support.",
+                button: "Message on WhatsApp"
+            },
+            validation: {
+                nameRequired: "Please enter your name",
+                emailRequired: "Please enter your email",
+                emailInvalid: "Please enter a valid email address",
+                subjectRequired: "Please select a subject",
+                messageRequired: "Please write your message"
             }
+        },
+        aboutPage: {
+            hero: {
+                badge: "Who We Are",
+                title1: "Real Stitching.",
+                title2: "Real Results.",
+                description: "A specialized studio focused on producing real stitched approval samples for brands, manufacturers and promotional companies worldwide.",
+                location: "Based in Istanbul, serving clients across the U.S., Canada and Europe."
+            },
+            stats: {
+                yearsExp: "Years Experience",
+                projectsCompleted: "Projects Completed",
+                avgTurnaround: "Avg. Turnaround",
+                accuracyRate: "Accuracy Rate"
+            },
+            story: {
+                badge: "Our Story",
+                title: "35+ Years of Embroidery Excellence",
+                desc1: "We run your existing embroidery file on a calibrated Tajima machine, then provide a clean, detailed high-resolution scan that reflects the true stitch result — not an estimate or simulation.",
+                desc2: "With decades of hands-on experience, we understand how stitches behave under real conditions. Every file is tested, every result is verified."
+            },
+            expertise: {
+                badge: "Our Expertise",
+                title: "Technical Precision in Every Detail",
+                description: "Every stitched sample is prepared and scanned to reveal the exact machine performance.",
+                item1Title: "Density & Underlay",
+                item1Desc: "Optimal stitch density and underlay structure for every fabric type",
+                item2Title: "Push-Pull Compensation",
+                item2Desc: "Precise adjustments for fabric distortion prevention",
+                item3Title: "Thread Selection",
+                item3Desc: "Expert thread and needle pairing for best results",
+                item4Title: "Stabilizer Choice",
+                item4Desc: "Fabric-specific stabilizer recommendations",
+                item5Title: "Small Text Tuning",
+                item5Desc: "Optimized legibility for fine lettering",
+                item6Title: "Fabric Analysis",
+                item6Desc: "Behavior prediction based on material properties"
+            },
+            delivery: {
+                badge: "What We Deliver",
+                title: "Complete Approval Package",
+                description: "Your selected approval-card template defines the layout, size, labeling and measurement style of your final sample.",
+                cta: "Get Started",
+                item1: "Real stitched test on calibrated Tajima",
+                item2: "High-resolution scan of result",
+                item3: "Approval card in your template",
+                item4: "Thread color list (Madeira / Robison-Anton / Isacord)",
+                item5: "Needle & stabilizer details",
+                item6: "Production-ready DST file"
+            },
+            mission: {
+                title: "Our Mission",
+                description: "Our mission is to bring certainty, clarity and precision to the embroidery production process. Most problems in mass production come from assumptions: density issues, thread breaks, unreadable small text, incorrect compensation or unexpected distortion on specific fabrics.",
+                quote: "Test it for real, verify it for real, and send a result that removes all uncertainty.",
+                goal1: "Confidence to brands",
+                goal2: "Clarity to production teams",
+                goal3: "Consistency to factories"
+            },
+            finalCta: {
+                title: "Ready to Get Started?",
+                description: "Turn your DST file into a production-ready stitched approval.",
+                cta: "Start Your Order"
+            }
+        },
+        pricingPage: {
+            hero: {
+                badge: "Pricing",
+                title: "Transparency. Simplicity. Real Value.",
+                description: "No estimates, no surprises. Clear, simple pricing for stitched approval samples."
+            },
+            plans: {
+                plan1: {
+                    name: "Approval Sample",
+                    description: "First test or quick check",
+                    features: ["You send existing DST", "Stitched as provided", "Approval card delivered"],
+                    notIncluded: ["No DST editing", "No approval responsibility"],
+                    bestFor: "First test or quick check",
+                    cta: "Start Order"
+                },
+                plan2: {
+                    name: "Fix Your DST + Approval Sample",
+                    priceNote: "+$10 upgrade if $25 already paid",
+                    description: "Approval focused or picky customers",
+                    features: ["You send existing DST", "DST edited if approval requires changes", "Re-stitched after editing", "Updated approval card delivered"],
+                    keyLogic: "You pay for responsibility, not attempts. Editing and re-stitch treated as one solution.",
+                    bestFor: "Approval focused or picky customers",
+                    cta: "Start Order",
+                    popular: "Popular"
+                },
+                plan3: {
+                    name: "Full Digitizing + Approval Sample",
+                    description: "No DST or clean start",
+                    features: ["You send artwork (AI / PDF / PNG / JPG)", "New DST digitized from scratch", "Approval sample stitched", "Approval card delivered"],
+                    bestFor: "No DST or clean start",
+                    cta: "Start Order"
+                },
+                included: "Included",
+                notIncluded: "Not Included",
+                bestForLabel: "Best for:"
+            },
+            faq: {
+                title: "Frequently Asked Questions",
+                q1: "What file formats do you accept?",
+                a1: "For Approval Sample and Fix Your DST, we need your existing DST file. For Full Digitizing, we accept AI, PDF, PNG, JPG and other common image formats.",
+                q2: "What is an 'Approval Card'?",
+                a2: "We run your design on an actual Tajima embroidery machine and send you a high-resolution scan with measurements, color codes, and stitch details so you can approve it before mass production.",
+                q3: "Can I upgrade from $25 to $35 package?",
+                a3: "Yes! If you started with Approval Sample ($25) and need edits, you can upgrade to the Fix Your DST package for just $10 more.",
+                q4: "How long does it take?",
+                a4: "Standard orders are completed within 24-48 hours. Rush orders can be arranged, contact us for expedited turnaround.",
+                customQuoteTitle: "Need a Custom Quote?",
+                customQuoteDesc: "For high volume, multiple designs or special requirements, reach out to us.",
+                contactUs: "Contact Us"
+            }
+        },
+        servicesPage: {
+            hero: {
+                badge: "Industrial Standards",
+                title: "Our Services",
+                description: "We don't just prepare files; we prove the result with real stitching on our Tajima machines."
+            },
+            mainServices: {
+                approval: {
+                    title: "Stitch Proof (Approval)",
+                    desc: "We process your existing DST file on our calibrated Tajima machines and send you a high-resolution scan.",
+                    includes: ["Real stitch test", "High-res scan", "Thread color sheet", "Production sheet"],
+                    startingAt: "Starting at"
+                },
+                fix: {
+                    title: "File Correction & Solution",
+                    desc: "We analyze your problematic files, fix technical errors, and prove the result by stitching.",
+                    includes: ["Technical error analysis", "Density & underlay correction", "Re-stitch test", "Edited DST delivery"],
+                    startingAt: "Starting at"
+                },
+                digitizing: {
+                    title: "Full Digitizing",
+                    desc: "We digitize your drawings from scratch with the cleanest stitch paths at industrial standards.",
+                    includes: ["Vector/Image digitizing", "Fabric-specific adjustment", "All machine formats", "Stitch proof included"],
+                    startingAt: "Starting at"
+                }
+            },
+            technicalExpertise: {
+                title: "Technical Expertise",
+                description: "With over 35 years of experience, we master all technical details of embroidery.",
+                item1Title: "Density and Underlay",
+                item1Desc: "Structure optimized for every fabric type.",
+                item2Title: "Push-Pull Compensation",
+                item2Desc: "Precise settings to prevent fabric stretching.",
+                item3Title: "Thread and Needle Selection",
+                item3Desc: "Expert pairings for the best results.",
+                item4Title: "Stabilizer Selection",
+                item4Desc: "Fabric-specific backing recommendations.",
+                item5Title: "Small Letter Adjustment",
+                item5Desc: "Readable fine text digitizing.",
+                item6Title: "Fabric Analysis",
+                item6Desc: "Industrial tests for different materials."
+            },
+            stitchLab: {
+                title: "Real Stitch Lab Experience",
+                description: "Simulations can be misleading. We stitch your designs on real fabrics using industrial Tajima machines to eliminate all errors before production.",
+                machinePark: "Machine Park",
+                scanQuality: "Scan Quality"
+            },
+            finalCTA: {
+                title: "Start Testing Your File",
+                description: "Place your order today and receive your production approval within 24-48 hours.",
+                cta: "Order Now"
+            }
+        },
+        faqsPage: {
+            hero: {
+                badge: "Common Questions",
+                title: "Frequently Asked Questions",
+                description: "Everything you need to know about our digitizing process, approval samples, and industrial embroidery standards."
+            },
+            categories: {
+                services: "Services & Pricing",
+                technical: "Technical Details",
+                turnaround: "Turnaround & Support"
+            },
+            questions: {
+                q1: "What is an 'Approval Card'?",
+                a1: "An Approval Card is a high-resolution scan of your design actually stitched on a Tajima embroidery machine. It includes precise measurements, color codes, stitch counts, and density technicals so you can be 100% sure of the result before mass production.",
+                q2: "Do you offer bulk discounts?",
+                a2: "Yes! While our per-design pricing is transparent for single orders, we offer tailored pricing for companies with high-volume monthly digitizing needs. Please contact us for a corporate account.",
+                q3: "How does the 'Fix Your DST' service work?",
+                a3: "If you have an existing DST file that isn't running well, you send it to us. We analyze it, fix the technical issues (density, underlay, pathing), and then stitch it to prove the fix. You pay for the solution, not the attempts.",
+                q4: "What file formats do you accept?",
+                a4: "For new digitizing, we accept AI, PDF, PNG, JPG, and EPS. For editing/fixing, we primarily work with DST files, but can handle EMB, PES, JEF, and HUS as well.",
+                q5: "What machines are used for samples?",
+                a5: "We only use Tajima industrial embroidery machines (TFMX and TMBR series) to ensure the highest possible precision that translates perfectly to your production floor.",
+                q6: "Can handle 3D Puff or specialty threads?",
+                a6: "Absolutely. We specialize in 3D Puff, appliqué, and specialty thread pathing (metallic, fire-resistant). Just specify your requirements when uploading.",
+                q7: "What is your standard turnaround time?",
+                a7: "Digital files and stitched scans are typically delivered within 24-48 hours. Rush service (12 hours) is available for an additional fee.",
+                q8: "What if I'm not happy with the sample?",
+                a8: "Our goal is production-ready perfection. We offer revisions until the sample meets the high quality standards required for your specific fabric and machine type.",
+                q9: "How do I receive my final files?",
+                a9: "Once you approve the digital scan and pay the balance, the production-ready DST files and technical sheets are immediately available for download in your dashboard."
+            },
+            stillQuestions: {
+                title: "Still Have Questions?",
+                description: "Can't find the answer you're looking for? Reach out to our technical support team.",
+                contactBtn: "Contact Support",
+                whatsappBtn: "Chat with Us"
+            },
+            searchPlaceholder: "Search questions..."
         },
     }
 };

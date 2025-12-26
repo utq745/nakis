@@ -9,7 +9,7 @@ export default function CookiePolicyPage() {
     const { language } = useLanguage();
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)]">
+        <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]">
             <Header />
 
             <main className="flex-grow">
@@ -19,7 +19,7 @@ export default function CookiePolicyPage() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -57,9 +57,9 @@ export default function CookiePolicyPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
-                            className="max-w-4xl mx-auto bg-white dark:bg-[#18181b] rounded-[2.5rem] p-8 md:p-16 border border-[#e5e7eb] dark:border-[#27272a] shadow-2xl"
+                            className="max-w-4xl mx-auto bg-card rounded-[2.5rem] p-8 md:p-16 border border-border shadow-2xl"
                         >
-                            <div className="prose prose-blue dark:prose-invert max-w-none text-[#616f89] dark:text-gray-300">
+                            <div className="prose prose-blue dark:prose-invert max-w-none text-muted-foreground">
                                 <p className="text-sm mb-8 italic">Last Updated: December 26, 2025</p>
 
                                 <p className="mb-6 leading-relaxed">
@@ -70,12 +70,12 @@ export default function CookiePolicyPage() {
                                     As we serve customers globally, this policy is designed to comply with the <strong>General Data Protection Regulation (GDPR)</strong> for our European users and the <strong>California Consumer Privacy Act (CCPA)</strong> for our US users.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">1. What Are Cookies?</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">1. What Are Cookies?</h2>
                                 <p className="mb-8 leading-relaxed">
                                     Cookies are small text files that are placed on your computer or mobile device when you visit a website. They are widely used to make websites work more efficiently, as well as to provide reporting information to the site owners and remember your preferences (like login status or language).
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">2. Types of Cookies We Use</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">2. Types of Cookies We Use</h2>
                                 <p className="mb-6">We use the following categories of cookies on Approval Stitch:</p>
                                 <ul className="space-y-6 mb-12">
                                     <li className="p-6 bg-[#f4f6fa] dark:bg-[#0a0a0a] rounded-xl border-l-4 border-blue-500">
@@ -92,19 +92,19 @@ export default function CookiePolicyPage() {
                                     </li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">3. Your Rights (GDPR & CCPA)</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">3. Your Rights (GDPR & CCPA)</h2>
 
-                                <h3 className="text-xl font-bold text-[#172136] dark:text-white mt-8 mb-4">For Users in the EEA & UK (GDPR)</h3>
+                                <h3 className="text-xl font-bold text-foreground mt-8 mb-4">For Users in the EEA & UK (GDPR)</h3>
                                 <p className="mb-6 leading-relaxed">
                                     Unless they are strictly necessary, we will not set cookies on your device without your explicit consent. You can manage your preferences via our "Cookie Banner" upon your first visit or change them at any time via the settings on our site.
                                 </p>
 
-                                <h3 className="text-xl font-bold text-[#172136] dark:text-white mt-8 mb-4">For Users in the USA (CCPA/CPRA)</h3>
+                                <h3 className="text-xl font-bold text-foreground mt-8 mb-4">For Users in the USA (CCPA/CPRA)</h3>
                                 <p className="mb-8 leading-relaxed">
                                     Residents of California have the right to opt-out of the "sale" or "sharing" of their personal information. You can manage your preferences regarding targeting cookies through our cookie settings or your browser controls.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">4. How to Manage Cookies</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">4. How to Manage Cookies</h2>
                                 <p className="mb-6 leading-relaxed">
                                     You have the right to decide whether to accept or reject cookies. You can set or amend your web browser controls to accept or refuse cookies. If you choose to reject cookies, you may still use our website, though your access to some functionality and areas of our website may be restricted.
                                 </p>
@@ -114,35 +114,38 @@ export default function CookiePolicyPage() {
                                 <ul className="list-disc pl-6 space-y-4 mb-8">
                                     <li>
                                         <strong>Google Chrome:</strong> <br />
-                                        <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-[#145BEC] hover:underline">Clear, enable, and manage cookies in Chrome</a>
+                                        <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Clear, enable, and manage cookies in Chrome</a>
                                     </li>
                                     <li>
                                         <strong>Mozilla Firefox:</strong> <br />
-                                        <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" target="_blank" rel="noopener noreferrer" className="text-[#145BEC] hover:underline">Enhanced Tracking Protection in Firefox</a>
+                                        <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Enhanced Tracking Protection in Firefox</a>
                                     </li>
                                     <li>
                                         <strong>Apple Safari:</strong> <br />
-                                        <a href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-[#145BEC] hover:underline">Manage cookies and website data in Safari</a>
+                                        <a href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Manage cookies and website data in Safari</a>
                                     </li>
                                     <li>
                                         <strong>Microsoft Edge:</strong> <br />
-                                        <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-[#145BEC] hover:underline">Delete cookies in Microsoft Edge</a>
+                                        <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Delete cookies in Microsoft Edge</a>
                                     </li>
                                     <li>
                                         <strong>Opera:</strong> <br />
-                                        <a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer" className="text-[#145BEC] hover:underline">Web preferences - Opera Help</a>
+                                        <a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Web preferences - Opera Help</a>
                                     </li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">5. Third-Party Services</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">5. Third-Party Services</h2>
                                 <p className="mb-12 leading-relaxed">
                                     We may use trusted third-party services (such as payment processors like Stripe/PayPal or analytics tools like Google Analytics). These third parties may also set cookies on your device. We recommend reading their privacy policies for more information.
                                 </p>
 
                                 <div className="mt-16 text-center">
                                     <button
-                                        onClick={() => alert('Cookie management modal would open here.')}
-                                        className="px-8 py-4 bg-[#145BEC] text-white rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
+                                        onClick={() => {
+                                            localStorage.removeItem("cookie-consent");
+                                            window.location.reload();
+                                        }}
+                                        className="px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
                                     >
                                         Update Cookie Settings
                                     </button>

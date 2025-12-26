@@ -9,7 +9,7 @@ export default function DistanceSalesAgreement() {
     const { language } = useLanguage();
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)]">
+        <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]">
             <Header />
 
             <main className="flex-grow">
@@ -19,7 +19,7 @@ export default function DistanceSalesAgreement() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#145BEC]/20 blur-[120px] rounded-full"
+                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
                         />
                         <motion.div
                             animate={{ scale: [1.2, 1, 1.2] }}
@@ -57,49 +57,49 @@ export default function DistanceSalesAgreement() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
-                            className="max-w-4xl mx-auto bg-white dark:bg-[#18181b] rounded-[2.5rem] p-8 md:p-16 border border-[#e5e7eb] dark:border-[#27272a] shadow-2xl"
+                            className="max-w-4xl mx-auto bg-card rounded-[2.5rem] p-8 md:p-16 border border-border shadow-2xl"
                         >
-                            <div className="prose prose-blue dark:prose-invert max-w-none text-[#616f89] dark:text-gray-300">
-                                <p className="text-sm mb-8 italic">Last Updated: December 2023</p>
+                            <div className="prose prose-blue dark:prose-invert max-w-none text-muted-foreground">
+                                <p className="text-sm mb-8 italic">Last Updated: December 2025</p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">1. Parties</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">1. Parties</h2>
                                 <p className="mb-6 leading-relaxed">
                                     This Agreement is entered into electronically between <strong>Approval Stitch</strong> (hereinafter referred to as "SELLER") and the customer who places an order through the platform (hereinafter referred to as "BUYER"), under the terms and conditions set forth below.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">2. Subject of the Agreement</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">2. Subject of the Agreement</h2>
                                 <p className="mb-6 leading-relaxed">
                                     The subject of this agreement is to determine the rights and obligations of the parties in accordance with the Law No. 6502 on the Protection of Consumers and the Regulation on Distance Contracts regarding the sale and delivery of the service specialized for the BUYER through the SELLER's website.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">3. Service Information</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">3. Service Information</h2>
                                 <p className="mb-6 leading-relaxed">
                                     The services subject to the agreement include embroidery digitizing, file correction, or stitched approval samples. Details, scope, and price of the service are as specified on the order screen within the package selected by the BUYER.
                                 </p>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">4. General Provisions</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">4. General Provisions</h2>
                                 <ul className="list-disc pl-6 space-y-4 mb-8">
                                     <li>The BUYER declares that they have read and understood the basic characteristics of the service, the sale price, and the payment method on the website and has given the necessary confirmation in the electronic environment.</li>
                                     <li>The service subject to the agreement includes files prepared in the digital environment and high-resolution scans of the stitching results of these files. Physical shipping is not involved unless otherwise stated.</li>
                                     <li>The SELLER is responsible for providing the ordered service in a flawless, complete, and appropriate manner as specified in the order.</li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">5. Right of Withdrawal and Exceptions</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">5. Right of Withdrawal and Exceptions</h2>
                                 <p className="mb-6 leading-relaxed">
                                     In accordance with Article 15 of the Distance Contracts Regulation; <strong>"Contracts for goods prepared in line with the consumer's wishes or personal needs"</strong> cannot exercise the right of withdrawal.
                                 </p>
-                                <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-l-4 border-blue-500 mb-8">
-                                    <p className="text-sm font-bold text-[#172136] dark:text-white">Important Notice:</p>
+                                <div className="p-6 bg-primary/5 dark:bg-primary/10 rounded-xl border-l-4 border-primary mb-8">
+                                    <p className="text-sm font-bold text-foreground">Important Notice:</p>
                                     <p className="text-sm">Since the services provided by Approval Stitch are prepared entirely specifically for the designs sent by the BUYER, there is no right of withdrawal or refund after the process has started.</p>
                                 </div>
 
-                                <h2 className="text-2xl font-black text-[#172136] dark:text-white mt-12 mb-6">6. Dispute Resolution</h2>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">6. Dispute Resolution</h2>
                                 <p className="mb-8 leading-relaxed">
                                     In the implementation of this agreement, Consumer Arbitration Committees up to the value declared by the Ministry of Customs and Trade and Consumer Courts in the place of residence of the SELLER are authorized.
                                 </p>
 
-                                <div className="mt-16 text-center border-t border-[#e5e7eb] dark:border-[#27272a] pt-12">
-                                    <p className="text-sm text-[#616f89]">This agreement comes into effect upon the BUYER's confirmation of "I Have Read and Accept the Agreement" at the payment step.</p>
+                                <div className="mt-16 text-center border-t border-border pt-12">
+                                    <p className="text-sm text-muted-foreground">This agreement comes into effect upon the BUYER's confirmation of "I Have Read and Accept the Agreement" at the payment step.</p>
                                 </div>
                             </div>
                         </motion.div>

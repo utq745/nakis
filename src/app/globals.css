@@ -33,6 +33,9 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary2: var(--brand-primary-2);
+  --color-primary-dark: var(--brand-primary-2);
+  --color-brand-dark: var(--brand-dark-1);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -49,13 +52,17 @@
 :root {
   /* Brand Identity Colors */
   --brand-primary-1: #145BEC;
-  --brand-primary-2: #104DC9;
+  --brand-primary-2: #0E49BF;
   --brand-light-1: #FFFFFF;
   --brand-light-2: #F4F6FA;
-  --brand-light-3: #DEE3ED;
+  --brand-light-3: #E5E7EB;
   --brand-dark-1: #172136;
-  --brand-dark-2: #2D3953;
-  --brand-dark-3: #47536B;
+  --brand-dark-2: #09090B;
+  --brand-dark-3: #18181B;
+  --brand-text-dark: #111318;
+  --brand-text-muted: #616F89;
+  --brand-border-light: #E5E7EB;
+  --brand-border-dark: #27272A;
 
   /* Theme Tokens */
   --radius: 0.625rem;
@@ -77,7 +84,7 @@
   --border: var(--brand-light-3);
   --input: var(--brand-light-3);
   --ring: var(--brand-primary-1);
-  
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -113,7 +120,7 @@
   --border: #27272a;
   --input: #27272a;
   --ring: var(--brand-primary-1);
-  
+
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -133,7 +140,22 @@
 @layer base {
   * {
     border-color: var(--border);
-    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+
+  /* Interactive elements should always have a pointer cursor */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  label[for],
+  select,
+  a {
+    cursor: pointer;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
   }
 
   body {
@@ -145,26 +167,37 @@
   /* Headings */
   h1 {
     font-size: clamp(1.9rem, 1.6rem + 1.2vw, 2.4rem);
+    font-weight: 900;
+    /* Standard font-black */
+    letter-spacing: -0.02em;
   }
 
   h2 {
     font-size: clamp(1.6rem, 1.4rem + 0.9vw, 2rem);
+    font-weight: 800;
+    /* Standard font-extrabold */
+    letter-spacing: -0.01em;
   }
 
   h3 {
     font-size: clamp(1.35rem, 1.25rem + 0.5vw, 1.6rem);
+    font-weight: 700;
+    /* Standard font-bold */
   }
 
   h4 {
     font-size: clamp(1.2rem, 1.15rem + 0.3vw, 1.35rem);
+    font-weight: 700;
   }
 
   h5 {
     font-size: clamp(1.05rem, 1.02rem + 0.2vw, 1.15rem);
+    font-weight: 600;
   }
 
   h6 {
     font-size: clamp(0.95rem, 0.93rem + 0.1vw, 1rem);
+    font-weight: 600;
   }
 }
 
@@ -232,4 +265,23 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #47536B;
+}
+
+/* Accessibility: Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse,
+  .animate-ping,
+  .animate-pulse-ring {
+    animation: none !important;
+  }
 }
