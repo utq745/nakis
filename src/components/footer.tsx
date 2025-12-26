@@ -24,7 +24,7 @@ export function Footer() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:flex gap-12">
                     <div className="flex flex-col gap-4">
-                        <h4 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.company}</h4>
+                        <h3 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.company}</h3>
                         <div className="flex flex-col gap-2">
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About Us'}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
@@ -33,7 +33,7 @@ export function Footer() {
                         </div>
                     </div>
                     <div className="flex flex-col gap-4">
-                        <h4 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.support}</h4>
+                        <h3 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.support}</h3>
                         <div className="flex flex-col gap-2">
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/sss' : '/faqs'}>{t.footer.faq}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/cerez-politikasi' : '/cookie-policy'}>{language === 'tr' ? 'Çerez Politikası' : 'Cookie Policy'}</Link>
