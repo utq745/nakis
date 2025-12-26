@@ -62,10 +62,14 @@ export function Portfolio() {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
                             className="group relative overflow-hidden rounded-[2rem] aspect-[4/5] cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
+                            role="img"
+                            aria-label={`${item.title} - ${item.subtitle}`}
+                            title={`${item.title} - ${item.subtitle}`}
                         >
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                                 style={{ backgroundImage: `url("${item.bg}")` }}
+                                aria-hidden="true"
                             ></div>
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10 opacity-90 group-hover:opacity-100 transition-opacity">
                                 <motion.div

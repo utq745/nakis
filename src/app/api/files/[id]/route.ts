@@ -15,7 +15,7 @@ export async function GET(
             const url = new URL(request.url);
             const referer = request.headers.get("referer");
             const isTurkish = referer?.includes("/tr/") || request.headers.get("accept-language")?.startsWith("tr");
-            const loginPath = isTurkish ? "/tr/login" : "/login";
+            const loginPath = isTurkish ? "/tr/giris" : "/login";
             return NextResponse.redirect(new URL(loginPath, url.origin));
         }
 

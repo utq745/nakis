@@ -26,19 +26,20 @@ export function Footer() {
                     <div className="flex flex-col gap-4">
                         <h4 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.company}</h4>
                         <div className="flex flex-col gap-2">
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/about' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About Us'}</Link>
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/pricing' : '/pricing'}>{t.header.pricing}</Link>
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/services' : '/services'}>{t.header.services}</Link>
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.footer.contact}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About Us'}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/hizmetler' : '/services'}>{t.header.services}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.footer.contact}</Link>
                         </div>
                     </div>
                     <div className="flex flex-col gap-4">
                         <h4 className="text-foreground font-bold text-sm uppercase tracking-wider">{t.footer.support}</h4>
                         <div className="flex flex-col gap-2">
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/faqs' : '/faqs'}>{t.footer.faq}</Link>
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/cookie-policy' : '/cookie-policy'}>{language === 'tr' ? 'Çerez Politikası' : 'Cookie Policy'}</Link>
-                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/privacy-policy' : '/privacy-policy'}>{t.footer.privacy}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/sss' : '/faqs'}>{t.footer.faq}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/cerez-politikasi' : '/cookie-policy'}>{language === 'tr' ? 'Çerez Politikası' : 'Cookie Policy'}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/gizlilik-politikasi' : '/privacy-policy'}>{t.footer.privacy}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/mesafeli-satis-sozlesmesi' : '/distance-sales-agreement'}>{language === 'tr' ? 'Mesafeli Satış Sözleşmesi' : 'Distance Sales Agreement'}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href="/sitemap.xml">{language === 'tr' ? 'Site Haritası' : 'Sitemap'}</Link>
                         </div>
                     </div>
                 </div>
@@ -57,11 +58,13 @@ export function Footer() {
                         src="/iyzico_colored.svg"
                         alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
                         className="h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity dark:hidden"
+                        loading="lazy"
                     />
                     <img
                         src="/iyzico_white.svg"
                         alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
                         className="hidden dark:block h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity"
+                        loading="lazy"
                     />
                 </div>
             </div>

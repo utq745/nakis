@@ -11,9 +11,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const dict = getDictionary('en');
 
     return {
-        title: `${dict.landing.hero.titleLine1} ${dict.landing.hero.titleLine2} - Approval Stitch`,
+        title: {
+            default: `${dict.landing.hero.titleLine1} ${dict.landing.hero.titleLine2} - Approval Stitch`,
+            template: "%s | Approval Stitch",
+        },
         description: dict.landing.hero.description,
-        metadataBase: new URL('https://nakis-site.vercel.app'), // TODO: Replace with actual domain
+        metadataBase: new URL('https://www.approvalstitch.com'),
         alternates: {
             canonical: `/`,
             languages: {
@@ -27,9 +30,57 @@ export async function generateMetadata(): Promise<Metadata> {
             description: dict.landing.hero.description,
             locale: 'en_US',
             alternateLocale: 'tr_TR',
+            siteName: 'Approval Stitch',
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            site: '@approvalstitch',
+        },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
         },
     };
 }
+
+// Organization Schema for SEO
+const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Approval Stitch",
+    "url": "https://www.approvalstitch.com",
+    "logo": "https://www.approvalstitch.com/logo.png",
+    "description": "Professional embroidery digitizing service with real stitch verification on Tajima machines.",
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+90-548-858-8394",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Turkish"],
+    },
+    "sameAs": [
+        "https://wa.me/905488588394"
+    ]
+};
+
+const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Approval Stitch",
+    "url": "https://www.approvalstitch.com",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.approvalstitch.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+};
 
 export default function EnLayout({
     children,
@@ -40,11 +91,22 @@ export default function EnLayout({
         <html lang="en" suppressHydrationWarning>
             <head>
                 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+                />
             </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased font-sans`}
                 suppressHydrationWarning
             >
+                <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 bg-background px-4 py-2 rounded-md shadow-md">
+                    Skip to content
+                </a>
                 <Providers>
                     <LanguageProvider initialLang="en">
                         {children}

@@ -80,20 +80,20 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                 <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
                     <div className="hidden lg:flex items-center gap-6 xl:gap-9">
                         <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/about' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/services' : '/services'}>{t.header.services}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/pricing' : '/pricing'}>{t.header.pricing}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/contact' : '/contact'}>{t.header.contact}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/hizmetler' : '/services'}>{t.header.services}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
+                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
                     </div>
 
                     <div className="flex gap-2 items-center">
-                        <Link href={language === 'tr' ? '/tr/login' : '/login'} className="hidden sm:inline-block">
+                        <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="hidden sm:inline-block">
                             <button className={`h-10 px-4 text-sm font-bold hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`}>
                                 {t.header.signIn}
                             </button>
                         </Link>
 
-                        <Link href={language === 'tr' ? '/tr/register' : '/register'} className="hidden sm:inline-block">
+                        <Link href={language === 'tr' ? '/tr/kayit' : '/register'} className="hidden sm:inline-block">
                             <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-colors shadow-md">
                                 <span className="truncate">{t.header.startOrder}</span>
                             </button>
@@ -201,28 +201,28 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                                     {t.header.home}
                                 </Link>
                                 <Link
-                                    href={language === 'tr' ? '/tr/about' : '/about'}
+                                    href={language === 'tr' ? '/tr/hakkimizda' : '/about'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
                                 >
                                     {language === 'tr' ? 'Hakkımızda' : 'About'}
                                 </Link>
                                 <Link
-                                    href={language === 'tr' ? '/tr/services' : '/services'}
+                                    href={language === 'tr' ? '/tr/hizmetler' : '/services'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
                                 >
                                     {t.header.services}
                                 </Link>
                                 <Link
-                                    href={language === 'tr' ? '/tr/pricing' : '/pricing'}
+                                    href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
                                 >
                                     {t.header.pricing}
                                 </Link>
                                 <Link
-                                    href={language === 'tr' ? '/tr/contact' : '/contact'}
+                                    href={language === 'tr' ? '/tr/iletisim' : '/contact'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
                                 >
@@ -232,14 +232,14 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                                 <div className="my-4 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
 
                                 <Link
-                                    href={language === 'tr' ? '/tr/login' : '/login'}
+                                    href={language === 'tr' ? '/tr/giris' : '/login'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
                                 >
                                     {t.header.signIn}
                                 </Link>
                                 <Link
-                                    href={language === 'tr' ? '/tr/register' : '/register'}
+                                    href={language === 'tr' ? '/tr/kayit' : '/register'}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-6 py-4 bg-primary text-white hover:bg-primary-dark rounded-xl transition-colors font-bold text-center text-lg shadow-lg"
                                 >

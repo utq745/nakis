@@ -53,7 +53,7 @@ export function Hero() {
                         </div>
 
                         <div className="flex flex-wrap gap-4">
-                            <Link href={`/${language}/login`}>
+                            <Link href={language === 'tr' ? '/tr/giris' : '/login'}>
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -63,7 +63,7 @@ export function Hero() {
                                     <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </motion.button>
                             </Link>
-                            <Link href={`/${language}/pricing`}>
+                            <Link href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -103,8 +103,9 @@ export function Hero() {
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/5 backdrop-blur-sm aspect-[4/3] group">
                             <img
                                 src="/images/hero/embroidery-hero.webp"
-                                alt="Embroidery hero"
-                                loading="lazy"
+                                alt="High-quality embroidery digitizing sample showing detailed stitch work on Tajima machine"
+                                loading="eager"
+                                fetchPriority="high"
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent opacity-60"></div>

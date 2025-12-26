@@ -58,7 +58,7 @@ export default function LoginPage() {
                     // Fetch user language preference
                     const userRes = await fetch("/api/user/profile");
                     const userData = await userRes.json();
-                    const redirectPath = userData?.language === "tr" ? "/tr/dashboard" : "/dashboard";
+                    const redirectPath = userData?.language === "tr" ? "/tr/panel" : "/dashboard";
                     router.push(redirectPath);
                 }
             } catch (err) {
@@ -78,7 +78,7 @@ export default function LoginPage() {
                 // Fetch user language preference
                 const userRes = await fetch("/api/user/profile");
                 const userData = await userRes.json();
-                const redirectPath = userData?.language === "tr" ? "/tr/dashboard" : "/dashboard";
+                const redirectPath = userData?.language === "tr" ? "/tr/panel" : "/dashboard";
                 router.push(redirectPath);
             }
         }

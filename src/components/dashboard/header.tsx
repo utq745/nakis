@@ -125,19 +125,19 @@ export function Header() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-border" />
-                            <Link href={language === 'tr' ? '/tr/dashboard' : '/dashboard'}>
+                            <Link href={language === 'tr' ? '/tr/panel' : '/dashboard'}>
                                 <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <LayoutDashboard className="mr-2 h-4 w-4" />
                                     {t.sidebar.dashboard}
                                 </DropdownMenuItem>
                             </Link>
-                            <Link href={language === 'tr' ? '/tr/orders' : '/orders'}>
+                            <Link href={language === 'tr' ? '/tr/siparisler' : '/orders'}>
                                 <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <Package className="mr-2 h-4 w-4" />
                                     {t.sidebar.orders}
                                 </DropdownMenuItem>
                             </Link>
-                            <Link href={language === 'tr' ? '/tr/settings' : '/settings'}>
+                            <Link href={language === 'tr' ? '/tr/ayarlar' : '/settings'}>
                                 <DropdownMenuItem className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer">
                                     <Settings className="mr-2 h-4 w-4" />
                                     {t.common.settings}
@@ -146,7 +146,7 @@ export function Header() {
                             <DropdownMenuSeparator className="bg-border" />
                             <DropdownMenuItem
                                 className="text-red-400 dark:text-red-400 focus:text-red-500 dark:focus:text-red-300 focus:bg-accent cursor-pointer"
-                                onClick={() => signOut({ callbackUrl: language === 'tr' ? "/tr/login" : "/login" })}
+                                onClick={() => signOut({ callbackUrl: language === 'tr' ? "/tr/giris" : "/login" })}
                             >
                                 <LogOut className="mr-2 h-4 w-4" />
                                 {t.common.logout}

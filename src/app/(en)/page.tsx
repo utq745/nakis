@@ -5,6 +5,39 @@ import { WhyUs } from "@/components/landing/why-us";
 import { Process } from "@/components/landing/process";
 import { Portfolio } from "@/components/landing/portfolio";
 import { CTA } from "@/components/landing/cta";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Professional Embroidery Digitizing & Stitch Approval | Approval Stitch",
+  description: "Get production-ready embroidery files with real stitch verification. We test your designs on Tajima machines and deliver high-resolution scans. 35+ years of expertise. Fast 24-48h turnaround.",
+  keywords: ["embroidery digitizing", "stitch approval", "DST file conversion", "embroidery file format", "Tajima embroidery", "embroidery digitizing service", "stitched sample approval", "professional digitizing", "embroidery machine files"],
+  openGraph: {
+    title: "Professional Embroidery Digitizing & Stitch Approval",
+    description: "Get production-ready embroidery files with real stitch verification on Tajima machines. 35+ years of expertise.",
+    type: "website",
+    images: [
+      {
+        url: "/images/hero/embroidery-hero.webp",
+        width: 1200,
+        height: 630,
+        alt: "Approval Stitch - Professional Embroidery Digitizing Services",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Professional Embroidery Digitizing & Stitch Approval",
+    description: "Get production-ready embroidery files with real stitch verification on Tajima machines.",
+    images: ["/images/hero/embroidery-hero.webp"],
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en": "/",
+      "tr": "/tr",
+    },
+  },
+};
 
 export default function LandingPage() {
   return (

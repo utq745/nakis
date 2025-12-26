@@ -35,7 +35,7 @@ export function CookieBanner() {
             decline: "Reddet",
             settings: "Ayarlar",
             policy: "Politikamız",
-            link: "/tr/cookie-policy"
+            link: "/tr/cerez-politikasi"
         },
         en: {
             title: "Cookie Usage",

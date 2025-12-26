@@ -358,7 +358,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button
-                        onClick={() => router.push(locale === 'tr' ? `/tr/orders/${orderId}` : `/orders/${orderId}`)}
+                        onClick={() => router.push(locale === 'tr' ? `/tr/siparisler/${orderId}` : `/orders/${orderId}`)}
                         className="w-full sm:w-auto min-w-[200px] h-12 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl flex items-center justify-center gap-2 group transition-all"
                     >
                         {locale === 'tr' ? 'Siparişi Görüntüle' : 'View Order Details'}
@@ -366,7 +366,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                     </Button>
                     <Button
                         variant="ghost"
-                        onClick={() => router.push(locale === 'tr' ? '/tr/orders' : '/orders')}
+                        onClick={() => router.push(locale === 'tr' ? '/tr/siparisler' : '/orders')}
                         className="w-full sm:w-auto h-12 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center gap-2"
                     >
                         <Home className="h-4 w-4" />

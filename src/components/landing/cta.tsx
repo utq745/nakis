@@ -41,7 +41,7 @@ export function CTA() {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto">
-                            <Link href={`/${language}/login`} className="w-full sm:w-auto">
+                            <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="w-full sm:w-auto">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -50,7 +50,7 @@ export function CTA() {
                                     {t.landing.cta.startBtn}
                                 </motion.button>
                             </Link>
-                            <Link href={`/${language}/contact`} className="w-full sm:w-auto">
+                            <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'} className="w-full sm:w-auto">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}

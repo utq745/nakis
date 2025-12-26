@@ -1,23 +1,56 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { Hero } from "@/components/landing/hero";
-import { WhyUs } from "@/components/landing/why-us";
-import { Process } from "@/components/landing/process";
-import { Portfolio } from "@/components/landing/portfolio";
-import { CTA } from "@/components/landing/cta";
+
+import type { Metadata } from "next";
+import { getDictionary } from "@/lib/get-dictionary";
+import { LandingClient } from "./_components/landing-client";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = getDictionary('tr');
+
+  return {
+    title: `${dict.landing.hero.titleLine1} ${dict.landing.hero.titleLine2} - Approval Stitch`,
+    description: dict.landing.hero.description,
+    alternates: {
+      canonical: 'https://www.approvalstitch.com/tr',
+    },
+    openGraph: {
+      title: `${dict.landing.hero.titleLine1} ${dict.landing.hero.titleLine2}`,
+      description: dict.landing.hero.description,
+      url: 'https://www.approvalstitch.com/tr',
+      locale: 'tr_TR',
+    },
+  };
+}
 
 export default function LandingPage() {
+  const dict = getDictionary('tr');
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Approval Stitch - Profesyonel Nakış Dijitalleştirme",
+    "description": dict.landing.hero.description,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Approval Stitch",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.approvalstitch.com/images/approval-stitch-logo.png"
+      }
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "25.00",
+      "priceCurrency": "USD"
+    }
+  };
+
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)] selection:bg-primary selection:text-white">
-      <Header />
-      <main className="flex-grow flex flex-col items-center">
-        <Hero />
-        <WhyUs />
-        <Process />
-        <Portfolio />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <LandingClient />
+    </>
   );
 }

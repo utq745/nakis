@@ -431,7 +431,7 @@ export const translations = {
         pricingPage: {
             hero: {
                 badge: "Fiyatlandırma",
-                title: "Saydamlık. Basitlik. Gerçek Değer.",
+                title: "Şeffaf, Basit, Doğru Fiyat",
                 description: "Tahmini yok, sürpriz yok. Dikişli onay örnekleri için net, basit fiyatlandırma."
             },
             plans: {
@@ -462,7 +462,7 @@ export const translations = {
                 },
                 included: "Dahil",
                 notIncluded: "Dahil Değil",
-                bestForLabel: "En iyisi:"
+                bestForLabel: "Kimler için:"
             },
             faq: {
                 title: "Sıkça Sorulan Sorular",
@@ -571,6 +571,12 @@ export const translations = {
                 whatsappBtn: "Bizimle Sohbet Edin"
             },
             searchPlaceholder: "Soruların içinde ara..."
+        },
+        notFound: {
+            title: "Sayfa Bulunamadı",
+            description: "Oops! Aradığınız sayfa taşınmış, silinmiş veya hiç var olmamış olabilir.",
+            backHome: "Ana Sayfaya Dön",
+            contactSupport: "Destek Ekibine Ulaş"
         }
     },
     en: {
@@ -1146,5 +1152,11 @@ export const translations = {
             },
             searchPlaceholder: "Search questions..."
         },
+        notFound: {
+            title: "Page Not Found",
+            description: "Oops! It seems like the page you are looking for has been moved, deleted, or never existed in the first place.",
+            backHome: "Back to Home",
+            contactSupport: "Contact Support"
+        }
     }
 };

@@ -34,22 +34,22 @@ export function Sidebar() {
     const customerNav = [
         {
             title: t.sidebar.dashboard,
-            href: `${prefix}/dashboard`,
+            href: language === 'tr' ? '/tr/panel' : '/dashboard',
             icon: LayoutDashboard,
         },
         {
             title: t.sidebar.orders,
-            href: `${prefix}/orders`,
+            href: language === 'tr' ? '/tr/siparisler' : '/orders',
             icon: Package,
         },
         {
             title: t.sidebar.newOrder,
-            href: `${prefix}/orders/new`,
+            href: language === 'tr' ? '/tr/siparisler/new' : '/orders/new',
             icon: Plus,
         },
         {
             title: t.sidebar.settings,
-            href: `${prefix}/settings`,
+            href: language === 'tr' ? '/tr/ayarlar' : '/settings',
             icon: Settings,
         },
     ];
@@ -57,27 +57,27 @@ export function Sidebar() {
     const adminNav = [
         {
             title: t.sidebar.dashboard,
-            href: `${prefix}/dashboard`,
+            href: language === 'tr' ? '/tr/panel' : '/dashboard',
             icon: LayoutDashboard,
         },
         {
             title: t.sidebar.allOrders,
-            href: `${prefix}/orders`,
+            href: language === 'tr' ? '/tr/siparisler' : '/orders',
             icon: Package,
         },
         {
             title: t.sidebar.customers,
-            href: `${prefix}/customers`,
+            href: language === 'tr' ? '/tr/musteriler' : '/customers',
             icon: Users,
         },
         {
             title: t.sidebar.reports,
-            href: `${prefix}/reports`,
+            href: language === 'tr' ? '/tr/raporlar' : '/reports',
             icon: FileText,
         },
         {
             title: t.sidebar.settings,
-            href: `${prefix}/settings`,
+            href: language === 'tr' ? '/tr/ayarlar' : '/settings',
             icon: Settings,
         },
     ];
