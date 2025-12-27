@@ -32,6 +32,11 @@ export function middleware(request: NextRequest) {
 
     // CSRF protection for API routes (POST, PUT, PATCH, DELETE)
     if (pathname.startsWith('/api/')) {
+        // Skip manual CSRF check for Auth.js routes as it has its own CSRF protection
+        if (pathname.startsWith('/api/auth/')) {
+            return response;
+        }
+
         const method = request.method;
 
         if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
