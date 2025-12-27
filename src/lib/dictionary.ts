@@ -367,64 +367,82 @@ export const translations = {
         },
         aboutPage: {
             hero: {
-                badge: "Biz Kimiz",
-                title1: "Gerçek Nakış.",
-                title2: "Gerçek Sonuçlar.",
-                description: "Markalar, üreticiler ve promosyon şirketleri için dünya çapında gerçek dikişli onay örnekleri üretmeye odaklanmış uzman bir stüdyo.",
-                location: "İstanbul merkezli olarak ABD, Kanada ve Avrupa'daki müşterilere hizmet veriyoruz."
+                badge: "Gerçek Dikiş Onay Hizmeti",
+                title1: "APPROVALSTITCH",
+                title2: "Gerçek Dikiş. Gerçek Onay.",
+                description: "Nakış tasarımlarının üretim koşullarında gerçekte nasıl davrandığını gösteren gerçek dikişli onay sonuçları sunuyoruz."
             },
-            stats: {
-                yearsExp: "Yıllık Deneyim",
-                projectsCompleted: "Tamamlanan Proje",
-                avgTurnaround: "Ort. Teslim Süresi",
-                accuracyRate: "Doğruluk Oranı"
+            whatWeDo: {
+                badge: "Ne Yapıyoruz",
+                title: "Gerçek Dikişli Onay Sonuçları",
+                description: "ApprovalStitch, bir nakış tasarımının gerçek üretim koşullarında nasıl davrandığını gösteren gerçek dikişli onay sonuçları sunar.",
+                detail: "Ekran simülasyonlarına, temiz PDF'lere veya teorik önizlemelere güvenmek yerine, tasarımın seçtiğiniz kumaşta gerçek dikiş koşullarında nasıl performans gösterdiğini kanıtlıyoruz. Bu, onayların varsayımlara değil gerçekliğe dayanarak yapılmasını sağlar."
             },
-            story: {
-                badge: "Hikayemiz",
-                title: "35+ Yıllık Nakış Mükemmelliği",
-                desc1: "Mevcut nakış dosyanızı kalibre edilmiş bir Tajima makinesinde çalıştırıyor, ardından gerçek dikiş sonucunu yansıtan temiz, detaylı bir yüksek çözünürlüklü tarama sağlıyoruz — bir tahmin veya simülasyon değil.",
-                desc2: "Onlarca yıllık uygulamalı deneyimimizle, dikişlerin gerçek koşullar altında nasıl davrandığını anlıyoruz. Her dosya test edilir, her sonuç doğrulanır."
+            whyMatters: {
+                badge: "Neden Önemli",
+                title: "Gerçek Dikiş Onayı Neden Önemli?",
+                description: "Nakış tasarımları ekranda genellikle doğru görünür, ancak dikildikten sonra farklı davranır.",
+                factors: [
+                    "Kumaş yapısı",
+                    "Dikiş yoğunluğu etkileşimi",
+                    "Çekme telafisi",
+                    "Gerçek gerilim altında iplik davranışı"
+                ],
+                conclusion: "Bu faktörler yalnızca gerçek dikiş yoluyla doğru şekilde değerlendirilebilir. ApprovalStitch bu sonuçları üretim başlamadan önce görünür kılar ve daha sonra pahalı revizyonlardan kaçınmanıza yardımcı olur."
             },
-            expertise: {
-                badge: "Uzmanlığımız",
-                title: "Her Detayda Teknik Hassasiyet",
-                description: "Her dikişli örnek, tam makine performansını ortaya çıkarmak için hazırlanır ve taranır.",
-                item1Title: "Yoğunluk ve Alt Dikiş",
-                item1Desc: "Her kumaş türü için optimize edilmiş dikiş yoğunluğu ve alt dikiş yapısı",
-                item2Title: "İtme-Çekme Telafisi",
-                item2Desc: "Kumaş bozulmasını önlemek için hassas ayarlamalar",
-                item3Title: "İplik Seçimi",
-                item3Desc: "En iyi sonuçlar için uzman iplik ve iğne eşleştirmesi",
-                item4Title: "Tela Seçimi",
-                item4Desc: "Kumaşa özel tela önerileri",
-                item5Title: "Küçük Yazı Ayarı",
-                item5Desc: "İnce harfler için optimize edilmiş okunabilirlik",
-                item6Title: "Kumaş Analizi",
-                item6Desc: "Malzeme özelliklerine dayalı davranış tahmini"
+            process: {
+                badge: "Süreç",
+                title: "Süreç Nasıl İşler?",
+                step1Title: "Dosya Gönderimi",
+                step1Desc: "Nakış dosyanızı veya çiziminizi gönderirsiniz.",
+                step2Title: "Tasarım Hazırlığı",
+                step2Desc: "Tasarım yalnızca doğru dikiş sonuçları sağlamak için hazırlanır.",
+                step3Title: "Gerçek Üretim Dikişi",
+                step3Desc: "Tasarım gerçek üretim koşullarında dikiliyor.",
+                step4Title: "Onay Teslimi",
+                step4Desc: "Onay için yüksek çözünürlüklü dikişli sonuç alırsınız."
             },
-            delivery: {
-                badge: "Teslim Ettiklerimiz",
+            whatYouReceive: {
+                badge: "Ne Alırsınız",
                 title: "Eksiksiz Onay Paketi",
-                description: "Seçtiğiniz onay kartı şablonu, nihai numunenizin yerleşimini, boyutunu, etiketlemesini ve ölçüm stilini tanımlar.",
-                cta: "Başlayın",
-                item1: "Kalibre edilmiş Tajima'da gerçek dikişli test",
-                item2: "Sonucun yüksek çözünürlüklü taraması",
-                item3: "Şablonunuzda onay kartı",
-                item4: "İplik renk listesi (Madeira / Robison-Anton / Isacord)",
-                item5: "İğne ve tela detayları",
-                item6: "Üretime hazır DST dosyası"
+                item1: "Müşterinize sunmak için gerçek dikişli onay sonucu",
+                item2: "Makine operatörünüz için detaylı üretim referans kartı",
+                item3: "Onay ve üretimi hizalayan net görsel referans",
+                conclusion: "Bu, onay, kurulum ve nihai üretim arasında tutarlılık yaratır."
             },
-            mission: {
-                title: "Misyonumuz",
-                description: "Misyonumuz nakış üretim sürecine kesinlik, netlik ve hassasiyet getirmektir. Seri üretimdeki çoğu problem varsayımlardan kaynaklanır: yoğunluk sorunları, iplik kırılmaları, okunamayan küçük metinler, yanlış telafi veya belirli kumaşlarda beklenmeyen bozulmalar.",
-                quote: "Gerçekten test edin, gerçekten doğrulayın ve tüm belirsizliği ortadan kaldıran bir sonuç gönderin.",
-                goal1: "Markalara güven",
-                goal2: "Üretim ekiplerine netlik",
-                goal3: "Fabrikalara tutarlılık"
+            noMachines: {
+                badge: "Avantajlar",
+                title: "Makine Yok. Personel Yok.",
+                description: "ApprovalStitch şu ihtiyaçları ortadan kaldırır:",
+                items: [
+                    "Numune makinelerine yatırım yapma",
+                    "Onay işi için operatör tahsis etme",
+                    "Deneme çalışmalarını yönetmek için dahili zaman harcama"
+                ],
+                conclusion: "Onay dikiş sürecini biz yönetiyoruz, böylece ekibiniz üretime odaklanabilir."
+            },
+            experience: {
+                badge: "Deneyim",
+                title: "Üretim Deneyimi Üzerine Kurulu",
+                years: "35+",
+                yearsLabel: "Yıllık Deneyim",
+                description: "ApprovalStitch, 35 yılı aşkın nakış üretim deneyimiyle şekillenmiştir. Yaklaşımımız, nakışın gerçek iş akışlarında nasıl davrandığını yansıtır — teoride nasıl davranması beklendiğini değil."
+            },
+            whoIsFor: {
+                badge: "Kimler İçin",
+                title: "ApprovalStitch Kimler İçin?",
+                description: "ApprovalStitch şunlar için tasarlanmıştır:",
+                audiences: [
+                    "Nakış üreticileri",
+                    "Giyim ve kurumsal kıyafet tedarikçileri",
+                    "Üretim ve tedarik ekipleri",
+                    "Güvenilir onay kararları gerektiren markalar"
+                ],
+                conclusion: "Onaylarınızın gerçek üretim sonuçlarını yansıtması gerekiyorsa, ApprovalStitch iş akışınıza doğal olarak uyum sağlar."
             },
             finalCta: {
                 title: "Başlamaya Hazır mısınız?",
-                description: "DST dosyanızı üretime hazır dikişli onaya dönüştürün.",
+                tagline: "Gerçek dikiş onayı — üretim imzası için hazır.",
                 cta: "Siparişinizi Başlatın"
             }
         },
@@ -947,64 +965,82 @@ export const translations = {
         },
         aboutPage: {
             hero: {
-                badge: "Who We Are",
-                title1: "Real Stitching.",
-                title2: "Real Results.",
-                description: "A specialized studio focused on producing real stitched approval samples for brands, manufacturers and promotional companies worldwide.",
-                location: "Based in Istanbul, serving clients across the U.S., Canada and Europe."
+                badge: "Real Stitch Approval Service",
+                title1: "APPROVALSTITCH",
+                title2: "Real Stitch. Real Approval.",
+                description: "We provide real stitched approval results that show how an embroidery design actually behaves under production conditions."
             },
-            stats: {
-                yearsExp: "Years Experience",
-                projectsCompleted: "Projects Completed",
-                avgTurnaround: "Avg. Turnaround",
-                accuracyRate: "Accuracy Rate"
+            whatWeDo: {
+                badge: "What We Do",
+                title: "Real Stitched Approval Results",
+                description: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.",
+                detail: "Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality — not assumptions."
             },
-            story: {
-                badge: "Our Story",
-                title: "35+ Years of Embroidery Excellence",
-                desc1: "We run your existing embroidery file on a calibrated Tajima machine, then provide a clean, detailed high-resolution scan that reflects the true stitch result — not an estimate or simulation.",
-                desc2: "With decades of hands-on experience, we understand how stitches behave under real conditions. Every file is tested, every result is verified."
+            whyMatters: {
+                badge: "Why It Matters",
+                title: "Why Real Stitch Approval Matters",
+                description: "Embroidery designs often appear correct on screen, yet behave differently once stitched.",
+                factors: [
+                    "Fabric structure",
+                    "Stitch density interaction",
+                    "Pull compensation",
+                    "Thread behavior under real tension"
+                ],
+                conclusion: "These factors can only be evaluated accurately through actual stitching. ApprovalStitch makes these results visible before production begins, helping you avoid costly revisions later."
             },
-            expertise: {
-                badge: "Our Expertise",
-                title: "Technical Precision in Every Detail",
-                description: "Every stitched sample is prepared and scanned to reveal the exact machine performance.",
-                item1Title: "Density & Underlay",
-                item1Desc: "Optimal stitch density and underlay structure for every fabric type",
-                item2Title: "Push-Pull Compensation",
-                item2Desc: "Precise adjustments for fabric distortion prevention",
-                item3Title: "Thread Selection",
-                item3Desc: "Expert thread and needle pairing for best results",
-                item4Title: "Stabilizer Choice",
-                item4Desc: "Fabric-specific stabilizer recommendations",
-                item5Title: "Small Text Tuning",
-                item5Desc: "Optimized legibility for fine lettering",
-                item6Title: "Fabric Analysis",
-                item6Desc: "Behavior prediction based on material properties"
+            process: {
+                badge: "Process",
+                title: "How the Process Works",
+                step1Title: "File Submission",
+                step1Desc: "You submit your embroidery file or artwork.",
+                step2Title: "Design Preparation",
+                step2Desc: "The design is prepared only to ensure accurate stitching results.",
+                step3Title: "Real Production Stitching",
+                step3Desc: "The design is stitched under real production conditions.",
+                step4Title: "Approval Delivery",
+                step4Desc: "You receive a high-resolution stitched result for approval."
             },
-            delivery: {
-                badge: "What We Deliver",
+            whatYouReceive: {
+                badge: "What You Receive",
                 title: "Complete Approval Package",
-                description: "Your selected approval-card template defines the layout, size, labeling and measurement style of your final sample.",
-                cta: "Get Started",
-                item1: "Real stitched test on calibrated Tajima",
-                item2: "High-resolution scan of result",
-                item3: "Approval card in your template",
-                item4: "Thread color list (Madeira / Robison-Anton / Isacord)",
-                item5: "Needle & stabilizer details",
-                item6: "Production-ready DST file"
+                item1: "A real stitched approval result to present to your customer for sign-off",
+                item2: "A detailed production reference card for your machine operator",
+                item3: "A clear visual benchmark that aligns approval and production",
+                conclusion: "This creates consistency between approval, setup, and final production."
             },
-            mission: {
-                title: "Our Mission",
-                description: "Our mission is to bring certainty, clarity and precision to the embroidery production process. Most problems in mass production come from assumptions: density issues, thread breaks, unreadable small text, incorrect compensation or unexpected distortion on specific fabrics.",
-                quote: "Test it for real, verify it for real, and send a result that removes all uncertainty.",
-                goal1: "Confidence to brands",
-                goal2: "Clarity to production teams",
-                goal3: "Consistency to factories"
+            noMachines: {
+                badge: "Benefits",
+                title: "No Machines to Buy. No Staff to Manage.",
+                description: "ApprovalStitch removes the need to:",
+                items: [
+                    "Invest in sample machines",
+                    "Allocate operators for approval work",
+                    "Spend internal time managing trial runs"
+                ],
+                conclusion: "We handle the approval stitching process so your team can focus on production."
+            },
+            experience: {
+                badge: "Experience",
+                title: "Built on Production Experience",
+                years: "35+",
+                yearsLabel: "Years Experience",
+                description: "ApprovalStitch is shaped by over 35 years of embroidery production experience. Our approach reflects how embroidery truly behaves in real workflows — not how it is expected to behave in theory."
+            },
+            whoIsFor: {
+                badge: "Who Is It For",
+                title: "Who Is ApprovalStitch For?",
+                description: "ApprovalStitch is designed for:",
+                audiences: [
+                    "Embroidery manufacturers",
+                    "Apparel and corporate wear suppliers",
+                    "Production and sourcing teams",
+                    "Brands that require dependable approval decisions"
+                ],
+                conclusion: "If your approvals must reflect real production outcomes, ApprovalStitch fits naturally into your workflow."
             },
             finalCta: {
                 title: "Ready to Get Started?",
-                description: "Turn your DST file into a production-ready stitched approval.",
+                tagline: "Real stitch approval — ready for production sign-off.",
                 cta: "Start Your Order"
             }
         },
