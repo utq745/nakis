@@ -181,7 +181,7 @@ export default function NewOrderPage() {
                         {/* Label */}
                         <span className={cn(
                             "text-[10px] mt-2 font-medium uppercase tracking-wider text-center max-w-[80px]",
-                            step >= s.id ? "text-violet-500" : "text-muted-foreground"
+                            step >= s.id ? "text-violet-500 dark:text-violet-400" : "text-muted-foreground dark:text-zinc-500"
                         )}>
                             {idx + 1}. {s.name}
                         </span>
