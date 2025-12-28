@@ -3,21 +3,21 @@
 import { ReactNode } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
-import { SidebarProvider, useSidebar } from "@/components/providers/sidebar-provider";
-import { cn } from "@/lib/utils";
+import { SidebarProvider } from "@/components/providers/sidebar-provider";
 
 function DashboardContent({ children }: { children: ReactNode }) {
-    const { isCollapsed } = useSidebar();
-
     return (
-        <div className="h-screen bg-background text-foreground overflow-hidden">
-            <Sidebar />
-            <div className={cn(
-                "h-full flex flex-col transition-all duration-300",
-                isCollapsed ? "pl-16" : "pl-64"
-            )}>
-                <Header />
-                <main className="flex-1 overflow-auto p-6">{children}</main>
+        <div className="min-h-screen bg-background text-foreground flex justify-center">
+            {/* Centered container for the entire dashboard */}
+            <div className="w-full max-w-[1440px] h-screen overflow-hidden flex">
+                <Sidebar />
+                {/* Main content area */}
+                <div className="flex-1 h-full flex flex-col min-w-0">
+                    <Header />
+                    <main className="flex-1 overflow-auto p-6">
+                        {children}
+                    </main>
+                </div>
             </div>
         </div>
     );

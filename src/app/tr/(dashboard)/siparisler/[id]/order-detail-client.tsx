@@ -36,6 +36,7 @@ import {
     Archive,
     RefreshCcw,
     FilePlus,
+    Package,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -112,7 +113,9 @@ interface OrderDetailClientProps {
             name: string | null;
             email: string;
             role: "CUSTOMER" | "ADMIN";
+            notes: string | null;
         };
+        serviceType: string | null;
         files: Array<{
             id: string;
             name: string;
@@ -157,6 +160,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [isApprovingPreview, setIsApprovingPreview] = useState(false);
     const [isSendingPreview, setIsSendingPreview] = useState(false);
     const [hasNewPreviewFiles, setHasNewPreviewFiles] = useState(false);
+    const [customerNotes, setCustomerNotes] = useState(order.customer.notes || "");
+    const [isUpdatingNotes, setIsUpdatingNotes] = useState(false);
     const [isRevisionDialogOpen, setIsRevisionDialogOpen] = useState(false);
     const [revisionMessage, setRevisionMessage] = useState("");
     const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
@@ -205,7 +210,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     status,
-                    price: price ? parseFloat(price) : null,
                 }),
             });
 
@@ -270,37 +274,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
-    async function handleApprovePrice() {
-        setIsApprovingPrice(true);
-        try {
-            const response = await fetch(`/api/orders/${order.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    status: "PRICE_ACCEPTED",
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Onay başarısız");
-            }
-
-            toast.success("Fiyat onaylandı, sipariş işleme alındı.");
-
-            setStatus("PRICE_ACCEPTED");
-
-            setTimeout(() => {
-                router.refresh();
-                setIsApprovingPrice(false);
-            }, 1000);
-        } catch (error) {
-            toast.error("İşlem sırasında hata oluştu");
-            console.error(error);
-            setIsApprovingPrice(false);
-        }
-    }
-
-    async function handlePriceDecline() {
+    async function handleCancelOrder() {
         setIsDecliningPrice(true);
         try {
             const response = await fetch(`/api/orders/${order.id}`, {
@@ -450,6 +424,27 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
+    async function handleUpdateCustomerNotes() {
+        setIsUpdatingNotes(true);
+        try {
+            const response = await fetch(`/api/admin/users/${order.customer.id}/notes`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notes: customerNotes }),
+            });
+
+            if (!response.ok) throw new Error("Notlar güncellenemedi");
+
+            toast.success("Müşteri notları güncellendi");
+            router.refresh();
+        } catch (error) {
+            toast.error("Notlar güncellenemedi");
+            console.error(error);
+        } finally {
+            setIsUpdatingNotes(false);
+        }
+    }
+
     const formattedComments = order.comments;
 
     return (
@@ -473,20 +468,22 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </div>
             </div>
 
-            {/* Admin Price Warning Banner */}
-            {isAdmin && status === "WAITING_PRICE" && (
-                <Card className="border-yellow-500/50 bg-yellow-500/5 overflow-hidden">
+            {/* Admin - New Order Received Banner */}
+            {isAdmin && status === "ORDERED" && (
+                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-yellow-500/20 text-yellow-400">
-                                <DollarSign className="h-6 w-6" />
+                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                <Package className="h-6 w-6" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold text-foreground">
-                                    Siparişe fiyat teklifi vermeniz bekleniyor
+                                    Yeni sipariş alındı
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Bu sipariş için fiyat belirleyin. Fiyat girildikten sonra müşteri onay bekleyecektir.
+                                    {order.serviceType === "Approval Sample (Existing DST)"
+                                        ? "Bu sipariş Paket 1 (Onay Örneği). Önizleme dosyalarını yükleyip müşteriye gönderin."
+                                        : "Bu sipariş için çalışmaya başlayın ve final dosyalarını hazırlayın."}
                                 </p>
                             </div>
                         </div>
@@ -494,8 +491,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
-            {/* Customer Waiting Price Banner */}
-            {!isAdmin && status === "WAITING_PRICE" && (
+            {/* Customer - Order Received Banner */}
+            {!isAdmin && status === "ORDERED" && (
                 <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -505,10 +502,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-foreground">
-                                        Fiyat Teklifi Bekleniyor
+                                        Siparişiniz Alındı
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Siparişiniz inceleniyor, fiyat teklifi hazırlandığında size bildirilecektir.
+                                        Siparişiniz inceleniyor. Yakında size dönüş yapılacaktır.
                                     </p>
                                 </div>
                             </div>
@@ -521,48 +518,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <X className="h-4 w-4" />
                                 Siparişi İptal Et
                             </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Admin Waiting for Price Approval Banner */}
-            {isAdmin && status === "PRICED" && (
-                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
-                                <CreditCard className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-semibold text-foreground">
-                                    Müşterinin fiyatı onaylaması bekleniyor
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Fiyat müşteriye iletildi. Müşterinin onayı bekleniyor.
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Admin Preview Upload Warning Banner */}
-            {isAdmin && status === "PRICE_ACCEPTED" && (
-                <Card className="border-emerald-500/50 bg-emerald-500/5 overflow-hidden">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-emerald-500/20 text-emerald-400">
-                                <ImageIcon className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-semibold text-foreground">
-                                    Önizleme dosyası yüklemeniz bekleniyor
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Müşteri fiyatı onayladı. Şimdi önizleme dosyalarını yükleyin ve müşteriye gönderin.
-                                </p>
-                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -625,60 +580,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <p className="text-sm text-muted-foreground">
                                     Müşteri önizlemeyi onayladı. Şimdi final dosyalarını yükleyin.
                                 </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Price Approval Banner for Customer */}
-            {!isAdmin && status === "PRICED" && order.price && (
-                <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-4 text-center md:text-left">
-                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
-                                    <CreditCard className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground">
-                                        {t.orders.priceApprovalTitle}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {t.orders.priceApprovalDesc}
-                                    </p>
-                                    <p className="text-2xl font-bold text-blue-400 mt-2">
-                                        ${Number(order.price).toLocaleString("en-US")}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                                <Button
-                                    onClick={() => setIsDeclineDialogOpen(true)}
-                                    disabled={isDecliningPrice || isApprovingPrice}
-                                    variant="outline"
-                                    className="w-full sm:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all gap-2"
-                                >
-                                    <X className="h-4 w-4" />
-                                    Teklifi Reddet
-                                </Button>
-                                <Button
-                                    onClick={handleApprovePrice}
-                                    disabled={isApprovingPrice || isDecliningPrice}
-                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 transition-all gap-2"
-                                >
-                                    {isApprovingPrice ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            {t.common.loading}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            {t.orders.approvePrice}
-                                        </>
-                                    )}
-                                </Button>
                             </div>
                         </div>
                     </CardContent>
@@ -860,13 +761,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <TabsContent value="final" className="mt-4 space-y-4">
                                     <FileList
                                         files={finalFiles}
-                                        isLocked={!isAdmin && !["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status)}
+                                        isLocked={!isAdmin && !["COMPLETED", "DELIVERED", "COMPLETED"].includes(status)}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && !["PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status)}
+                                        canDelete={isAdmin && !["PAYMENT_PENDING", "COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status)}
                                     />
                                     {/* Müşteri Toplu İndirme Butonu */}
-                                    {!isAdmin && finalFiles.length > 1 && ["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(status) && (
+                                    {!isAdmin && finalFiles.length > 1 && ["COMPLETED", "DELIVERED", "COMPLETED"].includes(status) && (
                                         <div className="pt-4 border-t border-border">
                                             <Button
                                                 onClick={() => {
@@ -925,7 +826,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </Card>
 
                     {/* Wilcom Design Data - Admin Only, visible after preview approval */}
-                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status) && (
+                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}
@@ -1025,41 +926,28 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
-                                <div className="grid grid-cols-6 gap-3">
-                                    <div className="col-span-4 space-y-1">
-                                        <Label className="text-muted-foreground text-xs">Durum</Label>
-                                        <Select
-                                            value={status}
-                                            onValueChange={(value) => setStatus(value as OrderStatus)}
-                                            disabled={order.status === "COMPLETED"}
-                                        >
-                                            <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-popover border-border">
-                                                {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
-                                                    <SelectItem
-                                                        key={key}
-                                                        value={key}
-                                                        className="text-foreground focus:bg-accent"
-                                                    >
-                                                        {label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="col-span-2 space-y-1">
-                                        <Label className="text-muted-foreground text-xs">Fiyat ($)</Label>
-                                        <Input
-                                            type="number"
-                                            value={price}
-                                            onChange={(e) => setPrice(e.target.value)}
-                                            placeholder="0.00"
-                                            className="bg-accent border-border text-foreground h-9"
-                                            disabled={order.status !== "WAITING_PRICE" && order.status !== "PRICED" && order.status !== "REVISION"}
-                                        />
-                                    </div>
+                                <div className="space-y-1">
+                                    <Label className="text-muted-foreground text-xs">Durum</Label>
+                                    <Select
+                                        value={status}
+                                        onValueChange={(value) => setStatus(value as OrderStatus)}
+                                        disabled={order.status === "COMPLETED"}
+                                    >
+                                        <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-popover border-border">
+                                            {Object.entries(ORDER_STATUS_LABELS).map(([key, label]) => (
+                                                <SelectItem
+                                                    key={key}
+                                                    value={key}
+                                                    className="text-foreground focus:bg-accent"
+                                                >
+                                                    {label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <Button
@@ -1074,6 +962,39 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         </>
                                     ) : (
                                         "Güncelle"
+                                    )}
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
+                    {/* Müşteri Notları (CRM) - Sadece Admin */}
+                    {isAdmin && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                                    <ClipboardList className="h-5 w-5 text-violet-400" />
+                                    Müşteri Notları
+                                </CardTitle>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Buraya alacağınız notları müşteri göremez.
+                                </p>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <textarea
+                                    value={customerNotes}
+                                    onChange={(e) => setCustomerNotes(e.target.value)}
+                                    placeholder="Müşteri hakkında dâhili notlar..."
+                                    className="w-full bg-accent border-border text-foreground text-sm rounded-lg p-3 min-h-[100px] focus:ring-violet-500 focus:border-violet-500"
+                                />
+                                <Button
+                                    onClick={handleUpdateCustomerNotes}
+                                    disabled={isUpdatingNotes}
+                                    className="w-full bg-accent hover:bg-accent/80 text-foreground border border-border"
+                                >
+                                    {isUpdatingNotes ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        "Notları Kaydet"
                                     )}
                                 </Button>
                             </CardContent>
@@ -1155,7 +1076,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             <ActionConfirmDialog
                 isOpen={isDeclineDialogOpen}
                 onOpenChange={setIsDeclineDialogOpen}
-                onConfirm={handlePriceDecline}
+                onConfirm={handleCancelOrder}
                 isPending={isDecliningPrice}
                 title="Teklifi Reddet"
                 description="Fiyat teklifini reddetmek istediğinizden emin misiniz? Bu işlem siparişi kalıcı olarak iptal edecektir."

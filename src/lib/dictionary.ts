@@ -322,16 +322,13 @@ export const translations = {
             }
         },
         status: {
-            WAITING_PRICE: "Fiyat Bekleniyor",
-            PRICED: "Fiyatlandırıldı",
-            PRICE_ACCEPTED: "Fiyat Onaylandı",
+            ORDERED: "Sipariş Alındı",
             APPROVAL_AWAITING: "Önizleme Onayı Bekleniyor",
             REVISION: "Revizyon İstendi",
             IN_PROGRESS: "Sipariş Hazırlanıyor",
             PAYMENT_PENDING: "Ödeme Bekleniyor",
-            PAYMENT_COMPLETED: "Ödeme Tamamlandı",
-            DELIVERED: "Teslim Edildi",
             COMPLETED: "Tamamlandı",
+            DELIVERED: "Teslim Edildi",
             CANCELLED: "İptal",
         },
         contactPage: {
@@ -925,16 +922,13 @@ export const translations = {
             }
         },
         status: {
-            WAITING_PRICE: "Price Pending",
-            PRICED: "Priced",
-            PRICE_ACCEPTED: "Price Accepted",
+            ORDERED: "Order Received",
             APPROVAL_AWAITING: "Awaiting Preview Approval",
             REVISION: "Revision Requested",
             IN_PROGRESS: "In Progress",
             PAYMENT_PENDING: "Payment Pending",
-            PAYMENT_COMPLETED: "Payment Completed",
-            DELIVERED: "Delivered",
             COMPLETED: "Completed",
+            DELIVERED: "Delivered",
             CANCELLED: "Cancelled",
         },
         contactPage: {

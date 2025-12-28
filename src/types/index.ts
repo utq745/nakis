@@ -1,6 +1,15 @@
 export type Role = "CUSTOMER" | "ADMIN";
 
-export type OrderStatus = "WAITING_PRICE" | "PRICED" | "PRICE_ACCEPTED" | "APPROVAL_AWAITING" | "REVISION" | "IN_PROGRESS" | "PAYMENT_PENDING" | "PAYMENT_COMPLETED" | "DELIVERED" | "COMPLETED" | "CANCELLED";
+// New Order Status Flow:
+// 1. ORDERED - Customer creates order (price auto-set)
+// 2. APPROVAL_AWAITING - Only for Package 1, admin sends preview
+// 3. REVISION - Customer requests revision (+$10 fee)
+// 4. IN_PROGRESS - Customer approves preview OR packages 2/3 go directly here
+// 5. PAYMENT_PENDING - Admin uploads final files
+// 6. COMPLETED - Customer pays
+// 7. DELIVERED - Customer downloads files
+// 8. CANCELLED - Order cancelled
+export type OrderStatus = "ORDERED" | "APPROVAL_AWAITING" | "REVISION" | "IN_PROGRESS" | "PAYMENT_PENDING" | "COMPLETED" | "DELIVERED" | "CANCELLED";
 
 export interface SafeUser {
     id: string;
@@ -46,43 +55,35 @@ export interface CommentWithUser {
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-    WAITING_PRICE: "Price Pending",
-    PRICED: "Priced",
-    PRICE_ACCEPTED: "Price Accepted",
+    ORDERED: "Order Received",
     APPROVAL_AWAITING: "Awaiting Preview Approval",
     REVISION: "Revision Requested",
     IN_PROGRESS: "In Progress",
     PAYMENT_PENDING: "Payment Pending",
-    PAYMENT_COMPLETED: "Payment Completed",
-    DELIVERED: "Delivered",
     COMPLETED: "Completed",
+    DELIVERED: "Delivered",
     CANCELLED: "Cancelled",
 };
 
 export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
-    WAITING_PRICE: "Fiyat Bekleniyor",
-    PRICED: "Fiyatlandırıldı",
-    PRICE_ACCEPTED: "Fiyat Onaylandı",
+    ORDERED: "Sipariş Alındı",
     APPROVAL_AWAITING: "Önizleme Onayı Bekleniyor",
     REVISION: "Revizyon İstendi",
     IN_PROGRESS: "Sipariş Hazırlanıyor",
     PAYMENT_PENDING: "Ödeme Bekleniyor",
-    PAYMENT_COMPLETED: "Ödeme Tamamlandı",
-    DELIVERED: "Teslim Edildi",
     COMPLETED: "Tamamlandı",
+    DELIVERED: "Teslim Edildi",
     CANCELLED: "İptal Edildi",
 };
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
-    WAITING_PRICE: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-500",
-    PRICED: "bg-blue-500/10 text-blue-600 dark:text-blue-500",
-    PRICE_ACCEPTED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500",
+    ORDERED: "bg-blue-500/10 text-blue-600 dark:text-blue-500",
     APPROVAL_AWAITING: "bg-orange-500/10 text-orange-600 dark:text-orange-500",
     REVISION: "bg-red-500/10 text-red-600 dark:text-red-500",
     IN_PROGRESS: "bg-purple-500/10 text-purple-600 dark:text-purple-500",
     PAYMENT_PENDING: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-500",
-    PAYMENT_COMPLETED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500",
-    DELIVERED: "bg-blue-600/10 text-blue-700 dark:text-blue-600",
     COMPLETED: "bg-green-500/10 text-green-600 dark:text-green-500",
-    CANCELLED: "bg-red-500/10 text-red-600 dark:text-red-500",
+    DELIVERED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500",
+    CANCELLED: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-500",
 };
+

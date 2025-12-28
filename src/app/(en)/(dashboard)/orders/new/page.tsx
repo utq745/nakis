@@ -322,9 +322,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$", desc: "Check stitch quality of your existing DST file" },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$$$", desc: "Minor fixes + stitched approval sample" },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "$$$$", desc: "New digitizing from artwork + stitched sample" }
+                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "Check stitch quality of your existing DST file • Revision: +$10" },
+                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Minor fixes + stitched approval sample" },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "$60", desc: "New digitizing from artwork + stitched sample" }
                             ].map((s) => (
                                 <div
                                     key={s.id}

@@ -93,6 +93,14 @@ export async function POST(request: Request) {
         const estimatedDelivery = new Date();
         estimatedDelivery.setHours(estimatedDelivery.getHours() + 48);
 
+        // Determine price based on service type (fixed prices)
+        const SERVICE_PRICES: Record<string, number> = {
+            "Approval Sample (Existing DST)": 25,
+            "Fix Your DST + Sample": 35,
+            "New Digitizing + Sample": 60,
+        };
+        const orderPrice = SERVICE_PRICES[validatedData.serviceType || ""] || 25;
+
         let order = await prisma.order.create({
             data: {
                 title: sanitizedTitle || "Yeni Sipariş",
@@ -107,7 +115,8 @@ export async function POST(request: Request) {
                 priority: validatedData.priority,
                 estimatedDelivery: estimatedDelivery,
                 customerId: session.user.id,
-                status: "WAITING_PRICE",
+                status: "ORDERED", // Yeni akış: Sipariş alındı
+                price: orderPrice,
             },
         });
 

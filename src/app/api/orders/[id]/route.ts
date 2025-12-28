@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createOrderNotification } from "@/lib/notifications";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["WAITING_PRICE", "PRICED", "PRICE_ACCEPTED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "PAYMENT_COMPLETED", "DELIVERED", "COMPLETED", "CANCELLED"]).optional(),
+    status: z.enum(["ORDERED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
     title: z.string().optional(),
@@ -114,7 +114,7 @@ export async function PATCH(
         // Get current order to check if status changed and check permissions
         const currentOrder = await prisma.order.findUnique({
             where: { id },
-            select: { status: true, price: true, customerId: true }
+            select: { status: true, price: true, customerId: true, serviceType: true }
         });
 
         if (!currentOrder) {
@@ -130,7 +130,7 @@ export async function PATCH(
             return NextResponse.json({ error: "Only admins can update price or visibility" }, { status: 403 });
         }
 
-        // Status update rules:
+        // NEW WORKFLOW: Status update rules
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             if (!isAdmin) {
                 // Check if user owns the order
@@ -139,19 +139,18 @@ export async function PATCH(
                     return NextResponse.json({ error: "Unauthorized: Order belongs to another user." }, { status: 403 });
                 }
 
-                // Customer can transition:
-                // 1. PRICED -> PRICE_ACCEPTED (price approval)
-                // 2. APPROVAL_AWAITING -> IN_PROGRESS (preview approval)
-                // 3. Any stage before work starts -> CANCELLED (customer declines or cancels)
-                const isAcceptingPrice = (currentOrder.status === "PRICED" || currentOrder.status === "WAITING_PRICE") && validatedData.status === "PRICE_ACCEPTED";
-                const isAcceptingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
+                // Customer allowed transitions:
+                // 1. APPROVAL_AWAITING -> IN_PROGRESS (approve preview)
+                // 2. APPROVAL_AWAITING -> REVISION (request revision)
+                // 3. ORDERED -> CANCELLED (cancel before work starts)
+                const isApprovingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
                 const isRequestingRevision = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "REVISION";
-                const isCancelling = validatedData.status === "CANCELLED" && ["WAITING_PRICE", "PRICED"].includes(currentOrder.status);
+                const isCancelling = validatedData.status === "CANCELLED" && currentOrder.status === "ORDERED";
 
-                console.log(`[PATCH_ORDER] isAcceptingPrice=${isAcceptingPrice}, isAcceptingPreview=${isAcceptingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}`);
+                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}`);
                 console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
 
-                if (!isAcceptingPrice && !isAcceptingPreview && !isRequestingRevision && !isCancelling) {
+                if (!isApprovingPreview && !isRequestingRevision && !isCancelling) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
@@ -164,13 +163,6 @@ export async function PATCH(
                 return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
             }
         }
-        // Auto-set status to PRICED when price is entered and current status is WAITING_PRICE
-        // Only if user didn't manually change the status (status is same as current)
-        if (validatedData.price && validatedData.price > 0 &&
-            currentOrder.status === "WAITING_PRICE" &&
-            (!validatedData.status || validatedData.status === "WAITING_PRICE")) {
-            validatedData.status = "PRICED";
-        }
 
         // Handle cancelledAt timestamp
         const finalData: any = { ...validatedData };
@@ -178,6 +170,15 @@ export async function PATCH(
             finalData.cancelledAt = new Date();
         } else if (validatedData.status && validatedData.status !== "CANCELLED" && currentOrder.status === "CANCELLED") {
             finalData.cancelledAt = null;
+        }
+
+        // Add revision fee for Package 1 (Approval Sample) - $10 extra per revision
+        if (validatedData.status === "REVISION" &&
+            currentOrder.status === "APPROVAL_AWAITING" &&
+            currentOrder.serviceType === "Approval Sample (Existing DST)" &&
+            currentOrder.price) {
+            finalData.price = currentOrder.price + 10;
+            console.log(`[PATCH_ORDER] Revision fee added: $${currentOrder.price} + $10 = $${finalData.price}`);
         }
 
         console.log(`[PATCH_ORDER] Final data to update:`, JSON.stringify(finalData));
@@ -195,14 +196,13 @@ export async function PATCH(
         // If status changed, create a system message
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
-                WAITING_PRICE: { en: "Price Pending", tr: "Fiyat Bekleniyor" },
-                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
-                PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
+                ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
                 REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
+                DELIVERED: { en: "Delivered", tr: "Teslim Edildi" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
             };
 
@@ -234,14 +234,13 @@ export async function PATCH(
         // Create In-App Notification
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
-                WAITING_PRICE: { en: "Price Pending", tr: "Fiyat Bekleniyor" },
-                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
-                PRICE_ACCEPTED: { en: "Price Accepted", tr: "Fiyat Onaylandı" },
+                ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
                 REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
                 PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
+                DELIVERED: { en: "Delivered", tr: "Teslim Edildi" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
             };
             const newStatusLabel = statusLabels[validatedData.status] || { en: validatedData.status, tr: validatedData.status };

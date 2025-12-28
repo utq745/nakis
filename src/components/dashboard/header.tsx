@@ -12,11 +12,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Settings, Globe, LayoutDashboard, Package, Check } from "lucide-react";
+import { LogOut, Settings, LayoutDashboard, Package } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
 import { ThemeToggle } from "../theme-toggle";
+import { motion } from "framer-motion";
 
 export function Header() {
     const { data: session } = useSession();
@@ -41,53 +42,36 @@ export function Header() {
         <header className="sticky top-0 z-30 flex h-16 items-center justify-end border-b border-border bg-background/80 backdrop-blur-sm px-6">
 
             <div className="flex items-center gap-2">
-                {/* Language Switcher */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground hover:text-foreground hover:bg-accent"
-                            aria-label={language === "tr" ? "Dil Seç" : "Select Language"}
-                        >
-                            <Globe className="h-5 w-5" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        className="w-32 bg-popover border-border"
-                        align="end"
-                    >
-                        {language === 'tr' ? (
-                            <>
-                                <DropdownMenuItem
-                                    className="text-foreground bg-accent cursor-default font-semibold flex items-center justify-between"
-                                >
-                                    Türkçe <Check className="h-3 w-3" />
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer"
-                                    onClick={() => setLanguage("en")}
-                                >
-                                    English
-                                </DropdownMenuItem>
-                            </>
-                        ) : (
-                            <>
-                                <DropdownMenuItem
-                                    className="text-foreground bg-accent cursor-default font-semibold flex items-center justify-between"
-                                >
-                                    English <Check className="h-3 w-3" />
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="text-muted-foreground focus:text-foreground focus:bg-accent cursor-pointer"
-                                    onClick={() => setLanguage("tr")}
-                                >
-                                    Türkçe
-                                </DropdownMenuItem>
-                            </>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Language Toggle - Like main site */}
+                <button
+                    onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                    className="relative flex items-center w-[64px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none bg-accent border border-border"
+                    aria-label="Toggle language"
+                >
+                    {/* The sliding background */}
+                    <motion.div
+                        className="absolute left-1 h-6 w-7 rounded-full shadow-sm z-0 bg-white"
+                        initial={false}
+                        animate={{
+                            x: language === 'tr' ? 28 : 0,
+                        }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                        }}
+                    />
+
+                    {/* Labels container */}
+                    <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                        <div className="flex items-center justify-center h-full">
+                            <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-muted-foreground'}`}>EN</span>
+                        </div>
+                        <div className="flex items-center justify-center h-full">
+                            <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-muted-foreground'}`}>TR</span>
+                        </div>
+                    </div>
+                </button>
 
                 <ThemeToggle />
 

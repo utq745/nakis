@@ -7,6 +7,7 @@ import { Process } from "@/components/landing/process";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { HeroBackground } from "@/components/landing/hero-background";
 
 export function AboutClient() {
     const { t, language } = useLanguage();
@@ -17,24 +18,8 @@ export function AboutClient() {
 
             <main className="flex-grow">
                 {/* 1. Hero Section */}
-                <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-[#172136]">
-                    {/* Animated Background */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <motion.div
-                            animate={{ scale: [1, 1.2, 1], rotate: [0, 45, 0] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/15 blur-[120px] rounded-full"
-                        />
-                        <motion.div
-                            animate={{ scale: [1.2, 1, 1.2], rotate: [0, -45, 0] }}
-                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                            className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-400/10 blur-[120px] rounded-full"
-                        />
-                        <div className="absolute inset-0 opacity-5" style={{
-                            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-                            backgroundSize: '40px 40px'
-                        }} />
-                    </div>
+                <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-slate-50 dark:bg-[#172136]">
+                    <HeroBackground />
 
                     <div className="container mx-auto px-4 md:px-6 relative z-10 py-20">
                         <motion.div
@@ -45,16 +30,16 @@ export function AboutClient() {
                         >
 
 
-                            <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,6vw,5rem)]">
+                            <h1 className="text-primary dark:text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,6vw,5rem)]">
                                 <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                                     {t.aboutPage.hero.title1}
                                 </span>
                             </h1>
-                            <h2 className="text-white/90 text-2xl md:text-3xl font-bold mb-8">
+                            <h2 className="text-slate-700 dark:text-white/90 text-2xl md:text-3xl font-bold mb-8">
                                 {t.aboutPage.hero.title2}
                             </h2>
 
-                            <p className="text-white/70 text-lg md:text-xl leading-relaxed max-w-[700px] mx-auto">
+                            <p className="text-slate-600 dark:text-white/70 text-lg md:text-xl leading-relaxed max-w-[700px] mx-auto">
                                 {t.aboutPage.hero.description}
                             </p>
                         </motion.div>
@@ -267,7 +252,7 @@ export function AboutClient() {
                 {/* 6. What You Receive */}
                 <section className="w-full py-24 md:py-32 bg-white dark:bg-[#09090b]">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="flex flex-col items-center text-center gap-6 mb-16">
+                        <div className="flex flex-col items-center text-center gap-3 mb-16">
                             <motion.h2
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -287,9 +272,9 @@ export function AboutClient() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                             {[
+                                { title: t.landing.receive.item3Title, desc: t.landing.receive.item3Desc },
                                 { title: t.landing.receive.item1Title, desc: t.landing.receive.item1Desc },
-                                { title: t.landing.receive.item2Title, desc: t.landing.receive.item2Desc },
-                                { title: t.landing.receive.item3Title, desc: t.landing.receive.item3Desc }
+                                { title: t.landing.receive.item2Title, desc: t.landing.receive.item2Desc }
                             ].map((item, index) => (
                                 <motion.div
                                     key={index}

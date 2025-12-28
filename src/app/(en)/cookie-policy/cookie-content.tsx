@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
+import { HeroBackground } from "@/components/landing/hero-background";
 
 export default function CookieContent() {
     const { language } = useLanguage();
@@ -14,19 +15,8 @@ export default function CookieContent() {
 
             <main className="flex-grow">
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-[#172136]">
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
-                        />
-                        <motion.div
-                            animate={{ scale: [1.2, 1, 1.2] }}
-                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                            className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/15 blur-[100px] rounded-full"
-                        />
-                    </div>
+                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-slate-50 dark:bg-[#172136]">
+                    <HeroBackground />
 
                     <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
                         <motion.div
@@ -34,15 +24,15 @@ export default function CookieContent() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>cookie</span>
-                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">Privacy Matters</span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
+                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>cookie</span>
+                                <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">Privacy Matters</span>
                             </div>
 
-                            <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,5vw,4.5rem)]">
+                            <h1 className="text-primary dark:text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,5vw,4.5rem)]">
                                 Cookie Policy
                             </h1>
-                            <p className="text-white/70 text-lg md:text-xl max-w-[700px] mx-auto">
+                            <p className="text-slate-600 dark:text-white/70 text-lg md:text-xl max-w-[700px] mx-auto">
                                 Transparency about how we use cookies to provide a secure and efficient service.
                             </p>
                         </motion.div>
@@ -139,17 +129,7 @@ export default function CookieContent() {
                                     We may use trusted third-party services (such as payment processors like Stripe/PayPal or analytics tools like Google Analytics). These third parties may also set cookies on your device. We recommend reading their privacy policies for more information.
                                 </p>
 
-                                <div className="mt-16 text-center">
-                                    <button
-                                        onClick={() => {
-                                            localStorage.removeItem("cookie-consent");
-                                            window.location.reload();
-                                        }}
-                                        className="px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
-                                    >
-                                        Update Cookie Settings
-                                    </button>
-                                </div>
+
                             </div>
                         </motion.div>
                     </div>

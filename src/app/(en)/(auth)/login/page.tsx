@@ -96,7 +96,7 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f6f6f8] dark:bg-[#101622] font-[family-name:var(--font-inter)]">
-            <Header forceSolid />
+            <Header forceSolid fullWidth />
 
             <main className="flex-grow flex flex-col lg:flex-row w-full animate-in fade-in duration-500 min-h-screen pt-16">
                 {/* Left Side: Visual Sidebar */}

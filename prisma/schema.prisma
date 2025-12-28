@@ -65,7 +65,7 @@ model Order {
   id                 String      @id @default(cuid())
   title              String?
   description        String?
-  status             String      @default("WAITING_PRICE")
+  status             String      @default("ORDERED")
   price              Float?
   hidden             Boolean     @default(false)
   machineBrand       String?

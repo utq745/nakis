@@ -43,7 +43,7 @@ export function Process() {
             </div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
-                <div className="flex flex-col items-center text-center gap-6 mb-20 md:mb-28">
+                <div className="flex flex-col items-center text-center gap-3 mb-20 md:mb-28">
 
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}

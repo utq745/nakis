@@ -28,6 +28,8 @@ interface PaymentFormProps {
     price: number;
     locale: "en" | "tr";
     initialBillingAddress?: string;
+    serviceType?: string;
+    hasRevision?: boolean; // True if customer requested a revision (only for Package 1)
 }
 
 interface BillingData {
@@ -139,7 +141,7 @@ const COUNTRIES = [
     { code: "ZW", name: "Zimbabwe" },
 ];
 
-export function PaymentForm({ orderId, orderTitle, price, locale, initialBillingAddress }: PaymentFormProps) {
+export function PaymentForm({ orderId, orderTitle, price, locale, initialBillingAddress, serviceType, hasRevision }: PaymentFormProps) {
     const router = useRouter();
     const { t } = useLanguage();
     const [isProcessing, setIsProcessing] = useState(false);
@@ -282,7 +284,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
             const response = await fetch(`/api/orders/${orderId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "PAYMENT_COMPLETED" }),
+                body: JSON.stringify({ status: "COMPLETED" }),
             });
 
             if (!response.ok) throw new Error("Payment failed");
@@ -338,7 +340,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">{locale === 'tr' ? 'Durum:' : 'Status:'}</span>
-                                <span className="text-green-500 font-bold uppercase">{t.status.PAYMENT_COMPLETED}</span>
+                                <span className="text-green-500 font-bold uppercase">{t.status.COMPLETED}</span>
                             </div>
                         </div>
                     </div>
@@ -869,7 +871,28 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                             <p className="text-sm text-muted-foreground font-mono">{orderId}</p>
                         </div>
                         <div className="border-t border-border pt-4 mt-4 space-y-4">
-                            <div className="flex items-center justify-between">
+                            {/* Base Price */}
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                    {locale === "tr" ? "Paket Ücreti" : "Package Fee"}
+                                </span>
+                                <span className="text-foreground font-medium">
+                                    ${(hasRevision ? price - 10 : price).toFixed(2)}
+                                </span>
+                            </div>
+
+                            {/* Revision Fee - Only for Package 1 */}
+                            {hasRevision && serviceType === "Approval Sample (Existing DST)" && (
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-amber-500">
+                                        {locale === "tr" ? "Revizyon Ücreti" : "Revision Fee"}
+                                    </span>
+                                    <span className="text-amber-500 font-medium">+$10.00</span>
+                                </div>
+                            )}
+
+                            {/* Total */}
+                            <div className="flex items-center justify-between pt-2 border-t border-border/50">
                                 <span className="text-muted-foreground">{t.payment.totalAmount}</span>
                                 <span className="text-2xl font-bold text-foreground">${price.toFixed(2)}</span>
                             </div>

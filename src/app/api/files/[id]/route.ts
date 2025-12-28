@@ -44,7 +44,7 @@ export async function GET(
 
         // PAYMENT PROTECTION: If it's a final file, check if payment is done
         if (file.type === "final" && !isAdmin) {
-            const allowedStatuses = ["PAYMENT_COMPLETED", "DELIVERED", "COMPLETED"];
+            const allowedStatuses = ["COMPLETED", "DELIVERED"];
             if (!allowedStatuses.includes(file.order.status)) {
                 return NextResponse.json(
                     { error: "Payment required to access final files" },
@@ -53,7 +53,7 @@ export async function GET(
             }
 
             // DELIVERED tracking: Update status if not already delivered/completed
-            if (file.order.status === "PAYMENT_COMPLETED") {
+            if (file.order.status === "COMPLETED") {
                 await prisma.order.update({
                     where: { id: file.orderId },
                     data: { status: "DELIVERED" }

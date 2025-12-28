@@ -40,6 +40,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-white: #FAFAFA;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -53,7 +54,7 @@
   /* Brand Identity Colors */
   --brand-primary-1: #145BEC;
   --brand-primary-2: #0E49BF;
-  --brand-light-1: #FFFFFF;
+  --brand-light-1: #FAFAFA;
   --brand-light-2: #F4F6FA;
   --brand-light-3: #E5E7EB;
   --brand-dark-1: #172136;
@@ -99,6 +100,10 @@
   --sidebar-accent-foreground: var(--brand-primary-1);
   --sidebar-border: var(--brand-light-3);
   --sidebar-ring: var(--brand-primary-1);
+
+  --hero-circle-1-opacity: 0.5;
+  --hero-circle-2-opacity: 0.4;
+  --hero-gradient-opacity: 1;
 }
 
 .dark {
@@ -135,6 +140,10 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #27272a;
   --sidebar-ring: var(--brand-primary-1);
+
+  --hero-circle-1-opacity: 0.15;
+  --hero-circle-2-opacity: 0.1;
+  --hero-gradient-opacity: 0;
 }
 
 @layer base {

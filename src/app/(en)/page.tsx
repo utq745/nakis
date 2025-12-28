@@ -48,8 +48,6 @@ export default function LandingPage() {
         <Hero />
         <WhatYouReceive />
         <Process />
-        <WhyUs />
-        <Portfolio />
         <CTA />
       </main>
       <Footer />

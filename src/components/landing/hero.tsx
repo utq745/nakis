@@ -3,18 +3,14 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
+import { HeroBackground } from "./hero-background";
 
 export function Hero() {
     const { t, language } = useLanguage();
 
     return (
-        <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/10 blur-[120px] rounded-full"></div>
-                <div className="absolute top-1/4 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full"></div>
-            </div>
+        <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-slate-50 dark:bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
+            <HeroBackground />
 
             <div className="container relative z-10 mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -22,14 +18,14 @@ export function Hero() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="flex flex-col gap-8 p-6 sm:p-8 md:p-12 rounded-[2.5rem] bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-2xl relative overflow-hidden group"
+                        className="flex flex-col gap-8 p-6 sm:p-8 md:p-12 rounded-[2.5rem] bg-white/40 dark:bg-black/20 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-2xl relative overflow-hidden group"
                     >
                         {/* Subtle inner highlight */}
-                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
                         <div className="flex flex-col gap-6">
 
 
-                            <h1 className="text-[clamp(1.75rem,5vw,3.75rem)] font-black tracking-tight text-white leading-[1.1] break-words">
+                            <h1 className="text-[clamp(1.75rem,5vw,3.75rem)] font-black tracking-tight text-primary dark:text-white leading-[1.1] break-words">
                                 {t.landing.hero.titleLine1} <br />
                                 <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                                     {t.landing.hero.titleLine2}
@@ -38,10 +34,10 @@ export function Hero() {
 
                             <div className="flex flex-col gap-4">
                                 <p
-                                    className="text-white/80 text-lg md:text-xl leading-relaxed max-w-[540px]"
+                                    className="text-slate-600 dark:text-white/80 text-lg md:text-xl leading-relaxed max-w-[540px]"
                                     dangerouslySetInnerHTML={{ __html: t.landing.hero.description }}
                                 />
-                                <p className="text-white/60 text-sm md:text-base font-medium mb-2">
+                                <p className="text-slate-500 dark:text-white/60 text-sm md:text-base font-medium mb-2">
                                     {t.landing.hero.subText}
                                 </p>
                             </div>
@@ -63,7 +59,7 @@ export function Hero() {
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="px-8 h-14 bg-white/5 backdrop-blur-md text-white border border-white/20 rounded-xl font-bold text-lg hover:bg-white/10 transition-all shadow-sm"
+                                        className="px-8 h-14 bg-white dark:bg-white/5 backdrop-blur-md text-primary dark:text-white border border-black/5 dark:border-white/20 rounded-xl font-bold text-lg hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm"
                                     >
                                         {t.landing.hero.pricingBtn}
                                     </motion.button>
@@ -72,19 +68,19 @@ export function Hero() {
 
                             <div className="flex flex-wrap items-center gap-6 pt-2">
                                 <div className="flex items-center gap-2 group">
-                                    <div className="size-10 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <span className="material-symbols-outlined text-[20px] text-green-400 font-bold">verified</span>
+                                    <div className="size-10 rounded-full bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span className="material-symbols-outlined text-[20px] text-green-600 dark:text-green-400 font-bold">verified</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.labBadge}</span>
+                                        <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.labBadge}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 group">
-                                    <div className="size-10 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <span className="material-symbols-outlined text-[20px] text-blue-400 font-bold">check_circle</span>
+                                    <div className="size-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span className="material-symbols-outlined text-[20px] text-blue-600 dark:text-blue-400 font-bold">check_circle</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.readyBadge}</span>
+                                        <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.readyBadge}</span>
                                     </div>
                                 </div>
                             </div>
@@ -97,35 +93,40 @@ export function Hero() {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="relative lg:ml-10"
                     >
-                        <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/5 backdrop-blur-sm aspect-[5/4] group">
+                        <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group">
                             <img
                                 src="/images/hero/hero.webp"
                                 alt="High-quality real stitched embroidery sample"
                                 loading="eager"
                                 fetchPriority="high"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent opacity-60"></div>
+                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div>
 
-                            {/* Floating Badge on Image */}
                             <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute bottom-6 left-6 p-4 backdrop-blur-md bg-white/20 border border-white/30 rounded-2xl shadow-xl flex items-center gap-4 text-white"
+                                animate={{
+                                    y: [0, -12, 0],
+                                }}
+                                transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                                className="absolute bottom-6 left-6 p-4 backdrop-blur-md bg-white/80 dark:bg-white/20 border border-white/30 rounded-2xl shadow-xl flex items-center gap-4 text-primary dark:text-white"
                             >
                                 <div className="size-10 rounded-full bg-blue-500 flex items-center justify-center">
                                     <span className="material-symbols-outlined text-white">magic_button</span>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-medium opacity-80 uppercase tracking-tighter">{t.landing.hero.precisionBadge}</p>
+                                    <p className="text-xs font-medium opacity-70 dark:opacity-80 uppercase tracking-tighter">{t.landing.hero.precisionBadge}</p>
                                     <p className="text-sm font-bold">{t.landing.hero.stitchedReality}</p>
                                 </div>
                             </motion.div>
                         </div>
 
                         {/* Background blur shape behind image */}
-                        <div className="absolute -z-10 -top-10 -right-10 size-64 bg-primary/20 blur-3xl rounded-full"></div>
-                        <div className="absolute -z-10 -bottom-10 -left-10 size-64 bg-indigo-500/20 blur-3xl rounded-full"></div>
+                        <div className="absolute -z-10 -top-10 -right-10 size-64 bg-primary/10 dark:bg-primary/20 blur-3xl rounded-full"></div>
+                        <div className="absolute -z-10 -bottom-10 -left-10 size-64 bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl rounded-full"></div>
                     </motion.div>
                 </div>
             </div>

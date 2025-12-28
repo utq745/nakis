@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HeroBackground } from "@/components/landing/hero-background";
 
 export function PricingClient() {
     const { language, t } = useLanguage();
@@ -55,19 +56,8 @@ export function PricingClient() {
 
             <main className="flex-grow">
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-[#172136]">
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
-                        />
-                        <motion.div
-                            animate={{ scale: [1.2, 1, 1.2] }}
-                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                            className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/15 blur-[100px] rounded-full"
-                        />
-                    </div>
+                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-slate-50 dark:bg-[#172136]">
+                    <HeroBackground />
 
                     <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
                         <motion.div
@@ -75,15 +65,15 @@ export function PricingClient() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>payments</span>
-                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">{t.pricingPage.hero.badge}</span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
+                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>payments</span>
+                                <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">{t.pricingPage.hero.badge}</span>
                             </div>
 
-                            <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2rem,4vw,3.5rem)]">
+                            <h1 className="text-primary dark:text-white font-black leading-[1.1] mb-6 text-[clamp(2rem,4vw,3.5rem)]">
                                 {t.pricingPage.hero.title}
                             </h1>
-                            <p className="text-white/70 text-lg md:text-xl max-w-[600px] mx-auto">
+                            <p className="text-slate-600 dark:text-white/70 text-lg md:text-xl max-w-[600px] mx-auto">
                                 {t.pricingPage.hero.description}
                             </p>
                         </motion.div>

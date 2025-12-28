@@ -22,7 +22,7 @@ export function CTA() {
                         <div className="absolute bottom-[-20%] left-[-10%] w-[40%] aspect-square rounded-full bg-blue-400/20 blur-[80px]"></div>
                     </div>
 
-                    <div className="flex flex-col gap-8 flex-1 relative z-10 text-center lg:text-left items-center lg:items-start">
+                    <div className="flex flex-col gap-8 w-full relative z-10 text-center items-center">
                         <div className="flex items-center gap-2 group transition-all">
                             <div className="flex">
                                 {[1, 2, 3, 4, 5].map((s) => (
@@ -32,7 +32,7 @@ export function CTA() {
                             <span className="font-bold text-lg ml-2">{t.landing.cta.rating}</span>
                         </div>
 
-                        <h2 className="leading-[1.1] tracking-tight text-white mb-2">
+                        <h2 className="leading-[1.1] tracking-tight text-white mb-2 max-w-[800px]">
                             {t.landing.cta.title}
                         </h2>
                         <motion.div
@@ -43,7 +43,7 @@ export function CTA() {
                             className="w-24 h-1.5 bg-white rounded-full opacity-40"
                         ></motion.div>
 
-                        <p className="text-lg md:text-xl text-white/80 max-w-[480px] leading-relaxed">
+                        <p className="text-lg md:text-xl text-white/80 max-w-[600px] leading-relaxed">
                             {t.landing.cta.description}
                         </p>
 
@@ -67,33 +67,6 @@ export function CTA() {
                                 </motion.button>
                             </Link>
                         </div>
-                    </div>
-
-                    <div className="flex-1 w-full max-w-[500px] relative z-20">
-                        <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            className="bg-white/10 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-white/30 shadow-2xl relative lg:-my-24 lg:translate-x-4"
-                        >
-                            {/* Quote Icon */}
-                            <div className="absolute -top-6 -left-6 size-12 rounded-full bg-white flex items-center justify-center text-primary shadow-lg">
-                                <span className="material-symbols-outlined font-black">format_quote</span>
-                            </div>
-
-                            <p className="text-xl md:text-2xl font-bold italic mb-8 leading-relaxed">
-                                "{t.landing.cta.testimonial}"
-                            </p>
-
-                            <div className="flex items-center gap-6 pt-4 border-t border-white/10">
-                                <div
-                                    className="size-16 rounded-3xl bg-cover bg-center shadow-lg border-2 border-white/20"
-                                    style={{ backgroundImage: 'url("/images/avatars/testimonial-author.webp")' }}
-                                ></div>
-                                <div className="text-left">
-                                    <p className="font-black text-xl">{t.landing.cta.author}</p>
-                                    <p className="text-white/60 font-medium tracking-wide uppercase text-xs mt-1">{t.landing.cta.role}</p>
-                                </div>
-                            </div>
-                        </motion.div>
                     </div>
                 </motion.div>
             </div>

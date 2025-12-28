@@ -8,6 +8,12 @@ export function WhatYouReceive() {
 
     const items = [
         {
+            title: t.landing.receive.item3Title,
+            desc: t.landing.receive.item3Desc,
+            image: "/images/landing/Real_stitched_photos.webp",
+            alt: "Real stitched photos"
+        },
+        {
             title: t.landing.receive.item1Title,
             desc: t.landing.receive.item1Desc,
             image: "" // Placeholder for now
@@ -16,18 +22,13 @@ export function WhatYouReceive() {
             title: t.landing.receive.item2Title,
             desc: t.landing.receive.item2Desc,
             image: "" // Placeholder for now
-        },
-        {
-            title: t.landing.receive.item3Title,
-            desc: t.landing.receive.item3Desc,
-            image: "" // Placeholder for now
         }
     ];
 
     return (
         <section className="w-full py-24 md:py-32 bg-white dark:bg-[#09090b]">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col items-center text-center gap-6 mb-16">
+                <div className="flex flex-col items-center text-center gap-3 mb-16">
 
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -58,7 +59,7 @@ export function WhatYouReceive() {
                         >
                             <div className="w-full aspect-square bg-gray-100 dark:bg-white/5 rounded-3xl border-2 border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center relative overflow-hidden group">
                                 {item.image ? (
-                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                                    <img src={item.image} alt={item.alt || item.title} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="flex flex-col items-center gap-4 text-gray-400 dark:text-white/20">
                                         <span className="material-symbols-outlined text-5xl">image</span>

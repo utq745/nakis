@@ -17,8 +17,6 @@ export function LandingClient() {
                 <Hero />
                 <WhatYouReceive />
                 <Process />
-                <WhyUs />
-                <Portfolio />
                 <CTA />
             </main>
             <Footer />

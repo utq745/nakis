@@ -22,6 +22,7 @@ export default async function PaymentPage({
             price: true,
             status: true,
             customerId: true,
+            serviceType: true,
         },
     });
 
@@ -34,6 +35,12 @@ export default async function PaymentPage({
     if (!order) redirect("/tr/siparisler");
     if (order.customerId !== session.user.id) redirect("/tr/siparisler");
     if (order.status !== "PAYMENT_PENDING") redirect(`/tr/siparisler/${id}`);
+
+    // Check if revision was requested (for Package 1, original price is $25, with revision it's $35+)
+    const originalPrice = order.serviceType === "Approval Sample (Existing DST)" ? 25 :
+        order.serviceType === "Fix Your DST + Sample" ? 35 : 60;
+    const hasRevision = !!(order.serviceType === "Approval Sample (Existing DST)" &&
+        order.price && order.price > originalPrice);
 
     return (
         <div className="container mx-auto py-8 px-4 max-w-5xl">
@@ -56,6 +63,8 @@ export default async function PaymentPage({
                 price={order.price || 0}
                 locale="tr"
                 initialBillingAddress={user?.billingAddress || ""}
+                serviceType={order.serviceType || undefined}
+                hasRevision={hasRevision}
             />
         </div>
     );

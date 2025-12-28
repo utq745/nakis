@@ -6,7 +6,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
+export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?: boolean; fullWidth?: boolean }) {
     const { language, setLanguage, t } = useLanguage();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -58,10 +58,10 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                 : 'bg-white/80 backdrop-blur-md border-b-[#e5e7eb] py-3 shadow-sm dark:bg-[#18212f]/80 dark:border-b-[#2a3441]'
                 }`}
         >
-            <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-                <div className={`flex items-center gap-4 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`}>
+            <div className={`${fullWidth ? 'w-full px-4 md:px-8 xl:px-12' : 'container mx-auto px-4 md:px-6'} flex items-center justify-between`}>
+                <div className={`flex items-center gap-4 transition-colors duration-300 ${isAtTop ? 'text-primary dark:text-white' : 'text-primary dark:text-white'}`}>
                     <Link href={language === 'tr' ? '/tr' : '/'} className="flex items-center gap-4">
-                        <div className={`size-6 transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary'}`}>
+                        <div className={`size-6 transition-colors duration-300 ${isAtTop ? 'text-primary dark:text-white' : 'text-primary'}`}>
                             <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
                             </svg>
@@ -70,17 +70,16 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                     </Link>
                 </div>
                 <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
-                    <div className="hidden lg:flex items-center gap-6 xl:gap-9">
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
-
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
+                    <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
                     </div>
 
                     <div className="flex gap-2 items-center">
                         <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="hidden sm:inline-block">
-                            <button className={`h-10 px-4 text-sm font-bold hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`}>
+                            <button className={`h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`}>
                                 {t.header.signIn}
                             </button>
                         </Link>
@@ -94,7 +93,7 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                         <button
                             onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
                             className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none ${isAtTop
-                                ? "bg-white/10 border border-white/20 backdrop-blur-sm"
+                                ? "bg-zinc-200 dark:bg-white/10 border dark:border-white/20 backdrop-blur-sm"
                                 : "bg-zinc-200 dark:bg-zinc-800 dark:border dark:border-white/10"
                                 }`}
                             aria-label="Toggle language"
@@ -130,7 +129,7 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                         <button
                             onClick={() => setMobileMenuOpen(true)}
                             className={`lg:hidden flex items-center justify-center size-10 rounded-lg transition-colors ${isAtTop
-                                ? 'text-white hover:bg-white/10'
+                                ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'
                                 : 'text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441]'
                                 }`}
                             aria-label="Open menu"
@@ -173,18 +172,18 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
 
                         {/* Navigation Links - Centered */}
                         <nav className="flex-1 flex items-center justify-center px-6">
-                            <div className="flex flex-col gap-3 w-full">
+                            <div className="flex flex-col gap-1 w-full">
                                 <Link
                                     href={language === 'tr' ? '/tr' : '/'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
                                 >
                                     {t.header.home}
                                 </Link>
                                 <Link
                                     href={language === 'tr' ? '/tr/hakkimizda' : '/about'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
                                 >
                                     {language === 'tr' ? 'Hakkımızda' : 'About'}
                                 </Link>
@@ -192,31 +191,31 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                                 <Link
                                     href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
                                 >
                                     {t.header.pricing}
                                 </Link>
                                 <Link
                                     href={language === 'tr' ? '/tr/iletisim' : '/contact'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
                                 >
                                     {t.header.contact}
                                 </Link>
 
-                                <div className="my-4 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
+                                <div className="my-2 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
 
                                 <Link
                                     href={language === 'tr' ? '/tr/giris' : '/login'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
+                                    className="px-4 py-2 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-lg transition-colors font-bold text-sm"
                                 >
                                     {t.header.signIn}
                                 </Link>
                                 <Link
                                     href={language === 'tr' ? '/tr/kayit' : '/register'}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 bg-primary text-white hover:bg-primary-dark rounded-xl transition-colors font-bold text-center text-lg shadow-lg"
+                                    className="px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg transition-colors font-bold text-center text-sm shadow-lg"
                                 >
                                     {t.header.startOrder}
                                 </Link>

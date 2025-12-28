@@ -5,12 +5,12 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { HeroBackground } from "@/components/landing/hero-background";
 
 export default function FAQsContent() {
     const { t, language } = useLanguage();
     const faqs = t.faqsPage;
 
-    const [searchQuery, setSearchQuery] = useState("");
     const [openIndex, setOpenIndex] = useState<string | null>("0-0");
 
     const faqCategories = [
@@ -40,13 +40,7 @@ export default function FAQsContent() {
         }
     ];
 
-    const filteredCategories = faqCategories.map(category => ({
-        ...category,
-        questions: category.questions.filter(faq =>
-            faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            faq.a.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-    })).filter(category => category.questions.length > 0);
+
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#09090b] font-[family-name:var(--font-inter)]">
@@ -54,19 +48,8 @@ export default function FAQsContent() {
 
             <main className="flex-grow" id="main-content">
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-[#172136]">
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full"
-                        />
-                        <motion.div
-                            animate={{ scale: [1.2, 1, 1.2] }}
-                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                            className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/15 blur-[100px] rounded-full"
-                        />
-                    </div>
+                <section className="relative pt-32 pb-48 md:pt-40 md:pb-64 overflow-hidden bg-slate-50 dark:bg-[#172136]">
+                    <HeroBackground />
 
                     <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
                         <motion.div
@@ -74,29 +57,19 @@ export default function FAQsContent() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>help</span>
-                                <span className="text-white/90 text-sm font-bold uppercase tracking-wider">{faqs.hero.badge}</span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
+                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>help</span>
+                                <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">{faqs.hero.badge}</span>
                             </div>
 
-                            <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,5vw,4.5rem)]">
+                            <h1 className="text-primary dark:text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,5vw,4.5rem)]">
                                 {faqs.hero.title}
                             </h1>
-                            <p className="text-white/70 text-lg md:text-xl max-w-[700px] mx-auto mb-10">
+                            <p className="text-slate-600 dark:text-white/70 text-lg md:text-xl max-w-[700px] mx-auto mb-10">
                                 {faqs.hero.description}
                             </p>
 
-                            {/* Search Bar */}
-                            <div className="max-w-xl mx-auto relative">
-                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/50">search</span>
-                                <input
-                                    type="text"
-                                    placeholder={faqs.searchPlaceholder}
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl py-4 pl-12 pr-6 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                                />
-                            </div>
+
                         </motion.div>
                     </div>
                 </section>
@@ -106,7 +79,7 @@ export default function FAQsContent() {
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="max-w-4xl mx-auto">
                             <div className="grid grid-cols-1 gap-12">
-                                {filteredCategories.map((category, catIndex) => (
+                                {faqCategories.map((category, catIndex) => (
                                     <motion.div
                                         key={catIndex}
                                         initial={{ opacity: 0, y: 30 }}
@@ -168,13 +141,6 @@ export default function FAQsContent() {
                                         </div>
                                     </motion.div>
                                 ))}
-
-                                {filteredCategories.length === 0 && (
-                                    <div className="text-center py-20 bg-white dark:bg-[#18181b] rounded-[2.5rem] border border-[#e5e7eb] dark:border-[#27272a]">
-                                        <span className="material-symbols-outlined text-6xl text-[#616f89] mb-4">search_off</span>
-                                        <p className="text-[#616f89] dark:text-gray-400 text-lg">No results found for "{searchQuery}"</p>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>

@@ -322,9 +322,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$", desc: "Mevcut DST dosyanızın dikiş kalitesini kontrol edin" },
-                                { id: "Fix Your DST + Sample", label: "DST Düzeltme + Örnek", price: "$$$", desc: "Küçük düzeltmeler + dikişli onay örneği" },
-                                { id: "New Digitizing + Sample", label: "Yeni Dijitalleştirme + Örnek", price: "$$$$", desc: "Çizimden yeni dijitalleştirme + dikişli örnek" }
+                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Mevcut DST dosyanızın dikiş kalitesini kontrol edin • Revizyon hakkı: +$10" },
+                                { id: "Fix Your DST + Sample", label: "DST Düzeltme + Örnek", price: "$35", desc: "Küçük düzeltmeler + dikişli onay örneği" },
+                                { id: "New Digitizing + Sample", label: "Yeni Dijitalleştirme + Örnek", price: "$60", desc: "Çizimden yeni dijitalleştirme + dikişli örnek" }
                             ].map((s) => (
                                 <div
                                     key={s.id}
