@@ -8,8 +8,8 @@ services:
     expose:
       - "3000"
     volumes:
-      # Veritabanını korumak için SQLite dosyası (dev.db) klasörüyle birlikte bağlanıyor
-      - ./prisma/dev.db:/app/prisma/dev.db
+      # Veritabanını korumak için prisma klasörü bağlanıyor (SQLite journal dosyaları için gerekli)
+      - ./prisma:/app/prisma
       # Yüklenen dosyaların kaybolmaması için uploads klasörü bağlanıyor
       - ./uploads:/app/uploads
       # Projeye özel diğer resimler/assetlar varsa onları da buraya ekleyebilirsiniz
