@@ -256,7 +256,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             });
 
             if (!response.ok) {
-                throw new Error(t.orders.uploadError);
+                const errorData = await response.json();
+                throw new Error(errorData.error || t.orders.uploadError);
             }
 
             toast.success(t.orders.uploadSuccess);
@@ -270,8 +271,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             } else {
                 router.refresh();
             }
-        } catch (error) {
-            toast.error(t.orders.uploadError);
+        } catch (error: any) {
+            toast.error(error.message || t.orders.uploadError);
             console.error(error);
         } finally {
             setIsUploading(false);
