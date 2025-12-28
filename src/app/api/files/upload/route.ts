@@ -16,11 +16,11 @@ export async function POST(request: Request) {
         const orderId = formData.get("orderId") as string;
         const type = formData.get("type") as string || "original";
 
-        if (!orderId || files.length === 0) {
-            return NextResponse.json(
-                { error: "orderId and files are required" },
-                { status: 400 }
-            );
+        if (!orderId) {
+            return NextResponse.json({ error: "Missing orderId in request" }, { status: 400 });
+        }
+        if (files.length === 0) {
+            return NextResponse.json({ error: "No files provided for upload" }, { status: 400 });
         }
 
         // --- SECURITY VALIDATION ---

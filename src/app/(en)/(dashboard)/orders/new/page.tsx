@@ -106,7 +106,9 @@ export default function NewOrderPage() {
             setCreatedOrderId(order.id);
             setShowSuccessModal(true);
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "An error occurred");
+            // Check if it's a server response with an error message
+            const errorMessage = error instanceof Error ? error.message : "An error occurred during submission";
+            toast.error(errorMessage);
             console.error(error);
         } finally {
             setIsLoading(false);
