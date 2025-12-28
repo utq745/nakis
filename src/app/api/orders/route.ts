@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     } catch (error) {
         console.error("Error fetching orders:", error);
         return NextResponse.json(
-            { error: "Siparişler alınırken hata oluştu" },
+            { error: "An error occurred while fetching orders" },
             { status: 500 }
         );
     }
@@ -163,14 +163,14 @@ export async function POST(request: Request) {
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: error.issues[0].message },
+                { error: `Validation error: ${error.issues[0].message}` },
                 { status: 400 }
             );
         }
 
-        console.error("Error creating order:", error);
+        console.error("Order creation core error:", error);
         return NextResponse.json(
-            { error: "Sipariş oluşturulurken hata oluştu" },
+            { error: "An error occurred while creating the order. Please check your data." },
             { status: 500 }
         );
     }

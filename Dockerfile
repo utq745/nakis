@@ -70,7 +70,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy prisma folder for migrations and scripts for admin tools
-COPY --from=builder /app/prisma ./prisma/
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma/
 COPY --from=builder /app/scripts ./scripts/
 
 # Install bcryptjs for password scripts (standalone doesn't include it)

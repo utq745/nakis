@@ -204,7 +204,7 @@ export default function NewOrderPage() {
                 {step === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">1</div>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 dark:text-white flex items-center justify-center font-bold">1</div>
                             <h2 className="text-xl font-semibold text-foreground">Upload File</h2>
                         </div>
                         <div
@@ -281,7 +281,7 @@ export default function NewOrderPage() {
                 {step === 2 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">2</div>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 dark:text-white flex items-center justify-center font-bold">2</div>
                             <h2 className="text-xl font-semibold text-foreground">Select Machine</h2>
                         </div>
 
@@ -316,7 +316,7 @@ export default function NewOrderPage() {
                 {step === 3 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">3</div>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 dark:text-white flex items-center justify-center font-bold">3</div>
                             <h2 className="text-xl font-semibold text-foreground">Select Service Type</h2>
                         </div>
 
@@ -363,7 +363,7 @@ export default function NewOrderPage() {
                 {step === 4 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">4</div>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 dark:text-white flex items-center justify-center font-bold">4</div>
                             <h2 className="text-xl font-semibold text-foreground">Select Product Type</h2>
                         </div>
 
@@ -498,7 +498,7 @@ export default function NewOrderPage() {
                 {step === 5 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 flex items-center justify-center font-bold">5</div>
+                            <div className="w-8 h-8 rounded-full bg-violet-600/20 text-violet-500 dark:text-white flex items-center justify-center font-bold">5</div>
                             <h2 className="text-xl font-semibold text-foreground">Add Notes (optional)</h2>
                         </div>
 
