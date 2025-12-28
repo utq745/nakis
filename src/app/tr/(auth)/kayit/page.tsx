@@ -48,7 +48,8 @@ export default function RegisterPage() {
                 body: JSON.stringify({
                     name: `${firstName} ${lastName}`.trim(),
                     email,
-                    password
+                    password,
+                    language: "tr"
                 }),
             });
 

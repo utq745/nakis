@@ -76,6 +76,11 @@ export const translations = {
                 sidebarDesc: "Hızlı, yüksek kaliteli dijitalleştirme ve vektör dönüştürme hizmetleri için Approval Stitch'e güvenen binlerce işletmeye katılın.",
                 professionals: "10.000+ Profesyonel",
                 trustDaily: "Bize her gün güveniyor"
+            },
+            errors: {
+                alreadyRegistered: "Bu e-posta adresi zaten kayıtlı",
+                registrationError: "Kayıt sırasında bir hata oluştu",
+                tooManyAttempts: "Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin."
             }
         },
         customers: {
@@ -672,6 +677,11 @@ export const translations = {
                 sidebarDesc: "Join thousands of businesses who trust Approval Stitch for fast, high-quality digitizing and vector conversion services.",
                 professionals: "10k+ Professionals",
                 trustDaily: "Trust us daily"
+            },
+            errors: {
+                alreadyRegistered: "This email address is already registered",
+                registrationError: "An error occurred during registration",
+                tooManyAttempts: "Too many registration attempts. Please try again later."
             }
         },
         customers: {

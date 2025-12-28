@@ -3,21 +3,30 @@ import { hash } from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { registerRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
+import { translations, Locale } from "@/lib/dictionary";
 
 const registerSchema = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
     password: z.string().min(6, "Şifre en az 6 karakter olmalı"),
     name: z.string().min(2, "İsim en az 2 karakter olmalı"),
+    language: z.enum(["en", "tr"]).optional(),
 });
 
 export async function POST(request: Request) {
+    let selectedLanguage: Locale = "en";
+
     try {
         // Rate limiting
         const clientIP = getClientIP(request);
         const rateLimitResult = await checkRateLimit(registerRateLimiter, clientIP);
+
+        const body = await request.json();
+        selectedLanguage = body.language || "en";
+        const t = translations[selectedLanguage];
+
         if (!rateLimitResult.success) {
             return NextResponse.json(
-                { error: "Too many registration attempts. Please try again later." },
+                { error: t.auth.errors.tooManyAttempts },
                 {
                     status: 429,
                     headers: { "Retry-After": String(rateLimitResult.retryAfter) }
@@ -25,7 +34,6 @@ export async function POST(request: Request) {
             );
         }
 
-        const body = await request.json();
         const validatedData = registerSchema.parse(body);
 
         // Check if user already exists
@@ -37,7 +45,7 @@ export async function POST(request: Request) {
 
         if (existingUser) {
             return NextResponse.json(
-                { error: "Bu e-posta adresi zaten kayıtlı" },
+                { error: t.auth.errors.alreadyRegistered },
                 { status: 400 }
             );
         }
@@ -53,12 +61,13 @@ export async function POST(request: Request) {
                 name: validatedData.name,
                 role: "CUSTOMER",
                 emailVerified: new Date(), // Auto-verify for now
+                language: selectedLanguage,
             },
         });
 
         return NextResponse.json(
             {
-                message: "Kayıt başarılı",
+                message: selectedLanguage === "tr" ? "Kayıt başarılı" : "Registration successful",
                 user: {
                     id: user.id,
                     email: user.email,
@@ -69,6 +78,8 @@ export async function POST(request: Request) {
             { status: 201 }
         );
     } catch (error) {
+        const t = translations[selectedLanguage];
+
         if (error instanceof z.ZodError) {
             return NextResponse.json(
                 { error: error.issues[0].message },
@@ -76,9 +87,15 @@ export async function POST(request: Request) {
             );
         }
 
-        console.error("Registration error:", error);
+        // Detailed error logging for VPS troubleshooting
+        console.error("Registration error FULL DETAILS:", {
+            message: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            raw: error
+        });
+
         return NextResponse.json(
-            { error: "Kayıt sırasında bir hata oluştu" },
+            { error: t.auth.errors.registrationError },
             { status: 500 }
         );
     }
