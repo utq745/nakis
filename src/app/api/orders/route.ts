@@ -170,7 +170,7 @@ export async function POST(request: Request) {
 
         console.error("Order creation core error:", error);
         return NextResponse.json(
-            { error: "An error occurred while creating the order. Please check your data." },
+            { error: "Order creation failed [v2]. Please check your data." },
             { status: 500 }
         );
     }
