@@ -322,7 +322,7 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "Check stitch quality of your existing DST file • Revision: +$10" },
+                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "Check stitch quality of your existing DST file" },
                                 { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Minor fixes + stitched approval sample" },
                                 { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "$60", desc: "New digitizing from artwork + stitched sample" }
                             ].map((s) => (
@@ -330,23 +330,25 @@ export default function NewOrderPage() {
                                     key={s.id}
                                     onClick={() => setServiceType(s.id)}
                                     className={cn(
-                                        "p-5 rounded-xl border-2 transition-all cursor-pointer flex flex-col gap-1",
+                                        "p-6 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4",
                                         serviceType === s.id ? "border-violet-600 bg-violet-600/10" : "border-border bg-accent/30 hover:border-violet-500/50"
                                     )}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn(
-                                                "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                                                serviceType === s.id ? "border-violet-600 bg-violet-600" : "border-border"
-                                            )}>
-                                                {serviceType === s.id && <div className="w-2 h-2 rounded-full bg-white" />}
-                                            </div>
-                                            <span className={cn("font-medium", serviceType === s.id ? "text-violet-500" : "text-foreground")}>{s.label}</span>
+                                    <div className="flex items-center gap-4">
+                                        <div className={cn(
+                                            "w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0",
+                                            serviceType === s.id ? "border-violet-600 bg-violet-600" : "border-border"
+                                        )}>
+                                            {serviceType === s.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                                         </div>
-                                        <span className="text-emerald-500 font-bold text-xs">{s.price}</span>
+                                        <div className="flex flex-col gap-1">
+                                            <span className={cn("text-lg font-bold leading-tight", serviceType === s.id ? "text-violet-500" : "text-foreground")}>{s.label}</span>
+                                            <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                                        </div>
                                     </div>
-                                    <p className="text-muted-foreground text-xs ml-8">{s.desc}</p>
+                                    <div className="flex items-center shrink-0">
+                                        <span className="text-emerald-500 font-bold text-base">{s.price}</span>
+                                    </div>
                                 </div>
                             ))}
                         </div>
