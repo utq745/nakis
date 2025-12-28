@@ -63,9 +63,9 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Create non-root user for security
+# Create non-root user for security with a proper home directory
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 --home /home/nextjs nextjs
 
 # Copy necessary files from builder
 # Copy node_modules FIRST (before standalone overwrites it)
@@ -84,12 +84,16 @@ RUN npm install --omit=dev bcryptjs@3.0.3
 # Ensure the uploads directory exists and has correct permissions
 RUN mkdir -p uploads && chown nextjs:nodejs uploads
 
+# Create Puppeteer cache directory (won't be used since we use system chromium, but prevents errors)
+RUN mkdir -p /home/nextjs/.cache/puppeteer && chown -R nextjs:nodejs /home/nextjs
+
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
+ENV HOME /home/nextjs
 
 # Start server using the standalone server.js
 CMD ["node", "server.js"]
