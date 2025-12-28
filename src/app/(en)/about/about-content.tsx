@@ -3,6 +3,7 @@
 import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Process } from "@/components/landing/process";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -41,10 +42,7 @@ export default function AboutContent() {
                             transition={{ duration: 0.8 }}
                             className="text-center max-w-4xl mx-auto"
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-6">
-                                <span className="size-2 rounded-full bg-primary animate-pulse" />
-                                <span className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.hero.badge}</span>
-                            </div>
+
 
                             <h1 className="text-white font-black leading-[1.1] mb-6 text-[clamp(2.5rem,6vw,5rem)]">
                                 <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
@@ -92,16 +90,16 @@ export default function AboutContent() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-white/5 border border-primary/20 dark:border-white/10 backdrop-blur-sm w-fit mb-4">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-white opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-white"></span>
-                                    </span>
-                                    <span className="text-primary dark:text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.experience.badge}</span>
-                                </div>
-                                <h2 className="text-foreground dark:text-white mt-4 mb-6 font-black">
+                                <h2 className="text-foreground dark:text-white mb-4 font-black">
                                     {t.aboutPage.experience.title}
                                 </h2>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
+                                ></motion.div>
                                 <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed">
                                     {t.aboutPage.experience.description}
                                 </p>
@@ -114,16 +112,16 @@ export default function AboutContent() {
                 <section className="py-20 md:py-28 bg-background">
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="text-center mb-14">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-white/5 border border-primary/20 dark:border-white/10 backdrop-blur-sm w-fit mb-4 mx-auto">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                </span>
-                                <span className="text-primary dark:text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.whoIsFor.badge}</span>
-                            </div>
                             <h2 className="text-foreground dark:text-white mb-4 font-black">
                                 {t.aboutPage.whoIsFor.title}
                             </h2>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6 mx-auto"
+                            ></motion.div>
                             <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
                                 {t.aboutPage.whoIsFor.description}
                             </p>
@@ -172,16 +170,16 @@ export default function AboutContent() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-white/5 border border-primary/20 dark:border-white/10 backdrop-blur-sm w-fit mb-4">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                    </span>
-                                    <span className="text-primary dark:text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.whatWeDo.badge}</span>
-                                </div>
-                                <h2 className="text-foreground dark:text-white mt-4 mb-6 font-black">
+                                <h2 className="text-foreground dark:text-white mb-4 font-black">
                                     {t.aboutPage.whatWeDo.title}
                                 </h2>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
+                                ></motion.div>
                                 <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed mb-6">
                                     {t.aboutPage.whatWeDo.description}
                                 </p>
@@ -215,16 +213,16 @@ export default function AboutContent() {
                 <section className="py-20 md:py-28 bg-background">
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="text-center mb-14">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-white/5 border border-primary/20 dark:border-white/10 backdrop-blur-sm w-fit mb-4 mx-auto">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                </span>
-                                <span className="text-primary dark:text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.whyMatters.badge}</span>
-                            </div>
                             <h2 className="text-foreground dark:text-white mb-4 font-black">
                                 {t.aboutPage.whyMatters.title}
                             </h2>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6 mx-auto"
+                            ></motion.div>
                             <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
                                 {t.aboutPage.whyMatters.description}
                             </p>
@@ -264,153 +262,63 @@ export default function AboutContent() {
                 </section>
 
                 {/* 6. What You Receive */}
-                <section className="py-20 md:py-28 bg-[#111318] relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-5">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                        }} />
-                    </div>
-
-                    <div className="container mx-auto px-4 md:px-6 relative z-10">
-                        <div className="text-center mb-14">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm w-fit mb-4 mx-auto">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                </span>
-                                <span className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.whatYouReceive.badge}</span>
-                            </div>
-                            <h2 className="text-white mb-4 font-black">
-                                {t.aboutPage.whatYouReceive.title}
-                            </h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                            {[
-                                { icon: "approval", text: t.aboutPage.whatYouReceive.item1 },
-                                { icon: "description", text: t.aboutPage.whatYouReceive.item2 },
-                                { icon: "center_focus_strong", text: t.aboutPage.whatYouReceive.item3 },
-                            ].map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="flex flex-col items-center text-center p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300"
-                                >
-                                    <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white mb-4 shadow-lg">
-                                        <span className="material-symbols-outlined text-3xl">{item.icon}</span>
-                                    </div>
-                                    <p className="text-white font-medium">{item.text}</p>
-                                </motion.div>
-                            ))}
-                        </div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center max-w-3xl mx-auto"
-                        >
-                            <span className="material-symbols-outlined text-green-400 mb-3" style={{ fontSize: '48px' }}>check_circle</span>
-                            <p className="text-lg text-white/80 leading-relaxed">
-                                {t.aboutPage.whatYouReceive.conclusion}
-                            </p>
-                        </motion.div>
-                    </div>
-                </section>
-
-                {/* 7. How The Process Works - Enhanced Home Page Design */}
-                <section className="w-full py-24 md:py-32 bg-background relative overflow-hidden">
-                    {/* Background patterns */}
-                    <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-                        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <circle cx="0" cy="0" r="40" fill="url(#grad_process)" />
-                            <defs>
-                                <radialGradient id="grad_process" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="1" />
-                                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
-                                </radialGradient>
-                            </defs>
-                        </svg>
-                    </div>
-
-                    <div className="container mx-auto px-4 md:px-6 relative z-10">
-                        <div className="flex flex-col items-center text-center gap-6 mb-20 md:mb-28">
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4 }}
-                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-white/10 border border-primary/20 dark:border-white/20 w-fit"
-                            >
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-white opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-white"></span>
-                                </span>
-                                <span className="text-primary dark:text-white font-semibold text-xs uppercase tracking-wider">{t.aboutPage.process.badge}</span>
-                            </motion.div>
+                <section className="w-full py-24 md:py-32 bg-white dark:bg-[#09090b]">
+                    <div className="container mx-auto px-4 md:px-6">
+                        <div className="flex flex-col items-center text-center gap-6 mb-16">
                             <motion.h2
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 className="max-w-[700px] tracking-tight text-foreground dark:text-white font-black"
                             >
-                                {t.aboutPage.process.title}
+                                {t.landing.receive.title}
                             </motion.h2>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40"
+                            ></motion.div>
                         </div>
 
-                        <div className="relative">
-                            {/* Connector Line (visible on desktop) */}
-                            <div className="hidden lg:block absolute top-[50px] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/20 dark:via-white/10 to-transparent z-0"></div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-14 relative z-10">
-                                {[
-                                    { icon: "cloud_upload", title: t.aboutPage.process.step1Title, desc: t.aboutPage.process.step1Desc, step: "01" },
-                                    { icon: "tune", title: t.aboutPage.process.step2Title, desc: t.aboutPage.process.step2Desc, step: "02" },
-                                    { icon: "memory", title: t.aboutPage.process.step3Title, desc: t.aboutPage.process.step3Desc, step: "03" },
-                                    { icon: "verified_user", title: t.aboutPage.process.step4Title, desc: t.aboutPage.process.step4Desc, step: "04" },
-                                ].map((item, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: -50 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 1.2, delay: index * 0.4, ease: "easeOut" }}
-                                        className="relative group flex flex-col items-center lg:items-start"
-                                    >
-                                        {/* Step Number Badge */}
-                                        <div className="relative z-10 mb-10 w-[100px] h-[100px] rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary group-hover:scale-105 transition-all duration-500 shrink-0 flex items-center justify-center">
-                                            <div className="absolute -top-3 -right-3 size-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg group-hover:rotate-[360deg] transition-transform duration-1000">
-                                                {item.step}
-                                            </div>
-                                            <span className="material-symbols-outlined text-primary dark:text-white group-hover:scale-110 transition-transform duration-500 select-none" style={{ fontSize: '40px' }}>
-                                                {item.icon}
-                                            </span>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                            {[
+                                { title: t.landing.receive.item1Title, desc: t.landing.receive.item1Desc },
+                                { title: t.landing.receive.item2Title, desc: t.landing.receive.item2Desc },
+                                { title: t.landing.receive.item3Title, desc: t.landing.receive.item3Desc }
+                            ].map((item, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="flex flex-col gap-6"
+                                >
+                                    <div className="w-full aspect-square bg-gray-100 dark:bg-white/5 rounded-3xl border-2 border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center relative overflow-hidden group">
+                                        <div className="flex flex-col items-center gap-4 text-gray-400 dark:text-white/20">
+                                            <span className="material-symbols-outlined text-5xl">image</span>
+                                            <span className="text-sm font-medium">300 x 300px</span>
                                         </div>
-
-                                        <div className="flex flex-col gap-4 text-center lg:text-left">
-                                            <h3 className="text-foreground dark:text-white tracking-tight group-hover:text-primary transition-colors font-black">
-                                                {item.title}
-                                            </h3>
-                                            <p className="text-muted-foreground leading-relaxed">
-                                                {item.desc}
-                                            </p>
-                                        </div>
-
-                                        {/* Arrow for connection (mobile/tablet) */}
-                                        {index < 3 && (
-                                            <div className="lg:hidden my-6 opacity-20">
-                                                <span className="material-symbols-outlined text-[40px] text-primary dark:text-white">arrow_downward</span>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                ))}
-                            </div>
+                                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 text-center md:text-left">
+                                        <h3 className="text-xl font-black text-foreground dark:text-white leading-tight">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
                     </div>
                 </section>
+
+                {/* 7. How The Process Works */}
+                <Process />
 
                 {/* 8. No Machines Section */}
                 <section className="py-20 md:py-28 bg-muted/50 dark:bg-[#18212f]">
@@ -422,16 +330,17 @@ export default function AboutContent() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-white/5 border border-primary/20 dark:border-white/10 backdrop-blur-sm w-fit mb-4">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                    </span>
-                                    <span className="text-primary dark:text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{t.aboutPage.noMachines.badge}</span>
-                                </div>
-                                <h2 className="text-foreground dark:text-white mt-4 mb-6 font-black">
+
+                                <h2 className="text-foreground dark:text-white mb-4 font-black">
                                     {t.aboutPage.noMachines.title}
                                 </h2>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
+                                ></motion.div>
                                 <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed mb-6">
                                     {t.aboutPage.noMachines.description}
                                 </p>

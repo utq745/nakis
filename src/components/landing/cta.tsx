@@ -35,6 +35,13 @@ export function CTA() {
                         <h2 className="leading-[1.1] tracking-tight text-white mb-2">
                             {t.landing.cta.title}
                         </h2>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="w-24 h-1.5 bg-white rounded-full opacity-40"
+                        ></motion.div>
 
                         <p className="text-lg md:text-xl text-white/80 max-w-[480px] leading-relaxed">
                             {t.landing.cta.description}

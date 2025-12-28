@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 import { ThemeToggle } from "./theme-toggle";
 
 export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
@@ -17,7 +11,6 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isAtTop, setIsAtTop] = useState(!forceSolid);
-    const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
@@ -25,7 +18,6 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
             setIsAtTop(false);
             return;
         }
-        setMounted(true);
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
@@ -81,7 +73,7 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                     <div className="hidden lg:flex items-center gap-6 xl:gap-9">
                         <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
                         <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
-                        <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/hizmetler' : '/services'}>{t.header.services}</Link>
+
                         <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
                         <Link className={`text-sm font-bold leading-normal hover:text-primary-dark transition-colors duration-300 ${isAtTop ? 'text-white' : 'text-primary dark:text-white'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
                     </div>
@@ -99,49 +91,38 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                             </button>
                         </Link>
 
-                        {!mounted ? (
-                            <button className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f4] text-[#111318] hover:bg-[#e2e4e8] dark:bg-[#2a3441] dark:text-white dark:hover:bg-[#374151] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-colors">
-                                <span className="material-symbols-outlined text-[20px]">language</span>
-                                <span className="text-sm font-medium hidden sm:inline-block">
-                                    {language === 'tr' ? 'TR' : 'EN'}
-                                </span>
-                            </button>
-                        ) : (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button className={`flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-all duration-300 ${isAtTop
-                                        ? 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm'
-                                        : 'bg-[#f0f2f4] text-[#111318] hover:bg-[#e2e4e8] dark:bg-[#2a3441] dark:text-white dark:hover:bg-[#374151]'
-                                        }`}>
-                                        <span className="material-symbols-outlined text-[20px]">language</span>
-                                        <span className="text-sm font-medium hidden sm:inline-block">
-                                            {language === 'tr' ? 'TR' : 'EN'}
-                                        </span>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="bg-white dark:bg-[#2a3441] border-[#e5e7eb] dark:border-[#374151]">
-                                    {language === 'tr' ? (
-                                        <>
-                                            <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
-                                                Türkçe <Check className="h-3 w-3" />
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">
-                                                English
-                                            </DropdownMenuItem>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <DropdownMenuItem className="bg-zinc-100 dark:bg-zinc-800 cursor-default font-semibold flex items-center justify-between">
-                                                English <Check className="h-3 w-3" />
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setLanguage("tr")} className="cursor-pointer">
-                                                Türkçe
-                                            </DropdownMenuItem>
-                                        </>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
+                        <button
+                            onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                            className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none ${isAtTop
+                                ? "bg-white/10 border border-white/20 backdrop-blur-sm"
+                                : "bg-zinc-200 dark:bg-zinc-800 dark:border dark:border-white/10"
+                                }`}
+                            aria-label="Toggle language"
+                        >
+                            {/* The sliding background */}
+                            <motion.div
+                                className="absolute left-1 h-6 w-7 rounded-full shadow-sm z-0 bg-white"
+                                initial={false}
+                                animate={{
+                                    x: language === 'tr' ? 28 : 0,
+                                }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 500,
+                                    damping: 30,
+                                }}
+                            />
+
+                            {/* Labels container */}
+                            <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                                <div className="flex items-center justify-center h-full">
+                                    <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
+                                </div>
+                                <div className="flex items-center justify-center h-full">
+                                    <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
+                                </div>
+                            </div>
+                        </button>
 
                         <ThemeToggle isAtTop={isAtTop} />
 
@@ -207,13 +188,7 @@ export function Header({ forceSolid = false }: { forceSolid?: boolean }) {
                                 >
                                     {language === 'tr' ? 'Hakkımızda' : 'About'}
                                 </Link>
-                                <Link
-                                    href={language === 'tr' ? '/tr/hizmetler' : '/services'}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="px-6 py-4 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-lg"
-                                >
-                                    {t.header.services}
-                                </Link>
+
                                 <Link
                                     href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}
                                     onClick={() => setMobileMenuOpen(false)}

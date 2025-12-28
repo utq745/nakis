@@ -15,21 +15,15 @@ export function Process() {
         },
         {
             step: "02",
-            icon: "tune",
+            icon: "memory",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
         },
         {
             step: "03",
-            icon: "memory",
+            icon: "verified_user",
             title: t.landing.process.step3Title,
             desc: t.landing.process.step3Desc,
-        },
-        {
-            step: "04",
-            icon: "verified_user",
-            title: t.landing.process.step4Title,
-            desc: t.landing.process.step4Desc,
         },
     ];
 
@@ -50,19 +44,7 @@ export function Process() {
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="flex flex-col items-center text-center gap-6 mb-20 md:mb-28">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4 }}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-white/10 border border-primary/20 dark:border-white/20 w-fit"
-                    >
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-white"></span>
-                        </span>
-                        <span className="text-primary dark:text-white font-semibold text-xs uppercase tracking-wider">{t.landing.process.badge}</span>
-                    </motion.div>
+
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -71,6 +53,13 @@ export function Process() {
                     >
                         {t.landing.process.title}
                     </motion.h2>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40"
+                    ></motion.div>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -86,7 +75,7 @@ export function Process() {
                     {/* Connector Line (visible on desktop) */}
                     <div className="hidden lg:block absolute top-[50px] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/20 dark:via-white/10 to-transparent z-0"></div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-14 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-14 relative z-10">
                         {steps.map((item, index) => (
                             <motion.div
                                 key={index}
@@ -110,9 +99,10 @@ export function Process() {
                                     <h3 className="text-foreground dark:text-white tracking-tight group-hover:text-primary transition-colors font-black">
                                         {item.title}
                                     </h3>
-                                    <p className="text-muted-foreground leading-relaxed">
-                                        {item.desc}
-                                    </p>
+                                    <p
+                                        className="text-muted-foreground leading-relaxed"
+                                        dangerouslySetInnerHTML={{ __html: item.desc }}
+                                    />
                                 </div>
 
                                 {/* Arrow for connection (mobile/tablet) */}

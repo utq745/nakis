@@ -1,16 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Moon, Sun, Check } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { motion } from "framer-motion";
 
 export function ThemeToggle({ isAtTop = false }: { isAtTop?: boolean }) {
     const { theme, setTheme } = useTheme();
@@ -22,56 +15,44 @@ export function ThemeToggle({ isAtTop = false }: { isAtTop?: boolean }) {
 
     if (!mounted) {
         return (
-            <Button
-                variant="ghost"
-                size="icon"
-                className={isAtTop ? "text-white hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"}
-                aria-label="Toggle theme"
-            >
-                <Sun className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
+            <div className="w-14 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
         );
     }
 
-    const themes = [
-        { id: "light", label: "Light" },
-        { id: "dark", label: "Dark" },
-        { id: "system", label: "System" },
-    ];
-
-    // Reorder so active theme is at index 1 (second place)
-    const activeIndex = themes.findIndex(t => t.id === theme);
-    const reorderedThemes = [...themes];
-    if (activeIndex !== -1 && activeIndex !== 1) {
-        const [activeTheme] = reorderedThemes.splice(activeIndex, 1);
-        reorderedThemes.splice(1, 0, activeTheme);
-    }
+    const isDark = theme === "dark";
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className={isAtTop ? "text-white hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"}
-                    aria-label="Toggle theme"
-                >
-                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    <span className="sr-only">Toggle theme</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover border-border text-popover-foreground">
-                {reorderedThemes.map((t) => (
-                    <DropdownMenuItem
-                        key={t.id}
-                        onClick={() => setTheme(t.id)}
-                        className={`focus:text-accent-foreground focus:bg-accent cursor-pointer ${theme === t.id ? "bg-accent/50 text-accent-foreground font-semibold" : ""}`}
-                    >
-                        {t.label} {theme === t.id && <Check className="ml-auto h-4 w-4" />}
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <button
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className={`relative w-[56px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center ${isAtTop
+                ? "bg-white/10 dark:bg-white/10 border border-white/20"
+                : "bg-zinc-200 dark:bg-zinc-800 dark:border dark:border-white/10"
+                }`}
+            aria-label="Toggle theme"
+        >
+            {/* The sliding background - Always white for best indicator visibility */}
+            <motion.div
+                className="absolute left-1 h-6 w-6 rounded-full shadow-sm z-0 bg-white"
+                initial={false}
+                animate={{
+                    x: isDark ? 0 : 24,
+                }}
+                transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                }}
+            />
+
+            {/* Icons container */}
+            <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                <div className="flex items-center justify-center h-full">
+                    <Moon className={`h-3.5 w-3.5 transition-colors duration-300 ${isDark ? "text-primary" : "text-zinc-500 dark:text-white/50"}`} />
+                </div>
+                <div className="flex items-center justify-center h-full">
+                    <Sun className={`h-3.5 w-3.5 transition-colors duration-300 translate-x-[1.5px] ${isDark ? "text-zinc-500 dark:text-white/50" : "text-primary"}`} />
+                </div>
+            </div>
+        </button>
     );
 }

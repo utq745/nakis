@@ -248,11 +248,12 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Gerçek Onaylı Nakış",
-                titleLine1: "DİJİTALLEŞTİRMENİN ÖTESİNDE.",
-                titleLine2: "GERÇEK NAKIŞ KANITI.",
-                description: "Sadece simüle etmiyoruz, kanıtlıyoruz. Gerçek nakış laboratuvarı hassasiyeti ve üretime hazır güven ile 30+ yıllık deneyimi yaşayın.",
-                uploadBtn: "Tasarımını Yükle",
-                pricingBtn: "Fiyatları Gör",
+                titleLine1: "Gerçek Dikişli",
+                titleLine2: "Onay Örneği",
+                description: "Tasarımınızı gerçek bir üretim kurulumunda dikiyoruz, böylece güvenle onaylayabilirsiniz.",
+                subText: "Render değil. Simülasyon değil. Gerçek dikişli bir örnek.",
+                uploadBtn: "Siparişi Başlat",
+                pricingBtn: "Örnekleri Gör",
                 labBadge: "Gerçek Nakış Laboratuvarı",
                 readyBadge: "Üretime Hazır",
                 precisionBadge: "Hassasiyet",
@@ -268,22 +269,30 @@ export const translations = {
                 card3Title: "Üretime Hazır Güven",
                 card3Desc: "Ölçülmüş, hizalanmış ve renkleri listelenmiş gerçek nakış numuneleri ile kalibre edilmiş onay kartları. Dosyalarınız sadece 'düzeltilmez', üretim için yeniden inşa edilir."
             },
+            receive: {
+                badge: "Teslimat",
+                title: "Neler Alacaksınız?",
+                item1Title: "Onay Kartı (Müşteri Versiyonu)",
+                item1Desc: "Müşterinize sunmak için hazırlanan profesyonel onay kartı.",
+                item2Title: "Onay Kartı (Üretim / Operatör Versiyonu)",
+                item2Desc: "Operatörünüz için tüm teknik detayları içeren üretim föyü.",
+                item3Title: "Gerçek Dikiş Fotoğrafları",
+                item3Desc: "Tajima makinelerimizde dikilmiş gerçek ürün fotoğrafları."
+            },
             process: {
                 badge: "Süreç",
                 title: "Nasıl Çalışır?",
                 description: "Yüklemeden üretime hazır onay kartına kadar sorunsuz bir akış. Test Edildi, Doğrulandı, Hazır.",
                 step1Title: "Yükleme & Detaylar",
-                step1Desc: "Çiziminizi ve İş Özelliklerini Yükleyin. Boyut, kumaş, renk ve özel gereksinimler gibi önemli detaylarla başlıyoruz.",
-                step2Title: "Dijitalleştirme & Teknik Kurulum",
-                step2Desc: "Hassas Dijitalleştirme, Gerçek Kumaş Davranışı için Kalibre Edildi. Belirli kumaş ve gerçek dikiş davranışına göre tasarlandı.",
-                step3Title: "Gerçek Onay Nakışı",
-                step3Desc: "Tajima Tek Kafalı Makinede İşliyoruz. Tasarımınız laboratuvarımızda gerçek üretim koşulları altında işlenir.",
-                step4Title: "Onay Kartı Teslimi",
-                step4Desc: "Tam Bir Onay Paketi Alırsınız. Doğrulanmış, ölçülmüş ve müşteri onayı için hazır."
+                step1Desc: "DST veya çiziminizi yükleyin. <br />size, fabric, placement detaylarını belirtin.",
+                step2Title: "Gerçek Onay Dikişi",
+                step2Desc: "Tasarımınızı gerçek makinelerimizde dikiyoruz.",
+                step3Title: "Onay Paketi",
+                step3Desc: "Onay kartlarını ve gerçek fotoğrafları teslim alırsınız.",
             },
             portfolio: {
                 badge: "Portfolyo",
-                title: "Son Başyapıtlar",
+                title: "Portfolyo",
                 description: "Karmaşık kurumsal logolardan cesur kabartma nakışlara kadar, her dikişteki kaliteyi görün.",
                 viewAll: "Tüm Projeleri Gör",
                 viewDesign: "Tasarımı Görüntüle",
@@ -323,12 +332,13 @@ export const translations = {
         contactPage: {
             heroBadge: "İletişime Geçin",
             title: "İletişim",
-            subtitle: "Gerçek dikişli onay örnekleri, dijitalleştirme talepleri veya fiyat teklifleri için bize her zaman ulaşın.",
+            subtitle: "Gerçek dikişli onay örnekleri ve üretime hazır onaylar için bize her zaman ulaşın.",
             quickContactTitle: "Hızlı İletişim",
             email: "info@approvalstitch.com",
             whatsapp: "WhatsApp: +90 548 858 8394",
-            sendUsInfo: "Nakış dosyanızı (dst), iplik tercihlerinizi ve kumaş detaylarını gönderin.",
-            replyTime: "12 saat içinde yanıt veriyoruz.",
+            whatsappNote: "WhatsApp yalnızca hızlı sorular içindir.<br>Siparişler <a href='/tr/kayit' class='underline'>Sipariş Başlat</a> üzerinden verilir.",
+            sendUsInfo: "Sipariş vermeden önce bir sorunuz mu var?",
+            replyTime: "Genellikle 12 saat içinde yanıt veriyoruz.",
             whatHappensTitle: "Sonra Ne Olur?",
             step1: "Tasarımınızı ve kumaş detaylarınızı bize gönderirsiniz.",
             step2: "Fiyat, tahmini dikiş sayısı ve tahmini süre ile yanıt veririz.",
@@ -343,8 +353,10 @@ export const translations = {
             subjectPlaceholder: "Konu seçin",
             messageLabel: "Mesaj",
             messagePlaceholder: "Mesajınızı yazın...",
-            attachLabel: "Dosya Ekle (opsiyonel)",
+            attachLabel: "Referans dosyası ekleyin (opsiyonel)",
+            attachNote: "Siparişler için lütfen <a href='/tr/kayit' class='underline'>Sipariş Başlat</a>'ı kullanın.",
             sendButton: "Mesaj Gönder",
+            orderCtaNote: "Sipariş vermeye hazır mısınız? Daha hızlı işlem için <a href='/tr/kayit' class='underline'>Sipariş Başlat</a>'ı kullanın.",
             subjects: {
                 quote: "Fiyat Teklifi",
                 digitizing: "Dijitalleştirme Talebi",
@@ -376,7 +388,7 @@ export const translations = {
                 badge: "Ne Yapıyoruz",
                 title: "Gerçek Dikişli Onay Sonuçları",
                 description: "ApprovalStitch, bir nakış tasarımının gerçek üretim koşullarında nasıl davrandığını gösteren gerçek dikişli onay sonuçları sunar.",
-                detail: "Ekran simülasyonlarına, temiz PDF'lere veya teorik önizlemelere güvenmek yerine, tasarımın seçtiğiniz kumaşta gerçek dikiş koşullarında nasıl performans gösterdiğini kanıtlıyoruz. Bu, onayların varsayımlara değil gerçekliğe dayanarak yapılmasını sağlar."
+                detail: "Ekran simülasyonlarına, temiz PDF'lere veya teorik önizlemelere güvenmek yerine, tasarımın seçtiğiniz kumaşta gerçek dikiş koşullarında nasıl performans gösterdiğini kanıtlıyoruz. Bu, onayların varsayımlara değil, gerçekliğe dayanarak yapılmasını sağlar."
             },
             whyMatters: {
                 badge: "Neden Önemli",
@@ -390,18 +402,7 @@ export const translations = {
                 ],
                 conclusion: "Bu faktörler yalnızca gerçek dikiş yoluyla doğru şekilde değerlendirilebilir. ApprovalStitch bu sonuçları üretim başlamadan önce görünür kılar ve daha sonra pahalı revizyonlardan kaçınmanıza yardımcı olur."
             },
-            process: {
-                badge: "Süreç",
-                title: "Süreç Nasıl İşler?",
-                step1Title: "Dosya Gönderimi",
-                step1Desc: "Nakış dosyanızı veya çiziminizi gönderirsiniz.",
-                step2Title: "Tasarım Hazırlığı",
-                step2Desc: "Tasarım yalnızca doğru dikiş sonuçları sağlamak için hazırlanır.",
-                step3Title: "Gerçek Üretim Dikişi",
-                step3Desc: "Tasarım gerçek üretim koşullarında dikiliyor.",
-                step4Title: "Onay Teslimi",
-                step4Desc: "Onay için yüksek çözünürlüklü dikişli sonuç alırsınız."
-            },
+
             whatYouReceive: {
                 badge: "Ne Alırsınız",
                 title: "Eksiksiz Onay Paketi",
@@ -426,7 +427,7 @@ export const translations = {
                 title: "Üretim Deneyimi Üzerine Kurulu",
                 years: "35+",
                 yearsLabel: "Yıllık Deneyim",
-                description: "ApprovalStitch, 35 yılı aşkın nakış üretim deneyimiyle şekillenmiştir. Yaklaşımımız, nakışın gerçek iş akışlarında nasıl davrandığını yansıtır — teoride nasıl davranması beklendiğini değil."
+                description: "ApprovalStitch, 35 yılı aşkın nakış üretim deneyimiyle şekillenmiştir. Yaklaşımımız, nakışın gerçek iş akışlarında nasıl davrandığını yansıtır, teoride nasıl davranması beklendiğini değil."
             },
             whoIsFor: {
                 badge: "Kimler İçin",
@@ -442,7 +443,7 @@ export const translations = {
             },
             finalCta: {
                 title: "Başlamaya Hazır mısınız?",
-                tagline: "Gerçek dikiş onayı — üretim imzası için hazır.",
+                tagline: "Gerçek dikiş onayı, üretim imzası için hazır.",
                 cta: "Siparişinizi Başlatın"
             }
         },
@@ -456,25 +457,24 @@ export const translations = {
                 plan1: {
                     name: "Onay Örneği",
                     description: "İlk test veya hızlı kontrol",
-                    features: ["Mevcut DST'nizi gönderirsiniz", "Sağlandığı gibi dikiliyor", "Onay kartı teslim edilir"],
-                    notIncluded: ["DST düzenleme yok", "Onay sorumluluğu yok"],
+                    features: ["Mevcut DST'nizi gönderirsiniz", "DST düzenlemesi olmadan dikiliyor", "Onay kartı teslim edilir"],
+                    notIncluded: ["DST düzenlemesi dahil değildir"],
                     bestFor: "İlk test veya hızlı kontrol için",
                     cta: "Sipariş Başlat"
                 },
                 plan2: {
                     name: "DST Düzeltme + Onay Örneği",
                     priceNote: "+$10 yükseltme ($25 ödendiyse)",
-                    description: "Onay odaklı veya titiz müşteriler",
-                    features: ["Mevcut DST'nizi gönderirsiniz", "Onay değişiklik gerektiriyorsa DST düzenlenir", "Düzenleme sonrası yeniden dikiliyor", "Güncellenmiş onay kartı teslim edilir"],
-                    keyLogic: "Girişim değil, sorumluluk için ödeme yapıyorsunuz. Düzenleme ve yeniden dikiş tek çözüm olarak değerlendirilir.",
-                    bestFor: "Onay odaklı veya titiz müşteriler için",
+                    description: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
+                    features: ["Mevcut DST ve EMB (Wilcom) dosyanızı gönderirsiniz", "Sadece onay değişiklik gerektiriyorsa DST düzenlenir", "Düzenleme sonrası yeniden dikiliyor", "Güncellenmiş onay kartı teslim edilir"],
+                    bestFor: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
                     cta: "Sipariş Başlat",
-                    popular: "Popüler"
+                    popular: "Tavsiye Edilen"
                 },
                 plan3: {
                     name: "Tam Dijitalleştirme + Onay Örneği",
                     description: "DST yok veya temiz başlangıç",
-                    features: ["Tasarımınızı gönderirsiniz (AI / PDF / PNG / JPG)", "Sıfırdan yeni DST dijitalleştirilir", "Onay örneği dikiliyor", "Onay kartı teslim edilir"],
+                    features: ["Tasarımınızı herhangi bir yaygın formatta (AI, PDF, PNG, JPG, vb.) yükleyebilirsiniz. Tüm standart tasarım formatlarını açabiliyoruz.", "Sıfırdan DST dijitalleştirilir", "Onay örneği dikiliyor", "Onay kartı teslim edilir"],
                     bestFor: "DST yok veya temiz başlangıç için",
                     cta: "Sipariş Başlat"
                 },
@@ -846,11 +846,12 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Real Approval Stitch",
-                titleLine1: "BEYOND DIGITIZING.",
-                titleLine2: "REAL STITCHED PROOF.",
-                description: "We don't just simulate stitches; we prove them. Experience 30+ years of expertise with real stitch lab accuracy and production-ready confidence.",
-                uploadBtn: "Upload Your Design",
-                pricingBtn: "View Pricing",
+                titleLine1: "Real Stitched",
+                titleLine2: "Approval Sample",
+                description: "We stitch your design on a real production setup <br />so you can approve with confidence.",
+                subText: "Not a render. Not a simulation. A real stitched sample.",
+                uploadBtn: "Start Order",
+                pricingBtn: "View Samples",
                 labBadge: "Real Stitch Lab",
                 readyBadge: "Production Ready",
                 precisionBadge: "Precision",
@@ -866,22 +867,30 @@ export const translations = {
                 card3Title: "Production-Ready Confidence",
                 card3Desc: "Calibrated approval cards with real stitched samples — measured, aligned, and color-listed. Your files aren't just \"fixed\", they're rebuilt for production."
             },
+            receive: {
+                badge: "What You Receive",
+                title: "What You Receive",
+                item1Title: "Approval Card (Client Version)",
+                item1Desc: "Professional approval card ready for your client.",
+                item2Title: "Approval Card (Production / Operator Version)",
+                item2Desc: "Technical sheet with all details for your operator.",
+                item3Title: "Real stitched photos",
+                item3Desc: "Photos of the real sample stitched on Tajima machines."
+            },
             process: {
                 badge: "Process",
                 title: "How It Works",
                 description: "A seamless flow from upload to a production-ready approval card. Tested, Verified, Ready.",
-                step1Title: "Upload & Details",
-                step1Desc: "Upload Your Artwork & Job Specs. We start with details that matter — size, fabric, color, and special requirements.",
-                step2Title: "Digitizing & Tech Setup",
-                step2Desc: "Precision Digitizing, Calibrated for Real Fabric Behavior. Engineered for the specific fabric and how real stitches behave.",
-                step3Title: "Real Approval Stitch",
-                step3Desc: "We Stitch It on a Tajima Single-Head Machine. Your design is stitched in our lab under true production conditions.",
-                step4Title: "Approval Card Delivery",
-                step4Desc: "You Receive a Full Approval Package. Verified, measured, and ready for client approval."
+                step1Title: "Upload & Specs",
+                step1Desc: "Upload DST or artwork. <br />size, fabric, placement",
+                step2Title: "Real Approval Stitch",
+                step2Desc: "We stitch a real approval sample on our machines.",
+                step3Title: "Approval Package",
+                step3Desc: "You receive approval cards & real photos.",
             },
             portfolio: {
                 badge: "Portfolio",
-                title: "Recent Masterpieces",
+                title: "Portfolio",
                 description: "From intricate corporate logos to bold puff embroidery, see the quality in every stitch.",
                 viewAll: "View All Projects",
                 viewDesign: "View Design",
@@ -921,12 +930,13 @@ export const translations = {
         contactPage: {
             heroBadge: "Get In Touch",
             title: "Contact",
-            subtitle: "For real stitched approval samples, digitizing requests, or quotes reach us anytime.",
+            subtitle: "For real stitched approval samples and production-ready approvals, reach us anytime.",
             quickContactTitle: "Quick Contact",
             email: "info@approvalstitch.com",
             whatsapp: "WhatsApp: +90 548 858 8394",
-            sendUsInfo: "Send us your embroidery file (dst), thread preferences and fabric details.",
-            replyTime: "We reply within 12 hours.",
+            whatsappNote: "WhatsApp is for quick questions only.<br>Orders are placed through <a href='/register' class='underline'>Start Order</a>.",
+            sendUsInfo: "Have a question before placing an order?",
+            replyTime: "We usually reply within 12 hours.",
             whatHappensTitle: "What happens next?",
             step1: "You send us your design and fabric details.",
             step2: "We reply with price, estimated stitch count and ETA.",
@@ -941,8 +951,10 @@ export const translations = {
             subjectPlaceholder: "Select a subject",
             messageLabel: "Message",
             messagePlaceholder: "Write your message...",
-            attachLabel: "Attach File (optional)",
+            attachLabel: "Attach reference file (optional)",
+            attachNote: "For orders, please use <a href='/register' class='underline'>Start Order</a>.",
             sendButton: "Send Message",
+            orderCtaNote: "Ready to place an order? Use <a href='/register' class='underline'>Start Order</a> for faster processing.",
             subjects: {
                 quote: "Get a Quote",
                 digitizing: "Digitizing Request",
@@ -974,7 +986,7 @@ export const translations = {
                 badge: "What We Do",
                 title: "Real Stitched Approval Results",
                 description: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.",
-                detail: "Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality — not assumptions."
+                detail: "Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality, not assumptions."
             },
             whyMatters: {
                 badge: "Why It Matters",
@@ -988,18 +1000,7 @@ export const translations = {
                 ],
                 conclusion: "These factors can only be evaluated accurately through actual stitching. ApprovalStitch makes these results visible before production begins, helping you avoid costly revisions later."
             },
-            process: {
-                badge: "Process",
-                title: "How the Process Works",
-                step1Title: "File Submission",
-                step1Desc: "You submit your embroidery file or artwork.",
-                step2Title: "Design Preparation",
-                step2Desc: "The design is prepared only to ensure accurate stitching results.",
-                step3Title: "Real Production Stitching",
-                step3Desc: "The design is stitched under real production conditions.",
-                step4Title: "Approval Delivery",
-                step4Desc: "You receive a high-resolution stitched result for approval."
-            },
+
             whatYouReceive: {
                 badge: "What You Receive",
                 title: "Complete Approval Package",
@@ -1024,7 +1025,7 @@ export const translations = {
                 title: "Built on Production Experience",
                 years: "35+",
                 yearsLabel: "Years Experience",
-                description: "ApprovalStitch is shaped by over 35 years of embroidery production experience. Our approach reflects how embroidery truly behaves in real workflows — not how it is expected to behave in theory."
+                description: "ApprovalStitch is shaped by over 35 years of embroidery production experience. Our approach reflects how embroidery truly behaves in real workflows, not how it is expected to behave in theory."
             },
             whoIsFor: {
                 badge: "Who Is It For",
@@ -1040,7 +1041,7 @@ export const translations = {
             },
             finalCta: {
                 title: "Ready to Get Started?",
-                tagline: "Real stitch approval — ready for production sign-off.",
+                tagline: "Real stitch approval, ready for production sign-off.",
                 cta: "Start Your Order"
             }
         },
@@ -1054,25 +1055,24 @@ export const translations = {
                 plan1: {
                     name: "Approval Sample",
                     description: "First test or quick check",
-                    features: ["You send existing DST", "Stitched as provided", "Approval card delivered"],
-                    notIncluded: ["No DST editing", "No approval responsibility"],
+                    features: ["You send existing DST", "Stitched without DST editing", "Approval card delivered"],
+                    notIncluded: ["DST editing not included"],
                     bestFor: "First test or quick check",
                     cta: "Start Order"
                 },
                 plan2: {
                     name: "Fix Your DST + Approval Sample",
                     priceNote: "+$10 upgrade if $25 already paid",
-                    description: "Approval focused or picky customers",
-                    features: ["You send existing DST", "DST edited if approval requires changes", "Re-stitched after editing", "Updated approval card delivered"],
-                    keyLogic: "You pay for responsibility, not attempts. Editing and re-stitch treated as one solution.",
-                    bestFor: "Approval focused or picky customers",
+                    description: "Designs that may require adjustments after review",
+                    features: ["You send existing DST and EMB (Wilcom)", "DST edited only if approval requires changes", "Re-stitched after editing", "Updated approval card delivered"],
+                    bestFor: "Designs that may require<br>adjustments after review",
                     cta: "Start Order",
-                    popular: "Popular"
+                    popular: "Recommended"
                 },
                 plan3: {
                     name: "Full Digitizing + Approval Sample",
                     description: "No DST or clean start",
-                    features: ["You send artwork (AI / PDF / PNG / JPG)", "New DST digitized from scratch", "Approval sample stitched", "Approval card delivered"],
+                    features: ["You can upload your artwork in any common format (AI, PDF, PNG, JPG, etc.). We can open all standard artwork formats.", "DST digitized from scratch", "Approval sample stitched", "Approval card delivered"],
                     bestFor: "No DST or clean start",
                     cta: "Start Order"
                 },

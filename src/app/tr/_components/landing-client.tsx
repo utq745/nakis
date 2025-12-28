@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { Hero } from "@/components/landing/hero";
 import { WhyUs } from "@/components/landing/why-us";
 import { Process } from "@/components/landing/process";
+import { WhatYouReceive } from "@/components/landing/what-you-receive";
 import { Portfolio } from "@/components/landing/portfolio";
 import { CTA } from "@/components/landing/cta";
 
@@ -14,8 +15,9 @@ export function LandingClient() {
             <Header />
             <main className="flex-grow flex flex-col items-center">
                 <Hero />
-                <WhyUs />
+                <WhatYouReceive />
                 <Process />
+                <WhyUs />
                 <Portfolio />
                 <CTA />
             </main>

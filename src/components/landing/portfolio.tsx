@@ -15,23 +15,11 @@ export function Portfolio() {
     ];
 
     return (
-        <section className="w-full bg-white dark:bg-[#09090b] py-24 md:py-32">
+        <section id="samples" className="w-full bg-white dark:bg-[#09090b] py-24 md:py-32">
             <div className="container mx-auto px-4 md:px-6 flex flex-col gap-12 md:gap-16">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-10">
                     <div className="flex flex-col gap-6 max-w-[700px]">
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4 }}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-white/10 border border-primary/20 dark:border-white/20 w-fit"
-                        >
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary dark:bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary dark:bg-white"></span>
-                            </span>
-                            <span className="text-primary dark:text-white font-semibold text-xs uppercase tracking-wider">{t.landing.portfolio.badge}</span>
-                        </motion.div>
+
                         <motion.h2
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -40,6 +28,13 @@ export function Portfolio() {
                         >
                             {t.landing.portfolio.title}
                         </motion.h2>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40"
+                        ></motion.div>
                         <motion.p
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}

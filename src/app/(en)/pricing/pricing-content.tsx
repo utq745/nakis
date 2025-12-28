@@ -28,7 +28,6 @@ export default function PricingContent() {
             priceNote: t.pricingPage.plans.plan2.priceNote,
             description: t.pricingPage.plans.plan2.description,
             features: t.pricingPage.plans.plan2.features,
-            keyLogic: t.pricingPage.plans.plan2.keyLogic,
             bestFor: t.pricingPage.plans.plan2.bestFor,
             highlighted: true,
             popular: t.pricingPage.plans.plan2.popular,
@@ -110,6 +109,12 @@ export default function PricingContent() {
                                         }`}
                                 >
 
+                                    {plan.popular && (
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#ffc107] text-[#111318] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-[0_4px_20px_rgba(255,193,7,0.4)] z-20 whitespace-nowrap">
+                                            {plan.popular}
+                                        </div>
+                                    )}
+
                                     <div className="text-center mb-6">
                                         <h3 className={`font-bold text-lg mb-2 ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}>
                                             {plan.name}
@@ -162,22 +167,10 @@ export default function PricingContent() {
                                         </div>
                                     )}
 
-                                    {/* Key Logic */}
-                                    {plan.keyLogic && (
-                                        <div className={`mb-6 p-4 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
-                                            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${plan.highlighted ? 'text-white/80' : 'text-primary'}`}>
-                                                {language === 'tr' ? 'Temel Mantık:' : 'Core Logic:'}
-                                            </p>
-                                            <p className={`text-xs ${plan.highlighted ? 'text-white/80' : 'text-[#616f89] dark:text-gray-400'}`}>
-                                                {plan.keyLogic}
-                                            </p>
-                                        </div>
-                                    )}
-
                                     {/* Best For */}
-                                    <div className={`mb-6 text-center py-3 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-[#0a0a0a]'}`}>
+                                    <div className={`mb-6 text-center py-3 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-white/5'}`}>
                                         <p className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>{t.pricingPage.plans.bestForLabel}</p>
-                                        <p className={`text-sm font-bold ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}>{plan.bestFor}</p>
+                                        <p className={`text-sm font-bold ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`} dangerouslySetInnerHTML={{ __html: plan.bestFor }} />
                                     </div>
 
                                     <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="block mt-auto">
