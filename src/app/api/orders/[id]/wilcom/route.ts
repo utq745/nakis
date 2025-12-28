@@ -100,9 +100,12 @@ export async function POST(
         // Note: Status changes are now handled explicitly via the UI/workflow, not automatically
 
         return NextResponse.json({ success: true, data: wilcomData });
-    } catch (error) {
+    } catch (error: any) {
         console.error("[WILCOM_POST]", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json(
+            { error: `Internal Server Error [v2]: ${error.message || 'Unknown error'}` },
+            { status: 500 }
+        );
     }
 }
 

@@ -21,8 +21,13 @@ RUN apt-get update && apt-get install -y \
     libxshmfence1 \
     python3 \
     python3-pip \
+    chromium \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+# Set Puppeteer environment variables
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Install Python dependencies globally
 RUN pip3 install --no-cache-dir pymupdf pillow --break-system-packages
