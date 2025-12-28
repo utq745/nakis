@@ -52,6 +52,7 @@ export async function POST(request: Request) {
                 password: hashedPassword,
                 name: validatedData.name,
                 role: "CUSTOMER",
+                emailVerified: new Date(), // Auto-verify for now
             },
         });
 

@@ -8,9 +8,9 @@ export const loginRateLimiter = new RateLimiterMemory({
     blockDuration: 60 * 15, // Block for 15 minutes
 });
 
-// Register: 3 attempts per hour per IP
+// Register: Relaxed for testing (100 attempts per hour per IP)
 export const registerRateLimiter = new RateLimiterMemory({
-    points: 3,
+    points: 100,
     duration: 60 * 60, // per hour
     blockDuration: 60 * 60,
 });
