@@ -43,9 +43,9 @@ export default function NewOrderPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const newFiles = Array.from(e.target.files);
-            setFiles((prev) => [...prev, ...newFiles]);
+        if (e.target.files && e.target.files.length > 0) {
+            // Only allow one file
+            setFiles([e.target.files[0]]);
         }
     };
 
@@ -57,6 +57,7 @@ export default function NewOrderPage() {
         }
 
         setIsLoading(true);
+        const startTime = Date.now();
 
         try {
             // Create order
@@ -96,6 +97,12 @@ export default function NewOrderPage() {
                 method: "POST",
                 body: uploadFormData,
             });
+
+            // Ensure at least 2 seconds have passed
+            const elapsedTime = Date.now() - startTime;
+            if (elapsedTime < 2000) {
+                await new Promise(resolve => setTimeout(resolve, 2000 - elapsedTime));
+            }
 
             if (!uploadRes.ok) {
                 toast.error("Order created but file upload failed. You can upload files from the order page.");
@@ -215,8 +222,9 @@ export default function NewOrderPage() {
                             onDrop={(e) => {
                                 e.preventDefault();
                                 setIsDragOver(false);
-                                if (e.dataTransfer.files) {
-                                    setFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+                                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                    // Only allow one file
+                                    setFiles([e.dataTransfer.files[0]]);
                                 }
                             }}
                             className={cn(
@@ -228,9 +236,8 @@ export default function NewOrderPage() {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                multiple
                                 className="hidden"
-                                accept=".dst,.emb,.ai,.pdf"
+                                accept=".dst,.emb,.ai,.pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                                 onChange={handleFileChange}
                             />
                             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
@@ -240,7 +247,7 @@ export default function NewOrderPage() {
                                 <Button variant="secondary" size="sm" className="bg-accent border-border hover:bg-accent/80 text-xs text-foreground">Choose File</Button>
                                 <span className="text-muted-foreground text-sm py-1">No file chosen</span>
                             </div>
-                            <p className="text-muted-foreground text-xs">or drag & drop your DST, EMB, AI, or PDF file here (max 50MB)</p>
+                            <p className="text-muted-foreground text-xs">or drag & drop your AI, PDF, PNG, JPG, DST or JPEG file here (max 50MB)</p>
                         </div>
 
                         <div className="space-y-4">

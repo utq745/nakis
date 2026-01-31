@@ -38,6 +38,9 @@ export async function GET(
             case "design":
                 imagePath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_design.png`);
                 break;
+            case "artwork":
+                imagePath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_artwork.png`);
+                break;
             default:
                 return NextResponse.json({ error: "Invalid image type" }, { status: 400 });
         }

@@ -32,14 +32,37 @@ export async function POST(
         const buffer = Buffer.from(bytes);
         await fs.writeFile(pdfPath, buffer);
 
-        // Fetch order to check for user-provided title
+        // Fetch order to check for user-provided title and get artwork file
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            select: { title: true }
+            include: {
+                files: {
+                    where: {
+                        type: "preview",
+                        OR: [
+                            { name: { endsWith: ".png" } },
+                            { name: { endsWith: ".jpg" } },
+                            { name: { endsWith: ".jpeg" } },
+                            { name: { endsWith: ".PNG" } },
+                            { name: { endsWith: ".JPG" } },
+                            { name: { endsWith: ".JPEG" } },
+                        ]
+                    },
+                    orderBy: {
+                        createdAt: "desc" // Use the latest preview
+                    },
+                    take: 1
+                }
+            }
         });
 
+        const artworkFile = order?.files?.[0];
+        const artworkPath = artworkFile
+            ? path.join(process.cwd(), "uploads", orderId, "preview", artworkFile.url)
+            : null;
+
         // Process the PDF
-        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title);
+        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title, artworkPath);
 
         // Save/Update in database
         const wilcomData = await prisma.wilcomData.upsert({
@@ -65,6 +88,7 @@ export async function POST(
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
                 designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
+                customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
                 wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,
@@ -91,6 +115,7 @@ export async function POST(
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
                 designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
+                customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
                 wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,

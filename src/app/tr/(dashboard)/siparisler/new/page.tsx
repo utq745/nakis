@@ -43,9 +43,9 @@ export default function NewOrderPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const newFiles = Array.from(e.target.files);
-            setFiles((prev) => [...prev, ...newFiles]);
+        if (e.target.files && e.target.files.length > 0) {
+            // Only allow one file
+            setFiles([e.target.files[0]]);
         }
     };
 
@@ -57,45 +57,49 @@ export default function NewOrderPage() {
         }
 
         setIsLoading(true);
+        const startTime = Date.now();
 
         try {
-            // Create order
-            const response = await fetch("/api/orders", {
+            // Create order first
+            const res = await fetch("/api/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    title: projectName.trim(),
-                    description: notes,
                     machineBrand: machine,
                     serviceType,
                     productType,
                     garmentType: isNotSure ? "Belirsiz" : garmentType,
+                    projectName: projectName.trim(),
+                    description: notes,
+                    priority,
                     isNotSure,
                     customProduct,
                     addKnockdownStitch,
-                    priority,
                 }),
             });
 
-            if (!response.ok) {
-                const err = await response.json();
+            if (!res.ok) {
+                const err = await res.json();
                 throw new Error(err.error || "Sipariş oluşturulamadı");
             }
+            const order = await res.json();
 
-            const order = await response.json();
-
-            // Upload files
-            const uploadFormData = new FormData();
-            files.forEach((file) => {
-                uploadFormData.append("files", file);
-            });
-            uploadFormData.append("orderId", order.id);
-            uploadFormData.append("type", "original");
+            // Handle file upload
+            const formData = new FormData();
+            files.forEach((file) => formData.append("files", file));
+            formData.append("orderId", order.id);
+            formData.append("type", "original");
 
             const uploadRes = await fetch("/api/files/upload", {
                 method: "POST",
-                body: uploadFormData,
+                body: formData,
             });
+
+            // Ensure at least 2 seconds have passed
+            const elapsedTime = Date.now() - startTime;
+            if (elapsedTime < 2000) {
+                await new Promise(resolve => setTimeout(resolve, 2000 - elapsedTime));
+            }
 
             if (!uploadRes.ok) {
                 toast.error("Sipariş oluşturuldu ancak dosya yüklenemedi. Sipariş sayfasından dosyaları yükleyebilirsiniz.");
@@ -213,8 +217,9 @@ export default function NewOrderPage() {
                             onDrop={(e) => {
                                 e.preventDefault();
                                 setIsDragOver(false);
-                                if (e.dataTransfer.files) {
-                                    setFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+                                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                    // Only allow one file
+                                    setFiles([e.dataTransfer.files[0]]);
                                 }
                             }}
                             className={cn(
@@ -226,9 +231,8 @@ export default function NewOrderPage() {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                multiple
                                 className="hidden"
-                                accept=".dst,.emb,.ai,.pdf"
+                                accept=".dst,.emb,.ai,.pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
                                 onChange={handleFileChange}
                             />
                             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
@@ -238,7 +242,7 @@ export default function NewOrderPage() {
                                 <Button variant="secondary" size="sm" className="bg-accent border-border hover:bg-accent/80 text-xs text-foreground">Dosya Seç</Button>
                                 <span className="text-muted-foreground text-sm py-1">Dosya seçilmedi</span>
                             </div>
-                            <p className="text-muted-foreground text-xs">veya DST, EMB, AI, veya PDF dosyanızı buraya sürükleyin (maks 50MB)</p>
+                            <p className="text-muted-foreground text-xs">veya AI, PDF, PNG, JPG, DST veya JPEG dosyanızı buraya sürükleyin (maks 50MB)</p>
                         </div>
 
                         <div className="space-y-4">
@@ -636,34 +640,36 @@ export default function NewOrderPage() {
             </div>
 
             {/* Success Modal */}
-            {showSuccessModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-black/60 animate-in fade-in duration-300">
-                    <div className="bg-card border border-border p-8 rounded-3xl max-w-md w-full text-center shadow-2xl shadow-violet-900/20 animate-in zoom-in-95 duration-300">
-                        <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-ring">
-                            <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                                <Check className="h-8 w-8 text-white" />
+            {
+                showSuccessModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-black/60 animate-in fade-in duration-300">
+                        <div className="bg-card border border-border p-8 rounded-3xl max-w-md w-full text-center shadow-2xl shadow-violet-900/20 animate-in zoom-in-95 duration-300">
+                            <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-ring">
+                                <div className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                                    <Check className="h-8 w-8 text-white" />
+                                </div>
+                            </div>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">Siparişiniz Başarıyla Oluşturuldu!</h2>
+                            <p className="text-muted-foreground mb-8">Nakış siparişiniz alındı ve işleme konuldu.</p>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    onClick={() => router.push(`/tr/siparisler/${createdOrderId}`)}
+                                    className="bg-violet-600 hover:bg-violet-700 py-6 rounded-xl font-semibold text-white shadow-lg shadow-violet-600/20"
+                                >
+                                    Siparişi Göster
+                                </Button>
+                                <Button
+                                    onClick={() => router.push('/tr/siparisler')}
+                                    className="bg-accent hover:bg-accent/80 text-foreground py-6 rounded-xl font-semibold"
+                                >
+                                    Siparişlerim
+                                </Button>
                             </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-foreground mb-2">Siparişiniz Başarıyla Oluşturuldu!</h2>
-                        <p className="text-muted-foreground mb-8">Nakış siparişiniz alındı ve işleme konuldu.</p>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                onClick={() => router.push(`/tr/siparisler/${createdOrderId}`)}
-                                className="bg-violet-600 hover:bg-violet-700 py-6 rounded-xl font-semibold text-white shadow-lg shadow-violet-600/20"
-                            >
-                                Siparişi Göster
-                            </Button>
-                            <Button
-                                onClick={() => router.push('/tr/siparisler')}
-                                className="bg-accent hover:bg-accent/80 text-foreground py-6 rounded-xl font-semibold"
-                            >
-                                Siparişlerim
-                            </Button>
-                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

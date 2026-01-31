@@ -111,7 +111,7 @@ export default function FAQsContent() {
                                                             <h3 className="font-bold text-lg text-[#111318] dark:text-white">
                                                                 {faq.q}
                                                             </h3>
-                                                            <span className={`material-symbols-outlined transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : 'text-[#616f89]'}`}>
+                                                            <span className={`material-symbols-outlined transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
                                                                 expand_more
                                                             </span>
                                                         </button>

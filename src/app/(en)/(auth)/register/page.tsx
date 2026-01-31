@@ -179,7 +179,7 @@ export default function RegisterPage() {
                                 type="password"
                                 placeholder="••••••••"
                                 required
-                                minLength={6}
+                                minLength={8}
                                 disabled={isLoading}
                                 className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                             />
@@ -193,7 +193,7 @@ export default function RegisterPage() {
                                 type="password"
                                 placeholder="••••••••"
                                 required
-                                minLength={6}
+                                minLength={8}
                                 disabled={isLoading}
                                 className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary"
                             />

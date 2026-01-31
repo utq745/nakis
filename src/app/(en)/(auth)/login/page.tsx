@@ -14,6 +14,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -88,10 +89,6 @@ export default function LoginPage() {
 
     const handleGoogleSignIn = () => {
         signIn("google", { callbackUrl: "/dashboard" });
-    };
-
-    const handleAppleSignIn = () => {
-        signIn("apple", { callbackUrl: "/dashboard" });
     };
 
     return (
@@ -263,6 +260,23 @@ export default function LoginPage() {
                                 </div>
                             </div>
 
+                            {/* Remember Me */}
+                            {activeTab === 'signin' && (
+                                <div className="flex items-center mt-2">
+                                    <input
+                                        id="remember-me"
+                                        name="remember-me"
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="h-4 w-4 text-primary border-slate-300 dark:border-slate-600 rounded focus:ring-primary bg-white dark:bg-[#1a2230]"
+                                    />
+                                    <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600 dark:text-slate-400">
+                                        {t.auth.rememberMe || "Remember me"}
+                                    </label>
+                                </div>
+                            )}
+
                             {/* Submit Button */}
                             <button
                                 type="submit"
@@ -294,11 +308,11 @@ export default function LoginPage() {
                         </div>
 
                         {/* Social Buttons */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <button
                                 onClick={handleGoogleSignIn}
                                 type="button"
-                                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#1a2230] border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                                className="flex w-full items-center justify-center gap-3 rounded-lg bg-white dark:bg-[#1a2230] border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                             >
                                 {/* Official Google Logo */}
                                 <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -308,17 +322,6 @@ export default function LoginPage() {
                                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                 </svg>
                                 <span>{lp.google}</span>
-                            </button>
-                            <button
-                                onClick={handleAppleSignIn}
-                                type="button"
-                                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#1a2230] border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                            >
-                                {/* Official Apple Logo */}
-                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
-                                </svg>
-                                <span>{lp.apple}</span>
                             </button>
                         </div>
 

@@ -47,6 +47,7 @@ export const translations = {
             firstName: "Ad",
             lastName: "Soyad",
             confirmPassword: "Şifre (Tekrar)",
+            rememberMe: "Beni hatırla",
             registerDesc: "Nakış digitizing siparişlerinizi yönetin",
             creatingAccount: "Kayıt olunuyor...",
             loginPage: {
@@ -66,7 +67,6 @@ export const translations = {
                 fullNamePlaceholder: "Ahmet Yılmaz",
                 orContinueWith: "Veya şununla devam edin",
                 google: "Google",
-                apple: "Apple",
                 termsText: "Giriş yaparak,",
                 termsOfService: "Kullanım Şartları",
                 and: "ve",
@@ -277,22 +277,22 @@ export const translations = {
             receive: {
                 badge: "Teslimat",
                 title: "Neler Alacaksınız?",
-                item1Title: "Onay Kartı (Müşteri Versiyonu)",
-                item1Desc: "Müşterinize sunmak için hazırlanan profesyonel onay kartı.",
-                item2Title: "Onay Kartı (Üretim / Operatör Versiyonu)",
-                item2Desc: "Operatörünüz için tüm teknik detayları içeren üretim föyü.",
-                item3Title: "Gerçek Dikiş Fotoğrafları",
-                item3Desc: "Tajima makinelerimizde dikilmiş gerçek ürün fotoğrafları."
+                item1Title: "Approval Card (Client Version)",
+                item1Desc: "Üretim öncesi onay için müşteriye hazır onay kartı.",
+                item2Title: "Approval Card (Production / Operator Version)",
+                item2Desc: "Dikiş, renk ve kurulum detaylarını içeren üretim onay kartı.",
+                item3Title: "Real stitched photos",
+                item3Desc: "Tajima veya Barudan makinelerimizde dikilmiş gerçek numune fotoğrafları."
             },
             process: {
                 badge: "Süreç",
                 title: "Nasıl Çalışır?",
                 description: "Yüklemeden üretime hazır onay kartına kadar sorunsuz bir akış. Test Edildi, Doğrulandı, Hazır.",
-                step1Title: "Yükleme & Detaylar",
-                step1Desc: "DST veya çiziminizi yükleyin. <br />size, fabric, placement detaylarını belirtin.",
-                step2Title: "Gerçek Onay Dikişi",
-                step2Desc: "Tasarımınızı gerçek makinelerimizde dikiyoruz.",
-                step3Title: "Onay Paketi",
+                step1Title: "Upload & Specs",
+                step1Desc: "DST veya çiziminizi yükleyin. Boyut, makine markası, kumaş ve yerleşim detaylarını seçin.",
+                step2Title: "Real Approval Stitch",
+                step2Desc: "Tasarımınızı Tajima veya Barudan üretim makinelerimizde dikiyoruz.",
+                step3Title: "Approval Package",
                 step3Desc: "Onay kartlarını ve gerçek fotoğrafları teslim alırsınız.",
             },
             portfolio: {
@@ -459,8 +459,12 @@ export const translations = {
                 plan1: {
                     name: "Onay Örneği",
                     description: "İlk test veya hızlı kontrol",
-                    features: ["Mevcut DST'nizi gönderirsiniz", "DST düzenlemesi olmadan dikiliyor", "Onay kartı teslim edilir"],
-                    notIncluded: ["DST düzenlemesi dahil değildir"],
+                    features: [
+                        "<strong>DST</strong> dosyanızı yüklersiniz",
+                        "<strong>Bize ulaştığı şekilde</strong> dikiyoruz (ön düzenleme yok)",
+                        "Gerçek dikiş fotoğrafı + <strong>Onay Kartı</strong> teslim edilir"
+                    ],
+                    notIncluded: ["DST düzenleme / temizleme"],
                     bestFor: "İlk test veya hızlı kontrol için",
                     cta: "Sipariş Başlat"
                 },
@@ -468,8 +472,13 @@ export const translations = {
                     name: "DST Düzeltme + Onay Örneği",
                     priceNote: "+$10 yükseltme ($25 ödendiyse)",
                     description: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
-                    features: ["Mevcut DST ve EMB (Wilcom) dosyanızı gönderirsiniz", "Sadece onay değişiklik gerektiriyorsa DST düzenlenir", "Düzenleme sonrası yeniden dikiliyor", "Güncellenmiş onay kartı teslim edilir"],
-                    bestFor: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
+                    features: [
+                        "<strong>DST</strong> dosyanızı yüklersiniz",
+                        "Sadece <strong>küçük düzeltmeler</strong> yapıyoruz (yoğunluk, çekme telafisi, temizleme, overlok dikişleri vb.) <br /><i>(Tamamen yeniden dijitalleştirme değil)</i>",
+                        "Düzenlemeden sonra <strong>yeniden dikiyoruz</strong>",
+                        "Güncellenmiş dikiş fotoğrafı + <strong>Güncellenmiş Onay Kartı</strong> teslim edilir"
+                    ],
+                    bestFor: "İlk incelemeden sonra ayarlama gerektiren tasarımlar",
                     cta: "Sipariş Başlat",
                     popular: "Tavsiye Edilen"
                 },
@@ -645,6 +654,7 @@ export const translations = {
             firstName: "First Name",
             lastName: "Last Name",
             confirmPassword: "Password (Confirm)",
+            rememberMe: "Remember me",
             registerDesc: "Manage your embroidery digitizing orders",
             creatingAccount: "Creating account...",
             loginPage: {
@@ -664,7 +674,6 @@ export const translations = {
                 fullNamePlaceholder: "John Doe",
                 orContinueWith: "Or continue with",
                 google: "Google",
-                apple: "Apple",
                 termsText: "By signing in, you agree to our",
                 termsOfService: "Terms of Service",
                 and: "and",
@@ -878,20 +887,20 @@ export const translations = {
                 badge: "What You Receive",
                 title: "What You Receive",
                 item1Title: "Approval Card (Client Version)",
-                item1Desc: "Professional approval card ready for your client.",
+                item1Desc: "Client-ready approval card for sign-off before production.",
                 item2Title: "Approval Card (Production / Operator Version)",
-                item2Desc: "Technical sheet with all details for your operator.",
+                item2Desc: "Production approval card with stitch, color, and setup details.",
                 item3Title: "Real stitched photos",
-                item3Desc: "Photos of the real sample stitched on Tajima machines."
+                item3Desc: "Photos of the real sample stitches on Tajima or Barudan Machines."
             },
             process: {
                 badge: "Process",
                 title: "How It Works",
                 description: "A seamless flow from upload to a production-ready approval card. Tested, Verified, Ready.",
                 step1Title: "Upload & Specs",
-                step1Desc: "Upload DST or artwork. <br />size, fabric, placement",
+                step1Desc: "Upload DST or artwork. Select size, machine brand, fabric, and placement.",
                 step2Title: "Real Approval Stitch",
-                step2Desc: "We stitch a real approval sample on our machines.",
+                step2Desc: "We stitch a real approval sample on Tajima or Barudan production machines.",
                 step3Title: "Approval Package",
                 step3Desc: "You receive approval cards & real photos.",
             },
@@ -1059,17 +1068,26 @@ export const translations = {
                 plan1: {
                     name: "Approval Sample",
                     description: "First test or quick check",
-                    features: ["You send existing DST", "Stitched without DST editing", "Approval card delivered"],
-                    notIncluded: ["DST editing not included"],
-                    bestFor: "First test or quick check",
+                    features: [
+                        "You upload your <strong>DST</strong>",
+                        "We stitch it <strong>exactly as provided</strong> (no pre-editing)",
+                        "Real stitched photo + <strong>Approval Card</strong> delivered"
+                    ],
+                    notIncluded: ["DST editing / cleanup"],
+                    bestFor: "First test / quick check",
                     cta: "Start Order"
                 },
                 plan2: {
                     name: "Fix Your DST + Approval Sample",
                     priceNote: "+$10 upgrade if $25 already paid",
                     description: "Designs that may require adjustments after review",
-                    features: ["You send existing DST and EMB (Wilcom)", "DST edited only if approval requires changes", "Re-stitched after editing", "Updated approval card delivered"],
-                    bestFor: "Designs that may require<br>adjustments after review",
+                    features: [
+                        "You upload your <strong>DST</strong>",
+                        "We do <strong>small fixes only</strong> (density, pull comp, trims, lock stitches, etc.) <br /><i>(No full re-digitizing)</i>",
+                        "We <strong>re-stitch after editing</strong>",
+                        "Updated stitched photo + <strong>Updated Approval Card</strong> delivered"
+                    ],
+                    bestFor: "Designs that need adjustments after the first review",
                     cta: "Start Order",
                     popular: "Recommended"
                 },

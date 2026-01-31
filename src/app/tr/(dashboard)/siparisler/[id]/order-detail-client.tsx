@@ -862,6 +862,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <span className="text-foreground font-medium">Oluşturulma</span>
                                 <span className="text-sm text-muted-foreground">
                                     {new Date(order.createdAt).toLocaleDateString("tr-TR", {
+                                        year: "numeric",
                                         month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
@@ -873,6 +874,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <span className="text-foreground font-medium">Son Güncelleme</span>
                                 <span className="text-sm text-muted-foreground">
                                     {new Date(order.updatedAt).toLocaleDateString("tr-TR", {
+                                        year: "numeric",
                                         month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
@@ -885,6 +887,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <span className="text-foreground font-medium">Sipariş Teslimi</span>
                                     <span className="text-sm text-muted-foreground">
                                         {new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))).toLocaleDateString("tr-TR", {
+                                            year: "numeric",
                                             month: "short",
                                             day: "numeric",
                                             hour: "2-digit",
@@ -934,7 +937,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         onValueChange={(value) => setStatus(value as OrderStatus)}
                                         disabled={order.status === "COMPLETED"}
                                     >
-                                        <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
+                                        <SelectTrigger className="w-full bg-accent hover:bg-blue-50 dark:hover:bg-accent/80 border-border text-foreground h-9 transition-colors">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-popover border-border">
@@ -942,7 +945,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 <SelectItem
                                                     key={key}
                                                     value={key}
-                                                    className="text-foreground focus:bg-accent"
+                                                    className="text-foreground"
                                                 >
                                                     {label}
                                                 </SelectItem>

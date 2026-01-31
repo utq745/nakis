@@ -129,9 +129,7 @@ export default function PricingContent() {
                                                 <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} style={{ fontSize: '20px' }}>
                                                     check_circle
                                                 </span>
-                                                <span className={`text-sm ${plan.highlighted ? 'text-white/90' : 'text-[#616f89] dark:text-gray-300'}`}>
-                                                    {feature}
-                                                </span>
+                                                <span className={`text-sm ${plan.highlighted ? 'text-white/90' : 'text-[#616f89] dark:text-gray-300'}`} dangerouslySetInnerHTML={{ __html: feature }} />
                                             </li>
                                         ))}
                                     </ul>
@@ -148,9 +146,7 @@ export default function PricingContent() {
                                                         <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white/50' : 'text-red-400'}`} style={{ fontSize: '16px' }}>
                                                             close
                                                         </span>
-                                                        <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>
-                                                            {item}
-                                                        </span>
+                                                        <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`} dangerouslySetInnerHTML={{ __html: item }} />
                                                     </li>
                                                 ))}
                                             </ul>
@@ -209,7 +205,7 @@ export default function PricingContent() {
                                             </span>
                                             <h3 className="font-bold text-[#111318] dark:text-white">{faq.q}</h3>
                                         </div>
-                                        <span className={`material-symbols-outlined text-[#616f89] dark:text-gray-400 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180' : ''}`}>
+                                        <span className={`material-symbols-outlined transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
                                             expand_more
                                         </span>
                                     </button>

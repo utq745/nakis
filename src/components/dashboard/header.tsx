@@ -45,12 +45,12 @@ export function Header() {
                 {/* Language Toggle - Like main site */}
                 <button
                     onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
-                    className="relative flex items-center w-[64px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none bg-accent border border-border"
+                    className="relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-white/10"
                     aria-label="Toggle language"
                 >
                     {/* The sliding background */}
                     <motion.div
-                        className="absolute left-1 h-6 w-7 rounded-full shadow-sm z-0 bg-white"
+                        className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
                         initial={false}
                         animate={{
                             x: language === 'tr' ? 28 : 0,
@@ -65,10 +65,10 @@ export function Header() {
                     {/* Labels container */}
                     <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
                         <div className="flex items-center justify-center h-full">
-                            <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-muted-foreground'}`}>EN</span>
+                            <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
                         </div>
                         <div className="flex items-center justify-center h-full">
-                            <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-muted-foreground'}`}>TR</span>
+                            <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
                         </div>
                     </div>
                 </button>

@@ -9,7 +9,7 @@ export function Hero() {
     const { t, language } = useLanguage();
 
     return (
-        <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-slate-50 dark:bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
+        <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-[#F6F7F8] dark:bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
             <HeroBackground />
 
             <div className="container relative z-10 mx-auto px-4 md:px-6">

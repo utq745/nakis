@@ -264,6 +264,7 @@ export function CommentSection({ orderId, initialComments, status }: CommentSect
                                         </span>
                                         <span className="text-[10px] text-amber-500/60">
                                             {mounted && new Date(comment.createdAt).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {
+                                                year: "numeric",
                                                 month: "short",
                                                 day: "numeric",
                                                 hour: "2-digit",

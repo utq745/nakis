@@ -24,15 +24,15 @@ export function ThemeToggle({ isAtTop = false }: { isAtTop?: boolean }) {
     return (
         <button
             onClick={() => setTheme(isDark ? "light" : "dark")}
-            className={`relative w-[56px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center ${isAtTop
-                ? "bg-white/10 dark:bg-white/10 border border-white/20"
-                : "bg-zinc-200 dark:bg-zinc-800 dark:border dark:border-white/10"
+            className={`relative w-[56px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center ${isAtTop
+                ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
+                : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
                 }`}
             aria-label="Toggle theme"
         >
             {/* The sliding background - Always white for best indicator visibility */}
             <motion.div
-                className="absolute left-1 h-6 w-6 rounded-full shadow-sm z-0 bg-white"
+                className="absolute left-1 h-6 w-6 rounded-full z-0 bg-white"
                 initial={false}
                 animate={{
                     x: isDark ? 0 : 24,

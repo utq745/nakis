@@ -1,29 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Process() {
     const { t } = useLanguage();
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
     const steps = [
         {
             step: "01",
-            icon: "cloud_upload",
             title: t.landing.process.step1Title,
             desc: t.landing.process.step1Desc,
+            image: "/images/landing/How_it_works_Upload_specs.webp"
         },
         {
             step: "02",
-            icon: "memory",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
+            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp",
+            video: "/videos/landing/Real-Approval-Stitch.webm"
         },
         {
             step: "03",
-            icon: "verified_user",
             title: t.landing.process.step3Title,
             desc: t.landing.process.step3Desc,
+            image: "/images/landing/Approval-Package.webp"
         },
     ];
 
@@ -85,14 +88,36 @@ export function Process() {
                                 transition={{ duration: 1.2, delay: index * 0.4, ease: "easeOut" }}
                                 className="relative group flex flex-col items-center lg:items-start"
                             >
-                                {/* Step Number Badge */}
-                                <div className="relative z-10 mb-10 w-[100px] h-[100px] rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary group-hover:scale-105 transition-all duration-500 shrink-0 flex items-center justify-center">
-                                    <div className="absolute -top-3 -right-3 size-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-lg group-hover:rotate-[360deg] transition-transform duration-1000">
+                                {/* Step Image & Badge Container */}
+                                <div className="relative z-20 mb-10 w-full aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-500">
+                                    {/* Image Canvas */}
+                                    <div
+                                        className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${item.video ? 'cursor-pointer' : ''}`}
+                                        onClick={() => item.video && setSelectedVideo(item.video)}
+                                    >
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${item.video ? 'opacity-60' : ''}`}
+                                        />
+
+                                        {/* Play Button Overlay */}
+                                        {item.video && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors z-10">
+                                                <div className="w-20 h-20 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                    <span className="material-symbols-outlined text-primary ml-1" style={{ fontVariationSettings: "'FILL' 1", fontSize: '2vw' }}>
+                                                        play_arrow
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+
+                                    {/* Step Number Badge - Outside the overflow:hidden container */}
+                                    <div className="absolute -top-4 -right-4 size-12 rounded-full bg-primary text-white flex items-center justify-center font-black text-base shadow-xl group-hover:rotate-[360deg] transition-transform duration-1000 z-30 border-4 border-[#e8f3ff] dark:border-[#18212F]">
                                         {item.step}
                                     </div>
-                                    <span className="material-symbols-outlined text-primary dark:text-white group-hover:scale-110 transition-transform duration-500 select-none" style={{ fontSize: '40px' }}>
-                                        {item.icon}
-                                    </span>
                                 </div>
 
                                 <div className="flex flex-col gap-4 text-center lg:text-left">
@@ -116,6 +141,40 @@ export function Process() {
                     </div>
                 </div>
             </div>
+
+            {/* Video Modal */}
+            <AnimatePresence>
+                {selectedVideo && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedVideo(null)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl z-10"
+                        >
+                            <button
+                                onClick={() => setSelectedVideo(null)}
+                                className="absolute top-4 right-4 z-20 size-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-md transition-colors"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                            <video
+                                src={selectedVideo}
+                                controls
+                                autoPlay
+                                className="w-full h-full"
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

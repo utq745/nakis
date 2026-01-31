@@ -224,9 +224,20 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
         datePrinted: null,
     };
 
-    // Parse design name - capture everything until end of line
-    const designMatch = text.match(/Design:\s*(.+?)(?:\n|$)/);
-    if (designMatch) result.designName = designMatch[1].trim();
+    // Parse design name - try common labels
+    let designName = '';
+    const designMatch = text.match(/(?:Design|Design Name):\s*(.+?)(?:\n|$)/i);
+    if (designMatch) {
+        designName = designMatch[1].trim();
+    }
+
+    // As a fallback, try to find the first line that looks like a title if designName is still empty
+    if (!designName) {
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+        if (lines.length > 0) designName = lines[0];
+    }
+
+    if (designName) result.designName = designName;
 
     // Parse dimensions
     const heightMatch = text.match(/Height:\s*([\d.,]+)\s*mm/);
@@ -905,13 +916,8 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         </div>
         
         <div class="bottom-sections">
-            <div class="section-title">Operator Final Quality Check</div>
-            <div class="approval-section">
-                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">APPROVED</span></div>
-                <div class="checkbox-group"><span class="checkbox"></span><span class="approval-label">CHANGES NEEDED</span></div>
-            </div>
             <div class="notes-section">
-                <div class="notes-title">Notes & Feedback:</div>
+                <div class="notes-title">Operator Notes & Observations:</div>
                 <div class="notes-area"></div>
             </div>
         </div>
@@ -1038,6 +1044,26 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
 
     const barcodeText = `*${Math.random().toString(36).substring(2, 12).toUpperCase()}*`;
 
+    // Generate color grid HTML (same as operator card)
+    const colorGridHtml = data.colors.map(color => `
+        <div class="color-cell">
+            <div class="color-code" style="background: ${color.hex}; color: ${getContrastColor(color.hex)}">${color.code}</div>
+            <div class="color-name">${color.name}</div>
+        </div>
+    `).join('');
+
+    // Split sequence into rows of 25 (same as operator card)
+    const sequenceRowsArr: string[] = [];
+    for (let i = 0; i < data.colorSequence.length; i += 25) {
+        const rowItems = data.colorSequence.slice(i, i + 25).map((item, idx) => `
+            <div class="seq-item">
+                <div class="seq-circle" style="background: ${item.hex}; color: ${getContrastColor(item.hex)}">${i + idx + 1}</div>
+                <div class="seq-number">${item.colorCode}</div>
+            </div>
+        `).join('');
+        sequenceRowsArr.push(`<div class="color-sequence">${rowItems}</div>`);
+    }
+
     const styles = `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Barcode+128&display=swap');
         
@@ -1146,7 +1172,17 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             margin-left: auto;
         }
         
-        .artwork-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .artwork-preview img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .color-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
+        .color-cell { display: flex; align-items: center; gap: 4px; font-size: 10px; }
+        .color-code { padding: 2px 6px; border-radius: 3px; font-weight: 700; font-size: 9px; }
+        .color-name { color: #333; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .color-sequence { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+        .seq-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+        .seq-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+        .seq-number { font-size: 8px; color: #666; }
         
         .ruler-section { margin-bottom: 25px; position: relative; }
         
@@ -1279,6 +1315,9 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             </div>
         </div>
         
+        <div class="section-title">Color Grid</div>
+        <div class="color-grid">${colorGridHtml}</div>
+
         <div class="section-title">Visual Preview</div>
         <div class="ruler-section">
             <div class="ruler-area" style="height: ${containerHeight}px; min-height: 350px;">
@@ -1351,12 +1390,14 @@ export async function processWilcomPdf(
     wilcomPdfPath: string,
     orderId: string,
     outputDir: string,
-    orderTitle?: string | null
+    orderTitle?: string | null,
+    customerArtworkPath?: string | null
 ): Promise<{
     data: WilcomParsedData;
     operatorPdfPath: string;
     customerPdfPath: string;
     designImagePath: string | null;
+    artworkImagePath: string | null;
 }> {
     // Ensure output directory exists
     await mkdir(outputDir, { recursive: true });
@@ -1369,23 +1410,23 @@ export async function processWilcomPdf(
         data.designName = orderTitle.trim();
     }
 
-    // Extract images from PDF (using Python helper)
+    // Extract images using Python helper
     let designImageBase64: string | undefined;
+    let artworkImageBase64: string | undefined;
 
-    // Try to extract design image using Python/PyMuPDF and remove background
     try {
         const { execSync } = await import('child_process');
         const { writeFileSync, unlinkSync, existsSync } = await import('fs');
         const { tmpdir } = await import('os');
-        const tempScriptPath = join(tmpdir(), `extract_design_${Date.now()}.py`);
+        const tempScriptPath = join(tmpdir(), `extract_images_${Date.now()}.py`);
 
         const pythonScript = `
 import fitz
 import base64
 import sys
+import os
+import json
 from io import BytesIO
-
-pdf_path = sys.argv[1]
 
 try:
     from PIL import Image, ImageOps
@@ -1393,115 +1434,120 @@ try:
 except ImportError:
     HAS_PIL = False
 
-doc = fitz.open(pdf_path)
-
-# Find the largest image across all pages
-largest_image = None
-largest_size = 0
-
-for page_num in range(len(doc)):
-    page = doc[page_num]
-    images = page.get_images()
+def process_and_trim(img_bytes):
+    if not HAS_PIL:
+        return base64.b64encode(img_bytes).decode()
     
-    for img_info in images:
-        xref = img_info[0]
-        try:
-            pix = fitz.Pixmap(doc, xref)
-            if pix.n >= 5:
-                pix = fitz.Pixmap(fitz.csRGB, pix)
-            
-            # Calculate image size (width * height)
-            img_size = pix.width * pix.height
-            
-            if img_size > largest_size:
-                largest_size = img_size
-                largest_image = pix
-        except:
-            continue
-
-if largest_image:
-    pix = largest_image
-    img_bytes = pix.tobytes("png")
-    
-    if HAS_PIL:
-        img = Image.open(BytesIO(img_bytes))
-        img = img.convert("RGB")
-        
-        # 1. OPTIONAL: Convert near-white background to pure white for cleaner look
-        # Only if it's very close to pure white to avoid destroying white design parts
-        datas = img.getdata()
-        new_data = []
-        for item in datas:
-            # Absolute white threshold (250 instead of 254 to be more forgiving but still safe)
-            if item[0] >= 250 and item[1] >= 250 and item[2] >= 250:
-                new_data.append((255, 255, 255))
-            else:
-                new_data.append(item)
-        img.putdata(new_data)
-        
-        # 2. TRIM WHITESPACE
-        # Convert to grayscale
-        gray = img.convert('L')
-        # Threshold: only absolute white or very near white is background
-        threshold = 250
-        bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
-        # Invert so content is white (to detect bbox), background is black
-        bw = ImageOps.invert(bw.convert('L'))
-        # Get bounding box of content
-        bbox = bw.getbbox()
-        
-        if bbox:
-            img = img.crop(bbox)
-        
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
-        print(base64.b64encode(buffer.read()).decode())
+    img = Image.open(BytesIO(img_bytes))
+    if img.mode == 'RGBA':
+        background = Image.new('RGB', img.size, (255, 255, 255))
+        background.paste(img, mask=img.split()[3]) 
+        img = background
     else:
-        # No PIL available, just return the extracted image bytes
-        print(base64.b64encode(img_bytes).decode())
+        img = img.convert("RGB")
+    
+    # Trim whitespace
+    gray = img.convert('L')
+    threshold = 250
+    bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
+    bw = ImageOps.invert(bw.convert('L'))
+    bbox = bw.getbbox()
+    
+    if bbox:
+        # Add 2px padding
+        w, h = img.size
+        new_bbox = (
+            max(0, bbox[0] - 2),
+            max(0, bbox[1] - 2),
+            min(w, bbox[2] + 2),
+            min(h, bbox[3] + 2)
+        )
+        img = img.crop(new_bbox)
+    
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return base64.b64encode(buffer.read()).decode()
+
+wilcom_pdf = sys.argv[1]
+customer_artwork = sys.argv[2] if len(sys.argv) > 2 else ""
+
+results = {}
+
+# 1. Extract design from Wilcom PDF
+try:
+    doc = fitz.open(wilcom_pdf)
+    largest_image = None
+    largest_size = 0
+    for page in doc:
+        for img_info in page.get_images():
+            xref = img_info[0]
+            try:
+                pix = fitz.Pixmap(doc, xref)
+                if pix.n >= 5: pix = fitz.Pixmap(fitz.csRGB, pix)
+                if pix.width * pix.height > largest_size:
+                    largest_size = pix.width * pix.height
+                    largest_image = pix
+            except: continue
+    if largest_image:
+        results['design'] = process_and_trim(largest_image.tobytes("png"))
+    doc.close()
+except Exception as e:
+    results['design_error'] = str(e)
+
+# 2. Process customer artwork if provided
+if customer_artwork and os.path.exists(customer_artwork):
+    try:
+        with open(customer_artwork, 'rb') as f:
+            results['artwork'] = process_and_trim(f.read())
+    except Exception as e:
+        results['artwork_error'] = str(e)
+
+print(json.dumps(results))
 `;
 
-        try {
-            writeFileSync(tempScriptPath, pythonScript);
-            const result = execSync(`python3 "${tempScriptPath}" "${wilcomPdfPath}"`, {
-                encoding: 'utf-8',
-                maxBuffer: 50 * 1024 * 1024
-            });
-            designImageBase64 = result.trim();
+        writeFileSync(tempScriptPath, pythonScript);
+        const artworkArg = customerArtworkPath ? `"${customerArtworkPath}"` : '""';
+        const result = execSync(`python3 "${tempScriptPath}" "${wilcomPdfPath}" ${artworkArg}`, {
+            encoding: 'utf-8',
+            maxBuffer: 50 * 1024 * 1024
+        });
 
-            // Cleanup
-            if (existsSync(tempScriptPath)) {
-                unlinkSync(tempScriptPath);
-            }
-        } catch (scriptError) {
-            console.error('Python script execution failed:', scriptError);
-            // Cleanup on error
-            try {
-                if (existsSync(tempScriptPath)) {
-                    unlinkSync(tempScriptPath);
-                }
-            } catch { }
+        try {
+            const parsed = JSON.parse(result.trim());
+            designImageBase64 = parsed.design;
+            artworkImageBase64 = parsed.artwork;
+        } catch (e) {
+            console.error('Failed to parse Python result:', e);
         }
+
+        if (existsSync(tempScriptPath)) unlinkSync(tempScriptPath);
     } catch (error) {
-        console.error('Failed to extract design image:', error);
+        console.error('Failed to process images:', error);
     }
 
-    // Save design image if extracted
+    // Save images if extracted
     let designImagePath: string | null = null;
     if (designImageBase64) {
         designImagePath = join(outputDir, `${orderId}_design.png`);
         await writeFile(designImagePath, Buffer.from(designImageBase64, 'base64'));
     }
 
-    // Generate approval card HTML
-    const operatorHtml = generateOperatorApprovalHtml(data, { designImageBase64 });
-    const customerHtml = generateCustomerApprovalHtml(data, { designImageBase64 });
+    let artworkImagePath: string | null = null;
+    if (artworkImageBase64) {
+        artworkImagePath = join(outputDir, `${orderId}_artwork.png`);
+        await writeFile(artworkImagePath, Buffer.from(artworkImageBase64, 'base64'));
+    }
 
-    // Debug: Save HTML to file for inspection
-    await writeFile(join(outputDir, 'debug_operator.html'), operatorHtml);
-    await writeFile(join(outputDir, 'debug_customer.html'), customerHtml);
-    console.log('Debug HTMLs saved to:', outputDir);
+    // Generate approval card HTML
+    const operatorHtml = generateOperatorApprovalHtml(data, {
+        designImageBase64,
+        artworkImageBase64
+    });
+    const customerHtml = generateCustomerApprovalHtml(data, {
+        designImageBase64,
+        artworkImageBase64
+    });
 
     // Generate PDFs
     const operatorPdfPath = join(outputDir, `${orderId}_operator_approval.pdf`);
@@ -1515,5 +1561,6 @@ if largest_image:
         operatorPdfPath,
         customerPdfPath,
         designImagePath,
+        artworkImagePath,
     };
 }

@@ -903,6 +903,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <span className="text-foreground font-medium">{t.orders.created}</span>
                                 <span className="text-sm text-muted-foreground">
                                     {new Date(order.createdAt).toLocaleDateString(dateLocale, {
+                                        year: "numeric",
                                         month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
@@ -921,6 +922,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <span className="text-foreground font-medium">{language === "tr" ? "Tahmini Teslim" : "Est. Delivery"}</span>
                                 <span className="text-sm text-muted-foreground">
                                     {order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString(dateLocale, {
+                                        year: "numeric",
                                         month: "short",
                                         day: "numeric",
                                     }) : "24-48h"}
@@ -930,6 +932,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <span className="text-foreground font-medium">{t.orders.updated}</span>
                                 <span className="text-sm text-muted-foreground">
                                     {new Date(order.updatedAt).toLocaleDateString(dateLocale, {
+                                        year: "numeric",
                                         month: "short",
                                         day: "numeric",
                                         hour: "2-digit",
@@ -942,6 +945,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <span className="text-foreground font-medium">{t.orders.delivered}</span>
                                     <span className="text-sm text-muted-foreground">
                                         {new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))).toLocaleDateString(dateLocale, {
+                                            year: "numeric",
                                             month: "short",
                                             day: "numeric",
                                             hour: "2-digit",
@@ -991,7 +995,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         onValueChange={(value) => setStatus(value as OrderStatus)}
                                         disabled={order.status === "COMPLETED"}
                                     >
-                                        <SelectTrigger className="w-full bg-accent border-border text-foreground h-9">
+                                        <SelectTrigger className="w-full bg-accent hover:bg-blue-50 dark:hover:bg-accent/80 border-border text-foreground h-9 transition-colors">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-popover border-border">
@@ -999,7 +1003,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 <SelectItem
                                                     key={key}
                                                     value={key}
-                                                    className="text-foreground focus:bg-accent"
+                                                    className="text-foreground"
                                                 >
                                                     {label}
                                                 </SelectItem>
@@ -1323,7 +1327,7 @@ function FileList({
                         </div>
                         <div className="flex items-center gap-1">
                             {!isLocked && (
-                                <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                <a href={file.url} download={file.name}>
                                     <Button
                                         variant="ghost"
                                         size="icon"

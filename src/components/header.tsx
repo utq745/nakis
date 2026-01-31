@@ -71,15 +71,15 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                 </div>
                 <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
                     <div className="hidden lg:flex items-center gap-1 xl:gap-2">
-                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
-                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
-                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
-                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
                     </div>
 
                     <div className="flex gap-2 items-center">
                         <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="hidden sm:inline-block">
-                            <button className={`h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'}`}>
+                            <button className={`h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`}>
                                 {t.header.signIn}
                             </button>
                         </Link>
@@ -92,15 +92,15 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
 
                         <button
                             onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
-                            className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none ${isAtTop
-                                ? "bg-zinc-200 dark:bg-white/10 border dark:border-white/20 backdrop-blur-sm"
-                                : "bg-zinc-200 dark:bg-zinc-800 dark:border dark:border-white/10"
+                            className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none ${isAtTop
+                                ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
+                                : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
                                 }`}
                             aria-label="Toggle language"
                         >
                             {/* The sliding background */}
                             <motion.div
-                                className="absolute left-1 h-6 w-7 rounded-full shadow-sm z-0 bg-white"
+                                className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
                                 initial={false}
                                 animate={{
                                     x: language === 'tr' ? 28 : 0,
@@ -129,8 +129,8 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                         <button
                             onClick={() => setMobileMenuOpen(true)}
                             className={`lg:hidden flex items-center justify-center size-10 rounded-lg transition-colors ${isAtTop
-                                ? 'text-primary dark:text-white hover:bg-primary/5 dark:hover:bg-white/10'
-                                : 'text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441]'
+                                ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'
+                                : 'text-[#111318] dark:text-white hover:bg-blue-50 dark:hover:bg-[#2a3441]'
                                 }`}
                             aria-label="Open menu"
                         >

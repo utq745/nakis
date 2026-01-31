@@ -4,12 +4,17 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { HeroBackground } from "@/components/landing/hero-background";
 
 export function PricingClient() {
     const { language, t } = useLanguage();
+    const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
+    const toggleFaq = (index: number) => {
+        setOpenFaqIndex(openFaqIndex === index ? null : index);
+    };
     const pricingPlans = [
         {
             name: t.pricingPage.plans.plan1.name,
@@ -127,9 +132,7 @@ export function PricingClient() {
                                                 <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} style={{ fontSize: '20px' }}>
                                                     check_circle
                                                 </span>
-                                                <span className={`text-sm ${plan.highlighted ? 'text-white/90' : 'text-[#616f89] dark:text-gray-300'}`}>
-                                                    {feature}
-                                                </span>
+                                                <span className={`text-sm ${plan.highlighted ? 'text-white/90' : 'text-[#616f89] dark:text-gray-300'}`} dangerouslySetInnerHTML={{ __html: feature }} />
                                             </li>
                                         ))}
                                     </ul>
@@ -146,9 +149,7 @@ export function PricingClient() {
                                                         <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white/50' : 'text-red-400'}`} style={{ fontSize: '16px' }}>
                                                             close
                                                         </span>
-                                                        <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>
-                                                            {item}
-                                                        </span>
+                                                        <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`} dangerouslySetInnerHTML={{ __html: item }} />
                                                     </li>
                                                 ))}
                                             </ul>
@@ -194,13 +195,20 @@ export function PricingClient() {
                                     transition={{ duration: 0.4, delay: index * 0.1 }}
                                     className="bg-white dark:bg-[#18181b] rounded-2xl p-6 border border-[#e5e7eb] dark:border-[#27272a]"
                                 >
-                                    <h4 className="font-bold text-[#111318] dark:text-white mb-2 flex items-center gap-3">
+                                    <h4
+                                        className="font-bold text-[#111318] dark:text-white mb-2 flex items-center gap-3 cursor-pointer"
+                                        onClick={() => toggleFaq(index)}
+                                    >
                                         <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>help</span>
+                                            <span className={`material-symbols-outlined transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
+                                                expand_more
+                                            </span>
                                         </span>
                                         {faq.q}
                                     </h4>
-                                    <p className="text-[#616f89] dark:text-gray-400 pl-11">{faq.a}</p>
+                                    {openFaqIndex === index && (
+                                        <p className="text-[#616f89] dark:text-gray-400 pl-11 mt-2">{faq.a}</p>
+                                    )}
                                 </motion.div>
                             ))}
                         </div>

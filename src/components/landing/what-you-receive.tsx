@@ -10,18 +10,20 @@ export function WhatYouReceive() {
         {
             title: t.landing.receive.item3Title,
             desc: t.landing.receive.item3Desc,
-            image: "/images/landing/Real_stitched_photos.webp",
+            image: "/images/landing/What_You_Receive_Real_stitched_photos.webp",
             alt: "Real stitched photos"
         },
         {
             title: t.landing.receive.item1Title,
             desc: t.landing.receive.item1Desc,
-            image: "" // Placeholder for now
+            image: "/images/landing/What_You_Receive_Approval_card_client_version.webp",
+            alt: "Approval Card (Client Version)"
         },
         {
             title: t.landing.receive.item2Title,
             desc: t.landing.receive.item2Desc,
-            image: "" // Placeholder for now
+            image: "/images/landing/What_You_Receive_Approval_card_production_operator_version.webp",
+            alt: "Approval Card (Production / Operator Version)"
         }
     ];
 

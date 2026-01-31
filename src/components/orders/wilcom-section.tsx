@@ -317,7 +317,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500 hover:text-white hover:border-violet-600 transition-colors"
+                                            className="border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-300 hover:bg-violet-600 hover:text-white hover:border-violet-700 dark:hover:bg-violet-500 dark:hover:text-white dark:hover:border-violet-600 transition-colors"
                                         >
                                             <Eye className="mr-2 h-4 w-4" />
                                             {t.orders.wilcom.customerCard}
@@ -334,7 +334,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500 hover:text-white hover:border-fuchsia-600 transition-colors"
+                                            className="border-fuchsia-200 dark:border-fuchsia-500/30 bg-fuchsia-50 dark:bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-300 hover:bg-fuchsia-600 hover:text-white hover:border-fuchsia-700 dark:hover:bg-fuchsia-500 dark:hover:text-white dark:hover:border-fuchsia-600 transition-colors"
                                         >
                                             <Eye className="mr-2 h-4 w-4" />
                                             {t.orders.wilcom.operatorCard}
@@ -351,7 +351,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="bg-transparent border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                                            className="bg-accent/40 dark:bg-transparent border-border text-foreground dark:text-muted-foreground hover:bg-accent hover:text-foreground dark:hover:bg-accent dark:hover:text-white"
                                         >
                                             <Download className="mr-2 h-4 w-4" />
                                             {t.orders.wilcom.originalPdf}
@@ -374,7 +374,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                                 asChild
                                                 variant="outline"
                                                 size="sm"
-                                                className="bg-transparent border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                                                className="bg-accent/40 dark:bg-transparent border-border text-foreground dark:text-muted-foreground hover:bg-accent hover:text-foreground dark:hover:bg-accent dark:hover:text-white"
                                                 disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
                                             >
                                                 <span>
@@ -387,7 +387,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="bg-transparent border-red-900/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-600 transition-all"
+                                            className="bg-red-50 dark:bg-transparent border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white hover:border-red-700 dark:hover:bg-red-500 dark:hover:text-white dark:hover:border-red-600 transition-all"
                                             disabled={isDeleting || status === "COMPLETED"}
                                             onClick={() => setIsDeleteDialogOpen(true)}
                                         >
@@ -418,7 +418,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="w-full mt-4 bg-accent/30 hover:bg-accent/70 text-muted-foreground hover:text-foreground border border-border/50 hover:border-border transition-all"
+                                    className="w-full mt-4 bg-accent/30 hover:bg-accent/70 text-muted-foreground hover:text-foreground border border-border/50 hover:border-border transition-all dark:hover:text-white"
                                     onClick={() => setShowDetails(!showDetails)}
                                 >
                                     {showDetails ? t.orders.wilcom.hideDetails : t.orders.wilcom.showDetails}

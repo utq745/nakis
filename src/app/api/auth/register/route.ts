@@ -7,7 +7,7 @@ import { translations, Locale } from "@/lib/dictionary";
 
 const registerSchema = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
-    password: z.string().min(6, "Şifre en az 6 karakter olmalı"),
+    password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
     name: z.string().min(2, "İsim en az 2 karakter olmalı"),
     language: z.enum(["en", "tr"]).optional(),
 });

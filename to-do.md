@@ -15,12 +15,7 @@
 - [x] Tüm sayfarladaki hero alanımn light versiyonu yok. Aynı dark versiyonundaki gibi çok hafif belirgin bir animasyon olmalı.
 - [x] Anasayfadaki heroda soldaki yazı alanı dark modda fazl aydınlık olmuş, biraz koyu olmalı.
 - [x] What You Receive componentinde "Real stitched photos" un görseli şu olacak: /Users/utkusakallioglu/Documents/nakis/Real_stitched_photos.webp Görselin alt etiketini "Real stitched photos" olarak değiştir.
-- [ ] What You Receive componentinde "Client version" un görseli şu olacak: /Users/utkusakallioglu/Documents/nakis/Client_version.webp Görselin alt etiketini "Client version" olarak değiştir.
-- [ ] What You Receive componentinde "Operator version" un görseli şu olacak: /Users/utkusakallioglu/Documents/nakis/Operator_version.webp Görselin alt etiketini "Operator version" olarak değiştir.
 - [x] Tüm sayfalardaki tüm sectionlarda title altına gelen çizgi (varsa) biraz daha yukarı kaymalı.
-
-
-
 
 
 ## Panel tarafında yapılacak değişiklikler ##
@@ -59,3 +54,52 @@
 - [x] Order detail client dosyaları (TR/EN) - Banner'lar yeni akışa göre güncellendi
 - [x] Payment form - COMPLETED durumu kullanılıyor
 - [x] Files API - COMPLETED durumu kontrol ediliyor
+
+
+## 1-2 Ocak 2026 ##
+
+- [x] Yeni sipariş oluştururken AI, PDF, PNG, JPG, DST ve JPEG dosya formatları da seçilebiliyor
+- [x] Yeni siparişte sadece 1 dosya yükleme zorunluluğu eklendi (min/max 1)
+- [x] Admin panelinde dosya indirme butonu yeni sekmede açmak yerine doğrudan indiriyor
+- [x] Giriş ekranına "Beni Hatırla" (Remember Me) checkbox seçeneği eklendi
+- [x] Operator onay kartından sadece onay kutuları kaldırıldı
+- [x] Customer onay kartına Color Grid bölümü eklendi
+- [x] operator ve customer onay kartlarında CUSTOMER ARTWORK başlığı altındaki kutuya adminin preview olarak yüklediği görsel (etrafındaki boşluk kırpılmalı) konmalı.
+- [x] Customer artwork görüntüsü kutunun içine sığacak şekilde crop ediliyor (object-fit: cover)
+- [x] Light modda Headerdaki toggel butonunları ve admindeki order status selectbox'ının hover modundaki arkaplan rengi açık mavi olmalı
+- [x] hem admin hem de müşteri panelinde order detail sayfasındaki order info kısmında tarihte yıl da görünmeli
+- [x] anasayfadaki hero alanı light versiyonda arkaplan rengi #F6F7F8 olmalı
+- [x] eğer müşteri sipariş oluştururken sipariş ismini boş bırakırsa, operator ve müşteri cardlarında design name olarak sisteme yüklenen wilcom dosyasındaki design name yazılmalı
+- [x] müşteri sipariş oluştururken (son aşamada gönderirken) çıkan animasyon 2 saniye sürmeli ya da 2 saniye o bekletmeli.
+- [x] admin panelinde dark modda Upload Wilcom File panelindeki butonların hover efektinde font rengi beyaz olmalı. (send butonu hariç)
+- [x] anasayfadaki hero alanı sağ ve sol yanlarına operator ve müşteri card imajları ve %10 opacity ile arkaplanına konmalı (customer_approval_card.webp ve operator_approval_card.webp). sağa ve sola eklenen bu görseller yalnızca masaüstü görünümünde görünmeli.
+- [x] bir üst maddede heroya eklenen görsellerin opacity'si light modda %20 olmalı
+- [x] heronun sağ alt bölümüne  hero-barudan.webp %30 opacity ile eklenmeli (yalnızca masaüstü görünümünde görünmeli). width: 300px, height: auto. bottom: %1, right: %1
+- [x] What You Receive sectionındaki başlık ve altındaki yazılar şu şekilde olmalı: 
+    - Başlık: Real stitched photos
+    - Alt Yazı: Photos of the real sample stitches on Tajima or Barudan Machines.
+    - Başlık: Approval Card (Client Version)
+    - Alt Yazı: Client-ready approval card for sign-off before production.
+    - Başlık: Approval Card (Production / Operator Version)
+    - Alt Yazı: Production approval card with stitch, color, and setup details.
+- [x] What You Receive sectionındaki görseller şu şekilde olmalı:
+    - Real stitched photos: /Users/utkusakallioglu/Documents/nakis/What_You_Receive_Real_stitched_photos.webp
+    - Approval Card (Client Version): /Users/utkusakallioglu/Documents/nakis/What_You_Receive_Approval_card_client_version.webp
+    - Approval Card (Production / Operator Version): /Users/utkusakallioglu/Documents/nakis/What_You_Receive_Approval_card_production_operator_version.webp
+- [x] Hem anasaydadaki hem de About sayfasındaki How it works sectionındaki başlık ve altındaki yazılar şu şekilde olmalı:
+    - Başlık: Upload & Specs
+    - Alt Yazı: Upload DST or artwork. Select size, machine brand, fabric, and placement.
+    - Başlık: Real Approval Stitch
+    - Alt Yazı: We stitch a real approval sample on Tajima or Barudan production machines.
+    - Başlık: Approval Package
+    - Alt Yazı: You receive approval cards & real photos.
+
+
+- [x] How it works sectionındaki görseller şu şekilde olmalı:
+    - Upload & Specs: 
+    - Real Approval Stitch: /Users/utkusakallioglu/Documents/nakis/Real-Approval-Stitch.webm videsu eklenmeli kapak olarak /Users/utkusakallioglu/Documents/nakis/howitsworks-Real-Approval-Stitch.webp görseli olmalı. kapakta ortalı bir şekilde play butonu olmalı ve tıklandığında popup olarak video oynatılmalı. popup kapısının sağ üstünde close butonu olmalı.
+    - Approval Package: /Users/utkusakallioglu/Documents/nakis/Approval-Package.webp
+- [x] Frequently Asked Questions bölümündeki akordiyon ikonları dark modda color-green-500 olmalı.
+- [x] Pricing sayfasındaki card'ların içeriği değişecek.
+
+

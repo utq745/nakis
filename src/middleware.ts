@@ -29,6 +29,16 @@ export function middleware(request: NextRequest) {
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    // HSTS - Strict Transport Security (1 year, include subdomains)
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
+    // HTTPS Enforcement in production
+    const isProduction = process.env.NODE_ENV === 'production';
+    const proto = request.headers.get('x-forwarded-proto');
+    if (isProduction && proto === 'http') {
+        const httpsUrl = request.url.replace('http://', 'https://');
+        return NextResponse.redirect(httpsUrl, 301);
+    }
 
     // CSRF protection for API routes (POST, PUT, PATCH, DELETE)
     if (pathname.startsWith('/api/')) {
@@ -64,8 +74,14 @@ export function middleware(request: NextRequest) {
                         { status: 403 }
                     );
                 }
+            } else {
+                // If no origin OR referer, reject for security (prevent CSRF bypass)
+                return NextResponse.json(
+                    { error: 'Forbidden - Missing Origin or Referer' },
+                    { status: 403 }
+                );
             }
-            // If no origin/referer, allow (could be server-to-server or same-origin fetch)
+
         }
 
         return response;
