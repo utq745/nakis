@@ -170,6 +170,88 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [revisionMessage, setRevisionMessage] = useState("");
     const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
     const [selectedRevisionFiles, setSelectedRevisionFiles] = useState<File[]>([]);
+    const [stitchCount, setStitchCount] = useState<number | "">("");
+    const [isSendingQuote, setIsSendingQuote] = useState(false);
+    const [isPriceExplainerOpen, setIsPriceExplainerOpen] = useState(false);
+
+    const calculatePrice = (stitches: number) => {
+        let digitizing = 0;
+        let approval = 0;
+        let extra = 0;
+
+        if (stitches <= 7000) {
+            digitizing = 25;
+            approval = 25;
+        } else if (stitches < 30000) {
+            digitizing = 25;
+            approval = 25;
+            extra = 3 * Math.ceil((stitches - 7000) / 1000);
+        } else {
+            digitizing = 120;
+            approval = 35;
+        }
+
+        return {
+            total: digitizing + approval + extra,
+            digitizing,
+            approval,
+            extra
+        };
+    };
+
+    const breakdown = stitchCount !== "" ? calculatePrice(Number(stitchCount)) : null;
+
+    async function handleSendQuote() {
+        if (!price) {
+            toast.error("Please enter a price.");
+            return;
+        }
+
+        setIsSendingQuote(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    status: "PRICED",
+                    price: parseFloat(price),
+                }),
+            });
+
+            if (!response.ok) throw new Error("Failed to send quote.");
+
+            toast.success("Price quote sent to customer.");
+            setStatus("PRICED");
+            setTimeout(() => router.refresh(), 1000);
+        } catch (error) {
+            toast.error("An error occurred.");
+            console.error(error);
+        } finally {
+            setIsSendingQuote(false);
+        }
+    }
+
+    async function handleAcceptQuote() {
+        setIsApprovingPrice(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "IN_PROGRESS" }),
+            });
+
+            if (!response.ok) throw new Error("Failed to approve quote.");
+
+            toast.success("You have approved the price quote. Your order is now in progress.");
+            setStatus("IN_PROGRESS");
+            setTimeout(() => router.refresh(), 1000);
+        } catch (error) {
+            toast.error("An error occurred.");
+            console.error(error);
+        } finally {
+            setIsApprovingPrice(false);
+        }
+    }
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
@@ -492,24 +574,79 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             {isAdmin && status === "ORDERED" && (
                 <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
                     <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
-                                <Package className="h-6 w-6" />
+                        <div className="flex flex-col gap-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                    <Package className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground">
+                                        {language === "tr" ? "Yeni sipariş alındı" : "New order received"}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {order.serviceType === "New Digitizing + Sample"
+                                            ? (language === "tr" ? "Bu sipariş için fiyat teklifi hazırlamanız gerekiyor. Lütfen vuruş sayısını girin." : "You need to prepare a price quote for this order. Please enter the stitch count.")
+                                            : language === "tr"
+                                                ? order.serviceType === "Approval Sample (Existing DST)"
+                                                    ? "Bu sipariş Paket 1 (Onay Örneği). Önizleme dosyalarını yükleyip müşteriye gönderin."
+                                                    : "Bu sipariş için çalışmaya başlayın ve final dosyalarını hazırlayın."
+                                                : order.serviceType === "Approval Sample (Existing DST)"
+                                                    ? "This is a Package 1 order (Approval Sample). Upload preview files and send to customer."
+                                                    : "Start working on this order and prepare the final files."}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-semibold text-foreground">
-                                    {language === "tr" ? "Yeni sipariş alındı" : "New order received"}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    {language === "tr"
-                                        ? order.serviceType === "Approval Sample (Existing DST)"
-                                            ? "Bu sipariş Paket 1 (Onay Örneği). Önizleme dosyalarını yükleyip müşteriye gönderin."
-                                            : "Bu sipariş için çalışmaya başlayın ve final dosyalarını hazırlayın."
-                                        : order.serviceType === "Approval Sample (Existing DST)"
-                                            ? "This is a Package 1 order (Approval Sample). Upload preview files and send to customer."
-                                            : "Start working on this order and prepare the final files."}
-                                </p>
-                            </div>
+
+                            {order.serviceType === "New Digitizing + Sample" && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-xl bg-accent/50 border border-border">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wider">Stitch Count</Label>
+                                        <Input
+                                            type="number"
+                                            value={stitchCount}
+                                            onChange={(e) => {
+                                                const val = e.target.value === "" ? "" : Number(e.target.value);
+                                                setStitchCount(val);
+                                                if (val !== "") {
+                                                    const b = calculatePrice(val);
+                                                    setPrice(b.total.toString());
+                                                }
+                                            }}
+                                            placeholder="Ex: 15000"
+                                            className="bg-background border-border"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price ($)</Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                type="number"
+                                                value={price}
+                                                onChange={(e) => setPrice(e.target.value)}
+                                                className="bg-background border-border font-bold text-violet-500"
+                                            />
+                                            <Button
+                                                onClick={handleSendQuote}
+                                                disabled={isSendingQuote || !price}
+                                                className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 px-6"
+                                            >
+                                                {isSendingQuote ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Quote"}
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    {breakdown && (
+                                        <div className="md:col-span-2 lg:col-span-1 p-3 rounded-lg bg-violet-500/5 border border-violet-500/10 flex flex-col justify-center">
+                                            <p className="text-xs font-semibold text-violet-400 mb-1">CALCULATION BREAKDOWN:</p>
+                                            <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground">
+                                                <div>Digitizing: <span className="text-foreground font-medium">${breakdown.digitizing}</span></div>
+                                                <div>Approval: <span className="text-foreground font-medium">${breakdown.approval}</span></div>
+                                                {breakdown.extra > 0 && <div>Extra: <span className="text-foreground font-medium">${breakdown.extra}</span></div>}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -526,12 +663,18 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-foreground">
-                                        {language === "tr" ? "Siparişiniz Alındı" : "Order Received"}
+                                        {order.serviceType === "New Digitizing + Sample"
+                                            ? (language === "tr" ? "Fiyat Teklifi Bekleniyor" : "Awaiting Price Quote")
+                                            : (language === "tr" ? "Siparişiniz Alındı" : "Order Received")}
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        {language === "tr"
-                                            ? "Siparişiniz inceleniyor. Yakında size dönüş yapılacaktır."
-                                            : "Your order is being reviewed. You will be notified shortly."}
+                                        {order.serviceType === "New Digitizing + Sample"
+                                            ? (language === "tr"
+                                                ? "Tasarımınız inceleniyor. Vuruş sayısına göre en kısa sürede fiyat teklifimiz gönderilecektir."
+                                                : "Your design is being reviewed. We will send a price quote based on the stitch count shortly.")
+                                            : (language === "tr"
+                                                ? "Siparişiniz inceleniyor. Yakında size dönüş yapılacaktır."
+                                                : "Your order is being reviewed. You will be notified shortly.")}
                                     </p>
                                 </div>
                             </div>
@@ -544,6 +687,57 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <X className="h-4 w-4" />
                                 {language === "tr" ? "Siparişi İptal Et" : "Cancel Order"}
                             </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Customer - Price Quote Approval Banner */}
+            {!isAdmin && status === "PRICED" && (
+                <Card className="border-cyan-500/50 bg-cyan-500/5 overflow-hidden shadow-2xl shadow-cyan-500/10">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-cyan-500/20 text-cyan-400">
+                                    <DollarSign className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground">
+                                        {language === "tr" ? "Fiyat Teklifiniz Hazır" : "Your Price Quote is Ready"}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {language === "tr" ? "Bu tasarım için belirlenen toplam ücret: " : "Total fee for this design: "}
+                                        <span className="text-cyan-400 font-bold">${Number(order.price).toLocaleString("en-US")}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    onClick={() => setIsDeclineDialogOpen(true)}
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-zinc-500/50 text-zinc-400 hover:bg-zinc-800 transition-all gap-2"
+                                >
+                                    <X className="h-4 w-4" />
+                                    {language === "tr" ? "Reddet" : "Decline"}
+                                </Button>
+                                <Button
+                                    onClick={handleAcceptQuote}
+                                    disabled={isApprovingPrice}
+                                    className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all gap-2"
+                                >
+                                    {isApprovingPrice ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            {language === "tr" ? "Onaylanıyor..." : "Approving..."}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            {language === "tr" ? "Teklifi Kabul Et" : "Accept Quote"}
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

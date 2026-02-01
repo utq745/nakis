@@ -155,13 +155,13 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
             return true;
         });
 
-        // Sort function to prioritize WAITING_PRICE and PRICE_ACCEPTED for admin
+        // Sort function to prioritize orders needing action
         const sortOrders = (orders: typeof filtered) => {
             if (!isAdmin) return orders;
             return [...orders].sort((a, b) => {
-                const aPriority = a.status === "WAITING_PRICE" || a.status === "PRICE_ACCEPTED" ? 1 : 0;
-                const bPriority = b.status === "WAITING_PRICE" || b.status === "PRICE_ACCEPTED" ? 1 : 0;
-                if (aPriority !== bPriority) return bPriority - aPriority;
+                const aPriorityStatus = (a.status === "ORDERED" && !a.price) || a.status === "REVISION" ? 1 : 0;
+                const bPriorityStatus = (b.status === "ORDERED" && !b.price) || b.status === "REVISION" ? 1 : 0;
+                if (aPriorityStatus !== bPriorityStatus) return bPriorityStatus - aPriorityStatus;
                 return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             });
         };
@@ -202,12 +202,12 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
     }
 
     function OrderCard({ order }: { order: Order }) {
-        const needsPrice = order.status === "WAITING_PRICE" && !order.price;
+        const needsPrice = isAdmin && order.status === "ORDERED" && !order.price;
         const isPriced = !isAdmin && order.status === "PRICED";
         const isAwaitingApproval = !isAdmin && order.status === "APPROVAL_AWAITING";
         const isPaymentPending = !isAdmin && order.status === "PAYMENT_PENDING";
         const isOrangeAlert = isAwaitingApproval || isPaymentPending;
-        const isAdminPriority = isAdmin && (order.status === "WAITING_PRICE" || order.status === "PRICE_ACCEPTED");
+        const isAdminActionRequired = isAdmin && (order.status === "REVISION" || (order.status === "ORDERED" && !order.price));
         const basePath = locale === "tr" ? "/tr" : "";
 
         return (
@@ -218,7 +218,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                             ? "bg-blue-500/5 border-blue-500/50 hover:border-blue-400 hover:bg-blue-500/10 shadow-lg shadow-blue-500/10 animate-pulse"
                             : isOrangeAlert
                                 ? "bg-orange-500/5 border-orange-500/50 hover:border-orange-400 hover:bg-orange-500/10 shadow-lg shadow-orange-500/10 animate-pulse"
-                                : isAdminPriority
+                                : isAdminActionRequired
                                     ? "bg-violet-500/5 border-violet-500/50 hover:border-violet-400 hover:bg-violet-500/10 shadow-lg shadow-violet-500/10 animate-pulse"
                                     : needsPrice
                                         ? "bg-amber-500/5 border-amber-700/50 hover:border-amber-600 hover:bg-amber-500/10"
@@ -238,7 +238,7 @@ export function OrdersClient({ orders, isAdmin, locale = "en" }: OrdersClientPro
                                         <span className="text-xs font-mono text-muted-foreground">
                                             #{order.id.slice(-8)}
                                         </span>
-                                        {!isPriced && !isOrangeAlert && !isAdminPriority && (isAdmin || order.status !== "WAITING_PRICE") && (
+                                        {!isPriced && !isOrangeAlert && !isAdminActionRequired && (
                                             <Badge
                                                 className={`text-xs ${ORDER_STATUS_COLORS[
                                                     order.status as keyof typeof ORDER_STATUS_COLORS

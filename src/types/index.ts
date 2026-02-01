@@ -1,15 +1,16 @@
 export type Role = "CUSTOMER" | "ADMIN";
 
 // New Order Status Flow:
-// 1. ORDERED - Customer creates order (price auto-set)
-// 2. APPROVAL_AWAITING - Only for Package 1, admin sends preview
-// 3. REVISION - Customer requests revision (+$10 fee)
-// 4. IN_PROGRESS - Customer approves preview OR packages 2/3 go directly here
-// 5. PAYMENT_PENDING - Admin uploads final files
-// 6. COMPLETED - Customer pays
-// 7. DELIVERED - Customer downloads files
-// 8. CANCELLED - Order cancelled
-export type OrderStatus = "ORDERED" | "APPROVAL_AWAITING" | "REVISION" | "IN_PROGRESS" | "PAYMENT_PENDING" | "COMPLETED" | "DELIVERED" | "CANCELLED";
+// 1. ORDERED - Customer creates order (price auto-set for P1/P2, zero for P3)
+// 2. PRICED - Admin sends quote for P3
+// 3. APPROVAL_AWAITING - Only for Package 1, admin sends preview
+// 4. REVISION - Customer requests revision (+$10 fee)
+// 5. IN_PROGRESS - Customer approves preview OR packages 2/3 go directly here (P3 moves here after price approval)
+// 6. PAYMENT_PENDING - Admin uploads final files
+// 7. COMPLETED - Customer pays
+// 8. DELIVERED - Customer downloads files
+// 9. CANCELLED - Order cancelled
+export type OrderStatus = "ORDERED" | "PRICED" | "APPROVAL_AWAITING" | "REVISION" | "IN_PROGRESS" | "PAYMENT_PENDING" | "COMPLETED" | "DELIVERED" | "CANCELLED";
 
 export interface SafeUser {
     id: string;
@@ -56,6 +57,7 @@ export interface CommentWithUser {
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
     ORDERED: "Order Received",
+    PRICED: "Quote Sent",
     APPROVAL_AWAITING: "Awaiting Preview Approval",
     REVISION: "Revision Requested",
     IN_PROGRESS: "In Progress",
@@ -67,6 +69,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 
 export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
     ORDERED: "Sipariş Alındı",
+    PRICED: "Fiyat Teklifi Gönderildi",
     APPROVAL_AWAITING: "Önizleme Onayı Bekleniyor",
     REVISION: "Revizyon İstendi",
     IN_PROGRESS: "Sipariş Hazırlanıyor",
@@ -78,6 +81,7 @@ export const ORDER_STATUS_LABELS_TR: Record<OrderStatus, string> = {
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
     ORDERED: "bg-blue-500/10 text-blue-600 dark:text-blue-500",
+    PRICED: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-500",
     APPROVAL_AWAITING: "bg-orange-500/10 text-orange-600 dark:text-orange-500",
     REVISION: "bg-red-500/10 text-red-600 dark:text-red-500",
     IN_PROGRESS: "bg-purple-500/10 text-purple-600 dark:text-purple-500",

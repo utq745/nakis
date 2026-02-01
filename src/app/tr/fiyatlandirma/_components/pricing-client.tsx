@@ -11,6 +11,7 @@ import { HeroBackground } from "@/components/landing/hero-background";
 export function PricingClient() {
     const { language, t } = useLanguage();
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+    const [isCalcOpen, setIsCalcOpen] = useState(false);
 
     const toggleFaq = (index: number) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -32,6 +33,7 @@ export function PricingClient() {
             priceNote: t.pricingPage.plans.plan2.priceNote,
             description: t.pricingPage.plans.plan2.description,
             features: t.pricingPage.plans.plan2.features,
+            notIncluded: t.pricingPage.plans.plan2.notIncluded,
             bestFor: t.pricingPage.plans.plan2.bestFor,
             highlighted: true,
             popular: t.pricingPage.plans.plan2.popular,
@@ -39,9 +41,14 @@ export function PricingClient() {
         },
         {
             name: t.pricingPage.plans.plan3.name,
-            price: "$60",
+            price: "$50<sup>*</sup>",
+            priceNote: language === "tr" ? "<sup>*</sup>7.000 vuruşa kadar" : "<sup>*</sup>Up to 7,000 stitches",
             description: t.pricingPage.plans.plan3.description,
             features: t.pricingPage.plans.plan3.features,
+            calculation: {
+                title: t.pricingPage.plans.plan3.howItCalculated,
+                details: t.pricingPage.plans.plan3.calculationDetails
+            },
             bestFor: t.pricingPage.plans.plan3.bestFor,
             highlighted: false,
             cta: t.pricingPage.plans.plan3.cta,
@@ -88,7 +95,7 @@ export function PricingClient() {
                 {/* Pricing Cards */}
                 <section className="py-20 -mt-32 md:-mt-48 relative z-20">
                     <div className="container mx-auto px-4 md:px-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
                             {pricingPlans.map((plan, index) => (
                                 <motion.div
                                     key={index}
@@ -115,18 +122,20 @@ export function PricingClient() {
                                     </div>
 
                                     <div className="text-center mb-6">
-                                        <span className={`text-5xl font-black ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}>
-                                            {plan.price}
-                                        </span>
+                                        <span
+                                            className={`text-5xl font-black ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}
+                                            dangerouslySetInnerHTML={{ __html: plan.price }}
+                                        />
                                         {plan.priceNote && (
-                                            <span className={`block text-xs mt-2 px-3 py-1 rounded-full mx-auto w-fit ${plan.highlighted ? 'bg-white/20 text-white' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
-                                                {plan.priceNote}
-                                            </span>
+                                            <span
+                                                className={`block text-xs mt-2 px-3 py-1 rounded-full mx-auto w-fit ${plan.highlighted ? 'bg-white/20 text-white' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}
+                                                dangerouslySetInnerHTML={{ __html: plan.priceNote }}
+                                            />
                                         )}
                                     </div>
 
                                     {/* Features */}
-                                    <ul className="space-y-3 mb-6 flex-grow">
+                                    <ul className="space-y-3 mb-4 flex-grow">
                                         {plan.features.map((feature, fIndex) => (
                                             <li key={fIndex} className="flex items-start gap-3">
                                                 <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} style={{ fontSize: '20px' }}>
@@ -137,16 +146,48 @@ export function PricingClient() {
                                         ))}
                                     </ul>
 
+                                    {/* Calculation Accordion for Plan 3 */}
+                                    {plan.calculation && (
+                                        <div className="mb-6 rounded-2xl border border-border bg-accent/30 overflow-hidden">
+                                            <button
+                                                onClick={() => setIsCalcOpen(!isCalcOpen)}
+                                                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent/50 transition-colors"
+                                            >
+                                                <span className="text-xs font-bold text-foreground flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-white" style={{ fontSize: '16px', lineHeight: 1 }}>calculate</span>
+                                                    {plan.calculation.title}
+                                                </span>
+                                                <span className={`material-symbols-outlined text-muted-foreground transition-transform duration-300 ${isCalcOpen ? 'rotate-180' : ''}`} style={{ fontSize: '18px' }}>
+                                                    expand_more
+                                                </span>
+                                            </button>
+                                            <motion.div
+                                                initial={false}
+                                                animate={{ height: isCalcOpen ? 'auto' : 0, opacity: isCalcOpen ? 1 : 0 }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="px-4 pb-4 pt-0 space-y-2">
+                                                    {plan.calculation.details.map((detail, dIndex) => (
+                                                        <div key={dIndex} className="flex items-center gap-2" style={{ fontSize: '12px', color: '#c5c5c5', lineHeight: 1.4 }}>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                                            {detail}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        </div>
+                                    )}
+
                                     {/* Not Included */}
                                     {plan.notIncluded && (
-                                        <div className="mb-6">
+                                        <div className="mb-6 mt-[15px]">
                                             <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>
                                                 {t.pricingPage.plans.notIncluded}:
                                             </p>
                                             <ul className="space-y-2">
                                                 {plan.notIncluded.map((item, nIndex) => (
                                                     <li key={nIndex} className="flex items-start gap-2">
-                                                        <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white/50' : 'text-red-400'}`} style={{ fontSize: '16px' }}>
+                                                        <span className="material-symbols-outlined shrink-0 text-red-500" style={{ fontSize: '16px' }}>
                                                             close
                                                         </span>
                                                         <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`} dangerouslySetInnerHTML={{ __html: item }} />
@@ -157,7 +198,7 @@ export function PricingClient() {
                                     )}
 
                                     {/* Best For */}
-                                    <div className={`mb-6 text-center py-3 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-white/5'}`}>
+                                    <div className={`mb-6 text-center py-3 px-[6px] rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-white/5'}`}>
                                         <p className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>{t.pricingPage.plans.bestForLabel}</p>
                                         <p className={`text-sm font-bold ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`} dangerouslySetInnerHTML={{ __html: plan.bestFor }} />
                                     </div>

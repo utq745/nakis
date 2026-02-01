@@ -97,9 +97,9 @@ export async function POST(request: Request) {
         const SERVICE_PRICES: Record<string, number> = {
             "Approval Sample (Existing DST)": 25,
             "Fix Your DST + Sample": 35,
-            "New Digitizing + Sample": 60,
+            "New Digitizing + Sample": 0, // Package 3: Price will be determined by Admin
         };
-        const orderPrice = SERVICE_PRICES[validatedData.serviceType || ""] || 25;
+        const orderPrice = SERVICE_PRICES[validatedData.serviceType || ""] || 0;
 
         let order = await prisma.order.create({
             data: {

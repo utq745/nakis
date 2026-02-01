@@ -478,16 +478,28 @@ export const translations = {
                         "Düzenlemeden sonra <strong>yeniden dikiyoruz</strong>",
                         "Güncellenmiş dikiş fotoğrafı + <strong>Güncellenmiş Onay Kartı</strong> teslim edilir"
                     ],
+                    notIncluded: ["Sıfırdan profesyonel dijitalleştirme (DST)"],
                     bestFor: "İlk incelemeden sonra ayarlama gerektiren tasarımlar",
                     cta: "Sipariş Başlat",
                     popular: "Tavsiye Edilen"
                 },
                 plan3: {
-                    name: "Tam Dijitalleştirme + Onay Örneği",
-                    description: "DST yok veya temiz başlangıç",
-                    features: ["Tasarımınızı herhangi bir yaygın formatta (AI, PDF, PNG, JPG, vb.) yükleyebilirsiniz. Tüm standart tasarım formatlarını açabiliyoruz.", "Sıfırdan DST dijitalleştirilir", "Onay örneği dikiliyor", "Onay kartı teslim edilir"],
-                    bestFor: "DST yok veya temiz başlangıç için",
-                    cta: "Sipariş Başlat"
+                    name: "Yeni Dijitalleştirme + Onay Örneği",
+                    description: "Vuruş sayısına göre özel fiyatlandırma",
+                    howItCalculated: "Nasıl hesaplanır?",
+                    calculationDetails: [
+                        "0-7.000 vuruş için $50 fix fiyat",
+                        "7.001 - 30.000 vuruş arası: $50 + ($3 × her 1.000 vuruş için)",
+                        "30.000+ vuruş: $155 fix fiyat"
+                    ],
+                    features: [
+                        "Dilediğiniz formatta (AI, PDF, JPG vb.) tasarım yükleyin",
+                        "Vuruş sayısına göre size özel fiyat teklifi. <i>(Göndereceğiniz tasarıma göre vuruş adedi hesaplanarak size fiyat teklifi yapılır)</i>",
+                        "Sıfırdan profesyonel dijitalleştirme (DST)",
+                        "Gerçek makinede dikiş numunesi ve Onay Kartı dahildir"
+                    ],
+                    bestFor: "Elinizde DST dosyası yoksa veya<br>yeni bir tasarım dikilecekse",
+                    cta: "Fiyat Teklifi Al"
                 },
                 included: "Dahil",
                 notIncluded: "Dahil Değil",
@@ -1087,16 +1099,28 @@ export const translations = {
                         "We <strong>re-stitch after editing</strong>",
                         "Updated stitched photo + <strong>Updated Approval Card</strong> delivered"
                     ],
+                    notIncluded: ["Professional digitizing from scratch (DST)"],
                     bestFor: "Designs that need adjustments after the first review",
                     cta: "Start Order",
                     popular: "Recommended"
                 },
                 plan3: {
-                    name: "Full Digitizing + Approval Sample",
-                    description: "No DST or clean start",
-                    features: ["You can upload your artwork in any common format (AI, PDF, PNG, JPG, etc.). We can open all standard artwork formats.", "DST digitized from scratch", "Approval sample stitched", "Approval card delivered"],
-                    bestFor: "No DST or clean start",
-                    cta: "Start Order"
+                    name: "New Digitizing + Approval Sample",
+                    description: "Custom quote based on stitch count",
+                    howItCalculated: "How is it calculated?",
+                    calculationDetails: [
+                        "0-7,000 stitches: $50 fix price",
+                        "7,001 - 30,000 stitches: $50 + ($3 × every 1,000 stitches)",
+                        "30,000+ stitches: $155 fix price"
+                    ],
+                    features: [
+                        "Upload artwork in any format (AI, PDF, JPG, etc.)",
+                        "Get a custom quote based on stitch count. <i>(We calculate the stitch count based on your design and provide a quote)</i>",
+                        "Professional DST digitizing from scratch",
+                        "Real machine stitch sample and Approval Card included"
+                    ],
+                    bestFor: "When you don't have a DST file or starting a new design",
+                    cta: "Get Quote"
                 },
                 included: "Included",
                 notIncluded: "Not Included",
