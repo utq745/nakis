@@ -39,9 +39,8 @@ export function Header() {
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-end border-b border-border bg-background/80 backdrop-blur-sm px-6">
-
-            <div className="flex items-center gap-2">
+        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-background/80 backdrop-blur-sm shadow-sm transition-all duration-300">
+            <div className="max-w-[1440px] mx-auto w-full flex items-center justify-end px-6 gap-2">
                 {/* Language Toggle - Like main site */}
                 <button
                     onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
