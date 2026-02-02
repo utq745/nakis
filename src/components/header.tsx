@@ -5,13 +5,22 @@ import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "./theme-toggle";
+import { useSession } from "next-auth/react";
 
 export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?: boolean; fullWidth?: boolean }) {
     const { language, setLanguage, t } = useLanguage();
+    const { data: session } = useSession();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isAtTop, setIsAtTop] = useState(!forceSolid);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    const isLoggedIn = !!session;
+    const isAdmin = session?.user?.role === "ADMIN";
+    const panelUrl = language === 'tr' ? '/tr/panel' : '/dashboard';
+    const newOrderUrl = language === 'tr' ? '/tr/siparisler/new' : '/orders/new';
+    const loginUrl = language === 'tr' ? '/tr/giris' : '/login';
+    const registerUrl = language === 'tr' ? '/tr/kayit' : '/register';
 
     useEffect(() => {
         if (forceSolid) {
@@ -78,17 +87,19 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                     </div>
 
                     <div className="flex gap-2 items-center">
-                        <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="hidden sm:inline-block">
+                        <Link href={isLoggedIn ? panelUrl : loginUrl} className="hidden sm:inline-block">
                             <button className={`h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`}>
-                                {t.header.signIn}
+                                {isLoggedIn ? t.header.panel : t.header.signIn}
                             </button>
                         </Link>
 
-                        <Link href={language === 'tr' ? '/tr/kayit' : '/register'} className="hidden sm:inline-block">
-                            <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-colors shadow-md">
-                                <span className="truncate">{t.header.startOrder}</span>
-                            </button>
-                        </Link>
+                        {!isAdmin && (
+                            <Link href={isLoggedIn ? newOrderUrl : registerUrl} className="hidden sm:inline-block">
+                                <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-colors shadow-md transition-all duration-300">
+                                    <span className="truncate">{t.header.startOrder}</span>
+                                </button>
+                            </Link>
+                        )}
 
                         <button
                             onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
@@ -206,19 +217,21 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 <div className="my-2 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
 
                                 <Link
-                                    href={language === 'tr' ? '/tr/giris' : '/login'}
+                                    href={isLoggedIn ? panelUrl : loginUrl}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="px-4 py-2 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-lg transition-colors font-bold text-sm"
                                 >
-                                    {t.header.signIn}
+                                    {isLoggedIn ? t.header.panel : t.header.signIn}
                                 </Link>
-                                <Link
-                                    href={language === 'tr' ? '/tr/kayit' : '/register'}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg transition-colors font-bold text-center text-sm shadow-lg"
-                                >
-                                    {t.header.startOrder}
-                                </Link>
+                                {!isAdmin && (
+                                    <Link
+                                        href={isLoggedIn ? newOrderUrl : registerUrl}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg transition-colors font-bold text-center text-sm shadow-lg"
+                                    >
+                                        {t.header.startOrder}
+                                    </Link>
+                                )}
                             </div>
                         </nav>
 

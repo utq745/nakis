@@ -3,9 +3,17 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
+import { useSession } from "next-auth/react";
 
 export function CTA() {
     const { t, language } = useLanguage();
+    const { data: session } = useSession();
+
+    const isLoggedIn = !!session;
+    const isAdmin = session?.user?.role === "ADMIN";
+    const panelUrl = language === 'tr' ? '/tr/panel' : '/dashboard';
+    const newOrderUrl = language === 'tr' ? '/tr/siparisler/new' : '/orders/new';
+    const loginUrl = language === 'tr' ? '/tr/giris' : '/login';
 
     return (
         <section className="w-full py-24 md:py-32 dark:bg-gradient-to-b dark:from-[#111318] dark:to-[#09090b]">
@@ -48,13 +56,13 @@ export function CTA() {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto">
-                            <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="w-full sm:w-auto">
+                            <Link href={isLoggedIn ? (isAdmin ? panelUrl : newOrderUrl) : loginUrl} className="w-full sm:w-auto">
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     className="w-full h-14 px-10 bg-white text-primary rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all"
                                 >
-                                    {t.landing.cta.startBtn}
+                                    {isLoggedIn && isAdmin ? t.header.panel : t.landing.cta.startBtn}
                                 </motion.button>
                             </Link>
                             <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'} className="w-full sm:w-auto">

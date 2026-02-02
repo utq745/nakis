@@ -233,7 +233,8 @@ export const translations = {
             pricing: "Fiyatlandırma",
             contact: "İletişim",
             startOrder: "Siparişi Başlat",
-            signIn: "Giriş Yap"
+            signIn: "Giriş Yap",
+            panel: "Panel"
         },
         footer: {
             rights: "© 2025 Approval Stitch Inc. Tüm hakları saklıdır.",
@@ -255,7 +256,7 @@ export const translations = {
                 badge: "Gerçek Onaylı Nakış",
                 titleLine1: "Gerçek Dikişli",
                 titleLine2: "Onay Örneği",
-                description: "Tasarımınızı gerçek bir üretim kurulumunda dikiyoruz, böylece güvenle onaylayabilirsiniz.",
+                description: "Seri üretimden önce onay için gerçek üretim makinelerinde dikilmiştir.",
                 subText: "Render değil. Simülasyon değil. Gerçek dikişli bir örnek.",
                 uploadBtn: "Siparişi Başlat",
                 pricingBtn: "Örnekleri Gör",
@@ -853,7 +854,8 @@ export const translations = {
             about: "About",
             contact: "Contact Us",
             startOrder: "Start Order",
-            signIn: "Sign In"
+            signIn: "Sign In",
+            panel: "Dashboard"
         },
         footer: {
             rights: "© 2023 Approval Stitch Inc. All rights reserved.",
@@ -876,7 +878,7 @@ export const translations = {
                 badge: "Real Approval Stitch",
                 titleLine1: "Real Stitched",
                 titleLine2: "Approval Sample",
-                description: "We stitch your design on a real production setup <br />so you can approve with confidence.",
+                description: "Stitched on real production machines for approval before mass production.",
                 subText: "Not a render. Not a simulation. A real stitched sample.",
                 uploadBtn: "Start Order",
                 pricingBtn: "View Samples",

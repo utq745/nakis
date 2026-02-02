@@ -4,9 +4,17 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 import { HeroBackground } from "./hero-background";
+import { useSession } from "next-auth/react";
 
 export function Hero() {
     const { t, language } = useLanguage();
+    const { data: session } = useSession();
+
+    const isLoggedIn = !!session;
+    const isAdmin = session?.user?.role === "ADMIN";
+    const panelUrl = language === 'tr' ? '/tr/panel' : '/dashboard';
+    const newOrderUrl = language === 'tr' ? '/tr/siparisler/new' : '/orders/new';
+    const loginUrl = language === 'tr' ? '/tr/giris' : '/login';
 
     return (
         <section className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-[#F6F7F8] dark:bg-[#172136] pt-32 pb-20 md:pt-40 md:pb-32">
@@ -45,16 +53,44 @@ export function Hero() {
 
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-wrap gap-4">
-                                <Link href={language === 'tr' ? '/tr/giris' : '/login'}>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                    >
-                                        {t.landing.hero.uploadBtn}
-                                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                    </motion.button>
-                                </Link>
+                                {isLoggedIn ? (
+                                    <>
+                                        {!isAdmin ? (
+                                            <Link href={newOrderUrl}>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                                >
+                                                    {t.landing.hero.uploadBtn}
+                                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                </motion.button>
+                                            </Link>
+                                        ) : (
+                                            <Link href={panelUrl}>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                                >
+                                                    {t.header.panel}
+                                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                </motion.button>
+                                            </Link>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Link href={loginUrl}>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                        >
+                                            {t.landing.hero.uploadBtn}
+                                            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                        </motion.button>
+                                    </Link>
+                                )}
                                 <Link href="#samples">
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
