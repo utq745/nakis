@@ -93,6 +93,7 @@ export default async function OrderDetailPage({
         price: orderData.price,
         customerId: orderData.customerId,
         priority: orderData.priority,
+        serviceType: orderData.serviceType,
         estimatedDelivery: orderData.estimatedDelivery ? orderData.estimatedDelivery.toISOString() : null,
         createdAt: orderData.createdAt.toISOString(),
         updatedAt: orderData.updatedAt.toISOString(),

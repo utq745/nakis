@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createOrderNotification } from "@/lib/notifications";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["ORDERED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "CANCELLED"]).optional(),
+    status: z.enum(["ORDERED", "PRICED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
     title: z.string().optional(),
@@ -143,14 +143,17 @@ export async function PATCH(
                 // 1. APPROVAL_AWAITING -> IN_PROGRESS (approve preview)
                 // 2. APPROVAL_AWAITING -> REVISION (request revision)
                 // 3. ORDERED -> CANCELLED (cancel before work starts)
+                // 4. PRICED -> IN_PROGRESS (accept quote)
+                // 5. PRICED -> CANCELLED (decline quote)
                 const isApprovingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
                 const isRequestingRevision = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "REVISION";
-                const isCancelling = validatedData.status === "CANCELLED" && currentOrder.status === "ORDERED";
+                const isCancelling = validatedData.status === "CANCELLED" && (currentOrder.status === "ORDERED" || currentOrder.status === "PRICED");
+                const isAcceptingQuote = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
 
-                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}`);
+                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}, isAcceptingQuote=${isAcceptingQuote}`);
                 console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
 
-                if (!isApprovingPreview && !isRequestingRevision && !isCancelling) {
+                if (!isApprovingPreview && !isRequestingRevision && !isCancelling && !isAcceptingQuote) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
@@ -197,6 +200,7 @@ export async function PATCH(
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
                 ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
+                PRICED: { en: "Quote Sent", tr: "Fiyat Teklifi Gönderildi" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
                 REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
@@ -235,6 +239,7 @@ export async function PATCH(
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
                 ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
+                PRICED: { en: "Quote Sent", tr: "Fiyat Teklifi Gönderildi" },
                 APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
                 REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },

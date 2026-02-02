@@ -36,6 +36,7 @@ import {
     RefreshCcw,
     FilePlus,
     Package,
+    Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -173,22 +174,22 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [stitchCount, setStitchCount] = useState<number | "">("");
     const [isSendingQuote, setIsSendingQuote] = useState(false);
     const [isPriceExplainerOpen, setIsPriceExplainerOpen] = useState(false);
+    const [isQuoteViewOpen, setIsQuoteViewOpen] = useState(false);
 
     const calculatePrice = (stitches: number) => {
-        let digitizing = 0;
-        let approval = 0;
+        let digitizing = 25;
+        let approval = 25;
         let extra = 0;
 
-        if (stitches <= 7000) {
-            digitizing = 25;
-            approval = 25;
-        } else if (stitches < 30000) {
-            digitizing = 25;
-            approval = 25;
-            extra = 3 * Math.ceil((stitches - 7000) / 1000);
-        } else {
+        if (stitches >= 30000) {
+            // 30,000+ stitches: flat rate
             digitizing = 120;
             approval = 35;
+            extra = 0;
+        } else if (stitches > 7000) {
+            // Extra fee for stitches above 7,000
+            // Formula: $3 × ((stitches - 7000) / 1000)
+            extra = 3 * ((stitches - 7000) / 1000);
         }
 
         return {
@@ -626,11 +627,11 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                                 className="bg-background border-border font-bold text-violet-500"
                                             />
                                             <Button
-                                                onClick={handleSendQuote}
-                                                disabled={isSendingQuote || !price}
+                                                onClick={() => setIsPriceExplainerOpen(true)}
+                                                disabled={!price}
                                                 className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 px-6"
                                             >
-                                                {isSendingQuote ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Quote"}
+                                                Review & Send
                                             </Button>
                                         </div>
                                     </div>
@@ -711,33 +712,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                                <Button
-                                    onClick={() => setIsDeclineDialogOpen(true)}
-                                    variant="outline"
-                                    className="w-full sm:w-auto border-zinc-500/50 text-zinc-400 hover:bg-zinc-800 transition-all gap-2"
-                                >
-                                    <X className="h-4 w-4" />
-                                    {language === "tr" ? "Reddet" : "Decline"}
-                                </Button>
-                                <Button
-                                    onClick={handleAcceptQuote}
-                                    disabled={isApprovingPrice}
-                                    className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all gap-2"
-                                >
-                                    {isApprovingPrice ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            {language === "tr" ? "Onaylanıyor..." : "Approving..."}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            {language === "tr" ? "Teklifi Kabul Et" : "Accept Quote"}
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
+                            <Button
+                                onClick={() => setIsQuoteViewOpen(true)}
+                                className="w-full md:w-auto bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all gap-2"
+                            >
+                                <Eye className="h-4 w-4" />
+                                {language === "tr" ? "Detayları Görüntüle" : "View Quote Details"}
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -1442,6 +1423,206 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <>
                                     <Send className="mr-2 h-4 w-4" />
                                     {t.orders.sendRevision}
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Price Explainer Dialog */}
+            <Dialog open={isPriceExplainerOpen} onOpenChange={setIsPriceExplainerOpen}>
+                <DialogContent className="sm:max-w-lg bg-popover border-border overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <DollarSign className="h-5 w-5 text-violet-500" />
+                            {language === "tr" ? "Fiyat Teklifi Gönder" : "Send Price Quote"}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        {/* Calculation Formula Section */}
+                        <div className="p-4 rounded-xl bg-accent/50 border border-border space-y-3">
+                            <h4 className="text-sm font-semibold text-violet-400 uppercase tracking-wider">
+                                {language === "tr" ? "Fiyatlandırma Formülü" : "Pricing Formula"}
+                            </h4>
+                            <div className="text-xs text-muted-foreground space-y-2">
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">0 - 7,000</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$50</span>
+                                    <span className="text-muted-foreground ml-1">(Digitizing $25 + Approval $25)</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">7,001 - 29,999</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$50</span> + <span className="text-amber-400 font-bold">$3 × (({language === "tr" ? "vuruş" : "stitches"} - 7000) / 1000)</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">30,000+</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$155</span>
+                                    <span className="text-muted-foreground ml-1">(Digitizing $120 + Approval $35)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Calculation Breakdown */}
+                        {breakdown && (
+                            <div className="p-4 rounded-xl bg-violet-500/10 border border-violet-500/20 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">{language === "tr" ? "Vuruş Sayısı:" : "Stitch Count:"}</span>
+                                    <span className="text-lg font-bold text-foreground">{Number(stitchCount).toLocaleString()}</span>
+                                </div>
+                                <div className="h-px bg-border/50" />
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Digitizing:</span>
+                                        <span className="text-foreground font-medium">${breakdown.digitizing}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Approval:</span>
+                                        <span className="text-foreground font-medium">${breakdown.approval}</span>
+                                    </div>
+                                    {breakdown.extra > 0 && (
+                                        <div className="flex justify-between col-span-2">
+                                            <span className="text-muted-foreground">{language === "tr" ? "Ek Ücret:" : "Extra Fee:"}</span>
+                                            <span className="text-amber-400 font-medium">${breakdown.extra.toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="h-px bg-border/50" />
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium text-violet-400">{language === "tr" ? "Hesaplanan Toplam:" : "Calculated Total:"}</span>
+                                    <span className="text-xl font-bold text-violet-400">${breakdown.total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Editable Price */}
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                {language === "tr" ? "Son Fiyat (düzenlenebilir)" : "Final Price (editable)"}
+                            </Label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold text-muted-foreground">$</span>
+                                <Input
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    className="bg-background border-border font-bold text-2xl text-violet-500 h-14"
+                                />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {language === "tr"
+                                    ? "Fiyatı göndermeden önce değiştirebilirsiniz."
+                                    : "You can adjust the price before sending."}
+                            </p>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsPriceExplainerOpen(false)}
+                            className="text-muted-foreground hover:text-foreground hover:bg-zinc-800"
+                        >
+                            {language === "tr" ? "Vazgeç" : "Cancel"}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setIsPriceExplainerOpen(false);
+                                handleSendQuote();
+                            }}
+                            disabled={isSendingQuote || !price}
+                            className="bg-violet-600 hover:bg-violet-500 text-white min-w-[140px] shadow-lg shadow-violet-500/20"
+                        >
+                            {isSendingQuote ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {language === "tr" ? "Gönderiliyor..." : "Sending..."}
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="mr-2 h-4 w-4" />
+                                    {language === "tr" ? "Fiyat Gönder" : "Send Quote"}
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Customer Quote View Dialog */}
+            <Dialog open={isQuoteViewOpen} onOpenChange={setIsQuoteViewOpen}>
+                <DialogContent className="sm:max-w-lg bg-popover border-border overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <DollarSign className="h-5 w-5 text-cyan-500" />
+                            {language === "tr" ? "Fiyat Teklifi Detayları" : "Price Quote Details"}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        {/* Pricing Formula Section */}
+                        <div className="p-4 rounded-xl bg-accent/50 border border-border space-y-3">
+                            <h4 className="text-sm font-semibold text-cyan-400 uppercase tracking-wider">
+                                {language === "tr" ? "Fiyatlandırma Politikamız" : "Our Pricing Policy"}
+                            </h4>
+                            <div className="text-xs text-muted-foreground space-y-2">
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">0 - 7,000</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$50</span>
+                                    <span className="text-muted-foreground ml-1">(Digitizing $25 + Approval $25)</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">7,001 - 29,999</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$50</span> + <span className="text-amber-400 font-bold">$3 × (({language === "tr" ? "vuruş" : "stitches"} - 7000) / 1000)</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">30,000+</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$155</span>
+                                    <span className="text-muted-foreground ml-1">(Digitizing $120 + Approval $35)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Your Quote */}
+                        <div className="p-6 rounded-xl bg-gradient-to-br from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 text-center space-y-3">
+                            <p className="text-sm text-muted-foreground">
+                                {language === "tr" ? "Tasarımınız için belirlenen fiyat" : "Price for your design"}
+                            </p>
+                            <div className="text-4xl font-bold text-cyan-400">
+                                ${Number(order.price).toFixed(2)}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {language === "tr"
+                                    ? "Bu fiyat, tasarımınızın karmaşıklığına göre hesaplanmıştır."
+                                    : "This price is calculated based on your design's complexity."}
+                            </p>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setIsQuoteViewOpen(false);
+                                setIsDeclineDialogOpen(true);
+                            }}
+                            className="text-red-400 border-red-500/50 hover:bg-red-500/10 hover:text-red-300"
+                        >
+                            <X className="mr-2 h-4 w-4" />
+                            {language === "tr" ? "Reddet" : "Decline"}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setIsQuoteViewOpen(false);
+                                handleAcceptQuote();
+                            }}
+                            disabled={isApprovingPrice}
+                            className="bg-cyan-600 hover:bg-cyan-500 text-white min-w-[140px] shadow-lg shadow-cyan-500/20"
+                        >
+                            {isApprovingPrice ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {language === "tr" ? "Onaylanıyor..." : "Approving..."}
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                    {language === "tr" ? "Teklifi Kabul Et" : "Accept Quote"}
                                 </>
                             )}
                         </Button>

@@ -326,9 +326,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Mevcut DST dosyanızın dikiş kalitesini kontrol edin" },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Küçük düzeltmeler + dikişli onay örneği" },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "$60", desc: "Çizimden yeni dijitalleştirme + dikişli örnek" }
+                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Mevcut DST dosyanızın dikiş kalitesini kontrol edin", isQuote: false },
+                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Küçük düzeltmeler + dikişli onay örneği", isQuote: false },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Fiyat Teklifi Al", desc: "Çizimden yeni dijitalleştirme + dikişli örnek", isQuote: true }
                             ].map((s) => (
                                 <div
                                     key={s.id}
@@ -351,7 +351,10 @@ export default function NewOrderPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center shrink-0">
-                                        <span className="text-emerald-500 font-bold text-base">{s.price}</span>
+                                        <span className={cn(
+                                            "font-bold text-base",
+                                            s.isQuote ? "text-amber-500" : "text-emerald-500"
+                                        )}>{s.price}</span>
                                     </div>
                                 </div>
                             ))}
