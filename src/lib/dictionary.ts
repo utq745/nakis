@@ -257,7 +257,7 @@ export const translations = {
                 titleLine1: "Gerçek Dikişli",
                 titleLine2: "Onay Örneği",
                 description: "Seri üretimden önce onay için gerçek üretim makinelerinde dikilmiştir.",
-                subText: "Render değil. Simülasyon değil. Gerçek dikişli bir örnek.",
+                subText: "Gerçek üretim makinelerinde işlenir. Render veya simülasyon değildir.",
                 uploadBtn: "Siparişi Başlat",
                 pricingBtn: "Örnekleri Gör",
                 labBadge: "Gerçek Nakış Laboratuvarı",
