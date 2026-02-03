@@ -32,13 +32,15 @@ export function middleware(request: NextRequest) {
     // HSTS - Strict Transport Security (1 year, include subdomains)
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
-    // HTTPS Enforcement in production
+    // HTTPS enforcement is handled by Cloudflare proxy
+    /*
     const isProduction = process.env.NODE_ENV === 'production';
     const proto = request.headers.get('x-forwarded-proto');
     if (isProduction && proto === 'http') {
         const httpsUrl = request.url.replace('http://', 'https://');
         return NextResponse.redirect(httpsUrl, 301);
     }
+    */
 
     // CSRF protection for API routes (POST, PUT, PATCH, DELETE)
     if (pathname.startsWith('/api/')) {
