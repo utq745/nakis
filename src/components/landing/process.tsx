@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Process() {
@@ -95,10 +96,12 @@ export function Process() {
                                         className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${item.video ? 'cursor-pointer' : ''}`}
                                         onClick={() => item.video && setSelectedVideo(item.video)}
                                     >
-                                        <img
+                                        <Image
                                             src={item.image}
                                             alt={item.title}
-                                            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${item.video ? 'opacity-60' : ''}`}
+                                            fill
+                                            className={`object-cover group-hover:scale-110 transition-transform duration-700 ${item.video ? 'opacity-60' : ''}`}
+                                            sizes="(max-width: 768px) 100vw, 33vw"
                                         />
 
                                         {/* Play Button Overlay */}

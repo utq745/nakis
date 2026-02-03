@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Portfolio() {
@@ -61,11 +62,13 @@ export function Portfolio() {
                             aria-label={`${item.title} - ${item.subtitle}`}
                             title={`${item.title} - ${item.subtitle}`}
                         >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                style={{ backgroundImage: `url("${item.bg}")` }}
-                                aria-hidden="true"
-                            ></div>
+                            <Image
+                                src={item.bg}
+                                alt={`${item.title} - ${item.subtitle}`}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10 opacity-90 group-hover:opacity-100 transition-opacity">
                                 <motion.div
                                     whileHover={{ y: -5 }}

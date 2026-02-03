@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function WhatYouReceive() {
@@ -61,7 +62,13 @@ export function WhatYouReceive() {
                         >
                             <div className="w-full aspect-square bg-gray-100 dark:bg-white/5 rounded-3xl border-2 border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center relative overflow-hidden group">
                                 {item.image ? (
-                                    <img src={item.image} alt={item.alt || item.title} className="w-full h-full object-cover" />
+                                    <Image
+                                        src={item.image}
+                                        alt={item.alt || item.title}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                    />
                                 ) : (
                                     <div className="flex flex-col items-center gap-4 text-gray-400 dark:text-white/20">
                                         <span className="material-symbols-outlined text-5xl">image</span>

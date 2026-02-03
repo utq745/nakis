@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 import { HeroBackground } from "./hero-background";
 import { useSession } from "next-auth/react";
@@ -129,17 +130,16 @@ export function Hero() {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="relative lg:ml-10"
                     >
-                        <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group">
-                            <img
+                        <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group aspect-[4/3]">
+                            <Image
                                 src="/images/hero/hero.webp"
                                 alt="High-quality real stitched embroidery sample"
-                                loading="eager"
-                                fetchPriority="high"
-                                className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                                fill
+                                priority
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div>
-
-                            <motion.div
+                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div><motion.div
                                 animate={{
                                     y: [0, -12, 0],
                                 }}
