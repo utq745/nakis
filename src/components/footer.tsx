@@ -57,12 +57,16 @@ export function Footer() {
                     <img
                         src="/iyzico_colored.svg"
                         alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
+                        width={80}
+                        height={34}
                         className="h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity dark:hidden"
                         loading="lazy"
                     />
                     <img
                         src="/iyzico_white.svg"
                         alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
+                        width={80}
+                        height={34}
                         className="hidden dark:block h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity"
                         loading="lazy"
                     />
