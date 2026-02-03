@@ -61,100 +61,95 @@ export async function GET(
             }
         }
 
-        // Determine file path - check both old (public) and new (uploads) locations
-        let filePath: string | null = null;
-
-        // Extract filename from URL or use url directly if it's just a filename
+        // Determine file source (R2 or Local)
         const urlPath = file.url;
+
+        // If urlPath contains a slash and doesn't exist locally, it's likely an R2 key
         const filename = urlPath.includes("/") ? urlPath.split("/").pop() || "" : urlPath;
-
-        // New secure path (uploads/{orderId}/{type}/{filename})
         const securePath = join(process.cwd(), "uploads", file.orderId, file.type, filename);
-
-        // Old public path (public/uploads/{orderId}/{type}/{filename})
         const publicPath = join(process.cwd(), "public", urlPath);
-
-        // Also check if URL is the old format /uploads/...
         const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, filename);
 
+        let fileStream: any = null;
+        let fileSize = file.size;
+
         if (existsSync(securePath)) {
-            filePath = securePath;
+            const { createReadStream } = await import("fs");
+            fileStream = createReadStream(securePath);
         } else if (existsSync(publicPath)) {
-            filePath = publicPath;
+            const { createReadStream } = await import("fs");
+            fileStream = createReadStream(publicPath);
         } else if (existsSync(oldPublicPath)) {
-            filePath = oldPublicPath;
+            const { createReadStream } = await import("fs");
+            fileStream = createReadStream(oldPublicPath);
+        } else {
+            // Try fetching from R2
+            try {
+                const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+                const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
+
+                const response = await s3Client.send(new GetObjectCommand({
+                    Bucket: R2_BUCKET_NAME,
+                    Key: file.url, // This is the R2 Key
+                }));
+
+                if (response.Body) {
+                    fileStream = response.Body;
+                    fileSize = Number(response.ContentLength) || file.size;
+                }
+            } catch (r2Error) {
+                console.error("R2 Fetch Error:", r2Error);
+                return NextResponse.json({ error: "File not found anywhere" }, { status: 404 });
+            }
         }
 
-        if (!filePath) {
-            console.error("File not found:", { securePath, publicPath, oldPublicPath });
-            return NextResponse.json({ error: "File not found on disk" }, { status: 404 });
+        if (!fileStream) {
+            return NextResponse.json({ error: "File content not found" }, { status: 404 });
         }
 
         // Determine content type
         const ext = file.name.split(".").pop()?.toLowerCase();
         const contentTypes: Record<string, string> = {
-            // Images
-            png: "image/png",
-            jpg: "image/jpeg",
-            jpeg: "image/jpeg",
-            gif: "image/gif",
-            webp: "image/webp",
-            svg: "image/svg+xml",
-            // Documents
-            pdf: "application/pdf",
-            ai: "application/postscript",
-            eps: "application/postscript",
-            // Embroidery files
-            dst: "application/octet-stream",
-            dts: "application/octet-stream",
-            pes: "application/octet-stream",
-            jef: "application/octet-stream",
-            exp: "application/octet-stream",
-            vp3: "application/octet-stream",
-            hus: "application/octet-stream",
-            // Archives
-            zip: "application/zip",
-            rar: "application/x-rar-compressed",
+            png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
+            webp: "image/webp", svg: "image/svg+xml", pdf: "application/pdf",
+            dst: "application/octet-stream", pes: "application/octet-stream"
         };
-
         const contentType = contentTypes[ext || ""] || "application/octet-stream";
 
-        // Check if request wants to view inline or download
-        const url = new URL(request.url);
-        const download = url.searchParams.get("download") === "true";
-
-        // Memory-efficient streaming
-        const { createReadStream, statSync } = await import("fs");
-        const stats = statSync(filePath);
-        const stream = createReadStream(filePath);
-
-        // Convert Node stream to Web Stream for Next.js
+        // Memory-efficient streaming for both Local and R2
         const readableStream = new ReadableStream({
-            start(controller) {
-                stream.on("data", (chunk) => {
-                    // Ensure chunk is a Buffer/Uint8Array
-                    const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-                    controller.enqueue(new Uint8Array(data));
-                });
-                stream.on("end", () => controller.close());
-                stream.on("error", (err) => controller.error(err));
+            async start(controller) {
+                if (fileStream.getReader) { // Web Stream (R2/S3)
+                    const reader = fileStream.getReader();
+                    try {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            controller.enqueue(value);
+                        }
+                    } finally {
+                        reader.releaseLock();
+                    }
+                } else { // Node Stream (Local FS)
+                    fileStream.on("data", (chunk: any) => controller.enqueue(new Uint8Array(chunk)));
+                    fileStream.on("end", () => controller.close());
+                    fileStream.on("error", (err: any) => controller.error(err));
+                }
+                controller.close();
             },
             cancel() {
-                stream.destroy();
+                if (fileStream.destroy) fileStream.destroy();
             }
         });
 
-        // Return file with proper headers
         return new NextResponse(readableStream, {
             headers: {
                 "Content-Type": contentType,
-                "Content-Disposition": (download || file.type === "final")
+                "Content-Disposition": (file.type === "final")
                     ? `attachment; filename="${encodeURIComponent(file.name)}"`
                     : `inline; filename="${encodeURIComponent(file.name)}"`,
-                "Content-Length": stats.size.toString(),
+                "Content-Length": (fileSize || 0).toString(),
                 "Cache-Control": "private, max-age=3600",
-                "X-Content-Type-Options": "nosniff", // Security: prevent MIME sniffing
-                "Content-Security-Policy": "default-src 'none'; img-src 'self'; style-src 'unsafe-inline';", // Security: restrictive CSP
             },
         });
     } catch (error) {

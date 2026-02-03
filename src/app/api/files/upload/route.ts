@@ -65,10 +65,6 @@ export async function POST(request: Request) {
 
         const uploadedFiles = [];
 
-        // Use secure uploads directory (outside public)
-        const uploadDir = join(process.cwd(), "uploads", orderId, type);
-        await mkdir(uploadDir, { recursive: true });
-
         for (const file of files) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
@@ -77,13 +73,21 @@ export async function POST(request: Request) {
             const uuid = crypto.randomUUID();
             const ext = file.name.split(".").pop() || "";
             const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const fileName = `${uuid}-${safeName}`;
-            const filePath = join(uploadDir, fileName);
+            const fileName = `${orderId}/${type}/${uuid}-${safeName}`;
 
-            await writeFile(filePath, buffer);
+            // Upload to Cloudflare R2 using the new s3Client
+            const { PutObjectCommand } = await import("@aws-sdk/client-s3");
+            const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
 
-            // Store API URL path (not public path)
-            const apiUrl = `/api/files`;  // Will be: /api/files/{fileId}
+            await s3Client.send(new PutObjectCommand({
+                Bucket: R2_BUCKET_NAME,
+                Key: fileName,
+                Body: buffer,
+                ContentType: file.type || "application/octet-stream",
+            }));
+
+            // Store API URL path (proxy through our server for auth checks)
+            // url in DB will now be the R2 Key (fileName)
 
             // Check if file with same name and type already exists for versioning
             const existingFile = await prisma.file.findFirst({
@@ -103,7 +107,7 @@ export async function POST(request: Request) {
             const dbFile = await prisma.file.create({
                 data: {
                     name: file.name,
-                    url: fileName,  // Store just filename, URL will be constructed via API
+                    url: fileName,  // Store the R2 Key
                     type,
                     size: file.size,
                     version: newVersion,
@@ -115,7 +119,7 @@ export async function POST(request: Request) {
 
             uploadedFiles.push({
                 ...dbFile,
-                url: `/api/files/${dbFile.id}`,  // Return API URL
+                url: `/api/files/${dbFile.id}`,  // Always serve via our protected route
             });
         }
 
