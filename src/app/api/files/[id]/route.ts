@@ -127,18 +127,35 @@ export async function GET(
                             if (done) break;
                             controller.enqueue(value);
                         }
+                        controller.close();
+                    } catch (err) {
+                        controller.error(err);
                     } finally {
                         reader.releaseLock();
                     }
                 } else { // Node Stream (Local FS)
-                    fileStream.on("data", (chunk: any) => controller.enqueue(new Uint8Array(chunk)));
-                    fileStream.on("end", () => controller.close());
-                    fileStream.on("error", (err: any) => controller.error(err));
+                    fileStream.on("data", (chunk: any) => {
+                        try {
+                            controller.enqueue(new Uint8Array(chunk));
+                        } catch (e) {
+                            // Controller might be closed
+                        }
+                    });
+                    fileStream.on("end", () => {
+                        try {
+                            controller.close();
+                        } catch (e) { }
+                    });
+                    fileStream.on("error", (err: any) => {
+                        try {
+                            controller.error(err);
+                        } catch (e) { }
+                    });
                 }
-                controller.close();
             },
             cancel() {
                 if (fileStream.destroy) fileStream.destroy();
+                else if (fileStream.cancel) fileStream.cancel();
             }
         });
 
