@@ -54,6 +54,8 @@ export function LanguageProvider({
             'cerez-politikasi': { en: '/cookie-policy', tr: '/tr/cerez-politikasi' },
             'distance-sales-agreement': { en: '/distance-sales-agreement', tr: '/tr/mesafeli-satis-sozlesmesi' },
             'mesafeli-satis-sozlesmesi': { en: '/distance-sales-agreement', tr: '/tr/mesafeli-satis-sozlesmesi' },
+            'delivery-and-returns': { en: '/delivery-and-returns', tr: '/tr/teslimat-ve-iade' },
+            'teslimat-ve-iade': { en: '/delivery-and-returns', tr: '/tr/teslimat-ve-iade' },
             // Dashboard pages
             'dashboard': { en: '/dashboard', tr: '/tr/panel' },
             'panel': { en: '/dashboard', tr: '/tr/panel' },
