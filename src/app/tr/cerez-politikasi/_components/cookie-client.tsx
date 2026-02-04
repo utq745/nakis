@@ -124,12 +124,17 @@ export function CookieClient() {
                                     </li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">5. Üçüncü Taraf Hizmetleri</h2>
-                                <p className="mb-12 leading-relaxed">
-                                    Stripe/PayPal gibi ödeme işlemcileri veya Google Analytics gibi analiz araçlarını kullanabiliriz. Bu üçüncü taraflar da cihazınıza çerez yerleştirebilir. Daha fazla bilgi için bu kurumların kendi gizlilik politikalarını okumanızı öneririz.
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">6. İletişim</h2>
+                                <p className="mb-6 leading-relaxed">
+                                    Bu Çerez Politikası veya veri uygulamalarımız hakkında sorularınız varsa, lütfen iletişime geçin:
                                 </p>
-
-
+                                <div className="p-8 bg-muted/50 dark:bg-muted/10 rounded-2xl border border-primary/20">
+                                    <div className="text-sm space-y-2">
+                                        <p><strong>Unvan:</strong> Yavuz Sakkaoğlu</p>
+                                        <p><strong>Adres:</strong> Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                        <p><strong>E-posta:</strong> <a href="mailto:info@approvalstitch.com" className="text-primary font-bold">info@approvalstitch.com</a></p>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>

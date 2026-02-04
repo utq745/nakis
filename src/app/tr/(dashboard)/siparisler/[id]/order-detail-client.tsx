@@ -1630,7 +1630,7 @@ function FileList({
                                             <Eye className="h-4 w-4" />
                                         </Button>
                                     </a>
-                                    <a href={file.url} download>
+                                    <a href={`${file.url}?download=1`} download={file.name}>
                                         <Button
                                             variant="ghost"
                                             size="icon"

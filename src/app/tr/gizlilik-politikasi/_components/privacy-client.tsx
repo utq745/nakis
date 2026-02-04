@@ -100,10 +100,12 @@ export function PrivacyClient() {
                                 </p>
 
                                 <div className="mt-16 p-8 bg-muted/50 dark:bg-muted/10 rounded-2xl border border-primary/20">
-                                    <h3 className="text-lg font-bold text-foreground mb-2 underline">Sorularınız mı Var?</h3>
-                                    <p className="text-muted-foreground">
-                                        Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, lütfen <a href="mailto:contact@approvalstitch.com" className="text-primary font-bold">contact@approvalstitch.com</a> adresinden bizimle iletişime geçin.
-                                    </p>
+                                    <h3 className="text-lg font-bold text-foreground mb-4 underline">İletişim</h3>
+                                    <div className="text-sm space-y-2">
+                                        <p><strong>Unvan:</strong> Yavuz Sakkaoğlu</p>
+                                        <p><strong>Adres:</strong> Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                        <p><strong>E-posta:</strong> <a href="mailto:info@approvalstitch.com" className="text-primary font-bold">info@approvalstitch.com</a></p>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

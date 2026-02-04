@@ -110,61 +110,37 @@ export async function GET(
         // Determine content type
         const ext = file.name.split(".").pop()?.toLowerCase();
         const contentTypes: Record<string, string> = {
-            png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
-            webp: "image/webp", svg: "image/svg+xml", pdf: "application/pdf",
-            dst: "application/octet-stream", pes: "application/octet-stream"
+            png: "image/png",
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            gif: "image/gif",
+            webp: "image/webp",
+            svg: "image/svg+xml",
+            pdf: "application/pdf",
+            dst: "application/octet-stream",
+            pes: "application/octet-stream",
+            emb: "application/octet-stream",
+            jef: "application/octet-stream",
+            exp: "application/octet-stream",
+            vp3: "application/octet-stream",
+            hus: "application/octet-stream",
+            ai: "application/postscript",
+            eps: "application/postscript"
         };
         const contentType = contentTypes[ext || ""] || "application/octet-stream";
 
-        // Memory-efficient streaming for both Local and R2
-        const readableStream = new ReadableStream({
-            async start(controller) {
-                if (fileStream.getReader) { // Web Stream (R2/S3)
-                    const reader = fileStream.getReader();
-                    try {
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            controller.enqueue(value);
-                        }
-                        controller.close();
-                    } catch (err) {
-                        controller.error(err);
-                    } finally {
-                        reader.releaseLock();
-                    }
-                } else { // Node Stream (Local FS)
-                    fileStream.on("data", (chunk: any) => {
-                        try {
-                            controller.enqueue(new Uint8Array(chunk));
-                        } catch (e) {
-                            // Controller might be closed
-                        }
-                    });
-                    fileStream.on("end", () => {
-                        try {
-                            controller.close();
-                        } catch (e) { }
-                    });
-                    fileStream.on("error", (err: any) => {
-                        try {
-                            controller.error(err);
-                        } catch (e) { }
-                    });
-                }
-            },
-            cancel() {
-                if (fileStream.destroy) fileStream.destroy();
-                else if (fileStream.cancel) fileStream.cancel();
-            }
-        });
+        const { searchParams } = new URL(request.url);
+        const forceDownload = searchParams.get("download") === "1";
 
-        return new NextResponse(readableStream, {
+        // Determine disposition
+        const disposition = (file.type === "final" || forceDownload) ? "attachment" : "inline";
+        const safeName = file.name.replace(/"/g, '\\"');
+        const encodedName = encodeURIComponent(file.name);
+
+        return new NextResponse(fileStream as any, {
             headers: {
                 "Content-Type": contentType,
-                "Content-Disposition": (file.type === "final")
-                    ? `attachment; filename="${encodeURIComponent(file.name)}"`
-                    : `inline; filename="${encodeURIComponent(file.name)}"`,
+                "Content-Disposition": `${disposition}; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
                 "Content-Length": (fileSize || 0).toString(),
                 "Cache-Control": "private, max-age=3600",
             },

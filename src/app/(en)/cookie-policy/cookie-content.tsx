@@ -124,12 +124,17 @@ export default function CookieContent() {
                                     </li>
                                 </ul>
 
-                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">5. Third-Party Services</h2>
-                                <p className="mb-12 leading-relaxed">
-                                    We may use trusted third-party services (such as payment processors like Stripe/PayPal or analytics tools like Google Analytics). These third parties may also set cookies on your device. We recommend reading their privacy policies for more information.
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">6. Contact Us</h2>
+                                <p className="mb-6 leading-relaxed">
+                                    If you have any questions about this Cookie Policy or our data practices, please reach out to us:
                                 </p>
-
-
+                                <div className="p-8 bg-muted/50 dark:bg-muted/10 rounded-2xl border border-primary/20">
+                                    <div className="text-sm space-y-2">
+                                        <p><strong>Title:</strong> Yavuz Sakkaoğlu</p>
+                                        <p><strong>Address:</strong> Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                        <p><strong>Email:</strong> <a href="mailto:info@approvalstitch.com" className="text-primary font-bold">info@approvalstitch.com</a></p>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>

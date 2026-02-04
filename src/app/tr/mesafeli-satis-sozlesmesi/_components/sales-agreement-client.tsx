@@ -60,11 +60,11 @@ export function SalesAgreementClient() {
                             className="max-w-4xl mx-auto bg-card rounded-[2.5rem] p-8 md:p-16 border border-border shadow-2xl"
                         >
                             <div className="prose prose-blue dark:prose-invert max-w-none text-muted-foreground">
-                                <p className="text-sm mb-8 italic">Son Güncelleme: 26 Aralık 2025</p>
+                                <p className="text-sm mb-8 italic">Son Güncelleme: 04 Şubat 2026</p>
 
                                 <h2 className="text-2xl font-black text-foreground mt-12 mb-6">1. Taraflar</h2>
                                 <p className="mb-6 leading-relaxed">
-                                    İşbu Sözleşme, bir tarafta <strong>Approval Stitch</strong> (bundan sonra "SATICI" olarak anılacaktır) ile diğer tarafta platform üzerinden sipariş veren kullanıcı (bundan sonra "ALICI" olarak anılacaktır) arasında, aşağıda belirtilen hüküm ve şartlar çerçevesinde elektronik ortamda akdedilmiştir.
+                                    İşbu Sözleşme, bir tarafta <strong>Yavuz Sakkaoğlu</strong> (bundan sonra "SATICI" olarak anılacaktır) ile diğer tarafta platform üzerinden sipariş veren kullanıcı (bundan sonra "ALICI" olarak anılacaktır) arasında, aşağıda belirtilen hüküm ve şartlar çerçevesinde elektronik ortamda akdedilmiştir.
                                 </p>
 
                                 <h2 className="text-2xl font-black text-foreground mt-12 mb-6">2. Sözleşmenin Konusu</h2>
@@ -93,10 +93,25 @@ export function SalesAgreementClient() {
                                     <p className="text-sm">Approval Stitch tarafından sunulan hizmetler tamamen ALICI'nın gönderdiği tasarımlara özel olarak hazırlandığı için, işlem başlatıldıktan sonra cayma hakkı ve iade söz konusu değildir.</p>
                                 </div>
 
-                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">6. Uyuşmazlık Çözümü</h2>
-                                <p className="mb-8 leading-relaxed">
-                                    İşbu sözleşmenin uygulanmasında, Gümrük ve Ticaret Bakanlığınca ilan edilen değere kadar Tüketici Hakem Heyetleri ile SATICI'nın yerleşim yerindeki Tüketici Mahkemeleri yetkilidir.
-                                </p>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">7. Satıcı Bilgileri</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-12">
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Unvan</p>
+                                        <p className="font-bold text-foreground">Yavuz Sakkaoğlu</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Adres</p>
+                                        <p className="font-bold text-foreground">Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Telefon</p>
+                                        <p className="font-bold text-foreground">+90 532 266 83 94</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">E-posta</p>
+                                        <p className="font-bold text-foreground">info@approvalstitch.com</p>
+                                    </div>
+                                </div>
 
                                 <div className="mt-16 text-center border-t border-border pt-12">
                                     <p className="text-sm text-muted-foreground">Bu sözleşme ALICI'nın ödeme adımında "Sözleşmeyi Okudum ve Kabul Ediyorum" onayını vermesiyle yürürlüğe girer.</p>

@@ -39,6 +39,7 @@ export function Footer() {
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/cerez-politikasi' : '/cookie-policy'}>{language === 'tr' ? 'Çerez Politikası' : 'Cookie Policy'}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/gizlilik-politikasi' : '/privacy-policy'}>{t.footer.privacy}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/mesafeli-satis-sozlesmesi' : '/distance-sales-agreement'}>{language === 'tr' ? 'Mesafeli Satış Sözleşmesi' : 'Distance Sales Agreement'}</Link>
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/teslimat-ve-iade' : '/delivery-and-returns'}>{language === 'tr' ? 'Teslimat ve İade' : 'Delivery and Returns'}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href="/sitemap.xml">{language === 'tr' ? 'Site Haritası' : 'Sitemap'}</Link>
                         </div>
                     </div>

@@ -1702,7 +1702,7 @@ function FileList({
                         </div>
                         <div className="flex items-center gap-1">
                             {!isLocked && (
-                                <a href={file.url} download={file.name}>
+                                <a href={`${file.url}?download=1`} download={file.name}>
                                     <Button
                                         variant="ghost"
                                         size="icon"

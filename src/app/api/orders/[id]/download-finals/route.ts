@@ -106,7 +106,23 @@ export async function GET(
                     console.error(`Failed to add file ${file.name}:`, err);
                 }
             } else {
-                console.warn(`File not found on disk: ${file.name}`);
+                // Try fetching from R2
+                try {
+                    const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+                    const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
+
+                    const response = await s3Client.send(new GetObjectCommand({
+                        Bucket: R2_BUCKET_NAME,
+                        Key: file.url,
+                    }));
+
+                    if (response.Body) {
+                        // S3 Body in Node.js is a Readable stream
+                        archive.append(response.Body as any, { name: file.name });
+                    }
+                } catch (r2Error) {
+                    console.error(`Failed to fetch ${file.name} from R2:`, r2Error);
+                }
             }
         }
 

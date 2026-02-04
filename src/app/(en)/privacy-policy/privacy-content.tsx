@@ -100,10 +100,12 @@ export default function PrivacyContent() {
                                 </p>
 
                                 <div className="mt-16 p-8 bg-muted/50 dark:bg-muted/10 rounded-2xl border border-primary/20">
-                                    <h3 className="text-lg font-bold text-foreground mb-2 underline">Questions?</h3>
-                                    <p className="text-muted-foreground">
-                                        If you have any questions about this Privacy Policy, please contact us at <a href="mailto:contact@approvalstitch.com" className="text-primary font-bold">contact@approvalstitch.com</a>
-                                    </p>
+                                    <h3 className="text-lg font-bold text-foreground mb-4 underline">Contact</h3>
+                                    <div className="text-sm space-y-2">
+                                        <p><strong>Title:</strong> Yavuz Sakkaoğlu</p>
+                                        <p><strong>Address:</strong> Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                        <p><strong>Email:</strong> <a href="mailto:info@approvalstitch.com" className="text-primary font-bold">info@approvalstitch.com</a></p>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

@@ -60,11 +60,11 @@ export default function AgreementContent() {
                             className="max-w-4xl mx-auto bg-card rounded-[2.5rem] p-8 md:p-16 border border-border shadow-2xl"
                         >
                             <div className="prose prose-blue dark:prose-invert max-w-none text-muted-foreground">
-                                <p className="text-sm mb-8 italic">Last Updated: December 2025</p>
+                                <p className="text-sm mb-8 italic">Last Updated: February 4, 2026</p>
 
                                 <h2 className="text-2xl font-black text-foreground mt-12 mb-6">1. Parties</h2>
                                 <p className="mb-6 leading-relaxed">
-                                    This Agreement is entered into electronically between <strong>Approval Stitch</strong> (hereinafter referred to as "SELLER") and the customer who places an order through the platform (hereinafter referred to as "BUYER"), under the terms and conditions set forth below.
+                                    This Agreement is entered into electronically between <strong>Yavuz Sakkaoğlu</strong> (hereinafter referred to as "SELLER") and the customer who places an order through the platform (hereinafter referred to as "BUYER"), under the terms and conditions set forth below.
                                 </p>
 
                                 <h2 className="text-2xl font-black text-foreground mt-12 mb-6">2. Subject of the Agreement</h2>
@@ -93,10 +93,25 @@ export default function AgreementContent() {
                                     <p className="text-sm">Since the services provided by Approval Stitch are prepared entirely specifically for the designs sent by the BUYER, there is no right of withdrawal or refund after the process has started.</p>
                                 </div>
 
-                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">6. Dispute Resolution</h2>
-                                <p className="mb-8 leading-relaxed">
-                                    In the implementation of this agreement, Consumer Arbitration Committees up to the value declared by the Ministry of Customs and Trade and Consumer Courts in the place of residence of the SELLER are authorized.
-                                </p>
+                                <h2 className="text-2xl font-black text-foreground mt-12 mb-6">7. Seller Information</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-12">
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Title</p>
+                                        <p className="font-bold text-foreground">Yavuz Sakkaoğlu</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Address</p>
+                                        <p className="font-bold text-foreground">Ahmet Nafiz Gürman Mah. Kınalıtepe Sok. No:10 34173 Güngören/İstanbul</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Phone</p>
+                                        <p className="font-bold text-foreground">+90 532 266 83 94</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground mb-1">Email</p>
+                                        <p className="font-bold text-foreground">info@approvalstitch.com</p>
+                                    </div>
+                                </div>
 
                                 <div className="mt-16 text-center border-t border-border pt-12">
                                     <p className="text-sm text-muted-foreground">This agreement comes into effect upon the BUYER's confirmation of "I Have Read and Accept the Agreement" at the payment step.</p>
