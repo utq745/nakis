@@ -129,6 +129,50 @@ export async function GET(
         };
         const contentType = contentTypes[ext || ""] || "application/octet-stream";
 
+        // Create a proper web ReadableStream from the file content
+        const readableStream = new ReadableStream({
+            async start(controller) {
+                if (fileStream.getReader) { // Web Stream (like from R2 in some environments)
+                    const reader = fileStream.getReader();
+                    try {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            controller.enqueue(value);
+                        }
+                        controller.close();
+                    } catch (err) {
+                        controller.error(err);
+                    } finally {
+                        reader.releaseLock();
+                    }
+                } else if (typeof fileStream[Symbol.asyncIterator] === 'function') { // Modern Node stream/iterator
+                    try {
+                        for await (const chunk of fileStream) {
+                            controller.enqueue(new Uint8Array(chunk));
+                        }
+                        controller.close();
+                    } catch (err) {
+                        controller.error(err);
+                    }
+                } else { // Legacy Node stream
+                    fileStream.on("data", (chunk: any) => {
+                        controller.enqueue(new Uint8Array(chunk));
+                    });
+                    fileStream.on("end", () => {
+                        controller.close();
+                    });
+                    fileStream.on("error", (err: any) => {
+                        controller.error(err);
+                    });
+                }
+            },
+            cancel() {
+                if (fileStream.destroy) fileStream.destroy();
+                else if (fileStream.cancel) fileStream.cancel();
+            }
+        });
+
         const { searchParams } = new URL(request.url);
         const forceDownload = searchParams.get("download") === "1";
 
@@ -137,7 +181,7 @@ export async function GET(
         const safeName = file.name.replace(/"/g, '\\"');
         const encodedName = encodeURIComponent(file.name);
 
-        return new NextResponse(fileStream as any, {
+        return new NextResponse(readableStream, {
             headers: {
                 "Content-Type": contentType,
                 "Content-Disposition": `${disposition}; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
