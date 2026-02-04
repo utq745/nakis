@@ -2,7 +2,7 @@ services:
   web:
     build: .
     container_name: netjs-site
-    restart: unless-stopped
+    restart: always
     env_file:
       - .env
     ports:
@@ -16,6 +16,26 @@ services:
       - ./public/images:/app/public/images
     networks:
       - cloudflare
+    # Health check - container sağlığını izle
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Kaynak limitleri
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   cloudflare:
