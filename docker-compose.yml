@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    expose:
-      - "3000"
+    ports:
+      - "80:3000"
     volumes:
       # Veritabanını korumak için prisma klasörü bağlanıyor (SQLite journal dosyaları için gerekli)
       - ./prisma:/app/prisma
