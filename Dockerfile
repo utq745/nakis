@@ -4,6 +4,7 @@ FROM node:20-slim AS base
 # Install system dependencies needed for both build and runtime
 RUN apt-get update && apt-get install -y \
     openssl \
+    curl \
     libnss3 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
