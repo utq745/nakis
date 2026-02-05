@@ -320,6 +320,18 @@ export const translations = {
                 testimonial: "\"Approval Stitch 3 yıldır vazgeçilmezimiz. Geri dönüş inanılmaz hızlı, ama asıl önemli olan dosyaların makinelerimizde her seferinde sorunsuz çalışması. İp kopması yok, mükemmel yoğunluk.\"",
                 author: "Michael Chen",
                 role: "Sahibi, Chen Custom Apparel"
+            },
+            backgroundCards: {
+                clientLabel: "Müşteri Versiyonu",
+                operatorLabel: "Üretim / Operatör Versiyonu",
+                approvalCard: "Onay Kartı",
+                approvalDocument: "Onay Belgesi",
+                description: "Profesyonel üretim doğrulama föyü. Bu teknik belge, seri üretim için gerekli olan iplik renklerini, dikiş yollarını ve kalite kriterlerini gösterir.",
+                features: [
+                    "Yüksek Çözünürlüklü Tarama",
+                    "İplik Renk Eşleştirmesi",
+                    "Üretime Hazır Formatlama"
+                ]
             }
         },
         status: {
@@ -942,6 +954,18 @@ export const translations = {
                 testimonial: "\"Approval Stitch has been our go-to for 3 years. The turnaround is incredibly fast, but what really matters is that the files run smooth on our machines every single time. No thread breaks, perfect density.\"",
                 author: "Michael Chen",
                 role: "Owner, Chen Custom Apparel"
+            },
+            backgroundCards: {
+                clientLabel: "Client Version",
+                operatorLabel: "Production / Operator Version",
+                approvalCard: "Approval Card",
+                approvalDocument: "Approval Document",
+                description: "Professional production verification sheet. This technical document displays thread colors, stitch paths, and quality metrics required for mass manufacturing.",
+                features: [
+                    "High Resolution Scan",
+                    "Thread Color Mapping",
+                    "Production Ready Formatting"
+                ]
             }
         },
         status: {

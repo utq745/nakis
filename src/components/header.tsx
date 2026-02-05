@@ -1,4 +1,5 @@
 "use client";
+// Force HMR update to resolve hydration mismatch
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "./theme-toggle";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?: boolean; fullWidth?: boolean }) {
     const { language, setLanguage, t } = useLanguage();
@@ -69,13 +71,23 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
         >
             <div className={`${fullWidth ? 'w-full px-4 md:px-8 xl:px-12' : 'container mx-auto px-4 md:px-6'} flex items-center justify-between`}>
                 <div className={`flex items-center gap-4 transition-colors duration-300 ${isAtTop ? 'text-primary dark:text-white' : 'text-primary dark:text-white'}`}>
-                    <Link href={language === 'tr' ? '/tr' : '/'} className="flex items-center gap-4">
-                        <div className={`size-6 transition-colors duration-300 ${isAtTop ? 'text-primary dark:text-white' : 'text-primary'}`}>
-                            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
-                            </svg>
+                    <Link href={language === 'tr' ? '/tr' : '/'} className="flex items-center">
+                        <div className="relative h-16 w-64">
+                            <Image
+                                src="/images/approval-stich-logo.webp"
+                                alt="Approval Stitch - Real Stitched Approval Sample"
+                                fill
+                                priority
+                                className="object-contain dark:hidden"
+                            />
+                            <Image
+                                src="/images/approval-stich-logo-w.webp"
+                                alt="Approval Stitch - Real Stitched Approval Sample"
+                                fill
+                                priority
+                                className="object-contain hidden dark:block"
+                            />
                         </div>
-                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em]">Approval Stitch</h2>
                     </Link>
                 </div>
                 <div className="flex flex-1 justify-end gap-3 md:gap-8 items-center">
@@ -164,13 +176,21 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                     <div className="absolute top-0 right-0 h-screen w-[85vw] max-w-[400px] bg-white dark:bg-[#18212f] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
                         {/* Logo and Close Button */}
                         <div className="flex items-center justify-between p-6 border-b border-[#e5e7eb] dark:border-[#2a3441]">
-                            <div className="flex items-center gap-3">
-                                <div className="size-7 text-primary">
-                                    <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
-                                    </svg>
+                            <div className="flex items-center">
+                                <div className="relative h-14 w-60">
+                                    <Image
+                                        src="/images/approval-stich-logo.webp"
+                                        alt="Approval Stitch - Real Stitched Approval Sample"
+                                        fill
+                                        className="object-contain dark:hidden"
+                                    />
+                                    <Image
+                                        src="/images/approval-stich-logo-w.webp"
+                                        alt="Approval Stitch - Real Stitched Approval Sample"
+                                        fill
+                                        className="object-contain hidden dark:block"
+                                    />
                                 </div>
-                                <span className="font-black text-lg text-[#111318] dark:text-white">Approval Stitch</span>
                             </div>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}

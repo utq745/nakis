@@ -28,6 +28,11 @@ export async function generateMetadata(): Promise<Metadata> {
             locale: 'tr_TR',
             alternateLocale: 'en_US',
         },
+        icons: {
+            icon: '/icon.png?v=1',
+            shortcut: '/favicon.ico?v=1',
+            apple: '/icon.png?v=1',
+        },
     };
 }
 

@@ -137,6 +137,7 @@ export function Hero() {
                                 width={600}
                                 height={600}
                                 priority
+                                unoptimized
                                 className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                             />

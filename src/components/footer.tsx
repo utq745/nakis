@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Footer() {
@@ -10,13 +11,21 @@ export function Footer() {
         <footer className="w-full bg-background dark:bg-card border-t border-border py-12 px-10">
             <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between gap-10">
                 <div className="flex flex-col gap-4 max-w-sm">
-                    <div className="flex items-center gap-2 text-foreground">
-                        <div className="size-6 text-primary">
-                            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
-                            </svg>
+                    <div className="flex items-center">
+                        <div className="relative h-14 w-60">
+                            <Image
+                                src="/images/approval-stich-logo.webp"
+                                alt="Approval Stitch - Real Stitched Approval Sample"
+                                fill
+                                className="object-contain object-left dark:hidden"
+                            />
+                            <Image
+                                src="/images/approval-stich-logo-w.webp"
+                                alt="Approval Stitch - Real Stitched Approval Sample"
+                                fill
+                                className="object-contain object-left hidden dark:block"
+                            />
                         </div>
-                        <h2 className="text-lg font-bold">Approval Stitch</h2>
                     </div>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                         {t.footer.desc}
