@@ -21,7 +21,8 @@ export function Process() {
             step: "02",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
-            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp"
+            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp",
+            video: "/videos/landing/Real-Approval-Stitch.webm"
         },
         {
             step: "03",
