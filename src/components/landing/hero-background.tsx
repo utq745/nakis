@@ -201,7 +201,7 @@ function HeroBackgroundContent() {
                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                className="relative max-w-5xl w-full max-h-[90vh] bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.6)] border border-white/10 flex flex-col md:flex-row"
+                                className="relative max-w-[1400px] w-full max-h-[92vh] bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.6)] border border-white/10 flex flex-col md:flex-row"
                             >
                                 <button
                                     onClick={() => setModalData(null)}
@@ -210,7 +210,7 @@ function HeroBackgroundContent() {
                                     <span className="material-symbols-outlined">close</span>
                                 </button>
 
-                                <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-6 md:p-12 flex items-center justify-center min-h-[40vh] md:min-h-0">
+                                <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 md:p-8 flex items-center justify-center min-h-[40vh] md:min-h-0 overflow-hidden">
                                     <img
                                         src={modalData.src}
                                         alt={modalData.label}
@@ -218,7 +218,7 @@ function HeroBackgroundContent() {
                                     />
                                 </div>
 
-                                <div className="w-full md:w-[420px] p-8 md:pl-12 md:pr-16 flex flex-col justify-center gap-6 bg-white dark:bg-slate-900 border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5">
+                                <div className="w-full md:w-[480px] p-8 md:pl-12 md:pr-16 flex flex-col justify-center gap-6 bg-white dark:bg-slate-900 border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5">
                                     <div>
                                         <p className="text-[11px] font-black text-primary uppercase tracking-[0.2em] mb-3">{t.landing.backgroundCards.approvalDocument}</p>
                                         <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-[1.1]">{modalData.label}</h3>
