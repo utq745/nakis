@@ -33,7 +33,7 @@ function InteractiveApprovalCard({ src, label, side, rotate, onOpenModal }: Inte
         mouseY.set(e.clientY);
 
         if (typeof window !== "undefined") {
-            const threshold = 300;
+            const threshold = 650;
             setIsFlippedVertically(e.clientY > window.innerHeight - threshold);
         }
     }, [mouseX, mouseY]);
@@ -44,8 +44,8 @@ function InteractiveApprovalCard({ src, label, side, rotate, onOpenModal }: Inte
         : { right: "5%", left: "auto" };
 
     // Offset logic for the floating preview
-    const translateX = side === "left" ? 15 : -310;
-    const translateY = isFlippedVertically ? -225 : 15;
+    const translateX = side === "left" ? 15 : -620;
+    const translateY = isFlippedVertically ? -550 : 15;
 
     return (
         <div
@@ -96,7 +96,7 @@ function InteractiveApprovalCard({ src, label, side, rotate, onOpenModal }: Inte
                                 }}
                                 className="hidden xl:flex flex-col gap-2 p-2 bg-white/95 dark:bg-slate-900/95 rounded-xl shadow-[0_25px_60px_rgba(0,0,0,0.35)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-md"
                             >
-                                <div className="w-72 h-auto overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-950">
+                                <div className="w-[580px] h-auto overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-950">
                                     <img src={src} alt={label} className="w-full h-auto" />
                                 </div>
                                 <div className="px-1.5 py-0.5">
