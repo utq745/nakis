@@ -14,14 +14,14 @@ export function Process() {
             step: "01",
             title: t.landing.process.step1Title,
             desc: t.landing.process.step1Desc,
-            image: "/images/landing/How_it_works_Upload_specs.webp"
+            image: "/images/landing/make-order.webp",
+            video: "/videos/landing/make-order-video.webm"
         },
         {
             step: "02",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
-            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp",
-            video: "/videos/landing/Real-Approval-Stitch.webm"
+            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp"
         },
         {
             step: "03",

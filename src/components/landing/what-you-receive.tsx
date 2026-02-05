@@ -17,13 +17,13 @@ export function WhatYouReceive() {
         {
             title: t.landing.receive.item1Title,
             desc: t.landing.receive.item1Desc,
-            image: "/images/landing/What_You_Receive_Approval_card_client_version.webp",
+            image: "/images/landing/What_You_Receive_Approval_card_customer_version.webp",
             alt: "Approval Card (Client Version)"
         },
         {
             title: t.landing.receive.item2Title,
             desc: t.landing.receive.item2Desc,
-            image: "/images/landing/What_You_Receive_Approval_card_production_operator_version.webp",
+            image: "/images/landing/What_You_Receive_Approval_card_operator_version.webp",
             alt: "Approval Card (Production / Operator Version)"
         }
     ];
