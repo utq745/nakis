@@ -4,10 +4,15 @@ import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+    if (process.env.NODE_ENV !== "development") {
+        throw new Error("Seed script is restricted to development environments.");
+    }
+
     console.log("Seeding database...");
 
     // Create admin user
-    const adminPassword = await hash("admin123", 12);
+    const adminPlainPassword = process.env.SEED_ADMIN_PASSWORD || "admin123";
+    const adminPassword = await hash(adminPlainPassword, 12);
     const admin = await prisma.user.upsert({
         where: { email: "admin@nakis.com" },
         update: {},
@@ -21,7 +26,8 @@ async function main() {
     console.log("Admin user created:", admin.email);
 
     // Create a test customer
-    const customerPassword = await hash("customer123", 12);
+    const customerPlainPassword = process.env.SEED_CUSTOMER_PASSWORD || "customer123";
+    const customerPassword = await hash(customerPlainPassword, 12);
     const customer = await prisma.user.upsert({
         where: { email: "customer@test.com" },
         update: {},
@@ -39,7 +45,7 @@ async function main() {
         data: {
             title: "Logo Nakış Tasarımı",
             description: "Şirket logomuzu nakış formatına çevirmenizi istiyoruz. Logo boyutu yaklaşık 10x10 cm olacak. Renkler: Mavi ve beyaz.",
-            status: "WAITING_PRICE",
+            status: "ORDERED",
             customerId: customer.id,
             priority: "NORMAL",
         },

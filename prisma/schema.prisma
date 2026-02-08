@@ -28,6 +28,7 @@ model User {
   resetPasswordToken            String?
   deleteAccountToken            String?
   deleteAccountTokenExpires     DateTime?
+  sessionVersion                Int            @default(0)
   accounts                      Account[]
   comments                      Comment[]
   notifications                 Notification[] @relation("UserNotifications")

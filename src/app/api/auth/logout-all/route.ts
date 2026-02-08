@@ -13,9 +13,15 @@ export async function POST() {
         }
 
         // Delete all sessions for the current user
-        await prisma.session.deleteMany({
-            where: { userId: session.user.id }
-        });
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: session.user.id },
+                data: { sessionVersion: { increment: 1 } },
+            }),
+            prisma.session.deleteMany({
+                where: { userId: session.user.id }
+            }),
+        ]);
 
         return NextResponse.json({
             message: "All sessions have been terminated",

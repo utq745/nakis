@@ -32,6 +32,8 @@ declare module "@auth/core/jwt" {
         id: string;
         role: Role;
         image?: string | null;
+        sessionVersion?: number;
+        invalidated?: boolean;
     }
 }
 
@@ -86,6 +88,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     callbacks: {
         async jwt({ token, user, trigger, session }) {
+            const userId = (user?.id || token.id) as string | undefined;
+
+            if (userId) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: userId },
+                    select: { sessionVersion: true },
+                });
+
+                if (!dbUser) {
+                    token.invalidated = true;
+                    token.exp = Math.floor(Date.now() / 1000) - 10;
+                    return token;
+                }
+
+                if (user) {
+                    token.sessionVersion = dbUser.sessionVersion;
+                    token.invalidated = false;
+                } else {
+                    const tokenSessionVersion = typeof token.sessionVersion === "number" ? token.sessionVersion : 0;
+                    if (tokenSessionVersion !== dbUser.sessionVersion) {
+                        token.invalidated = true;
+                        token.exp = Math.floor(Date.now() / 1000) - 10;
+                        return token;
+                    }
+                }
+            }
+
             if (user) {
                 token.id = user.id;
                 token.role = (user as any).role || "CUSTOMER";
@@ -99,6 +128,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return token;
         },
         async session({ session, token }) {
+            if (token.invalidated) {
+                return { ...session, expires: new Date(0).toISOString() };
+            }
+
             if (token && session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as Role;

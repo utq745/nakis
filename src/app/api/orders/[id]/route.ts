@@ -145,15 +145,17 @@ export async function PATCH(
                 // 3. ORDERED -> CANCELLED (cancel before work starts)
                 // 4. PRICED -> IN_PROGRESS (accept quote)
                 // 5. PRICED -> CANCELLED (decline quote)
+                // 6. PAYMENT_PENDING -> COMPLETED (complete payment)
                 const isApprovingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
                 const isRequestingRevision = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "REVISION";
                 const isCancelling = validatedData.status === "CANCELLED" && (currentOrder.status === "ORDERED" || currentOrder.status === "PRICED");
                 const isAcceptingQuote = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
+                const isCompletingPayment = currentOrder.status === "PAYMENT_PENDING" && validatedData.status === "COMPLETED";
 
-                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}, isAcceptingQuote=${isAcceptingQuote}`);
+                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}, isAcceptingQuote=${isAcceptingQuote}, isCompletingPayment=${isCompletingPayment}`);
                 console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
 
-                if (!isApprovingPreview && !isRequestingRevision && !isCancelling && !isAcceptingQuote) {
+                if (!isApprovingPreview && !isRequestingRevision && !isCancelling && !isAcceptingQuote && !isCompletingPayment) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }

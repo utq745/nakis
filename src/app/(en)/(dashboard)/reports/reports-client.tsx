@@ -29,23 +29,25 @@ interface ReportsClientProps {
 
 const STATUS_MAP = {
     en: {
-        "WAITING_PRICE": "Price Pending",
+        "ORDERED": "Order Received",
         "PRICED": "Priced",
-        "PRICE_ACCEPTED": "Price Accepted",
         "APPROVAL_AWAITING": "Awaiting Preview Approval",
+        "REVISION": "Revision Requested",
         "IN_PROGRESS": "In Progress",
         "PAYMENT_PENDING": "Payment Pending",
         "COMPLETED": "Completed",
+        "DELIVERED": "Delivered",
         "CANCELLED": "Cancelled",
     },
     tr: {
-        "WAITING_PRICE": "Fiyat Bekleniyor",
+        "ORDERED": "Sipariş Alındı",
         "PRICED": "Fiyatlandırıldı",
-        "PRICE_ACCEPTED": "Fiyat Onaylandı",
         "APPROVAL_AWAITING": "Önizleme Bekliyor",
+        "REVISION": "Revizyon İstendi",
         "IN_PROGRESS": "İşleniyor",
         "PAYMENT_PENDING": "Ödeme Bekliyor",
         "COMPLETED": "Tamamlandı",
+        "DELIVERED": "Teslim Edildi",
         "CANCELLED": "İptal",
     }
 };

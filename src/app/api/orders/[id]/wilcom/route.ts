@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import fs from "fs/promises";
 import path from "path";
+import { existsSync } from "fs";
 import { processWilcomPdf } from "@/lib/wilcom-parser";
 
 export async function POST(
@@ -57,9 +58,20 @@ export async function POST(
         });
 
         const artworkFile = order?.files?.[0];
-        const artworkPath = artworkFile
-            ? path.join(process.cwd(), "uploads", orderId, "preview", artworkFile.url)
-            : null;
+        let artworkPath: string | null = null;
+        if (artworkFile) {
+            const normalizedName = artworkFile.url.includes("/")
+                ? artworkFile.url.split("/").pop() || artworkFile.url
+                : artworkFile.url;
+
+            const candidates = [
+                path.join(process.cwd(), "uploads", orderId, "preview", normalizedName),
+                path.join(process.cwd(), "uploads", artworkFile.url),
+                path.join(process.cwd(), "public", artworkFile.url),
+            ];
+
+            artworkPath = candidates.find((candidate) => existsSync(candidate)) || null;
+        }
 
         // Process the PDF
         const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title, artworkPath);

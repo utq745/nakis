@@ -23,6 +23,7 @@ export async function GET(
             where: { id },
             select: {
                 customerId: true,
+                status: true,
                 title: true,
                 files: {
                     where: { type: "final" },
@@ -46,6 +47,14 @@ export async function GET(
         // Check ownership
         if (!isAdmin && order.customerId !== session.user.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        // Payment protection: non-admin users can only download finals after payment
+        if (!isAdmin && !["COMPLETED", "DELIVERED"].includes(order.status)) {
+            return NextResponse.json(
+                { error: "Payment required to access final files" },
+                { status: 402 }
+            );
         }
 
         // Check if there are any final files
