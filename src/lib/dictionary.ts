@@ -238,7 +238,7 @@ export const translations = {
         },
         footer: {
             rights: "© 2025 Approval Stitch Inc. Tüm hakları saklıdır.",
-            desc: "1994'ten beri tasarımları üretime hazır nakış dosyalarına dönüştürüyoruz. Güvenebileceğiniz kalite, ihtiyacınız olduğunda teslim.",
+            desc: "1990'dan beri deneyimle desteklenen gerçek dikişli nakış onayları<br>Yayına geçmeden önce onay alması gereken üretim ekiplerinin güvendiği hizmet.",
             services: "Hizmetler",
             company: "Şirket",
             support: "Destek",
@@ -254,10 +254,10 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Gerçek Onaylı Nakış",
-                titleLine1: "Gerçek Dikişli",
-                titleLine2: "Onay Örneği",
-                description: "Seri üretimden önce onay için gerçek üretim makinelerinde dikilmiştir.",
-                subText: "Gerçek üretim makinelerinde işlenir. Render veya simülasyon değildir.",
+                titleLine1: "Gerçek Dikişli Onay Örnekleri",
+                titleLine2: "Güvenli Nakış Üretimi İçin",
+                description: "Tasarımınızı, seri üretime geçmeden önce onaylayabilmeniz için gerçek üretim makinelerinde dikiyoruz.",
+                subText: "Üretim sınıfı Tajima ve Barudan makinelerinde işlenir. Render yok. Simülasyon yok. Sadece gerçek dikişli örnekler.",
                 uploadBtn: "Siparişi Başlat",
                 pricingBtn: "Örnekleri Gör",
                 labBadge: "Gerçek Nakış Laboratuvarı",
@@ -407,15 +407,15 @@ export const translations = {
             },
             whyMatters: {
                 badge: "Neden Önemli",
-                title: "Gerçek Dikiş Onayı Neden Önemli?",
+                title: "Neden Gerçek Dikişli Onay Numuneleri?",
                 description: "Nakış tasarımları ekranda genellikle doğru görünür, ancak dikildikten sonra farklı davranır.",
                 factors: [
-                    "Kumaş yapısı",
-                    "Dikiş yoğunluğu etkileşimi",
-                    "Çekme telafisi",
-                    "Gerçek gerilim altında iplik davranışı"
+                    "Costly mistakes",
+                    "Rejections",
+                    "Production delays",
+                    "Brand risk"
                 ],
-                conclusion: "Bu faktörler yalnızca gerçek dikiş yoluyla doğru şekilde değerlendirilebilir. ApprovalStitch bu sonuçları üretim başlamadan önce görünür kılar ve daha sonra pahalı revizyonlardan kaçınmanıza yardımcı olur."
+                conclusion: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
             },
 
             whatYouReceive: {
@@ -442,7 +442,7 @@ export const translations = {
                 title: "Üretim Deneyimi Üzerine Kurulu",
                 years: "35+",
                 yearsLabel: "Yıllık Deneyim",
-                description: "ApprovalStitch, 35 yılı aşkın nakış üretim deneyimiyle şekillenmiştir. Yaklaşımımız, nakışın gerçek iş akışlarında nasıl davrandığını yansıtır, teoride nasıl davranması beklendiğini değil."
+                description: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions.<br>We understand how designs behave on real machines, real fabrics, under real production pressure."
             },
             whoIsFor: {
                 badge: "Kimler İçin",
@@ -473,7 +473,7 @@ export const translations = {
                     name: "Onay Örneği",
                     description: "İlk test veya hızlı kontrol",
                     features: [
-                        "<strong>DST</strong> dosyanızı yüklersiniz",
+                        "Nakış dosyanızı (DST / EMB / PES) yüklersiniz",
                         "<strong>Bize ulaştığı şekilde</strong> dikiyoruz (ön düzenleme yok)",
                         "Gerçek dikiş fotoğrafı + <strong>Onay Kartı</strong> teslim edilir"
                     ],
@@ -486,7 +486,7 @@ export const translations = {
                     priceNote: "+$10 yükseltme ($25 ödendiyse)",
                     description: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
                     features: [
-                        "<strong>DST</strong> dosyanızı yüklersiniz",
+                        "Nakış dosyanızı (DST / EMB / PES) yüklersiniz",
                         "Sadece <strong>küçük düzeltmeler</strong> yapıyoruz (yoğunluk, çekme telafisi, temizleme, overlok dikişleri vb.) <br /><i>(Tamamen yeniden dijitalleştirme değil)</i>",
                         "Düzenlemeden sonra <strong>yeniden dikiyoruz</strong>",
                         "Güncellenmiş dikiş fotoğrafı + <strong>Güncellenmiş Onay Kartı</strong> teslim edilir"
@@ -499,11 +499,12 @@ export const translations = {
                 plan3: {
                     name: "Yeni Dijitalleştirme + Onay Örneği",
                     description: "Vuruş sayısına göre özel fiyatlandırma",
-                    howItCalculated: "Nasıl hesaplanır?",
+                    howItCalculated: "Simple pricing by stitch count",
                     calculationDetails: [
-                        "0-7.000 vuruş için $50 fix fiyat",
-                        "7.001 - 30.000 vuruş arası: $50 + ($3 × her 1.000 vuruş için)",
-                        "30.000+ vuruş: $155 fix fiyat"
+                        "Up to 7,000 stitches → $50 flat",
+                        "7,001–30,000 stitches → +$3 per 1,000 stitches",
+                        "30,000+ stitches → $155 flat",
+                        "We calculate the stitch count for you and apply this pricing — no surprises."
                     ],
                     features: [
                         "Dilediğiniz formatta (AI, PDF, JPG vb.) tasarım yükleyin",
@@ -871,7 +872,7 @@ export const translations = {
         },
         footer: {
             rights: "© 2023 Approval Stitch Inc. All rights reserved.",
-            desc: "Transforming artwork into production-ready embroidery files since 1994. Quality you can trust, delivered when you need it.",
+            desc: "Real stitched embroidery approvals, backed by experience since 1990<br>Trusted by production teams who need to approve before going live.",
             services: "Services",
             company: "Company",
             support: "Support",
@@ -888,10 +889,10 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Real Approval Stitch",
-                titleLine1: "Real Stitched",
-                titleLine2: "Approval Sample",
-                description: "Stitched on real production machines for approval before mass production.",
-                subText: "Not a render. Not a simulation. A real stitched sample.",
+                titleLine1: "Real Stitched Approval Samples",
+                titleLine2: "For Confident Embroidery Production",
+                description: "We stitch your design on real production machines so you can approve before mass production.",
+                subText: "Processed on production-grade Tajima & Barudan machines. No renders. No simulations. Just real stitched samples.",
                 uploadBtn: "Start Order",
                 pricingBtn: "View Samples",
                 labBadge: "Real Stitch Lab",
@@ -1041,15 +1042,15 @@ export const translations = {
             },
             whyMatters: {
                 badge: "Why It Matters",
-                title: "Why Real Stitch Approval Matters",
+                title: "Why Real Stitched Approval Samples",
                 description: "Embroidery designs often appear correct on screen, yet behave differently once stitched.",
                 factors: [
-                    "Fabric structure",
-                    "Stitch density interaction",
-                    "Pull compensation",
-                    "Thread behavior under real tension"
+                    "Costly mistakes",
+                    "Rejections",
+                    "Production delays",
+                    "Brand risk"
                 ],
-                conclusion: "These factors can only be evaluated accurately through actual stitching. ApprovalStitch makes these results visible before production begins, helping you avoid costly revisions later."
+                conclusion: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
             },
 
             whatYouReceive: {
@@ -1076,7 +1077,7 @@ export const translations = {
                 title: "Built on Production Experience",
                 years: "35+",
                 yearsLabel: "Years Experience",
-                description: "ApprovalStitch is shaped by over 35 years of embroidery production experience. Our approach reflects how embroidery truly behaves in real workflows, not how it is expected to behave in theory."
+                description: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions.<br>We understand how designs behave on real machines, real fabrics, under real production pressure."
             },
             whoIsFor: {
                 badge: "Who Is It For",
@@ -1107,7 +1108,7 @@ export const translations = {
                     name: "Approval Sample",
                     description: "First test or quick check",
                     features: [
-                        "You upload your <strong>DST</strong>",
+                        "Upload your embroidery file (DST / EMB / PES)",
                         "We stitch it <strong>exactly as provided</strong> (no pre-editing)",
                         "Real stitched photo + <strong>Approval Card</strong> delivered"
                     ],
@@ -1120,7 +1121,7 @@ export const translations = {
                     priceNote: "+$10 upgrade if $25 already paid",
                     description: "Designs that may require adjustments after review",
                     features: [
-                        "You upload your <strong>DST</strong>",
+                        "Upload your embroidery file (DST / EMB / PES)",
                         "We do <strong>small fixes only</strong> (density, pull comp, trims, lock stitches, etc.) <br /><i>(No full re-digitizing)</i>",
                         "We <strong>re-stitch after editing</strong>",
                         "Updated stitched photo + <strong>Updated Approval Card</strong> delivered"
@@ -1133,11 +1134,12 @@ export const translations = {
                 plan3: {
                     name: "New Digitizing + Approval Sample",
                     description: "Custom quote based on stitch count",
-                    howItCalculated: "How is it calculated?",
+                    howItCalculated: "Simple pricing by stitch count",
                     calculationDetails: [
-                        "0-7,000 stitches: $50 fix price",
-                        "7,001 - 30,000 stitches: $50 + ($3 × every 1,000 stitches)",
-                        "30,000+ stitches: $155 fix price"
+                        "Up to 7,000 stitches → $50 flat",
+                        "7,001–30,000 stitches → +$3 per 1,000 stitches",
+                        "30,000+ stitches → $155 flat",
+                        "We calculate the stitch count for you and apply this pricing — no surprises."
                     ],
                     features: [
                         "Upload artwork in any format (AI, PDF, JPG, etc.)",

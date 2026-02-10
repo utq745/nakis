@@ -2,5 +2,18 @@
 - [x] Anasayfada How It Works bölümündeki 1. kutuya kapak görseli olarak /Users/utkusakallioglu/Documents/nakis/make-order.webp görseli, tıklandığında açılacak video popup için /Users/utkusakallioglu/Documents/nakis/make-order-video.webm videosu eklenecek.
 - [x] How It Works bölümündeki 2. kutuya public/images/landing/howitsworks-Real-Approval-Stitch.webp görseli eklenecek.
 - [x] How It Works bölümündeki 3. kutuya public/images/landing/Approval-Package.webp görseli eklenecek.
-
-
+- [x] pricing kısmında You upload your DST kısmını şu şekilde değiştirelim: Upload your embroidery file (DST / EMB / PES)
+- [x] gene pricing kısmında How is it calculated? kısmını aşağıdaki şekilde değiştireceğiz akordion şeklinde değil, belki bir ton açık: "Simple pricing by stitch count Up to 7,000 stitches → $50 flat 7,001–30,000 stitches → +$3 per 1,000 stitches 30,000+ stitches → $155 flat We calculate the stitch count for you and apply this pricing — no surprises." olacak.
+- [x] footer kısmında logonun altındaki yazıyı "Real stitched embroidery approvals, backed by experience since 1990<br>Trusted by production teams who need to approve before going live." şeklinde değiştirelim.
+- [x] YENİ HERO -> Başlık (H1) Real Stitched Approval Samples<br>For Confident Embroidery Production -> Alt Başlık (H2) We stitch your design on real production machines so you can approve before mass production. -> Proof Line (kritik yeni ek) Processed on production-grade Tajima & Barudan machines. No renders. No simulations. Just real stitched samples.
+- [x] Footerda call action kısmındaki rating bölümünü kaldıralım. Sadece "Get Your Approval Sample" yazan buton kalsın.
+- [x] About sayfasında Why Real Stitched Approval Samples bölümmündeki kutuların altındaki metinleri şu şekilde değiştirelim lütfen: Costly mistakes        Rejections        Production delays          Brand risk
+- [x] ve en alttaki yazıyı şu şekilde revize edelim: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
+- [ ] About sayfasında Built on production experience yazısının altındaki metni şu şekilde değiştirelim lütfen: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions.<br>We understand how designs behave on real machines, real fabrics, under real production pressure.
+- [x] Login sayfasında sol taraftaki "10k+ Professionals Trust us daily" bölümünü ve user avatarlarını kaldıralım.
+- [x] Sipariş oluşturma sayfasındaki geri butonuna hafif bir border ekleyelim.
+- [x] Paneldeki last name güncellenmiyor sorunu düzeltildi (name değişikliği artık direkt güncelleniyor, email verification gerektirmiyor).
+- [x] Paneldeki logo site logosuyla değiştirildi.
+- [x] Sipariş oluşturma sayfasındaki geri butonu ileri butonu ile aynı sitilde olmalı yalnızca iç rengi siyah, text rengi beyaz olacak dark modda. Aynı ilerii butonyndaki gibi ok simgesi olmalı. Light modu sen site temasına uygun olarak düzenle.
+- [x] Paneldeki last name güncellendiği halde paneldeki sol altta görünen isim soyisim güncellenmiyor.
+- [x] Paneldeki logoyu büyütelim. heigth değeri 52px olsun.

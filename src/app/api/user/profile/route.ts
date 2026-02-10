@@ -67,7 +67,7 @@ export async function PATCH(request: Request) {
         if (validatedData.image !== undefined) updateData.image = validatedData.image;
 
         // Check if name or email is changing
-        const isNameChanging = validatedData.name && validatedData.name !== (currentProfile.pendingName || currentProfile.name);
+        const isNameChanging = validatedData.name && validatedData.name !== currentProfile.name;
         const isEmailChanging = validatedData.email && validatedData.email !== (currentProfile.pendingEmail || currentProfile.email);
 
         if (isEmailChanging && validatedData.email) {
@@ -82,9 +82,15 @@ export async function PATCH(request: Request) {
             }
         }
 
-        if (isNameChanging || isEmailChanging) {
-            updateData.pendingName = validatedData.name || currentProfile.pendingName || currentProfile.name;
+        // Name changes are applied directly
+        if (isNameChanging && validatedData.name) {
+            updateData.name = validatedData.name;
+        }
+
+        // Email changes require verification
+        if (isEmailChanging) {
             updateData.pendingEmail = validatedData.email || currentProfile.pendingEmail || currentProfile.email;
+            updateData.pendingName = validatedData.name || currentProfile.name;
             updateData.emailVerificationToken = crypto.randomUUID();
             updateData.emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 

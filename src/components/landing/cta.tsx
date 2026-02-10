@@ -31,15 +31,6 @@ export function CTA() {
                     </div>
 
                     <div className="flex flex-col gap-8 w-full relative z-10 text-center items-center">
-                        <div className="flex items-center gap-2 group transition-all">
-                            <div className="flex">
-                                {[1, 2, 3, 4, 5].map((s) => (
-                                    <span key={s} className="material-symbols-outlined text-[#ffc107] group-hover:scale-125 transition-transform" style={{ transitionDelay: `${s * 50}ms`, fontVariationSettings: "'FILL' 1" }}>star</span>
-                                ))}
-                            </div>
-                            <span className="font-bold text-lg ml-2">{t.landing.cta.rating}</span>
-                        </div>
-
                         <h2 className="leading-[1.1] tracking-tight text-white mb-2 max-w-[800px]">
                             {t.landing.cta.title}
                         </h2>

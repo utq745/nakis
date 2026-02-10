@@ -33,34 +33,57 @@ export async function GET(
 
         // Determine which image to serve
         let imagePath: string;
+        let r2Key: string;
 
         switch (type) {
             case "design":
                 imagePath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_design.png`);
+                r2Key = `wilcom/${orderId}/design.png`;
                 break;
             case "artwork":
                 imagePath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_artwork.png`);
+                r2Key = `wilcom/${orderId}/artwork.png`;
                 break;
             default:
                 return NextResponse.json({ error: "Invalid image type" }, { status: 400 });
         }
 
-        // Check if file exists
-        if (!existsSync(imagePath)) {
-            return NextResponse.json({ error: "Image not found" }, { status: 404 });
+        // 1. Try serving from local filesystem first (faster)
+        if (existsSync(imagePath)) {
+            const imageBuffer = await readFile(imagePath);
+            return new NextResponse(imageBuffer, {
+                headers: {
+                    "Content-Type": "image/png",
+                    "Cache-Control": "public, max-age=3600",
+                },
+            });
         }
 
-        // Read and return the image
-        const imageBuffer = await readFile(imagePath);
+        // 2. Fallback to Cloudflare R2
+        try {
+            const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+            const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
 
-        return new NextResponse(imageBuffer, {
-            headers: {
-                "Content-Type": "image/png",
-                "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-                "Pragma": "no-cache",
-                "Expires": "0",
-            },
-        });
+            const response = await s3Client.send(new GetObjectCommand({
+                Bucket: R2_BUCKET_NAME,
+                Key: r2Key,
+            }));
+
+            if (!response.Body) {
+                return NextResponse.json({ error: "Image not found in R2" }, { status: 404 });
+            }
+
+            const arrayBuffer = await response.Body.transformToByteArray();
+            return new NextResponse(Buffer.from(arrayBuffer), {
+                headers: {
+                    "Content-Type": "image/png",
+                    "Cache-Control": "public, max-age=3600",
+                },
+            });
+        } catch (r2Error) {
+            console.error("[WILCOM_IMAGE_R2_ERROR]", r2Error);
+            return NextResponse.json({ error: "Image not found" }, { status: 404 });
+        }
     } catch (error) {
         console.error("Error serving image:", error);
         return NextResponse.json(

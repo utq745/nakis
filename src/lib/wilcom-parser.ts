@@ -1479,6 +1479,8 @@ try:
     doc = fitz.open(wilcom_pdf)
     largest_image = None
     largest_size = 0
+    
+    # 1a. Try to find embedded images first (highest quality)
     for page in doc:
         for img_info in page.get_images():
             xref = img_info[0]
@@ -1489,8 +1491,49 @@ try:
                     largest_size = pix.width * pix.height
                     largest_image = pix
             except: continue
+            
     if largest_image:
         results['design'] = process_and_trim(largest_image.tobytes("png"))
+    else:
+        # 1b. Fallback: No embedded images found, try to render vector paths
+        # This is common in some Wilcom export settings
+        page = doc[0]
+        paths = page.get_drawings()
+        
+        # If there are many paths, it's likely a design
+        if len(paths) > 20: 
+            # Filter out very large paths that might be page borders
+            design_rects = []
+            page_rect = page.rect
+            for p in paths:
+                r = p["rect"]
+                # Skip paths that are almost as large as the page (likely borders/backgrounds)
+                if r.width < page_rect.width * 0.95 or r.height < page_rect.height * 0.95:
+                    design_rects.append(r)
+            
+            if design_rects:
+                union_rect = design_rects[0]
+                for r in design_rects[1:]:
+                    union_rect |= r
+                
+                # Add a small margin
+                union_rect.x0 -= 5
+                union_rect.y0 -= 5
+                union_rect.x1 += 5
+                union_rect.y1 += 5
+                
+                # Render only the design area
+                pix = page.get_pixmap(matrix=fitz.Matrix(3, 3), clip=union_rect)
+                results['design'] = process_and_trim(pix.tobytes("png"))
+            else:
+                # Last resort: just render the whole first page
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+                results['design'] = process_and_trim(pix.tobytes("png"))
+        else:
+            # Render first page if not enough paths found
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+            results['design'] = process_and_trim(pix.tobytes("png"))
+            
     doc.close()
 except Exception as e:
     results['design_error'] = str(e)

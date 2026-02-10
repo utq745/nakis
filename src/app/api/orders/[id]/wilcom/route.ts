@@ -5,6 +5,8 @@ import fs from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import { processWilcomPdf } from "@/lib/wilcom-parser";
+import { PutObjectCommand, DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { s3Client, R2_BUCKET_NAME } from "@/lib/s3";
 
 export async function POST(
     req: Request,
@@ -99,7 +101,9 @@ export async function POST(
                 totalBobbinM: result.data.totalBobbinM,
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
+                designImageUrl: result.designImagePath
+                    ? `/api/orders/${orderId}/wilcom/image/design`
+                    : (result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null),
                 customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
@@ -126,13 +130,45 @@ export async function POST(
                 totalBobbinM: result.data.totalBobbinM,
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: `/api/orders/${orderId}/wilcom/image/design`,
+                designImageUrl: result.designImagePath
+                    ? `/api/orders/${orderId}/wilcom/image/design`
+                    : (result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null),
                 customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
                 wilcomPdfUrl: `/api/orders/${orderId}/wilcom/pdf/original`,
             },
         });
+
+        // 4. Upload everything to Cloudflare R2 for persistence
+        try {
+            const filesToUpload = [
+                { path: pdfPath, key: `wilcom/${orderId}/wilcom.pdf`, contentType: 'application/pdf' },
+                { path: result.operatorPdfPath, key: `wilcom/${orderId}/operator_approval.pdf`, contentType: 'application/pdf' },
+                { path: result.customerPdfPath, key: `wilcom/${orderId}/customer_approval.pdf`, contentType: 'application/pdf' }
+            ];
+
+            if (result.designImagePath) {
+                filesToUpload.push({ path: result.designImagePath, key: `wilcom/${orderId}/design.png`, contentType: 'image/png' });
+            }
+            if (result.artworkImagePath) {
+                filesToUpload.push({ path: result.artworkImagePath, key: `wilcom/${orderId}/artwork.png`, contentType: 'image/png' });
+            }
+
+            await Promise.all(filesToUpload.map(async (file) => {
+                const fileBuffer = await fs.readFile(file.path);
+                return s3Client.send(new PutObjectCommand({
+                    Bucket: R2_BUCKET_NAME,
+                    Key: file.key,
+                    Body: fileBuffer,
+                    ContentType: file.contentType,
+                }));
+            }));
+            console.log(`[WILCOM_POST] Successfully uploaded ${filesToUpload.length} files to R2`);
+        } catch (r2Error) {
+            console.error("[WILCOM_R2_UPLOAD_ERROR]", r2Error);
+            // We don't fail the request if R2 upload fails, but we log it
+        }
 
         // Note: Status changes are now handled explicitly via the UI/workflow, not automatically
 
@@ -189,6 +225,28 @@ export async function DELETE(
         await prisma.wilcomData.delete({
             where: { id: order.wilcomData.id },
         });
+
+        // Delete from R2
+        try {
+            const listParams = {
+                Bucket: R2_BUCKET_NAME,
+                Prefix: `wilcom/${orderId}/`,
+            };
+            const listedObjects = await s3Client.send(new ListObjectsV2Command(listParams));
+
+            if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+                const deleteParams = {
+                    Bucket: R2_BUCKET_NAME,
+                    Delete: {
+                        Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+                    },
+                };
+                await s3Client.send(new DeleteObjectsCommand(deleteParams));
+                console.log(`[WILCOM_DELETE] Deleted ${listedObjects.Contents.length} files from R2`);
+            }
+        } catch (r2Error) {
+            console.error("[WILCOM_R2_DELETE_ERROR]", r2Error);
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

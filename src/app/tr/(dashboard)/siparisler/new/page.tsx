@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
     Loader2, Upload, X, FileIcon, ArrowLeft,
-    Check, ChevronRight, Scissors,
+    Check, ChevronLeft, ChevronRight, Scissors,
     Layers, Shirt, ClipboardList, Info, ChevronDown, Rocket, Clock
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -311,7 +311,7 @@ export default function NewOrderPage() {
                         </div>
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
+                            <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -361,7 +361,7 @@ export default function NewOrderPage() {
                         </div>
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
+                            <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -496,7 +496,7 @@ export default function NewOrderPage() {
                         )}
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-foreground hover:bg-accent transition-colors">Geri</Button>
+                            <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Geri</Button>
                             <Button onClick={nextStep} className="bg-violet-600 hover:bg-violet-700 px-14 py-3 h-auto rounded-xl">İleri <ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
@@ -566,7 +566,7 @@ export default function NewOrderPage() {
                         </div>
 
                         <div className="flex justify-between">
-                            <Button variant="ghost" onClick={prevStep} className="text-muted-foreground hover:bg-accent transition-colors">Geri</Button>
+                            <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Geri</Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={isLoading}

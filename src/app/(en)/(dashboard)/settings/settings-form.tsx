@@ -720,6 +720,9 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                 throw new Error(data.error || "Failed to update profile");
             }
 
+            const newName = `${firstName} ${lastName}`.trim();
+            await updateSession({ name: newName });
+
             toast.success(t.profileUpdated);
             router.refresh();
         } catch (error: any) {

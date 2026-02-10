@@ -1,0 +1,5 @@
+{
+  "/(en)/(auth)/login/page": "app/(en)/(auth)/login/page.js",
+  "/(en)/(dashboard)/settings/page": "app/(en)/(dashboard)/settings/page.js",
+  "/tr/(dashboard)/siparisler/new/page": "app/tr/(dashboard)/siparisler/new/page.js"
+}

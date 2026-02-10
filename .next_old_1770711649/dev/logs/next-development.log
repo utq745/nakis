@@ -1,0 +1,715 @@
+[00:00:00.459] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:00.520] Server  LOG      ✓ Ready in 404ms
+[00:00:03.354] Server  ERROR    ⨯ ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:03.427] Server  ERROR    ⨯ ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/(en)/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:03.938] Browser ERROR   uncaughtError: Error: ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:04.083] Browser ERROR   uncaughtError: Error: ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/(en)/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/(en)/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.258] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.077] Server  ERROR    ⨯ ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/(en)/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:07.420] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.425] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.425] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.843] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.843] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.843] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:15.843] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:16.143] Browser ERROR   ./Documents/nakis/src/app/globals.css:3420:24
+Module not found: Can't resolve '&#x27;/grid.svg&'
+  3418 |   .bg-\[url\(\&\#x27\;\/grid\.svg\&\#x27\;\)\] {
+  3419 |     background-image: url(&#x27;/grid.svg&#x27;);
+> 3420 |   }
+       |    ^
+  3421 |   .bg-\[url\(\'\/grid\.svg\'\)\] {
+  3422 |     background-image: url('/grid.svg');
+  3423 |   }
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/tr/layout.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./Documents/nakis/src/app/globals.css [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Client Component Browser]
+    ./Documents/nakis/src/app/loading.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found

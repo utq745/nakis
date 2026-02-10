@@ -1,0 +1,5 @@
+{
+  "/(en)/(dashboard)/dashboard/page": "app/(en)/(dashboard)/dashboard/page.js",
+  "/(en)/(dashboard)/settings/page": "app/(en)/(dashboard)/settings/page.js",
+  "/tr/(dashboard)/siparisler/new/page": "app/tr/(dashboard)/siparisler/new/page.js"
+}

@@ -1,0 +1,21 @@
+[00:00:00.562] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:00.650] Server  LOG      ✓ Ready in 501ms
+[00:00:05.660] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:05.660] Browser ERROR   uncaughtError: Error: Module [project]/Documents/nakis/node_modules/lucide-react/dist/esm/icons/sparkles.js [app-client] (ecmascript) <export default as Sparkles> was instantiated because it was required from module [project]/Documents/nakis/src/components/dashboard/sidebar.tsx [app-client] (ecmascript), but the module factory is not available. It might have been deleted in an HMR update.
+[00:00:06.196] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:06.196] Browser ERROR   uncaughtError: Error: Module [project]/Documents/nakis/node_modules/lucide-react/dist/esm/icons/sparkles.js [app-client] (ecmascript) <export default as Sparkles> was instantiated because it was required from module [project]/Documents/nakis/src/components/dashboard/sidebar.tsx [app-client] (ecmascript), but the module factory is not available. It might have been deleted in an HMR update.
+[00:00:20.691] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:00:20.691] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./Documents/nakis/src/components/dashboard/sidebar.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:00:20.693] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:00:20.693] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:00:20.693] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./Documents/nakis/src/components/dashboard/sidebar.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:00:20.696] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:00:20.720] Server  LOG      ✓ Compiled in 64ms
+[00:00:21.026] Server  ERROR    ⨯ Error: [next-auth]: `useSession` must be wrapped in a <SessionProvider />
+[00:00:21.058] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:21.210] Browser ERROR   uncaughtError: Error: Switched to client rendering because the server rendering errored:
+
+[next-auth]: `useSession` must be wrapped in a <SessionProvider />
+[00:00:21.210] Browser ERROR   uncaughtError: Error: Module [project]/Documents/nakis/node_modules/lucide-react/dist/esm/icons/sparkles.js [app-client] (ecmascript) <export default as Sparkles> was instantiated because it was required from module [project]/Documents/nakis/src/components/dashboard/sidebar.tsx [app-client] (ecmascript), but the module factory is not available. It might have been deleted in an HMR update.
+[00:00:21.461] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:21.461] Browser ERROR   uncaughtError: Error: Module [project]/Documents/nakis/node_modules/lucide-react/dist/esm/icons/sparkles.js [app-client] (ecmascript) <export default as Sparkles> was instantiated because it was required from module [project]/Documents/nakis/src/components/dashboard/sidebar.tsx [app-client] (ecmascript), but the module factory is not available. It might have been deleted in an HMR update.

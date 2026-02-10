@@ -143,35 +143,21 @@ export default function PricingContent() {
                                         ))}
                                     </ul>
 
-                                    {/* Calculation Accordion for Plan 3 */}
+                                    {/* Calculation for Plan 3 - Plain Text Display */}
                                     {plan.calculation && (
-                                        <div className="mb-6 rounded-2xl border border-border bg-accent/30 overflow-hidden">
-                                            <button
-                                                onClick={() => setIsCalcOpen(!isCalcOpen)}
-                                                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent/50 transition-colors"
-                                            >
-                                                <span className="text-xs font-bold text-foreground flex items-center gap-2">
-                                                    <span className="material-symbols-outlined text-white" style={{ fontSize: '16px', lineHeight: 1 }}>calculate</span>
-                                                    {plan.calculation.title}
-                                                </span>
-                                                <span className={`material-symbols-outlined text-muted-foreground transition-transform duration-300 ${isCalcOpen ? 'rotate-180' : ''}`} style={{ fontSize: '18px' }}>
-                                                    expand_more
-                                                </span>
-                                            </button>
-                                            <motion.div
-                                                initial={false}
-                                                animate={{ height: isCalcOpen ? 'auto' : 0, opacity: isCalcOpen ? 1 : 0 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="px-4 pb-4 pt-0 space-y-2">
-                                                    {plan.calculation.details.map((detail, dIndex) => (
-                                                        <div key={dIndex} className="flex items-center gap-2" style={{ fontSize: '12px', color: '#c5c5c5', lineHeight: 1.4 }}>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                                                            {detail}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
+                                        <div className="mb-6 rounded-2xl border border-border bg-accent/30 p-4">
+                                            <div className="text-xs font-bold text-foreground flex items-center gap-2 mb-3">
+                                                <span className="material-symbols-outlined text-white" style={{ fontSize: '16px', lineHeight: 1 }}>calculate</span>
+                                                {plan.calculation.title}
+                                            </div>
+                                            <div className="space-y-2">
+                                                {plan.calculation.details.map((detail, dIndex) => (
+                                                    <div key={dIndex} className="flex items-start gap-2" style={{ fontSize: '12px', color: '#c5c5c5', lineHeight: 1.4 }}>
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-[4px]" />
+                                                        <span>{detail}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
 

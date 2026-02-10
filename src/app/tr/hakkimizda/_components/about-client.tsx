@@ -87,9 +87,10 @@ export function AboutClient() {
                                     transition={{ duration: 0.5, delay: 0.2 }}
                                     className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
                                 ></motion.div>
-                                <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed">
-                                    {t.aboutPage.experience.description}
-                                </p>
+                                <p
+                                    className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed"
+                                    dangerouslySetInnerHTML={{ __html: t.aboutPage.experience.description }}
+                                />
                             </motion.div>
                         </div>
                     </div>
@@ -229,7 +230,7 @@ export function AboutClient() {
                                 >
                                     <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 text-primary dark:bg-white/10 dark:text-white group-hover:bg-primary group-hover:text-white transition-colors mb-4 mx-auto">
                                         <span className="material-symbols-outlined text-3xl">
-                                            {index === 0 ? 'texture' : index === 1 ? 'density_medium' : index === 2 ? 'swap_horiz' : 'cable'}
+                                            {index === 0 ? 'payments' : index === 1 ? 'cancel' : index === 2 ? 'schedule' : 'warning'}
                                         </span>
                                     </div>
                                     <h3 className="font-bold text-foreground dark:text-white text-sm">{factor}</h3>

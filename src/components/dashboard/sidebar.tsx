@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,6 @@ import {
     Settings,
     Users,
     FileText,
-    Sparkles,
     Home,
     ChevronLeft,
     ChevronRight,
@@ -85,23 +84,47 @@ export function Sidebar() {
     const navItems = session?.user?.role === "ADMIN" ? adminNav : customerNav;
 
     return (
-        <aside className={cn(
+            <aside className={cn(
             "h-screen bg-background border-r border-border transition-all duration-300",
             isCollapsed ? "w-16" : "w-64"
         )}>
             <div className="flex h-full flex-col">
                 {/* Logo */}
                 <div className={cn(
-                    "flex h-16 items-center gap-2 border-b border-border transition-all duration-300",
+                    "flex h-20 items-center border-b border-border transition-all duration-300 overflow-hidden shrink-0",
                     isCollapsed ? "justify-center px-2" : "px-6"
                 )}>
-                    <div className="p-2 rounded-lg bg-gradient-to-tr from-violet-500 to-fuchsia-500 shrink-0">
-                        <Sparkles className="h-5 w-5 text-white" />
-                    </div>
-                    {!isCollapsed && (
-                        <span className="text-lg font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent whitespace-nowrap">
-                            Approval Stitch
-                        </span>
+                    {isCollapsed ? (
+                        <div className="h-10 w-10 shrink-0 flex items-center justify-center">
+                            <Image
+                                src="/icon.png"
+                                alt="Approval Stitch"
+                                width={40}
+                                height={40}
+                                priority
+                                className="h-10 w-10 object-contain dark:hidden"
+                            />
+                            <Image
+                                src="/icon-white.png"
+                                alt="Approval Stitch"
+                                width={40}
+                                height={40}
+                                priority
+                                className="hidden h-10 w-10 object-contain dark:block"
+                            />
+                        </div>
+                    ) : (
+                        <div className="h-[50px] flex items-center">
+                            <Image
+                                src="/images/approval-stich-logo-w.webp"
+                                alt="Approval Stitch"
+                                width={160}
+                                height={50}
+                                priority
+                                className="object-contain shrink-0 !h-[50px] w-auto"
+                                style={{ height: "50px", maxHeight: "50px" }}
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -163,7 +186,7 @@ export function Sidebar() {
                                     <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
                                         {session?.user?.role === "ADMIN" ? t.sidebar.adminPanel : t.sidebar.customerPanel}
                                     </p>
-                                    <p className="text-sm text-foreground font-medium truncate">
+                                    <p key={session?.user?.name || 'name'} className="text-sm text-foreground font-medium truncate">
                                         {session?.user?.name || session?.user?.email?.split('@')[0]}
                                     </p>
                                 </div>

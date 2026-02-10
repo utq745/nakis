@@ -112,17 +112,7 @@ export default function LoginPage() {
                         <p className="text-slate-300 text-lg max-w-md leading-relaxed">
                             {lp.sidebarDesc}
                         </p>
-                        <div className="flex gap-4 mt-8">
-                            <div className="flex -space-x-2">
-                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-1.webp" width={40} height={40} />
-                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-2.webp" width={40} height={40} />
-                                <Image alt="User Avatar" className="inline-block rounded-full ring-2 ring-white object-cover" src="/images/avatars/avatar-3.webp" width={40} height={40} />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                                <span className="text-white text-sm font-semibold">{lp.professionals}</span>
-                                <span className="text-slate-400 text-xs">{lp.trustDaily}</span>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
