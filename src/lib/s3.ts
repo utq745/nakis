@@ -1,7 +1,9 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
-if (!process.env.R2_ACCOUNT_ID) {
-    throw new Error("Missing R2_ACCOUNT_ID in environment variables");
+const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.R2_ACCOUNT_ID;
+
+if (!process.env.R2_ACCOUNT_ID && !isBuildTime) {
+    console.warn("Warning: R2_ACCOUNT_ID is missing in environment variables");
 }
 
 export const s3Client = new S3Client({
