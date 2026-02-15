@@ -48,6 +48,8 @@ export function NotificationBell() {
     const [loading, setLoading] = useState(true);
     const prevUnreadCountRef = useRef<number>(0);
     const isInitialLoad = useRef(true);
+    const isFetchingRef = useRef(false);
+    const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const getBilingualText = useCallback((text: string) => {
         if (!text.includes(" | ")) return text;
@@ -56,8 +58,15 @@ export function NotificationBell() {
     }, [language]);
 
     const fetchNotifications = useCallback(async () => {
+        if (isFetchingRef.current) return;
+        if (typeof document !== "undefined" && document.hidden) return;
+
+        isFetchingRef.current = true;
         try {
-            const res = await fetch("/api/notifications");
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch("/api/notifications", { signal: controller.signal });
+            clearTimeout(timeoutId);
             if (res.ok) {
                 const data = await res.json();
                 const newUnreadCount = data.unreadCount;
@@ -99,17 +108,32 @@ export function NotificationBell() {
                 setUnreadCount(newUnreadCount);
             }
         } catch (error) {
-            console.error("Failed to fetch notifications:", error);
+            // Keep this silent in production-like environments to reduce noisy console logs on transient network issues.
+            if (process.env.NODE_ENV === "development") {
+                console.error("Failed to fetch notifications:", error);
+            }
         } finally {
             setLoading(false);
+            isFetchingRef.current = false;
         }
     }, [language]);
 
     useEffect(() => {
         fetchNotifications();
-        // Refresh every 30 seconds for better real-time experience
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
+        // Poll less aggressively to reduce API pressure and timeout cascades.
+        pollIntervalRef.current = setInterval(fetchNotifications, 120000);
+
+        const onVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchNotifications();
+            }
+        };
+
+        document.addEventListener("visibilitychange", onVisibilityChange);
+        return () => {
+            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+            document.removeEventListener("visibilitychange", onVisibilityChange);
+        };
     }, [fetchNotifications]);
 
     const markAsRead = async (id: string) => {

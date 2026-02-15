@@ -1477,37 +1477,57 @@ results = {}
 # 1. Extract design from Wilcom PDF
 try:
     doc = fitz.open(wilcom_pdf)
-    largest_image = None
-    largest_size = 0
+    best_image = None
+    best_score = 0
     
-    # 1a. Try to find embedded images first (highest quality)
+    # 1a. Try to find embedded images - pick the one with most actual content
+    # Wilcom PDFs often embed large blank placeholder images alongside the design
     for page in doc:
         for img_info in page.get_images():
             xref = img_info[0]
             try:
                 pix = fitz.Pixmap(doc, xref)
                 if pix.n >= 5: pix = fitz.Pixmap(fitz.csRGB, pix)
-                if pix.width * pix.height > largest_size:
-                    largest_size = pix.width * pix.height
-                    largest_image = pix
+                
+                # Skip very small images (icons, logos etc)
+                total_pixels = pix.width * pix.height
+                if total_pixels < 10000:
+                    continue
+                
+                # Count non-white pixels to determine actual content
+                samples = pix.samples
+                non_white = 0
+                step = max(1, len(samples) // (50000 * pix.n))  # Sample for speed
+                for k in range(0, len(samples), pix.n * step):
+                    if k + 2 < len(samples):
+                        if samples[k] < 250 or samples[k+1] < 250 or samples[k+2] < 250:
+                            non_white += 1
+                
+                # Score = non-white ratio * total size (prefer large images WITH content)
+                content_ratio = non_white / max(1, total_pixels // step)
+                
+                # Skip images that are >99% white (blank placeholders)
+                if content_ratio < 0.005:
+                    continue
+                
+                score = content_ratio * total_pixels
+                if score > best_score:
+                    best_score = score
+                    best_image = pix
             except: continue
             
-    if largest_image:
-        results['design'] = process_and_trim(largest_image.tobytes("png"))
+    if best_image:
+        results['design'] = process_and_trim(best_image.tobytes("png"))
     else:
-        # 1b. Fallback: No embedded images found, try to render vector paths
-        # This is common in some Wilcom export settings
+        # 1b. Fallback: No usable embedded images, try to render vector paths
         page = doc[0]
         paths = page.get_drawings()
         
-        # If there are many paths, it's likely a design
         if len(paths) > 20: 
-            # Filter out very large paths that might be page borders
             design_rects = []
             page_rect = page.rect
             for p in paths:
                 r = p["rect"]
-                # Skip paths that are almost as large as the page (likely borders/backgrounds)
                 if r.width < page_rect.width * 0.95 or r.height < page_rect.height * 0.95:
                     design_rects.append(r)
             
@@ -1516,21 +1536,17 @@ try:
                 for r in design_rects[1:]:
                     union_rect |= r
                 
-                # Add a small margin
                 union_rect.x0 -= 5
                 union_rect.y0 -= 5
                 union_rect.x1 += 5
                 union_rect.y1 += 5
                 
-                # Render only the design area
                 pix = page.get_pixmap(matrix=fitz.Matrix(3, 3), clip=union_rect)
                 results['design'] = process_and_trim(pix.tobytes("png"))
             else:
-                # Last resort: just render the whole first page
                 pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
                 results['design'] = process_and_trim(pix.tobytes("png"))
         else:
-            # Render first page if not enough paths found
             pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
             results['design'] = process_and_trim(pix.tobytes("png"))
             
