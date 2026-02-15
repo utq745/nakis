@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import AboutContent from "./about-content";
 import { Suspense } from "react";
-const AboutContent = dynamic(() => import("./about-content"), { ssr: false });
 
 export const metadata: Metadata = {
     title: "About Approval Stitch | 35+ Years of Embroidery Expertise",

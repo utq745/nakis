@@ -19,7 +19,9 @@ export default function AboutContent() {
         setIsMounted(true);
     }, []);
 
-    if (!isMounted) return null;
+    if (!isMounted) {
+        return <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]" />;
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]">

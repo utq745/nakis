@@ -1,9 +1,8 @@
 
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/get-dictionary";
-import dynamic from "next/dynamic";
+import { AboutClient } from "./_components/about-client";
 import { Suspense } from "react";
-const AboutClient = dynamic(() => import("./_components/about-client").then((mod) => mod.AboutClient), { ssr: false });
 
 export async function generateMetadata(): Promise<Metadata> {
     const dict = getDictionary('tr');
