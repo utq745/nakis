@@ -1516,11 +1516,42 @@ try:
             continue
     
     if content_bboxes:
-        # Compute union bounding box of all content-bearing images
-        x0 = min(b[0] for b in content_bboxes)
-        y0 = min(b[1] for b in content_bboxes)
-        x1 = max(b[2] for b in content_bboxes)
-        y1 = max(b[3] for b in content_bboxes)
+        # Cluster nearby bboxes - design tiles are adjacent, logos are isolated
+        # Two bboxes are "nearby" if they overlap or are within 50pt of each other
+        clusters = []
+        used = [False] * len(content_bboxes)
+        
+        for i in range(len(content_bboxes)):
+            if used[i]:
+                continue
+            cluster = [content_bboxes[i]]
+            used[i] = True
+            changed = True
+            while changed:
+                changed = False
+                for j in range(len(content_bboxes)):
+                    if used[j]:
+                        continue
+                    b = content_bboxes[j]
+                    # Check if b is near any bbox in the cluster
+                    for c in cluster:
+                        gap = 50
+                        if (b[0] <= c[2] + gap and b[2] >= c[0] - gap and
+                            b[1] <= c[3] + gap and b[3] >= c[1] - gap):
+                            cluster.append(b)
+                            used[j] = True
+                            changed = True
+                            break
+            clusters.append(cluster)
+        
+        # Pick the cluster with the most images (design tiles)
+        best_cluster = max(clusters, key=lambda c: len(c))
+        
+        # Compute union bounding box of the best cluster
+        x0 = min(b[0] for b in best_cluster)
+        y0 = min(b[1] for b in best_cluster)
+        x1 = max(b[2] for b in best_cluster)
+        y1 = max(b[3] for b in best_cluster)
         
         # Add small margin
         margin = 2
