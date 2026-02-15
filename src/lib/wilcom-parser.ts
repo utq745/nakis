@@ -1477,50 +1477,61 @@ results = {}
 # 1. Extract design from Wilcom PDF
 try:
     doc = fitz.open(wilcom_pdf)
-    best_image = None
-    best_score = 0
     
-    # 1a. Try to find embedded images - pick the one with most actual content
-    # Wilcom PDFs often embed large blank placeholder images alongside the design
-    for page in doc:
-        for img_info in page.get_images():
-            xref = img_info[0]
-            try:
-                pix = fitz.Pixmap(doc, xref)
-                if pix.n >= 5: pix = fitz.Pixmap(fitz.csRGB, pix)
-                
-                # Skip very small images (icons, logos etc)
-                total_pixels = pix.width * pix.height
-                if total_pixels < 10000:
-                    continue
-                
-                # Count non-white pixels to determine actual content
-                samples = pix.samples
-                non_white = 0
-                step = max(1, len(samples) // (50000 * pix.n))  # Sample for speed
-                for k in range(0, len(samples), pix.n * step):
-                    if k + 2 < len(samples):
-                        if samples[k] < 250 or samples[k+1] < 250 or samples[k+2] < 250:
-                            non_white += 1
-                
-                # Score = non-white ratio * total size (prefer large images WITH content)
-                content_ratio = non_white / max(1, total_pixels // step)
-                
-                # Skip images that are >99% white (blank placeholders)
-                if content_ratio < 0.005:
-                    continue
-                
-                score = content_ratio * total_pixels
-                if score > best_score:
-                    best_score = score
-                    best_image = pix
-            except: continue
+    # Strategy: Wilcom PDFs tile the design into multiple embedded images in a grid.
+    # We find all images with actual content, compute their union bounding box on the page,
+    # and render that region at high resolution to capture the complete design.
+    
+    page = doc[0]
+    infos = page.get_image_info(xrefs=True)
+    
+    content_bboxes = []
+    
+    for info in infos:
+        xref = info.get("xref", -1)
+        bbox = info.get("bbox", [])
+        if xref < 0 or len(bbox) < 4:
+            continue
+        try:
+            pix = fitz.Pixmap(doc, xref)
+            if pix.n >= 5: pix = fitz.Pixmap(fitz.csRGB, pix)
+            total_pixels = pix.width * pix.height
+            if total_pixels < 5000:
+                continue
             
-    if best_image:
-        results['design'] = process_and_trim(best_image.tobytes("png"))
+            # Sample pixels to check for content
+            samples = pix.samples
+            step = max(1, len(samples) // (50000 * pix.n))
+            non_white = 0
+            for k in range(0, len(samples), pix.n * step):
+                if k + 2 < len(samples):
+                    if samples[k] < 250 or samples[k+1] < 250 or samples[k+2] < 250:
+                        non_white += 1
+            ratio = non_white / max(1, total_pixels // step)
+            
+            # Only include images with meaningful content (>0.5%)
+            if ratio > 0.005:
+                content_bboxes.append(bbox)
+        except:
+            continue
+    
+    if content_bboxes:
+        # Compute union bounding box of all content-bearing images
+        x0 = min(b[0] for b in content_bboxes)
+        y0 = min(b[1] for b in content_bboxes)
+        x1 = max(b[2] for b in content_bboxes)
+        y1 = max(b[3] for b in content_bboxes)
+        
+        # Add small margin
+        margin = 2
+        clip = fitz.Rect(x0 - margin, y0 - margin, x1 + margin, y1 + margin)
+        clip = clip & page.rect  # Clamp to page
+        
+        # Render at high resolution (4x for sharp output)
+        pix = page.get_pixmap(matrix=fitz.Matrix(4, 4), clip=clip)
+        results['design'] = process_and_trim(pix.tobytes("png"))
     else:
-        # 1b. Fallback: No usable embedded images, try to render vector paths
-        page = doc[0]
+        # Fallback: try vector paths
         paths = page.get_drawings()
         
         if len(paths) > 20: 
