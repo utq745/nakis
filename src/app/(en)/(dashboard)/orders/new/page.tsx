@@ -237,17 +237,16 @@ export default function NewOrderPage() {
                                 ref={fileInputRef}
                                 type="file"
                                 className="hidden"
-                                accept=".dst,.emb,.ai,.pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                                accept=".dst,.emb,.pes,.ai,.pdf,.eps,.jpg,.jpeg,.png,image/jpeg,image/png"
                                 onChange={handleFileChange}
                             />
                             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Upload className="h-8 w-8 text-violet-500" />
                             </div>
-                            <div className="flex justify-center gap-2 mb-2">
-                                <Button variant="secondary" size="sm" className="bg-accent border-border hover:bg-accent/80 text-xs text-foreground">Choose File</Button>
-                                <span className="text-muted-foreground text-sm py-1">No file chosen</span>
-                            </div>
-                            <p className="text-muted-foreground text-xs">or drag & drop your AI, PDF, PNG, JPG, DST or JPEG file here (max 50MB)</p>
+                            <p className="text-foreground font-medium mb-1">Drag & drop or click to upload</p>
+                            <p className="text-muted-foreground text-xs">Embroidery files: DST, EMB, PES</p>
+                            <p className="text-muted-foreground text-xs">Artwork files: PDF, AI, EPS, PNG, JPG</p>
+                            <p className="text-muted-foreground text-[10px] mt-2">Max file size: 50MB</p>
                         </div>
 
                         <div className="space-y-4">
@@ -331,9 +330,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "Check stitch quality of your existing DST file", isQuote: false },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Minor fixes + stitched approval sample", isQuote: false },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Get Quote", desc: "New digitizing from artwork + stitched sample", isQuote: true }
+                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "No structural edits. Only machine-level adjustments if needed.", isQuote: false, upgradeNote: "If edits are needed after first stitch, you can upgrade to Fix Your DST for +$10." },
+                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Minor edits (density, trims, pull comp.) + re-stitch included.", isQuote: false },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Get Quote", desc: "Quoted after review (complexity + stitch count).", isQuote: true }
                             ].map((s) => (
                                 <div
                                     key={s.id}
@@ -353,6 +352,12 @@ export default function NewOrderPage() {
                                         <div className="flex flex-col gap-1">
                                             <span className={cn("text-lg font-bold leading-tight", serviceType === s.id ? "text-violet-500" : "text-foreground")}>{s.label}</span>
                                             <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                                            {s.upgradeNote && (
+                                                <p className="text-amber-500/90 text-xs mt-1 flex items-center gap-1">
+                                                    <Info className="w-3 h-3 shrink-0" />
+                                                    {s.upgradeNote}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center shrink-0">
@@ -639,7 +644,8 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    DST, EMB, AI, or PDF
+                                    <strong>Embroidery files:</strong> DST, EMB, PES<br />
+                                    <strong>Artwork files:</strong> PDF, AI, EPS, PNG, JPG
                                 </div>
                             </details>
                         </div>

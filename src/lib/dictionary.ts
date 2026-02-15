@@ -402,20 +402,19 @@ export const translations = {
             whatWeDo: {
                 badge: "Ne Yapıyoruz",
                 title: "Gerçek Dikişli Onay Sonuçları",
-                description: "ApprovalStitch, bir nakış tasarımının gerçek üretim koşullarında nasıl davrandığını gösteren gerçek dikişli onay sonuçları sunar.",
-                detail: "Ekran simülasyonlarına, temiz PDF'lere veya teorik önizlemelere güvenmek yerine, tasarımın seçtiğiniz kumaşta gerçek dikiş koşullarında nasıl performans gösterdiğini kanıtlıyoruz. Bu, onayların varsayımlara değil, gerçekliğe dayanarak yapılmasını sağlar."
+                description: "ApprovalStitch, bir nakış tasarımının gerçek üretim koşullarında nasıl davrandığını gösteren gerçek dikişli onay sonuçları sunar.<br><br>Tüm numuneler endüstriyel <strong>Tajima</strong> veya <strong>Barudan</strong> üretim makinelerinde dikilir — tam ölçekli üretimde kullanılan aynı sınıf ekipman.<br><br>Ekran simülasyonlarına, temiz PDF'lere veya teorik önizlemelere güvenmek yerine, tasarımın seçtiğiniz kumaşta gerçek dikiş koşullarında nasıl performans gösterdiğini kanıtlıyoruz. Bu, onayların varsayımlara değil, gerçekliğe dayanarak yapılmasını sağlar."
             },
             whyMatters: {
                 badge: "Neden Önemli",
                 title: "Neden Gerçek Dikişli Onay Numuneleri?",
                 description: "Nakış tasarımları ekranda genellikle doğru görünür, ancak dikildikten sonra farklı davranır.",
                 factors: [
-                    "Costly mistakes",
-                    "Rejections",
-                    "Production delays",
-                    "Brand risk"
+                    "Pahalı Hatalar",
+                    "Reddedilmeler",
+                    "Üretim Gecikmeleri",
+                    "Marka Riski"
                 ],
-                conclusion: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
+                conclusion: "Bu faktörler yalnızca gerçek dikiş ile doğru bir şekilde değerlendirilebilir.<br>ApprovalStitch bu sonuçları üretim başlamadan önce görünür kılar — çünkü tek bir yanlış onay binlerce parçanın yanlış üretilmesine yol açabilir."
             },
 
             whatYouReceive: {
@@ -1037,20 +1036,19 @@ export const translations = {
             whatWeDo: {
                 badge: "What We Do",
                 title: "Real Stitched Approval Results",
-                description: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.",
-                detail: "Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality, not assumptions."
+                description: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.<br><br>All samples are stitched on industrial <strong>Tajima</strong> or <strong>Barudan</strong> production machines — the same class of equipment used in full-scale manufacturing.<br><br>Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality, not assumptions."
             },
             whyMatters: {
                 badge: "Why It Matters",
                 title: "Why Real Stitched Approval Samples",
                 description: "Embroidery designs often appear correct on screen, yet behave differently once stitched.",
                 factors: [
-                    "Costly mistakes",
+                    "Costly Mistakes",
                     "Rejections",
-                    "Production delays",
-                    "Brand risk"
+                    "Production Delays",
+                    "Brand Risk"
                 ],
-                conclusion: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
+                conclusion: "These factors can only be evaluated accurately through actual stitching.<br>ApprovalStitch makes these results visible before production begins — because one incorrect approval can lead to thousands of pieces produced wrong."
             },
 
             whatYouReceive: {

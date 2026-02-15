@@ -167,12 +167,10 @@ export default function AboutContent() {
                                     transition={{ duration: 0.5, delay: 0.2 }}
                                     className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
                                 ></motion.div>
-                                <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed mb-6">
-                                    {t.aboutPage.whatWeDo.description}
-                                </p>
-                                <p className="text-muted-foreground dark:text-white/70 leading-relaxed">
-                                    {t.aboutPage.whatWeDo.detail}
-                                </p>
+                                <p
+                                    className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed"
+                                    dangerouslySetInnerHTML={{ __html: t.aboutPage.whatWeDo.description }}
+                                />
                             </motion.div>
                             <motion.div
                                 initial={{ opacity: 0, x: 30 }}
@@ -241,9 +239,10 @@ export default function AboutContent() {
                             viewport={{ once: true }}
                             className="bg-card dark:bg-[#172136] rounded-2xl p-8 border border-border dark:border-white/10 text-center max-w-3xl mx-auto"
                         >
-                            <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed">
-                                {t.aboutPage.whyMatters.conclusion}
-                            </p>
+                            <p
+                                className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: t.aboutPage.whyMatters.conclusion }}
+                            />
                         </motion.div>
                     </div>
                 </section>

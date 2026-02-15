@@ -232,17 +232,16 @@ export default function NewOrderPage() {
                                 ref={fileInputRef}
                                 type="file"
                                 className="hidden"
-                                accept=".dst,.emb,.ai,.pdf,.jpg,.jpeg,.png,image/jpeg,image/png"
+                                accept=".dst,.emb,.pes,.ai,.pdf,.eps,.jpg,.jpeg,.png,image/jpeg,image/png"
                                 onChange={handleFileChange}
                             />
                             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Upload className="h-8 w-8 text-violet-500" />
                             </div>
-                            <div className="flex justify-center gap-2 mb-2">
-                                <Button variant="secondary" size="sm" className="bg-accent border-border hover:bg-accent/80 text-xs text-foreground">Dosya Seç</Button>
-                                <span className="text-muted-foreground text-sm py-1">Dosya seçilmedi</span>
-                            </div>
-                            <p className="text-muted-foreground text-xs">veya AI, PDF, PNG, JPG, DST veya JPEG dosyanızı buraya sürükleyin (maks 50MB)</p>
+                            <p className="text-foreground font-medium mb-1">Sürükle & bırak veya tıklayarak yükle</p>
+                            <p className="text-muted-foreground text-xs">Nakış dosyaları: DST, EMB, PES</p>
+                            <p className="text-muted-foreground text-xs">Tasarım dosyaları: PDF, AI, EPS, PNG, JPG</p>
+                            <p className="text-muted-foreground text-[10px] mt-2">Maksimum dosya boyutu: 50MB</p>
                         </div>
 
                         <div className="space-y-4">
@@ -326,9 +325,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Mevcut DST dosyanızın dikiş kalitesini kontrol edin", isQuote: false },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Küçük düzeltmeler + dikişli onay örneği", isQuote: false },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Fiyat Teklifi Al", desc: "Çizimden yeni dijitalleştirme + dikişli örnek", isQuote: true }
+                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Yapısal düzenleme yok. Sadece gerekirse makine düzeyinde ayarlamalar.", isQuote: false, upgradeNote: "İlk dikişten sonra düzenleme gerekirse, +$10 ile Fix Your DST'ye yükseltebilirsiniz." },
+                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Küçük düzenlemeler (yoğunluk, trim, çekme telafisi) + yeniden dikiş dahil.", isQuote: false },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Fiyat Teklifi Al", desc: "İncelemeden sonra fiyatlandırılır (karmaşıklık + dikiş sayısı).", isQuote: true }
                             ].map((s) => (
                                 <div
                                     key={s.id}
@@ -348,6 +347,12 @@ export default function NewOrderPage() {
                                         <div className="flex flex-col gap-1">
                                             <span className={cn("text-lg font-bold leading-tight", serviceType === s.id ? "text-violet-500" : "text-foreground")}>{s.label}</span>
                                             <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
+                                            {s.upgradeNote && (
+                                                <p className="text-amber-500/90 text-xs mt-1 flex items-center gap-1">
+                                                    <Info className="w-3 h-3 shrink-0" />
+                                                    {s.upgradeNote}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center shrink-0">
@@ -634,7 +639,8 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    DST, EMB, AI, veya PDF
+                                    <strong>Nakış dosyaları:</strong> DST, EMB, PES<br />
+                                    <strong>Tasarım dosyaları:</strong> PDF, AI, EPS, PNG, JPG
                                 </div>
                             </details>
                         </div>

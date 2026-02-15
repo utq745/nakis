@@ -9,7 +9,6 @@
 - [x] Footerda call action kısmındaki rating bölümünü kaldıralım. Sadece "Get Your Approval Sample" yazan buton kalsın.
 - [x] About sayfasında Why Real Stitched Approval Samples bölümmündeki kutuların altındaki metinleri şu şekilde değiştirelim lütfen: Costly mistakes        Rejections        Production delays          Brand risk
 - [x] ve en alttaki yazıyı şu şekilde revize edelim: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
-- [ ] About sayfasında Built on production experience yazısının altındaki metni şu şekilde değiştirelim lütfen: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions.<br>We understand how designs behave on real machines, real fabrics, under real production pressure.
 - [x] Login sayfasında sol taraftaki "10k+ Professionals Trust us daily" bölümünü ve user avatarlarını kaldıralım.
 - [x] Sipariş oluşturma sayfasındaki geri butonuna hafif bir border ekleyelim.
 - [x] Paneldeki last name güncellenmiyor sorunu düzeltildi (name değişikliği artık direkt güncelleniyor, email verification gerektirmiyor).
@@ -17,3 +16,7 @@
 - [x] Sipariş oluşturma sayfasındaki geri butonu ileri butonu ile aynı sitilde olmalı yalnızca iç rengi siyah, text rengi beyaz olacak dark modda. Aynı ilerii butonyndaki gibi ok simgesi olmalı. Light modu sen site temasına uygun olarak düzenle.
 - [x] Paneldeki last name güncellendiği halde paneldeki sol altta görünen isim soyisim güncellenmiyor.
 - [x] Paneldeki logoyu büyütelim. heigth değeri 52px olsun.
+- [x] Admin panelinde Wilcom PDF yüklendiğinde preview görüntüsü görünmeme sorunu düzeltildi. (Vektör PDF deteği ve Cloudflare R2 entegrasyonu eklendi.)
+- [x] About sayfasında Real Stitched Approval Results bölümündeki metin şöyle değiştirildi: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.<br><br>All samples are stitched on industrial <strong>Tajima</strong> or <strong>Barudan</strong> production machines — the same class of equipment used in full-scale manufacturing.<br><br>Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality, not assumptions."
+- [x] Anasayfadaki ve about sayfasındaki How It Works bölümündeki 2. kutuya kapak görseli olarak /nakis/public/images/landing/What_You_Receive_Real_stitched_photos.webp görseli, tıklandığında açılacak video popup için /nakis/Real-Approval-Stitch.webm videosu eklenecek.
+- [x] About sayfasında Why Real Stitched Approval Samples bölümündeki 4 kutunun altındaki metinlerin ilk harfi büyük olacak şekilde düzenlendi. 4 kutunun altındaki alanda yer alan yazı şöyle değiştirildi: "These factors can only be evaluated accurately through actual stitching.<br> ApprovalStitch makes these results visible before production begins — because one incorrect approval can lead to thousands of pieces produced wrong."
