@@ -29,8 +29,12 @@ export function middleware(request: NextRequest) {
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    // HSTS - Strict Transport Security (1 year, include subdomains)
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    // HSTS should only be sent on HTTPS responses.
+    const forwardedProto = request.headers.get('x-forwarded-proto');
+    const isHttps = forwardedProto === 'https' || request.nextUrl.protocol === 'https:';
+    if (isHttps) {
+        response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
 
     // HTTPS enforcement is handled by Cloudflare proxy
     /*
