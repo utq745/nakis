@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function Process() {
     const { t } = useLanguage();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [isCorporateModalOpen, setIsCorporateModalOpen] = useState(false);
+    const [imageFallbacks, setImageFallbacks] = useState<Record<string, number>>({});
 
     const steps = [
         {
@@ -21,7 +24,7 @@ export function Process() {
             step: "02",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
-            image: "/images/landing/What_You_Receive_Real_stitched_photos.webp",
+            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp",
             video: "/videos/landing/Real-Approval-Stitch.webm"
         },
         {
@@ -29,6 +32,13 @@ export function Process() {
             title: t.landing.process.step3Title,
             desc: t.landing.process.step3Desc,
             image: "/images/landing/Approval-Package.webp"
+        },
+        {
+            step: "04",
+            title: t.landing.process.step4Title,
+            desc: t.landing.process.step4Desc,
+            image: "/images/landing/account-billing.webp",
+            isCorporate: true
         },
     ];
 
@@ -80,10 +90,10 @@ export function Process() {
                     {/* Connector Line (visible on desktop) */}
                     <div className="hidden lg:block absolute top-[50px] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/20 dark:via-white/10 to-transparent z-0"></div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-14 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 md:gap-10 relative z-10">
                         {steps.map((item, index) => (
                             <motion.div
-                                key={index}
+                                key={item.step}
                                 initial={{ opacity: 0, x: -50 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
@@ -94,24 +104,48 @@ export function Process() {
                                 <div className="relative z-20 mb-10 w-full aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-500">
                                     {/* Image Canvas */}
                                     <div
-                                        className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${item.video ? 'cursor-pointer' : ''}`}
-                                        onClick={() => item.video && setSelectedVideo(item.video)}
+                                        className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${(item.video || item.isCorporate) ? 'cursor-pointer' : ''}`}
+                                        onClick={() => {
+                                            if (item.video) setSelectedVideo(item.video);
+                                            if (item.isCorporate) setIsCorporateModalOpen(true);
+                                        }}
                                     >
                                         <Image
-                                            src={item.image}
-                                            alt={item.title}
+                                            src={
+                                                item.isCorporate
+                                                    ? ([
+                                                        "/images/landing/account-billing.webp",
+                                                        "/images/landing/Account-Billing.png",
+                                                        "/images/landing/make-order.webp",
+                                                    ][imageFallbacks[item.step] || 0])
+                                                    : item.image
+                                            }
+                                            alt={item.title || "Step Image"}
                                             fill
                                             className={`object-cover group-hover:scale-110 transition-transform duration-700 ${item.video ? 'opacity-60' : ''}`}
                                             sizes="(max-width: 768px) 100vw, 33vw"
+                                            onError={() => {
+                                                if (!item.isCorporate) return;
+                                                setImageFallbacks((prev) => ({
+                                                    ...prev,
+                                                    [item.step]: Math.min((prev[item.step] || 0) + 1, 2),
+                                                }));
+                                            }}
                                         />
 
                                         {/* Play Button Overlay */}
-                                        {item.video && (
+                                        {(item.video || item.isCorporate) && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors z-10">
                                                 <div className="w-20 h-20 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                                    <span className="material-symbols-outlined text-primary ml-1" style={{ fontVariationSettings: "'FILL' 1", fontSize: '2vw' }}>
-                                                        play_arrow
-                                                    </span>
+                                                    {item.isCorporate ? (
+                                                        <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
+                                                            business_center
+                                                        </span>
+                                                    ) : (
+                                                        <span className="material-symbols-outlined text-primary ml-1" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
+                                                            play_arrow
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         )}
@@ -175,6 +209,49 @@ export function Process() {
                                 autoPlay
                                 className="w-full h-full"
                             />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Corporate Modal */}
+            <AnimatePresence>
+                {isCorporateModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsCorporateModalOpen(false)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-xl rounded-3xl bg-white dark:bg-[#1c2637] p-8 shadow-2xl z-10"
+                        >
+                            <button
+                                onClick={() => setIsCorporateModalOpen(false)}
+                                className="absolute top-4 right-4 size-10 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-white flex items-center justify-center transition-colors"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+
+                            <h3 className="text-2xl font-black text-foreground dark:text-white mb-4">
+                                {t.landing.process.corporateModalTitle}
+                            </h3>
+                            <p
+                                className="text-muted-foreground leading-relaxed mb-8"
+                                dangerouslySetInnerHTML={{ __html: t.landing.process.corporateModalDesc }}
+                            />
+
+                            <Link
+                                href="/corporate-account"
+                                className="inline-flex h-12 px-6 rounded-xl bg-primary text-white font-bold items-center justify-center hover:opacity-90 transition-opacity"
+                            >
+                                {t.landing.process.corporateModalBtn}
+                            </Link>
                         </motion.div>
                     </div>
                 )}

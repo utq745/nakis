@@ -9,6 +9,11 @@ const createOrderSchema = z.object({
     description: z.string().optional(),
     machineBrand: z.string().optional(),
     serviceType: z.string().optional(),
+    designWidth: z.number().positive().optional(),
+    designHeight: z.number().positive().optional(),
+    designUnit: z.enum(["cm", "inch"]).optional(),
+    capType: z.enum(["Constructed", "Unconstructed"]).optional(),
+    capPlacement: z.enum(["Front", "Side", "Back"]).optional(),
     productType: z.string().optional(),
     garmentType: z.string().optional(),
     isNotSure: z.boolean().default(false),
@@ -88,6 +93,13 @@ export async function POST(request: Request) {
         const sanitizedTitle = validatedData.title ? sanitizeString(validatedData.title) : undefined;
         const sanitizedDescription = validatedData.description ? sanitizeString(validatedData.description) : undefined;
         const sanitizedCustomProduct = validatedData.customProduct ? sanitizeString(validatedData.customProduct) : undefined;
+        const sizeLine = validatedData.designWidth && validatedData.designHeight && validatedData.designUnit
+            ? `Design Size: ${validatedData.designWidth} x ${validatedData.designHeight} ${validatedData.designUnit}`
+            : undefined;
+        const capLine = validatedData.capType && validatedData.capPlacement
+            ? `Cap Details: ${validatedData.capType}, ${validatedData.capPlacement}`
+            : undefined;
+        const combinedDescription = [sizeLine, capLine, sanitizedDescription].filter(Boolean).join("\n\n") || undefined;
 
         // Calculate estimated delivery (default 24-48h, but let's say 48h for safety)
         const estimatedDelivery = new Date();
@@ -104,9 +116,9 @@ export async function POST(request: Request) {
         let order = await prisma.order.create({
             data: {
                 title: sanitizedTitle || "Yeni Sipariş",
-                description: sanitizedDescription,
                 machineBrand: validatedData.machineBrand,
                 serviceType: validatedData.serviceType,
+                description: combinedDescription,
                 productType: validatedData.productType,
                 garmentType: validatedData.garmentType,
                 isNotSure: validatedData.isNotSure,

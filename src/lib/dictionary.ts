@@ -295,6 +295,11 @@ export const translations = {
                 step2Desc: "Tasarımınızı Tajima veya Barudan üretim makinelerimizde dikiyoruz.",
                 step3Title: "Approval Package",
                 step3Desc: "Onay kartlarını ve gerçek fotoğrafları teslim alırsınız.",
+                step4Title: "Account & Billing",
+                step4Desc: "Monthly invoicing.<br>International wire transfer settlement.",
+                corporateModalTitle: "Corporate Production Account",
+                corporateModalDesc: "ApprovalStitch operates under a corporate production account model.<br>Invoices are issued at the end of each month.<br>Payments are settled via international wire transfer.",
+                corporateModalBtn: "Register Corporate Account"
             },
             portfolio: {
                 badge: "Portfolyo",
@@ -312,8 +317,7 @@ export const translations = {
                 item4Sub: "Ceketler & Kapüşonlular"
             },
             cta: {
-                rating: "5.0 Puan",
-                title: "Bir sonraki projenizi işlemeye hazır mısınız?",
+                title: "Bir sonraki projenizi nakışlamaya hazır mısınız?",
                 description: "Binlerce memnun müşteriye katılın. Tasarımınızı bugün yükleyin ve 12 saat içinde fiyat teklifi alın.",
                 startBtn: "Siparişi Başlat",
                 contactBtn: "Satışla İletişime Geç",
@@ -929,6 +933,11 @@ export const translations = {
                 step2Desc: "We stitch a real approval sample on Tajima or Barudan production machines.",
                 step3Title: "Approval Package",
                 step3Desc: "You receive approval cards & real photos.",
+                step4Title: "Account & Billing",
+                step4Desc: "Monthly invoicing.<br>International wire transfer settlement.",
+                corporateModalTitle: "Corporate Production Account",
+                corporateModalDesc: "ApprovalStitch operates under a corporate production account model.<br>Invoices are issued at the end of each month.<br>Payments are settled via international wire transfer.",
+                corporateModalBtn: "Register Corporate Account"
             },
             portfolio: {
                 badge: "Portfolio",

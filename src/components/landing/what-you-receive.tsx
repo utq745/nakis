@@ -64,7 +64,7 @@ export function WhatYouReceive() {
                                 {item.image ? (
                                     <Image
                                         src={item.image}
-                                        alt={item.alt || item.title}
+                                        alt={item.alt || item.title || "Step Image"}
                                         fill
                                         className="object-cover"
                                         sizes="(max-width: 768px) 100vw, 33vw"

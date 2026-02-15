@@ -30,7 +30,12 @@ export default function NewOrderPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [machine, setMachine] = useState<string>("");
     const [serviceType, setServiceType] = useState<string>("");
+    const [designWidth, setDesignWidth] = useState<string>("");
+    const [designHeight, setDesignHeight] = useState<string>("");
+    const [designUnit, setDesignUnit] = useState<"cm" | "inch">("cm");
     const [productType, setProductType] = useState<string>("");
+    const [capType, setCapType] = useState<"" | "Constructed" | "Unconstructed">("");
+    const [capPlacement, setCapPlacement] = useState<"" | "Front" | "Side" | "Back">("");
     const [garmentType, setGarmentType] = useState<string>("");
     const [isNotSure, setIsNotSure] = useState(false);
     const [customProduct, setCustomProduct] = useState("");
@@ -69,7 +74,12 @@ export default function NewOrderPage() {
                     description: notes,
                     machineBrand: machine,
                     serviceType,
+                    designWidth: serviceType === "New Digitizing + Sample" ? Number(designWidth) : undefined,
+                    designHeight: serviceType === "New Digitizing + Sample" ? Number(designHeight) : undefined,
+                    designUnit: serviceType === "New Digitizing + Sample" ? designUnit : undefined,
                     productType,
+                    capType: productType === "Cap" ? capType : undefined,
+                    capPlacement: productType === "Cap" ? capPlacement : undefined,
                     garmentType: isNotSure ? "Not Sure" : garmentType,
                     isNotSure,
                     customProduct,
@@ -135,9 +145,21 @@ export default function NewOrderPage() {
             toast.error("Please select a service type");
             return;
         }
+        if (step === 3 && serviceType === "New Digitizing + Sample") {
+            const width = Number(designWidth);
+            const height = Number(designHeight);
+            if (!designWidth || !designHeight || Number.isNaN(width) || Number.isNaN(height) || width <= 0 || height <= 0) {
+                toast.error("Please enter valid width and height values");
+                return;
+            }
+        }
         if (step === 4) {
             if (!productType) {
                 toast.error("Please select a product type");
+                return;
+            }
+            if (productType === "Cap" && (!capType || !capPlacement)) {
+                toast.error("Please select cap type and placement");
                 return;
             }
             if (productType === "Garment" && !garmentType && !isNotSure && !customProduct) {
@@ -336,7 +358,14 @@ export default function NewOrderPage() {
                             ].map((s) => (
                                 <div
                                     key={s.id}
-                                    onClick={() => setServiceType(s.id)}
+                                    onClick={() => {
+                                        setServiceType(s.id);
+                                        if (s.id !== "New Digitizing + Sample") {
+                                            setDesignWidth("");
+                                            setDesignHeight("");
+                                            setDesignUnit("cm");
+                                        }
+                                    }}
                                     className={cn(
                                         "p-6 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4",
                                         serviceType === s.id ? "border-violet-600 bg-violet-600/10" : "border-border bg-accent/30 hover:border-violet-500/50"
@@ -369,6 +398,56 @@ export default function NewOrderPage() {
                                 </div>
                             ))}
                         </div>
+                        {serviceType === "New Digitizing + Sample" && (
+                            <div className="p-5 rounded-xl border border-violet-500/40 bg-violet-500/5 space-y-4">
+                                <p className="text-sm font-semibold text-foreground">Design Size (required)</p>
+                                <div className="flex gap-2">
+                                    {(["cm", "inch"] as const).map((unit) => (
+                                        <button
+                                            key={unit}
+                                            type="button"
+                                            onClick={() => setDesignUnit(unit)}
+                                            className={cn(
+                                                "px-4 py-2 rounded-lg text-sm border transition-colors",
+                                                designUnit === unit
+                                                    ? "bg-violet-600 text-white border-violet-600"
+                                                    : "bg-background text-muted-foreground border-border hover:border-violet-500/50"
+                                            )}
+                                        >
+                                            {unit}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="designWidth">Width ({designUnit})</Label>
+                                        <Input
+                                            id="designWidth"
+                                            type="number"
+                                            min="0"
+                                            step="0.1"
+                                            value={designWidth}
+                                            onChange={(e) => setDesignWidth(e.target.value)}
+                                            placeholder={`Enter width in ${designUnit}`}
+                                            className="bg-background border-border text-foreground"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="designHeight">Height ({designUnit})</Label>
+                                        <Input
+                                            id="designHeight"
+                                            type="number"
+                                            min="0"
+                                            step="0.1"
+                                            value={designHeight}
+                                            onChange={(e) => setDesignHeight(e.target.value)}
+                                            placeholder={`Enter height in ${designUnit}`}
+                                            className="bg-background border-border text-foreground"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="flex justify-between">
                             <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Previous</Button>
@@ -388,7 +467,13 @@ export default function NewOrderPage() {
                             {["Garment", "Cap", "Apron"].map(p => (
                                 <div
                                     key={p}
-                                    onClick={() => setProductType(p)}
+                                    onClick={() => {
+                                        setProductType(p);
+                                        if (p !== "Cap") {
+                                            setCapType("");
+                                            setCapPlacement("");
+                                        }
+                                    }}
                                     className={cn(
                                         "flex items-center gap-2 px-6 py-3 rounded-full border-2 transition-all cursor-pointer",
                                         productType === p ? "border-violet-600 bg-violet-600 text-white" : "border-border bg-accent/30 text-muted-foreground hover:border-violet-500/50"
@@ -504,6 +589,50 @@ export default function NewOrderPage() {
                                 </div>
                             </div>
                         )}
+                        {productType === "Cap" && (
+                            <div className="p-6 bg-card border border-border rounded-2xl space-y-5">
+                                <div className="space-y-3">
+                                    <Label className="text-muted-foreground text-sm font-semibold uppercase tracking-wider block">Cap Type</Label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {(["Constructed", "Unconstructed"] as const).map((type) => (
+                                            <button
+                                                key={type}
+                                                type="button"
+                                                onClick={() => setCapType(type)}
+                                                className={cn(
+                                                    "px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all",
+                                                    capType === type
+                                                        ? "border-violet-600 bg-violet-600 text-white"
+                                                        : "border-border bg-accent/30 text-muted-foreground hover:border-violet-500/50"
+                                                )}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="text-muted-foreground text-sm font-semibold uppercase tracking-wider block">Placement</Label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {(["Front", "Side", "Back"] as const).map((placement) => (
+                                            <button
+                                                key={placement}
+                                                type="button"
+                                                onClick={() => setCapPlacement(placement)}
+                                                className={cn(
+                                                    "px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all",
+                                                    capPlacement === placement
+                                                        ? "border-violet-600 bg-violet-600 text-white"
+                                                        : "border-border bg-accent/30 text-muted-foreground hover:border-violet-500/50"
+                                                )}
+                                            >
+                                                {placement}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="flex justify-between">
                             <Button variant="outline" onClick={prevStep} className="bg-zinc-100 dark:bg-black text-zinc-900 dark:text-white px-14 py-3 h-auto rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-all font-medium"><ChevronLeft className="h-4 w-4" /> Previous</Button>
@@ -545,7 +674,7 @@ export default function NewOrderPage() {
                                             priority === "NORMAL" ? "bg-accent text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                                         )}
                                     >
-                                        Normal
+                                        Normal: Typical 24 hours
                                     </button>
                                     <button
                                         type="button"
@@ -556,7 +685,7 @@ export default function NewOrderPage() {
                                         )}
                                     >
                                         <Rocket className="w-3 h-3" />
-                                        Urgent
+                                        Urgent: Same-day (subject to availability — not guaranteed)
                                     </button>
                                 </div>
                             </div>
@@ -565,10 +694,9 @@ export default function NewOrderPage() {
                                 <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg animate-in fade-in slide-in-from-top-2 duration-300">
                                     <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                                     <div className="space-y-1">
-                                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Urgent Processing Selected</p>
+                                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Urgent selected</p>
                                         <p className="text-xs text-amber-600/80 dark:text-amber-500/80 leading-relaxed">
-                                            Choosing urgent priority will place your order at the top of our queue.
-                                            <span className="font-bold"> Please note that this may result in a higher price quote.</span>
+                                            We&apos;ll confirm availability quickly. If not possible, we&apos;ll switch to normal automatically.
                                         </p>
                                     </div>
                                 </div>
