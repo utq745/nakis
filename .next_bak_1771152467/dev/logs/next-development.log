@@ -1,0 +1,102 @@
+[00:00:00.649] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:00.737] Server  LOG      ✓ Ready in 555ms
+[00:01:54.795] Server  ERROR    ⨯ Error: ENOENT: no such file or directory, open '/Users/utkusakallioglu/Documents/nakis/.next/dev/server/app/(en)/(dashboard)/dashboard/page/build-manifest.json'
+[00:01:55.194] Server  ERROR    ⨯ Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:01:55.380] Browser ERROR   uncaughtError: Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:46.613] Server  ERROR    ⨯ Error: ENOENT: no such file or directory, open '/Users/utkusakallioglu/Documents/nakis/.next/dev/server/app/(en)/(dashboard)/dashboard/page/build-manifest.json'
+[00:02:46.631] Server  ERROR    ⨯ Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:46.744] Browser ERROR   uncaughtError: Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:47.987] Server  ERROR    ⨯ Error: ENOENT: no such file or directory, open '/Users/utkusakallioglu/Documents/nakis/.next/dev/server/app/(en)/(dashboard)/dashboard/page/build-manifest.json'
+[00:02:48.006] Server  ERROR    ⨯ Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:48.098] Browser ERROR   uncaughtError: Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:48.344] Server  ERROR    ⨯ Error: ENOENT: no such file or directory, open '/Users/utkusakallioglu/Documents/nakis/.next/dev/server/app/(en)/(dashboard)/dashboard/page/build-manifest.json'
+[00:02:48.355] Server  ERROR    ⨯ Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js
+[00:02:48.445] Browser ERROR   uncaughtError: Error: Cannot find module '../chunks/ssr/[turbopack]_runtime.js'
+Require stack:
+- /Users/utkusakallioglu/Documents/nakis/.next/dev/server/pages/_document.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/require.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/load-components.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/utils.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/options.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/swc/index.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/config.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/next.js
+- /Users/utkusakallioglu/Documents/nakis/node_modules/next/dist/server/lib/start-server.js

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +11,13 @@ export function Process() {
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
     const [isCorporateModalOpen, setIsCorporateModalOpen] = useState(false);
     const [imageFallbacks, setImageFallbacks] = useState<Record<string, number>>({});
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
 
     const steps = [
         {
@@ -24,7 +31,7 @@ export function Process() {
             step: "02",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
-            image: "/images/landing/howitsworks-Real-Approval-Stitch.webp",
+            image: "/images/landing/What_You_Receive_Real_stitched_photos.webp",
             video: "/videos/landing/Real-Approval-Stitch.webm"
         },
         {

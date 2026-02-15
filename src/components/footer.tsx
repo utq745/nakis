@@ -17,12 +17,14 @@ export function Footer() {
                                 src="/images/approval-stich-logo.webp"
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
+                                sizes="240px"
                                 className="object-contain object-left dark:hidden"
                             />
                             <Image
                                 src="/images/approval-stich-logo-w.webp"
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
+                                sizes="240px"
                                 className="object-contain object-left hidden dark:block"
                             />
                         </div>

@@ -1,17 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
 export function WhatYouReceive() {
     const { t } = useLanguage();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
 
     const items = [
         {
             title: t.landing.receive.item3Title,
             desc: t.landing.receive.item3Desc,
-            image: "/images/landing/What_You_Receive_Real_stitched_photos.webp",
+            image: "/images/landing/rutgers-real-stitched.webp",
             alt: "Real stitched photos"
         },
         {
@@ -66,6 +74,8 @@ export function WhatYouReceive() {
                                         src={item.image}
                                         alt={item.alt || item.title || "Step Image"}
                                         fill
+                                        priority={index === 0}
+                                        loading={index === 0 ? "eager" : "lazy"}
                                         className="object-cover"
                                         sizes="(max-width: 768px) 100vw, 33vw"
                                     />

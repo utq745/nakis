@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -12,6 +13,13 @@ import { HeroBackground } from "@/components/landing/hero-background";
 
 export function AboutClient() {
     const { t, language } = useLanguage();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
 
     return (
         <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-inter)]">
@@ -40,9 +48,10 @@ export function AboutClient() {
                                 {t.aboutPage.hero.title2}
                             </h2>
 
-                            <p className="text-slate-600 dark:text-white/70 text-lg md:text-xl leading-relaxed max-w-[700px] mx-auto">
-                                {t.aboutPage.hero.description}
-                            </p>
+                            <p
+                                className="text-slate-600 dark:text-white/70 text-lg md:text-xl leading-relaxed max-w-[700px] mx-auto"
+                                dangerouslySetInnerHTML={{ __html: t.aboutPage.hero.description }}
+                            />
                         </motion.div>
                     </div>
                 </section>
@@ -110,9 +119,10 @@ export function AboutClient() {
                                 transition={{ duration: 0.5, delay: 0.2 }}
                                 className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6 mx-auto"
                             ></motion.div>
-                            <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
-                                {t.aboutPage.whoIsFor.description}
-                            </p>
+                            <p
+                                className="text-lg text-muted-foreground max-w-[600px] mx-auto"
+                                dangerouslySetInnerHTML={{ __html: t.aboutPage.whoIsFor.description }}
+                            />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
@@ -130,7 +140,7 @@ export function AboutClient() {
                                             {index === 0 ? 'precision_manufacturing' : index === 1 ? 'storefront' : index === 2 ? 'groups' : 'verified'}
                                         </span>
                                     </div>
-                                    <h3 className="font-bold text-foreground dark:text-white">{audience}</h3>
+                                    <h3 className="font-bold text-sm text-foreground dark:text-white">{audience}</h3>
                                 </motion.div>
                             ))}
                         </div>
@@ -141,9 +151,10 @@ export function AboutClient() {
                             viewport={{ once: true }}
                             className="bg-gradient-to-r from-primary/10 to-blue-400/10 dark:from-[#172136] dark:to-[#1e2d4a] rounded-2xl p-8 border border-primary/20 dark:border-white/10 text-center max-w-3xl mx-auto"
                         >
-                            <p className="text-lg text-foreground dark:text-white leading-relaxed font-medium">
-                                {t.aboutPage.whoIsFor.conclusion}
-                            </p>
+                            <p
+                                className="text-lg text-foreground dark:text-white leading-relaxed font-medium"
+                                dangerouslySetInnerHTML={{ __html: t.aboutPage.whoIsFor.conclusion }}
+                            />
                         </motion.div>
                     </div>
                 </section>
@@ -211,9 +222,10 @@ export function AboutClient() {
                                 transition={{ duration: 0.5, delay: 0.2 }}
                                 className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6 mx-auto"
                             ></motion.div>
-                            <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
-                                {t.aboutPage.whyMatters.description}
-                            </p>
+                            <p
+                                className="text-lg text-muted-foreground max-w-[600px] mx-auto"
+                                dangerouslySetInnerHTML={{ __html: t.aboutPage.whyMatters.description }}
+                            />
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -277,9 +289,10 @@ export function AboutClient() {
                                     transition={{ duration: 0.5, delay: 0.2 }}
                                     className="w-24 h-1.5 bg-primary dark:bg-white rounded-full opacity-40 mb-6"
                                 ></motion.div>
-                                <p className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed mb-6">
-                                    {t.aboutPage.noMachines.description}
-                                </p>
+                                <p
+                                    className="text-lg text-muted-foreground dark:text-white/80 leading-relaxed mb-6"
+                                    dangerouslySetInnerHTML={{ __html: t.aboutPage.noMachines.description }}
+                                />
                                 <ul className="space-y-4 mb-8">
                                     {t.aboutPage.noMachines.items.map((item: string, index: number) => (
                                         <li key={index} className="flex items-center gap-3">
@@ -330,9 +343,10 @@ export function AboutClient() {
                             <div className="relative z-10">
                                 <span className="material-symbols-outlined text-white/30 mb-6" style={{ fontSize: '80px' }}>rocket_launch</span>
                                 <h2 className="text-white mb-4 font-black">{t.aboutPage.finalCta.title}</h2>
-                                <p className="text-xl text-white/80 mb-8 max-w-[500px] mx-auto italic">
-                                    "{t.aboutPage.finalCta.tagline}"
-                                </p>
+                                <p
+                                    className="text-xl text-white/80 mb-8 max-w-[500px] mx-auto italic"
+                                    dangerouslySetInnerHTML={{ __html: `"${t.aboutPage.finalCta.tagline}"` }}
+                                />
                                 <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'}>
                                     <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl hover:shadow-2xl">
                                         <span className="material-symbols-outlined">arrow_forward</span>

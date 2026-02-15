@@ -78,6 +78,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
                                 priority
+                                sizes="256px"
                                 className="object-contain dark:hidden"
                             />
                             <Image
@@ -85,6 +86,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
                                 priority
+                                sizes="256px"
                                 className="object-contain hidden dark:block"
                             />
                         </div>
@@ -182,12 +184,14 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                         src="/images/approval-stich-logo.webp"
                                         alt="Approval Stitch - Real Stitched Approval Sample"
                                         fill
+                                        sizes="240px"
                                         className="object-contain dark:hidden"
                                     />
                                     <Image
                                         src="/images/approval-stich-logo-w.webp"
                                         alt="Approval Stitch - Real Stitched Approval Sample"
                                         fill
+                                        sizes="240px"
                                         className="object-contain hidden dark:block"
                                     />
                                 </div>

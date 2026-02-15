@@ -10,7 +10,7 @@ async function getOrderStats(userId: string, isAdmin: boolean) {
         prisma.order.count({ where }),
         prisma.order.count({ where: { ...where, status: { in: pendingStatuses } } }),
         prisma.order.count({ where: { ...where, status: "IN_PROGRESS" } }),
-        prisma.order.count({ where: { ...where, status: "COMPLETED" } }),
+        prisma.order.count({ where: { ...where, status: { in: ["COMPLETED", "DELIVERED"] } } }),
     ]);
 
     return { total, pending, inProgress, completed };
