@@ -25,7 +25,7 @@ export function Process() {
             title: t.landing.process.step1Title,
             desc: t.landing.process.step1Desc,
             image: "/images/landing/make-order.webp",
-            video: "/videos/landing/make-order-video.webm"
+            video: "/videos/landing/new-order.webm"
         },
         {
             step: "02",
