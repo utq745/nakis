@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import AboutContent from "./about-content";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+const AboutContent = dynamic(() => import("./about-content"), { ssr: false });
 
 export const metadata: Metadata = {
     title: "About Approval Stitch | 35+ Years of Embroidery Expertise",
@@ -60,7 +62,9 @@ export default function AboutPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
-            <AboutContent />
+            <Suspense fallback={null}>
+                <AboutContent />
+            </Suspense>
         </>
     );
 }

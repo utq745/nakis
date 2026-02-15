@@ -1,7 +1,9 @@
 
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/get-dictionary";
-import { AboutClient } from "./_components/about-client";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+const AboutClient = dynamic(() => import("./_components/about-client").then((mod) => mod.AboutClient), { ssr: false });
 
 export async function generateMetadata(): Promise<Metadata> {
     const dict = getDictionary('tr');
@@ -51,7 +53,9 @@ export default function AboutPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <AboutClient />
+            <Suspense fallback={null}>
+                <AboutClient />
+            </Suspense>
         </>
     );
 }

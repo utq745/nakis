@@ -29,9 +29,10 @@ export function Footer() {
                             />
                         </div>
                     </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                        {t.footer.desc}
-                    </p>
+                    <p
+                        className="text-muted-foreground text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: t.footer.desc }}
+                    />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:flex gap-12">
                     <div className="flex flex-col gap-4">
@@ -64,24 +65,6 @@ export function Footer() {
                     <p className="text-muted-foreground text-xs">
                         Designed & Developed by <a href="https://www.utkusakallioglu.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Utku</a>.
                     </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <img
-                        src="/iyzico_colored.svg"
-                        alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
-                        width={80}
-                        height={34}
-                        className="h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity dark:hidden"
-                        loading="lazy"
-                    />
-                    <img
-                        src="/iyzico_white.svg"
-                        alt={language === 'tr' ? 'iyzico ile öde' : 'Pay with iyzico'}
-                        width={80}
-                        height={34}
-                        className="hidden dark:block h-[34px] w-auto opacity-90 hover:opacity-100 transition-opacity"
-                        loading="lazy"
-                    />
                 </div>
             </div>
         </footer>

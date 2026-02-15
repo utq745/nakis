@@ -8,6 +8,7 @@ import { Process } from "@/components/landing/process";
 import { WhatYouReceive } from "@/components/landing/what-you-receive";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { HeroBackground } from "@/components/landing/hero-background";
 
 export default function AboutContent() {
@@ -193,11 +194,13 @@ export default function AboutContent() {
                                 <div className="absolute -top-4 -left-4 w-24 h-24 border-2 border-primary/20 rounded-2xl" />
                                 <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/10 rounded-2xl" />
                                 <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
-                                    <img
+                                    <Image
                                         src="/images/Stitching-machine.webp"
                                         alt="Professional Tajima embroidery machine used for stitch approval testing at Approval Stitch"
+                                        width={1200}
+                                        height={800}
                                         className="w-full h-auto object-cover"
-                                        loading="lazy"
+                                        priority
                                     />
                                 </div>
                             </motion.div>

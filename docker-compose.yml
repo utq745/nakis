@@ -5,6 +5,10 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
     ports:
       - "80:3000"
     volumes:
@@ -14,29 +18,21 @@ services:
       - ./uploads:/app/uploads
       # Projeye özel diğer resimler/assetlar varsa onları da buraya ekleyebilirsiniz
       - ./public/images:/app/public/images
-    networks:
-      - cloudflare
+    stop_grace_period: 30s
     # Health check - container sağlığını izle
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ > /dev/null || exit 1"]
       interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    # Kaynak limitleri
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 512M
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Docker Compose (Swarm değil) için çalışan kaynak limitleri
+    mem_limit: 2g
+    mem_reservation: 512m
+    cpus: 1.0
     # Logging
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-
-networks:
-  cloudflare:
-    external: true
