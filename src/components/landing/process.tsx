@@ -39,7 +39,7 @@ export function Process() {
             step: "03",
             title: t.landing.process.step3Title,
             desc: t.landing.process.step3Desc,
-            image: "/images/landing/Approval-Package.webp?v=2",
+            image: "/images/landing/approval-package.webp",
             isImagePopup: true
         },
         {
@@ -274,43 +274,45 @@ export function Process() {
             {/* Image Modal */}
             <AnimatePresence>
                 {selectedImage && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedImage(null)}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                            className="absolute inset-0 bg-black/90 backdrop-blur-md"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-4xl bg-white dark:bg-[#1c2637] rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row"
+                            className="relative w-full max-w-6xl bg-white dark:bg-[#1c2637] rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
                         >
                             <button
                                 onClick={() => setSelectedImage(null)}
-                                className="absolute top-4 right-4 z-20 size-10 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-white flex items-center justify-center backdrop-blur-md transition-colors"
+                                className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
                             >
                                 <span className="material-symbols-outlined">close</span>
                             </button>
 
-                            <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-0">
+                            <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[85vh]">
                                 <img
                                     src={selectedImage.src}
                                     alt={selectedImage.title}
-                                    className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
+                                    className="max-w-full max-h-full object-contain"
                                 />
                             </div>
 
-                            <div className="w-full md:w-[350px] p-8 flex flex-col justify-center gap-4 bg-white dark:bg-[#1c2637] border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5">
-                                <div>
-                                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">HOW IT WORKS</p>
-                                    <h3 className="text-2xl font-black text-foreground dark:text-white leading-tight">{selectedImage.title}</h3>
+                            <div className="w-full p-6 md:p-8 flex items-center justify-between gap-6 bg-white dark:bg-[#1c2637] border-t border-slate-100 dark:border-white/5">
+                                <div className="flex-1">
+                                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">HOW IT WORKS</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-foreground dark:text-white leading-tight">{selectedImage.title}</h3>
                                 </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    {t.landing.backgroundCards?.description || "Visual preview of your embroidery production results."}
-                                </p>
+                                <div className="hidden md:block max-w-sm">
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {t.landing.backgroundCards?.description || "Visual preview of your embroidery production results."}
+                                    </p>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
