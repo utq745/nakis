@@ -1427,6 +1427,7 @@ import sys
 import os
 import json
 from io import BytesIO
+from collections import deque
 
 try:
     from PIL import Image, ImageChops, ImageStat
@@ -1463,16 +1464,89 @@ def process_and_trim(img_bytes):
     else:
         img = img.convert("RGB")
     
-    # Trim white/light-gray background + near-white empty regions.
-    bg_color = _sample_bg_color(img)
-    bg = Image.new("RGB", img.size, bg_color)
-    diff = ImageChops.difference(img, bg).convert("L")
-    bg_mask = diff.point(lambda x: 255 if x > 12 else 0, "L")
+    # Robust trim for noisy PDF backgrounds:
+    # 1) Build a binary "ink" mask on a downscaled image
+    # 2) Keep connected components and union nearby ones (logo + separated text)
+    # 3) Map bbox back to original resolution
+    scale = 4 if min(img.size) >= 400 else 2
+    sw = max(1, img.width // scale)
+    sh = max(1, img.height // scale)
+    small = img.resize((sw, sh), Image.Resampling.BILINEAR)
+    px = small.load()
 
-    gray = img.convert('L')
-    ink_mask = gray.point(lambda x: 255 if x < 245 else 0, 'L')
-    combined = ImageChops.lighter(bg_mask, ink_mask)
-    bbox = combined.getbbox()
+    mask = [[0] * sw for _ in range(sh)]
+    for y in range(sh):
+        for x in range(sw):
+            r, g, b = px[x, y]
+            l = 0.299 * r + 0.587 * g + 0.114 * b
+            sat = max(r, g, b) - min(r, g, b)
+            if l < 240 or sat > 18:
+                mask[y][x] = 1
+
+    visited = [[False] * sw for _ in range(sh)]
+    comps = []
+    for y in range(sh):
+        for x in range(sw):
+            if not mask[y][x] or visited[y][x]:
+                continue
+            q = deque([(x, y)])
+            visited[y][x] = True
+            area = 0
+            minx = maxx = x
+            miny = maxy = y
+            while q:
+                cx, cy = q.popleft()
+                area += 1
+                if cx < minx: minx = cx
+                if cx > maxx: maxx = cx
+                if cy < miny: miny = cy
+                if cy > maxy: maxy = cy
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if 0 <= nx < sw and 0 <= ny < sh and mask[ny][nx] and not visited[ny][nx]:
+                        visited[ny][nx] = True
+                        q.append((nx, ny))
+
+            bw = maxx - minx + 1
+            bh = maxy - miny + 1
+            if area < 30:
+                continue
+            # Drop 1px-wide vertical noise lines.
+            if bw <= 1 and bh > 20:
+                continue
+            comps.append((area, minx, miny, maxx, maxy))
+
+    bbox = None
+    if comps:
+        comps.sort(reverse=True, key=lambda c: c[0])
+        _, ux0, uy0, ux1, uy1 = comps[0]
+        used = {0}
+        gap = 35
+        changed = True
+        while changed:
+            changed = False
+            for i, (_, x0, y0, x1, y1) in enumerate(comps):
+                if i in used:
+                    continue
+                if x0 <= ux1 + gap and x1 >= ux0 - gap and y0 <= uy1 + gap and y1 >= uy0 - gap:
+                    used.add(i)
+                    changed = True
+                    ux0 = min(ux0, x0)
+                    uy0 = min(uy0, y0)
+                    ux1 = max(ux1, x1)
+                    uy1 = max(uy1, y1)
+        bbox = (ux0 * scale, uy0 * scale, (ux1 + 1) * scale, (uy1 + 1) * scale)
+
+    # Fallback to previous method if no component could be detected
+    if not bbox:
+        bg_color = _sample_bg_color(img)
+        bg = Image.new("RGB", img.size, bg_color)
+        diff = ImageChops.difference(img, bg).convert("L")
+        bg_mask = diff.point(lambda x: 255 if x > 12 else 0, "L")
+
+        gray = img.convert('L')
+        ink_mask = gray.point(lambda x: 255 if x < 245 else 0, 'L')
+        combined = ImageChops.lighter(bg_mask, ink_mask)
+        bbox = combined.getbbox()
     
     if bbox:
         # Add minimal padding for anti-aliased edges.
