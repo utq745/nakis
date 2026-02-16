@@ -5,8 +5,19 @@ import fs from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import { processWilcomPdf } from "@/lib/wilcom-parser";
-import { PutObjectCommand, DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectsCommand, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client, R2_BUCKET_NAME } from "@/lib/s3";
+
+async function streamToBuffer(stream: unknown): Promise<Buffer> {
+    if (!stream || typeof (stream as AsyncIterable<Uint8Array>)[Symbol.asyncIterator] !== "function") {
+        throw new Error("Unsupported stream body");
+    }
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream as AsyncIterable<Uint8Array>) {
+        chunks.push(chunk instanceof Uint8Array ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
+}
 
 export async function POST(
     req: Request,
@@ -41,25 +52,29 @@ export async function POST(
             include: {
                 files: {
                     where: {
-                        type: "preview",
+                        type: { in: ["original", "preview"] },
                         OR: [
                             { name: { endsWith: ".png" } },
                             { name: { endsWith: ".jpg" } },
                             { name: { endsWith: ".jpeg" } },
+                            { name: { endsWith: ".webp" } },
                             { name: { endsWith: ".PNG" } },
                             { name: { endsWith: ".JPG" } },
                             { name: { endsWith: ".JPEG" } },
+                            { name: { endsWith: ".WEBP" } },
                         ]
                     },
                     orderBy: {
                         createdAt: "desc" // Use the latest preview
                     },
-                    take: 1
+                    take: 20
                 }
             }
         });
 
-        const artworkFile = order?.files?.[0];
+        const artworkFile =
+            order?.files?.find((f) => f.type === "original") ||
+            order?.files?.find((f) => f.type === "preview");
         let artworkPath: string | null = null;
         if (artworkFile) {
             const normalizedName = artworkFile.url.includes("/")
@@ -68,11 +83,32 @@ export async function POST(
 
             const candidates = [
                 path.join(process.cwd(), "uploads", orderId, "preview", normalizedName),
+                path.join(process.cwd(), "uploads", orderId, "original", normalizedName),
                 path.join(process.cwd(), "uploads", artworkFile.url),
                 path.join(process.cwd(), "public", artworkFile.url),
             ];
 
             artworkPath = candidates.find((candidate) => existsSync(candidate)) || null;
+
+            // If not found locally, pull from R2 (url field stores key for new uploads)
+            if (!artworkPath && artworkFile.url) {
+                try {
+                    const r2Object = await s3Client.send(new GetObjectCommand({
+                        Bucket: R2_BUCKET_NAME,
+                        Key: artworkFile.url,
+                    }));
+
+                    if (r2Object.Body) {
+                        const ext = path.extname(artworkFile.name || "") || ".png";
+                        const localArtworkPath = path.join(uploadsDir, `customer_artwork${ext}`);
+                        const artworkBuffer = await streamToBuffer(r2Object.Body);
+                        await fs.writeFile(localArtworkPath, artworkBuffer);
+                        artworkPath = localArtworkPath;
+                    }
+                } catch (err) {
+                    console.error("[WILCOM_ARTWORK_R2_FETCH_ERROR]", err);
+                }
+            }
         }
 
         // Process the PDF
@@ -173,10 +209,11 @@ export async function POST(
         // Note: Status changes are now handled explicitly via the UI/workflow, not automatically
 
         return NextResponse.json({ success: true, data: wilcomData });
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         console.error("[WILCOM_POST]", error);
         return NextResponse.json(
-            { error: `Internal Server Error [v2]: ${error.message || 'Unknown error'}` },
+            { error: `Internal Server Error [v2]: ${message}` },
             { status: 500 }
         );
     }
