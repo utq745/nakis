@@ -223,3 +223,127 @@ export async function sendDeleteAccountEmail(
         });
     }
 }
+
+// ────────────────────────────────────────────────
+// Welcome Email — sent when a new user registers
+// ────────────────────────────────────────────────
+
+export async function sendWelcomeEmail(
+    to: string,
+    name: string,
+    locale: "en" | "tr"
+) {
+    const baseUrl = process.env.AUTH_URL || "https://www.approvalstitch.com";
+
+    if (locale === "tr") {
+        await send({
+            to,
+            subject: "Hoş Geldiniz! — Approval Stitch",
+            html: wrap(`
+                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Hoş Geldiniz, ${name}! 🎉</h2>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    Approval Stitch ailesine katıldığınız için teşekkür ederiz.
+                </p>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    Artık profesyonel nakış dijitalleştirme hizmetlerimizden yararlanabilir, siparişlerinizi kolayca takip edebilirsiniz.
+                </p>
+                <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+                    Hemen ilk siparişinizi oluşturmaya başlayın!
+                </p>
+                <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
+                    <a href="${baseUrl}/tr/siparisler/new" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+                        İlk Siparişi Oluştur →
+                    </a>
+                </td></tr></table>
+            `),
+        });
+    } else {
+        await send({
+            to,
+            subject: "Welcome! — Approval Stitch",
+            html: wrap(`
+                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Welcome, ${name}! 🎉</h2>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    Thank you for joining Approval Stitch.
+                </p>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    You can now access our professional embroidery digitizing services and easily track your orders.
+                </p>
+                <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+                    Start creating your first order now!
+                </p>
+                <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
+                    <a href="${baseUrl}/orders/new" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+                        Create First Order →
+                    </a>
+                </td></tr></table>
+            `),
+        });
+    }
+}
+
+// ────────────────────────────────────────────────
+// Password Reset Email — token valid for 15 min
+// ────────────────────────────────────────────────
+
+export async function sendPasswordResetEmail(
+    to: string,
+    resetUrl: string,
+    locale: "en" | "tr"
+) {
+    if (locale === "tr") {
+        await send({
+            to,
+            subject: "Şifre Sıfırlama — Approval Stitch",
+            html: wrap(`
+                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Şifre Sıfırlama Talebi</h2>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    Merhaba,<br>
+                    Hesabınız için bir şifre sıfırlama talebi aldık. Şifrenizi sıfırlamak için aşağıdaki butona tıklayın:
+                </p>
+                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
+                    <a href="${resetUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+                        Şifremi Sıfırla →
+                    </a>
+                </td></tr></table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#fef3c7;border-radius:12px;">
+                    <tr><td style="padding:16px 20px;">
+                        <p style="margin:0;color:#92400e;font-size:13px;line-height:1.6;">
+                            ⏱ Bu bağlantı <strong>15 dakika</strong> geçerlidir. Süre dolduktan sonra yeni bir sıfırlama talebi oluşturmanız gerekecektir.
+                        </p>
+                    </td></tr>
+                </table>
+                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
+                    Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Şifreniz değişmeyecektir.
+                </p>
+            `),
+        });
+    } else {
+        await send({
+            to,
+            subject: "Password Reset — Approval Stitch",
+            html: wrap(`
+                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Password Reset Request</h2>
+                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
+                    Hello,<br>
+                    We received a password reset request for your account. Click the button below to reset your password:
+                </p>
+                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
+                    <a href="${resetUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+                        Reset My Password →
+                    </a>
+                </td></tr></table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#fef3c7;border-radius:12px;">
+                    <tr><td style="padding:16px 20px;">
+                        <p style="margin:0;color:#92400e;font-size:13px;line-height:1.6;">
+                            ⏱ This link is valid for <strong>15 minutes</strong>. After it expires, you'll need to request a new reset link.
+                        </p>
+                    </td></tr>
+                </table>
+                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
+                    If you did not request this, please ignore this email. Your password will remain unchanged.
+                </p>
+            `),
+        });
+    }
+}

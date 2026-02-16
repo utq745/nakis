@@ -18,7 +18,8 @@ export async function POST(request: Request) {
             );
         }
 
-        const { email } = await request.json();
+        const { email, language } = await request.json();
+        const locale = language === "tr" ? "tr" : "en";
 
         if (!email) {
             return NextResponse.json(
@@ -34,13 +35,15 @@ export async function POST(request: Request) {
         // Always return success to prevent email enumeration attacks
         if (!user) {
             return NextResponse.json({
-                message: "If an account exists with this email, a password reset link has been sent.",
+                message: locale === "tr"
+                    ? "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
+                    : "If an account exists with this email, a password reset link has been sent.",
             });
         }
 
         // Generate reset token
         const resetToken = crypto.randomBytes(32).toString("hex");
-        const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
         // Save token to database
         await prisma.user.update({
@@ -51,15 +54,20 @@ export async function POST(request: Request) {
             },
         });
 
-        // TODO: Send email with reset link
-        // For now, log the token (in production, send via email service like Resend)
-        const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${resetToken}`;
-        console.log("Password reset URL:", resetUrl);
+        // Build reset URL based on language
+        const baseUrl = process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const resetUrl = locale === "tr"
+            ? `${baseUrl}/tr/sifre-sifirla?token=${resetToken}`
+            : `${baseUrl}/reset-password?token=${resetToken}`;
+
+        // Send password reset email
+        const { sendPasswordResetEmail } = await import("@/lib/mail");
+        await sendPasswordResetEmail(user.email!, resetUrl, locale);
 
         return NextResponse.json({
-            message: "If an account exists with this email, a password reset link has been sent.",
-            // Remove this in production - only for development
-            ...(process.env.NODE_ENV === "development" && { resetUrl }),
+            message: locale === "tr"
+                ? "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
+                : "If an account exists with this email, a password reset link has been sent.",
         });
     } catch (error) {
         console.error("Forgot password error:", error);

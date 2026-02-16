@@ -65,6 +65,13 @@ export async function POST(request: Request) {
             },
         });
 
+        // Send welcome email (fire-and-forget — don't block registration)
+        import("@/lib/mail").then(({ sendWelcomeEmail }) => {
+            sendWelcomeEmail(user.email!, user.name || "User", selectedLanguage).catch((err) =>
+                console.error("Welcome email failed:", err)
+            );
+        });
+
         return NextResponse.json(
             {
                 message: selectedLanguage === "tr" ? "Kayıt başarılı" : "Registration successful",
