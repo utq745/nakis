@@ -1415,7 +1415,7 @@ export async function processWilcomPdf(
     let artworkImageBase64: string | undefined;
 
     try {
-        const { execSync } = await import('child_process');
+        const { execFileSync } = await import('child_process');
         const { writeFileSync, unlinkSync, existsSync } = await import('fs');
         const { tmpdir } = await import('os');
         const tempScriptPath = join(tmpdir(), `extract_images_${Date.now()}.py`);
@@ -1429,10 +1429,27 @@ import json
 from io import BytesIO
 
 try:
-    from PIL import Image, ImageOps
+    from PIL import Image, ImageChops, ImageStat
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
+
+def _sample_bg_color(img):
+    # Estimate background from corners to remove white/light-gray canvas.
+    w, h = img.size
+    s = max(6, min(w, h) // 50)
+    boxes = [
+        (0, 0, s, s),
+        (max(0, w - s), 0, w, s),
+        (0, max(0, h - s), s, h),
+        (max(0, w - s), max(0, h - s), w, h),
+    ]
+    colors = []
+    for b in boxes:
+        stat = ImageStat.Stat(img.crop(b))
+        colors.append(tuple(int(v) for v in stat.mean[:3]))
+    colors.sort(key=lambda c: c[0] + c[1] + c[2])
+    return colors[len(colors) // 2]
 
 def process_and_trim(img_bytes):
     if not HAS_PIL:
@@ -1446,21 +1463,25 @@ def process_and_trim(img_bytes):
     else:
         img = img.convert("RGB")
     
-    # Trim whitespace
+    # Trim white/light-gray background + near-white empty regions.
+    bg_color = _sample_bg_color(img)
+    bg = Image.new("RGB", img.size, bg_color)
+    diff = ImageChops.difference(img, bg).convert("L")
+    bg_mask = diff.point(lambda x: 255 if x > 12 else 0, "L")
+
     gray = img.convert('L')
-    threshold = 250
-    bw = gray.point(lambda x: 0 if x < threshold else 255, '1')
-    bw = ImageOps.invert(bw.convert('L'))
-    bbox = bw.getbbox()
+    ink_mask = gray.point(lambda x: 255 if x < 245 else 0, 'L')
+    combined = ImageChops.lighter(bg_mask, ink_mask)
+    bbox = combined.getbbox()
     
     if bbox:
-        # Add 2px padding
+        # Add minimal padding for anti-aliased edges.
         w, h = img.size
         new_bbox = (
-            max(0, bbox[0] - 2),
-            max(0, bbox[1] - 2),
-            min(w, bbox[2] + 2),
-            min(h, bbox[3] + 2)
+            max(0, bbox[0] - 1),
+            max(0, bbox[1] - 1),
+            min(w, bbox[2] + 1),
+            min(h, bbox[3] + 1)
         )
         img = img.crop(new_bbox)
     
@@ -1608,8 +1629,9 @@ print(json.dumps(results))
 `;
 
         writeFileSync(tempScriptPath, pythonScript);
-        const artworkArg = customerArtworkPath ? `"${customerArtworkPath}"` : '""';
-        const result = execSync(`python3 "${tempScriptPath}" "${wilcomPdfPath}" ${artworkArg}`, {
+        const pythonArgs = [tempScriptPath, wilcomPdfPath];
+        if (customerArtworkPath) pythonArgs.push(customerArtworkPath);
+        const result = execFileSync('python3', pythonArgs, {
             encoding: 'utf-8',
             maxBuffer: 50 * 1024 * 1024
         });
