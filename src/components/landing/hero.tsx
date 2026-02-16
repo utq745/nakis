@@ -55,31 +55,16 @@ export function Hero() {
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-wrap gap-4">
                                 {isLoggedIn ? (
-                                    <>
-                                        {!isAdmin ? (
-                                            <Link href={newOrderUrl}>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                                >
-                                                    {t.landing.hero.uploadBtn}
-                                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                                </motion.button>
-                                            </Link>
-                                        ) : (
-                                            <Link href={panelUrl}>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                                >
-                                                    {t.header.panel}
-                                                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                                </motion.button>
-                                            </Link>
-                                        )}
-                                    </>
+                                    <Link href={newOrderUrl}>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                        >
+                                            {t.landing.hero.uploadBtn}
+                                            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                        </motion.button>
+                                    </Link>
                                 ) : (
                                     <Link href={loginUrl}>
                                         <motion.button
@@ -92,15 +77,6 @@ export function Hero() {
                                         </motion.button>
                                     </Link>
                                 )}
-                                <Link href="#samples">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="px-8 h-14 bg-white dark:bg-white/5 backdrop-blur-md text-primary dark:text-white border border-black/5 dark:border-white/20 rounded-xl font-bold text-lg hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm"
-                                    >
-                                        {t.landing.hero.pricingBtn}
-                                    </motion.button>
-                                </Link>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-6 pt-2">

@@ -115,40 +115,39 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                             </Link>
                         )}
 
-                        <button
-                            onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
-                            className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none ${isAtTop
-                                ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
-                                : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
-                                }`}
-                            aria-label="Toggle language"
-                        >
-                            {/* The sliding background */}
-                            <motion.div
-                                className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
-                                initial={false}
-                                animate={{
-                                    x: language === 'tr' ? 28 : 0,
-                                }}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 500,
-                                    damping: 30,
-                                }}
-                            />
-
-                            {/* Labels container */}
-                            <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
-                                <div className="flex items-center justify-center h-full">
-                                    <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
+                        {/* Desktop Toggles */}
+                        <div className="hidden lg:flex items-center gap-2">
+                            <button
+                                onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                                className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none ${isAtTop
+                                    ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
+                                    : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
+                                    }`}
+                                aria-label="Toggle language"
+                            >
+                                <motion.div
+                                    className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
+                                    initial={false}
+                                    animate={{
+                                        x: language === 'tr' ? 28 : 0,
+                                    }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 30,
+                                    }}
+                                />
+                                <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                                    <div className="flex items-center justify-center h-full">
+                                        <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
+                                    </div>
+                                    <div className="flex items-center justify-center h-full">
+                                        <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
+                                    </div>
                                 </div>
-                                <div className="flex items-center justify-center h-full">
-                                    <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
-                                </div>
-                            </div>
-                        </button>
-
-                        <ThemeToggle isAtTop={isAtTop} />
+                            </button>
+                            <ThemeToggle isAtTop={isAtTop} />
+                        </div>
 
                         {/* Mobile Menu Button */}
                         <button
@@ -167,7 +166,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
 
             {/* Mobile Menu Dialog */}
             {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 lg:hidden">
+                <div className="fixed inset-0 z-50 lg:hidden text-center">
                     {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -182,14 +181,14 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 <div className="relative h-14 w-60">
                                     <Image
                                         src="/images/approval-stich-logo.webp"
-                                        alt="Approval Stitch - Real Stitched Approval Sample"
+                                        alt="Approval Stitch"
                                         fill
                                         sizes="240px"
                                         className="object-contain dark:hidden"
                                     />
                                     <Image
                                         src="/images/approval-stich-logo-w.webp"
-                                        alt="Approval Stitch - Real Stitched Approval Sample"
+                                        alt="Approval Stitch"
                                         fill
                                         sizes="240px"
                                         className="object-contain hidden dark:block"
@@ -199,15 +198,14 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="size-10 flex items-center justify-center rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] transition-colors"
-                                aria-label="Close menu"
                             >
                                 <span className="material-symbols-outlined text-[#111318] dark:text-white">close</span>
                             </button>
                         </div>
 
-                        {/* Navigation Links - Centered */}
-                        <nav className="flex-1 flex items-center justify-center px-6">
-                            <div className="flex flex-col gap-1 w-full">
+                        {/* Navigation Links */}
+                        <nav className="flex-1 flex flex-col justify-center px-6 overflow-y-auto">
+                            <div className="flex flex-col gap-2 w-full">
                                 <Link
                                     href={language === 'tr' ? '/tr' : '/'}
                                     onClick={() => setMobileMenuOpen(false)}
@@ -222,7 +220,6 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 >
                                     {language === 'tr' ? 'Hakkımızda' : 'About'}
                                 </Link>
-
                                 <Link
                                     href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}
                                     onClick={() => setMobileMenuOpen(false)}
@@ -238,12 +235,12 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                     {t.header.contact}
                                 </Link>
 
-                                <div className="my-2 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
+                                <div className="my-4 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
 
                                 <Link
                                     href={isLoggedIn ? panelUrl : loginUrl}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="px-4 py-2 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-lg transition-colors font-bold text-sm"
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
                                 >
                                     {isLoggedIn ? t.header.panel : t.header.signIn}
                                 </Link>
@@ -251,18 +248,39 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                     <Link
                                         href={isLoggedIn ? newOrderUrl : registerUrl}
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg transition-colors font-bold text-center text-sm shadow-lg"
+                                        className="px-6 py-4 bg-primary text-white hover:bg-primary-dark rounded-xl transition-all font-bold text-center text-lg shadow-lg active:scale-95"
                                     >
                                         {t.header.startOrder}
                                     </Link>
                                 )}
+
+                                <div className="my-6 border-t border-[#e5e7eb] dark:border-[#2a3441]" />
+
+                                {/* Mobile Toggles */}
+                                <div className="flex items-center justify-center gap-8">
+                                    <button
+                                        onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                                        className="relative flex items-center w-[80px] h-10 rounded-full p-1 bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-white/10 focus:outline-none"
+                                    >
+                                        <motion.div
+                                            className="absolute left-1 h-8 w-9 rounded-full z-0 bg-white shadow-sm"
+                                            animate={{ x: language === 'tr' ? 36 : 0 }}
+                                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                        />
+                                        <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                                            <span className={`text-xs font-black text-center transition-colors ${language === 'en' ? 'text-primary' : 'text-zinc-500'}`}>EN</span>
+                                            <span className={`text-xs font-black text-center transition-colors ${language === 'tr' ? 'text-primary' : 'text-zinc-500'}`}>TR</span>
+                                        </div>
+                                    </button>
+                                    <ThemeToggle isAtTop={false} />
+                                </div>
                             </div>
                         </nav>
 
-                        {/* Copyright - Bottom */}
-                        <div className="pb-[3vh] px-6 text-center border-t border-[#e5e7eb] dark:border-[#2a3441] pt-6">
+                        {/* Copyright */}
+                        <div className="p-8 text-center border-t border-[#e5e7eb] dark:border-[#2a3441]">
                             <p className="text-xs text-[#616f89] dark:text-gray-500">
-                                © {new Date().getFullYear()} Approval Stitch. All rights reserved.
+                                © {new Date().getFullYear()} Approval Stitch.
                             </p>
                         </div>
                     </div>
