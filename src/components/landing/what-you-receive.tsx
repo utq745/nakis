@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
-const ASSET_VERSION = "20260216";
+const ASSET_VERSION = "20260217";
 
 export function WhatYouReceive() {
     const { t } = useLanguage();
@@ -22,20 +22,20 @@ export function WhatYouReceive() {
         {
             title: t.landing.receive.item3Title,
             desc: t.landing.receive.item3Desc,
-            image: `/images/landing/rutgers-real-stitched.webp?v=${ASSET_VERSION}`,
+            image: "/images/landing/rutgers-real-stitched.webp",
             alt: "Real stitched photos"
         },
         {
             title: t.landing.receive.item1Title,
             desc: t.landing.receive.item1Desc,
-            image: `/images/landing/What_You_Receive_Approval_card_customer_version.webp?v=${ASSET_VERSION}`,
+            image: "/images/landing/What_You_Receive_Approval_card_customer_version.webp",
             alt: "Approval Card (Client Version)",
             isImagePopup: true
         },
         {
             title: t.landing.receive.item2Title,
             desc: t.landing.receive.item2Desc,
-            image: `/images/landing/What_You_Receive_Approval_card_operator_version.webp?v=${ASSET_VERSION}`,
+            image: "/images/landing/What_You_Receive_Approval_card_operator_version.webp",
             alt: "Approval Card (Production / Operator Version)",
             isImagePopup: true
         }

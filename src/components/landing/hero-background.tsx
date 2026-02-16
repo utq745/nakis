@@ -4,6 +4,8 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motio
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
+
+const ASSET_VERSION = "20260217";
 import { useLanguage } from "@/components/providers/language-provider";
 
 interface InteractiveApprovalCardProps {
@@ -152,14 +154,14 @@ function HeroBackgroundContent() {
 
                 {/* Interactive Background Cards */}
                 <InteractiveApprovalCard
-                    src="/images/hero/customer_approval_card.webp"
+                    src={`/images/hero/customer_approval_card.webp?v=${ASSET_VERSION}`}
                     label={t.landing.backgroundCards.clientLabel}
                     side="left"
                     rotate={-15}
                     onOpenModal={openModal}
                 />
                 <InteractiveApprovalCard
-                    src="/images/hero/operator_approval_card.webp"
+                    src={`/images/hero/operator_approval_card.webp?v=${ASSET_VERSION}`}
                     label={t.landing.backgroundCards.operatorLabel}
                     side="right"
                     rotate={15}
@@ -169,7 +171,7 @@ function HeroBackgroundContent() {
                 {/* Barudan Machine Image (Bottom Right) */}
                 <div className="hidden xl:block absolute right-[1%] bottom-[1%] w-[300px] opacity-30 z-0 pointer-events-none">
                     <img
-                        src="/images/hero/hero-barudan.webp"
+                        src={`/images/hero/hero-barudan.webp?v=${ASSET_VERSION}`}
                         alt=""
                         className="w-full h-auto"
                     />
