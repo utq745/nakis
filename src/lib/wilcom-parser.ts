@@ -1406,6 +1406,7 @@ import base64
 import sys
 import os
 import json
+import math
 from io import BytesIO
 from collections import deque
 
@@ -1432,7 +1433,7 @@ def _sample_bg_color(img):
     colors.sort(key=lambda c: c[0] + c[1] + c[2])
     return colors[len(colors) // 2]
 
-def process_and_trim(img_bytes):
+def process_and_trim(img_bytes, expected_ratio=None):
     if not HAS_PIL:
         return base64.b64encode(img_bytes).decode()
     
@@ -1444,6 +1445,13 @@ def process_and_trim(img_bytes):
     else:
         img = img.convert("RGB")
     
+    image_ratio = img.width / float(max(1, img.height))
+    use_component_mode = (
+        expected_ratio is not None
+        and expected_ratio > 0
+        and (image_ratio < expected_ratio * 0.65 or image_ratio > expected_ratio * 1.45)
+    )
+
     # Robust trim for noisy PDF backgrounds:
     # 1) Build a binary "ink" mask on a downscaled image
     # 2) Keep connected components and union nearby ones (logo + separated text)
@@ -1497,24 +1505,69 @@ def process_and_trim(img_bytes):
 
     bbox = None
     if comps:
-        comps.sort(reverse=True, key=lambda c: c[0])
-        _, ux0, uy0, ux1, uy1 = comps[0]
-        used = {0}
-        gap = 35
-        changed = True
-        while changed:
-            changed = False
-            for i, (_, x0, y0, x1, y1) in enumerate(comps):
-                if i in used:
-                    continue
-                if x0 <= ux1 + gap and x1 >= ux0 - gap and y0 <= uy1 + gap and y1 >= uy0 - gap:
-                    used.add(i)
-                    changed = True
-                    ux0 = min(ux0, x0)
-                    uy0 = min(uy0, y0)
-                    ux1 = max(ux1, x1)
-                    uy1 = max(uy1, y1)
+        # Prefer components that do not touch page borders.
+        border_margin = 2
+        inner = []
+        touching = []
+        for c in comps:
+            _, x0, y0, x1, y1 = c
+            touches = x0 <= border_margin or y0 <= border_margin or x1 >= (sw - 1 - border_margin) or y1 >= (sh - 1 - border_margin)
+            if touches:
+                touching.append(c)
+            else:
+                inner.append(c)
+
+        candidates = inner if inner else comps
+
+        def score_component(c):
+            area, x0, y0, x1, y1 = c
+            bw = max(1, x1 - x0 + 1)
+            bh = max(1, y1 - y0 + 1)
+            ar = bw / bh
+            score = float(area)
+            # Penalize huge components likely to be page backgrounds/forms
+            area_ratio = area / float(max(1, sw * sh))
+            if area_ratio > 0.45:
+                score *= 0.1
+            elif area_ratio > 0.30:
+                score *= 0.4
+            if expected_ratio and expected_ratio > 0:
+                # Favor components close to parsed design aspect ratio.
+                ratio_penalty = abs(math.log(max(0.01, ar) / max(0.01, expected_ratio)))
+                score /= (1.0 + ratio_penalty * 1.6)
+            return score
+
+        candidates.sort(reverse=True, key=score_component)
+
+        def build_union_bbox(seed_component, source_components, neighbor_gap=35):
+            _, ux0, uy0, ux1, uy1 = seed_component
+            changed = True
+            while changed:
+                changed = False
+                for _, x0, y0, x1, y1 in source_components:
+                    if x0 <= ux1 + neighbor_gap and x1 >= ux0 - neighbor_gap and y0 <= uy1 + neighbor_gap and y1 >= uy0 - neighbor_gap:
+                        nx0 = min(ux0, x0)
+                        ny0 = min(uy0, y0)
+                        nx1 = max(ux1, x1)
+                        ny1 = max(uy1, y1)
+                        if nx0 != ux0 or ny0 != uy0 or nx1 != ux1 or ny1 != uy1:
+                            ux0, uy0, ux1, uy1 = nx0, ny0, nx1, ny1
+                            changed = True
+            return (ux0, uy0, ux1, uy1)
+
+        ux0, uy0, ux1, uy1 = build_union_bbox(candidates[0], candidates)
+        candidate_area_ratio = ((ux1 - ux0 + 1) * (uy1 - uy0 + 1)) / float(max(1, sw * sh))
+
+        # Safety fallback: if ratio-based crop is too tiny, use the largest-area component strategy.
+        if candidate_area_ratio < 0.02:
+            by_area = sorted(comps, reverse=True, key=lambda c: c[0])
+            ux0, uy0, ux1, uy1 = build_union_bbox(by_area[0], by_area)
+
         bbox = (ux0 * scale, uy0 * scale, (ux1 + 1) * scale, (uy1 + 1) * scale)
+
+    # Use legacy trim path for PDFs where source image ratio already matches design ratio well.
+    if not use_component_mode:
+        bbox = None
 
     # Fallback to previous method if no component could be detected
     if not bbox:
@@ -1546,6 +1599,12 @@ def process_and_trim(img_bytes):
 
 wilcom_pdf = sys.argv[1]
 customer_artwork = sys.argv[2] if len(sys.argv) > 2 else ""
+expected_ratio = None
+if len(sys.argv) > 3 and sys.argv[3]:
+    try:
+        expected_ratio = float(sys.argv[3])
+    except:
+        expected_ratio = None
 
 results = {}
 
@@ -1635,7 +1694,7 @@ try:
         
         # Render at high resolution (4x for sharp output)
         pix = page.get_pixmap(matrix=fitz.Matrix(4, 4), clip=clip)
-        results['design'] = process_and_trim(pix.tobytes("png"))
+        results['design'] = process_and_trim(pix.tobytes("png"), expected_ratio)
     else:
         # Fallback: try vector paths
         paths = page.get_drawings()
@@ -1659,13 +1718,13 @@ try:
                 union_rect.y1 += 5
                 
                 pix = page.get_pixmap(matrix=fitz.Matrix(3, 3), clip=union_rect)
-                results['design'] = process_and_trim(pix.tobytes("png"))
+                results['design'] = process_and_trim(pix.tobytes("png"), expected_ratio)
             else:
                 pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                results['design'] = process_and_trim(pix.tobytes("png"))
+                results['design'] = process_and_trim(pix.tobytes("png"), expected_ratio)
         else:
             pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-            results['design'] = process_and_trim(pix.tobytes("png"))
+            results['design'] = process_and_trim(pix.tobytes("png"), expected_ratio)
             
     doc.close()
 except Exception as e:
@@ -1683,8 +1742,10 @@ print(json.dumps(results))
 `;
 
         writeFileSync(tempScriptPath, pythonScript);
-        const pythonArgs = [tempScriptPath, wilcomPdfPath];
-        if (customerArtworkPath) pythonArgs.push(customerArtworkPath);
+        const expectedRatio = data.widthMm > 0 && data.heightMm > 0
+            ? (data.widthMm / data.heightMm).toFixed(6)
+            : "";
+        const pythonArgs = [tempScriptPath, wilcomPdfPath, customerArtworkPath || "", expectedRatio];
         const result = execFileSync('python3', pythonArgs, {
             encoding: 'utf-8',
             maxBuffer: 50 * 1024 * 1024
