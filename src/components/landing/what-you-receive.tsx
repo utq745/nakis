@@ -135,20 +135,20 @@ export function WhatYouReceive() {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-6xl bg-white dark:bg-[#1c2637] rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
+                            className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-[#1c2637] rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
                         >
                             <button
                                 onClick={() => setSelectedImage(null)}
-                                className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
+                                className="absolute top-4 right-4 z-20 size-10 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
                             >
                                 <span className="material-symbols-outlined">close</span>
                             </button>
 
-                            <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[90vh]">
+                            <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden">
                                 <img
                                     src={selectedImage.src}
                                     alt={selectedImage.title}
-                                    className="max-w-full max-h-full object-contain"
+                                    className="w-full h-auto max-h-[90vh] object-contain"
                                 />
                             </div>
                         </motion.div>
