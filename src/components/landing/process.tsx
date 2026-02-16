@@ -9,6 +9,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 export function Process() {
     const { t } = useLanguage();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<{ src: string, title: string } | null>(null);
     const [isCorporateModalOpen, setIsCorporateModalOpen] = useState(false);
     const [imageFallbacks, setImageFallbacks] = useState<Record<string, number>>({});
     const [isMounted, setIsMounted] = useState(false);
@@ -38,7 +39,8 @@ export function Process() {
             step: "03",
             title: t.landing.process.step3Title,
             desc: t.landing.process.step3Desc,
-            image: "/images/landing/Approval-Package.webp"
+            image: "/images/landing/Approval-Package.webp?v=2",
+            isImagePopup: true
         },
         {
             step: "04",
@@ -111,10 +113,11 @@ export function Process() {
                                 <div className="relative z-20 mb-10 w-full aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-500">
                                     {/* Image Canvas */}
                                     <div
-                                        className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${(item.video || item.isCorporate) ? 'cursor-pointer' : ''}`}
+                                        className={`w-full h-full rounded-[2rem] bg-white dark:bg-[#1c2637] border-2 border-primary/20 dark:border-white/10 shadow-xl dark:shadow-2xl group-hover:border-primary transition-all duration-500 flex items-center justify-center overflow-hidden relative ${(item.video || item.isCorporate || item.isImagePopup) ? 'cursor-pointer' : ''}`}
                                         onClick={() => {
                                             if (item.video) setSelectedVideo(item.video);
                                             if (item.isCorporate) setIsCorporateModalOpen(true);
+                                            if (item.isImagePopup) setSelectedImage({ src: item.image, title: item.title });
                                         }}
                                     >
                                         <Image
@@ -141,12 +144,16 @@ export function Process() {
                                         />
 
                                         {/* Play Button Overlay */}
-                                        {(item.video || item.isCorporate) && (
+                                        {(item.video || item.isCorporate || item.isImagePopup) && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors z-10">
                                                 <div className="w-20 h-20 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                                     {item.isCorporate ? (
                                                         <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
                                                             business_center
+                                                        </span>
+                                                    ) : item.isImagePopup ? (
+                                                        <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
+                                                            search
                                                         </span>
                                                     ) : (
                                                         <span className="material-symbols-outlined text-primary ml-1" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
@@ -259,6 +266,52 @@ export function Process() {
                             >
                                 {t.landing.process.corporateModalBtn}
                             </Link>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Image Modal */}
+            <AnimatePresence>
+                {selectedImage && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-4xl bg-white dark:bg-[#1c2637] rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row"
+                        >
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-4 right-4 z-20 size-10 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-white flex items-center justify-center backdrop-blur-md transition-colors"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+
+                            <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-0">
+                                <img
+                                    src={selectedImage.src}
+                                    alt={selectedImage.title}
+                                    className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
+                                />
+                            </div>
+
+                            <div className="w-full md:w-[350px] p-8 flex flex-col justify-center gap-4 bg-white dark:bg-[#1c2637] border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5">
+                                <div>
+                                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">HOW IT WORKS</p>
+                                    <h3 className="text-2xl font-black text-foreground dark:text-white leading-tight">{selectedImage.title}</h3>
+                                </div>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {t.landing.backgroundCards?.description || "Visual preview of your embroidery production results."}
+                                </p>
+                            </div>
                         </motion.div>
                     </div>
                 )}
