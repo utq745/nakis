@@ -152,14 +152,14 @@ function HeroBackgroundContent() {
 
                 {/* Interactive Background Cards */}
                 <InteractiveApprovalCard
-                    src="/images/hero/customer_approval_card.webp?v=5"
+                    src="/images/hero/customer_approval_card.webp"
                     label={t.landing.backgroundCards.clientLabel}
                     side="left"
                     rotate={-15}
                     onOpenModal={openModal}
                 />
                 <InteractiveApprovalCard
-                    src="/images/hero/operator_approval_card.webp?v=5"
+                    src="/images/hero/operator_approval_card.webp"
                     label={t.landing.backgroundCards.operatorLabel}
                     side="right"
                     rotate={15}
