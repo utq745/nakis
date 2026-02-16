@@ -101,7 +101,7 @@ export default function LoginPage() {
                     {/* Background Image */}
                     <div
                         className="absolute inset-0 w-full h-full bg-cover bg-center opacity-90"
-                        style={{ backgroundImage: "url('/images/hero/login-bg.webp')" }}
+                        style={{ backgroundImage: "url('/images/hero/login-cover.png')" }}
                     >
                     </div>
                     {/* Overlay Gradient */}

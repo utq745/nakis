@@ -141,25 +141,7 @@ export function Hero() {
                                 className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div><motion.div
-                                animate={{
-                                    y: [0, -12, 0],
-                                }}
-                                transition={{
-                                    duration: 3,
-                                    repeat: Infinity,
-                                    ease: "easeInOut"
-                                }}
-                                className="absolute bottom-6 left-6 p-4 backdrop-blur-md bg-white/80 dark:bg-white/20 border border-white/30 rounded-2xl shadow-xl flex items-center gap-4 text-primary dark:text-white"
-                            >
-                                <div className="size-10 rounded-full bg-blue-500 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-white">magic_button</span>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-medium opacity-70 dark:opacity-80 uppercase tracking-tighter">{t.landing.hero.precisionBadge}</p>
-                                    <p className="text-sm font-bold">{t.landing.hero.stitchedReality}</p>
-                                </div>
-                            </motion.div>
+                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div>
                         </div>
 
                         {/* Background blur shape behind image */}

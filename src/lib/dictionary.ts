@@ -317,8 +317,8 @@ export const translations = {
                 item4Sub: "Ceketler & Kapüşonlular"
             },
             cta: {
-                title: "Bir sonraki projenizi nakışlamaya hazır mısınız?",
-                description: "Binlerce memnun müşteriye katılın. Tasarımınızı bugün yükleyin ve 12 saat içinde fiyat teklifi alın.",
+                title: "Bir sonraki üretiminizi onaylamaya hazır mısınız?",
+                description: "Tasarımınızın bantta çalışmadan önce gerçekte nasıl dikildiğini görün.<br>Dosyanızı yükleyin — gerçek dikişli numune ve üretim onay verilerini alın.",
                 startBtn: "Siparişi Başlat",
                 contactBtn: "Satışla İletişime Geç",
                 testimonial: "\"Approval Stitch 3 yıldır vazgeçilmezimiz. Geri dönüş inanılmaz hızlı, ama asıl önemli olan dosyaların makinelerimizde her seferinde sorunsuz çalışması. İp kopması yok, mükemmel yoğunluk.\"",
@@ -956,8 +956,8 @@ export const translations = {
             },
             cta: {
                 rating: "5.0 Rating",
-                title: "Ready to stitch your next project?",
-                description: "Join thousands of satisfied customers. Upload your design today and get a quote within 12 hours.",
+                title: "Ready to approve your next production?",
+                description: "See how your design really stitches before you run it on the line.<br>Upload your file — receive a real stitched sample and production approval data.",
                 startBtn: "Start Order",
                 contactBtn: "Contact Sales",
                 testimonial: "\"Approval Stitch has been our go-to for 3 years. The turnaround is incredibly fast, but what really matters is that the files run smooth on our machines every single time. No thread breaks, perfect density.\"",

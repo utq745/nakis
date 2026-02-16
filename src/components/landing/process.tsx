@@ -295,24 +295,12 @@ export function Process() {
                                 <span className="material-symbols-outlined">close</span>
                             </button>
 
-                            <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[85vh]">
+                            <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[90vh]">
                                 <img
                                     src={selectedImage.src}
                                     alt={selectedImage.title}
                                     className="max-w-full max-h-full object-contain"
                                 />
-                            </div>
-
-                            <div className="w-full p-6 md:p-8 flex items-center justify-between gap-6 bg-white dark:bg-[#1c2637] border-t border-slate-100 dark:border-white/5">
-                                <div className="flex-1">
-                                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">HOW IT WORKS</p>
-                                    <h3 className="text-xl md:text-2xl font-black text-foreground dark:text-white leading-tight">{selectedImage.title}</h3>
-                                </div>
-                                <div className="hidden md:block max-w-sm">
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        {t.landing.backgroundCards?.description || "Visual preview of your embroidery production results."}
-                                    </p>
-                                </div>
                             </div>
                         </motion.div>
                     </div>
