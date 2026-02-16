@@ -842,22 +842,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         
         .embroidery-placeholder { object-fit: fill; object-position: left bottom; }
         
-        .bottom-sections {
-            ${isMultiPage ? 'margin-top: 10px;' : 'position: absolute; bottom: 15mm; left: 10mm; right: 10mm;'}
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border-top: ${isMultiPage ? '2px solid #000' : '1px solid #eee'};
-            padding-top: 10px;
-        }
-        
-        .approval-section { display: flex; flex-direction: row; gap: 40px; font-size: 11px; margin-bottom: 2px; }
-        .checkbox-group { display: flex; align-items: center; gap: 8px; }
-        .checkbox { width: 16px; height: 16px; border: 2px solid #000; display: inline-block; }
-        .approval-label { font-weight: 700; text-transform: uppercase; font-size: 11px; }
-        
-        .notes-area { border: 2px solid #000; min-height: 40px; padding: 6px; background: white; }
-        .notes-title { font-weight: 700; font-size: 11px; margin-bottom: 2px; }
+        .bottom-sections { display: none; }
     `;
 
     const commonHeader = `
@@ -915,12 +900,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             </div>
         </div>
         
-        <div class="bottom-sections">
-            <div class="notes-section">
-                <div class="notes-title">Operator Notes & Observations:</div>
-                <div class="notes-area"></div>
-            </div>
-        </div>
+        
     `;
 
     if (isMultiPage) {
@@ -1172,7 +1152,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             margin-left: auto;
         }
         
-        .artwork-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .artwork-preview img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
         
         .color-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
         .color-cell { display: flex; align-items: center; gap: 4px; font-size: 10px; }
