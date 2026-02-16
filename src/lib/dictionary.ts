@@ -320,7 +320,7 @@ export const translations = {
                 title: "Bir sonraki üretiminizi onaylamaya hazır mısınız?",
                 description: "Tasarımınızın bantta çalışmadan önce gerçekte nasıl dikildiğini görün.<br>Dosyanızı yükleyin — gerçek dikişli numune ve üretim onay verilerini alın.",
                 startBtn: "Siparişi Başlat",
-                contactBtn: "Satışla İletişime Geç",
+                contactBtn: "Projeniz Hakkında Konuşalım",
                 testimonial: "\"Approval Stitch 3 yıldır vazgeçilmezimiz. Geri dönüş inanılmaz hızlı, ama asıl önemli olan dosyaların makinelerimizde her seferinde sorunsuz çalışması. İp kopması yok, mükemmel yoğunluk.\"",
                 author: "Michael Chen",
                 role: "Sahibi, Chen Custom Apparel"
@@ -959,7 +959,7 @@ export const translations = {
                 title: "Ready to approve your next production?",
                 description: "See how your design really stitches before you run it on the line.<br>Upload your file — receive a real stitched sample and production approval data.",
                 startBtn: "Start Order",
-                contactBtn: "Contact Sales",
+                contactBtn: "Talk About your Project",
                 testimonial: "\"Approval Stitch has been our go-to for 3 years. The turnaround is incredibly fast, but what really matters is that the files run smooth on our machines every single time. No thread breaks, perfect density.\"",
                 author: "Michael Chen",
                 role: "Owner, Chen Custom Apparel"

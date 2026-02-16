@@ -31,9 +31,10 @@ export function CTA() {
                     </div>
 
                     <div className="flex flex-col gap-8 w-full relative z-10 text-center items-center">
-                        <h2 className="leading-[1.1] tracking-tight text-white mb-2 max-w-[800px]">
-                            {t.landing.cta.title}
-                        </h2>
+                        <h2
+                            className="leading-[1.1] tracking-tight text-white mb-2 max-w-[800px]"
+                            dangerouslySetInnerHTML={{ __html: t.landing.cta.title }}
+                        />
                         <motion.div
                             initial={{ opacity: 0, scale: 0 }}
                             whileInView={{ opacity: 1, scale: 1 }}
@@ -42,9 +43,10 @@ export function CTA() {
                             className="w-24 h-1.5 bg-white rounded-full opacity-40"
                         ></motion.div>
 
-                        <p className="text-lg md:text-xl text-white/80 max-w-[600px] leading-relaxed">
-                            {t.landing.cta.description}
-                        </p>
+                        <p
+                            className="text-lg md:text-xl text-white/80 max-w-[600px] leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: t.landing.cta.description }}
+                        />
 
                         <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto">
                             <Link href={isLoggedIn ? (isAdmin ? panelUrl : newOrderUrl) : loginUrl} className="w-full sm:w-auto">
