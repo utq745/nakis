@@ -105,11 +105,6 @@ export default function EnLayout({
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
                 />
-            </head>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased font-sans`}
-                suppressHydrationWarning
-            >
                 <Script
                     src="https://www.googletagmanager.com/gtag/js?id=AW-17962211871"
                     strategy="afterInteractive"
@@ -122,6 +117,11 @@ export default function EnLayout({
                       gtag('config', 'AW-17962211871');
                     `}
                 </Script>
+            </head>
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased font-sans`}
+                suppressHydrationWarning
+            >
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 bg-background px-4 py-2 rounded-md shadow-md">
                     Skip to content
                 </a>
