@@ -1,5 +1,6 @@
 import { LanguageProvider } from "@/components/providers/language-provider";
 import { CookieBanner } from "@/components/cookie-banner";
+import Script from "next/script";
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/get-dictionary";
 import { Providers } from "@/components/providers";
@@ -50,6 +51,18 @@ export default function TrLayout({
                 className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased font-sans`}
                 suppressHydrationWarning
             >
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=AW-17962211871"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-ads" strategy="afterInteractive">
+                    {`
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag(){dataLayer.push(arguments);}
+                      gtag('js', new Date());
+                      gtag('config', 'AW-17962211871');
+                    `}
+                </Script>
                 <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 bg-background px-4 py-2 rounded-md shadow-md">
                     İçeriğe atla
                 </a>
