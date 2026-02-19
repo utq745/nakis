@@ -265,6 +265,12 @@ export const translations = {
                 precisionBadge: "Hassasiyet",
                 stitchedReality: "Dikişli Gerçeklik"
             },
+            intro: {
+                title: "Üreticiler ve Giyim Markaları İçin Özel Bir Hizmet",
+                p1: "ApprovalStitch, üreticiler ve giyim markaları için özel bir nakış üretim öncesi numune hizmetidir.",
+                p2: "Seri üretimden önce profesyonel dikiş numuneleri sağlayarak, nakış fabrikalarının üretim riskini azaltmalarına, maliyetli hataları önlemelerine ve tasarımları gerçek dikişli kanıtlarla onaylamalarına yardımcı oluyoruz.",
+                p3: "Hizmetimiz, endüstriyel Tajima ve Barudan makinelerini kullanarak nakış onay numuneleri, dikiş testi, DST dosyası düzeltme ve üretime hazır doğrulama süreçlerini kapsar."
+            },
             why: {
                 badge: "Hikayemiz",
                 title: "Neden Approval Stitch?",
@@ -901,6 +907,12 @@ export const translations = {
                 readyBadge: "Production Ready",
                 precisionBadge: "Precision",
                 stitchedReality: "Stitched Reality"
+            },
+            intro: {
+                title: "A Specialized Service for Manufacturers and Apparel Brands",
+                p1: "ApprovalStitch is a specialized embroidery pre-production sample service for manufacturers and apparel brands.",
+                p2: "We provide professional stitch-out samples before mass production, helping embroidery factories reduce production risk, prevent costly mistakes, and approve designs with real stitched proof.",
+                p3: "Our service includes embroidery approval samples, stitch-out testing, DST file correction, and production-ready validation using industrial Tajima and Barudan machines."
             },
             why: {
                 badge: "Our Story",

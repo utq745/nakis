@@ -8,6 +8,7 @@ import { Process } from "@/components/landing/process";
 import { WhatYouReceive } from "@/components/landing/what-you-receive";
 import { Portfolio } from "@/components/landing/portfolio";
 import { CTA } from "@/components/landing/cta";
+import { IntroSection } from "@/components/landing/intro-section";
 
 export function LandingClient() {
     return (
@@ -15,6 +16,7 @@ export function LandingClient() {
             <Header />
             <main className="flex-grow flex flex-col items-center">
                 <Hero />
+                <IntroSection />
                 <WhatYouReceive />
                 <Process />
                 <CTA />
