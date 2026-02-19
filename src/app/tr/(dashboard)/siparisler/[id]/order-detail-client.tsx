@@ -22,21 +22,19 @@ import {
     Download,
     Upload,
     Loader2,
-    CheckCircle2,
     Image as ImageIcon,
     ChevronDown,
-    CreditCard,
     Lock,
     Trash2,
     Eye,
     Send,
-    DollarSign,
     ClipboardList,
     X,
     Archive,
     RefreshCcw,
     FilePlus,
     Package,
+    DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CommentSection } from "@/components/orders/comment-section";
@@ -154,7 +152,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState<string | null>(null);
     const [isDeletingFile, setIsDeletingFile] = useState(false);
-    const [isApprovingPrice, setIsApprovingPrice] = useState(false);
     const [isDecliningPrice, setIsDecliningPrice] = useState(false);
     const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
     const [isApprovingPreview, setIsApprovingPreview] = useState(false);
@@ -166,92 +163,24 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [revisionMessage, setRevisionMessage] = useState("");
     const [isSubmittingRevision, setIsSubmittingRevision] = useState(false);
     const [selectedRevisionFiles, setSelectedRevisionFiles] = useState<File[]>([]);
-    const [stitchCount, setStitchCount] = useState<number | "">("");
+    const [isOrderDeleteDialogOpen, setIsOrderDeleteDialogOpen] = useState(false);
+    const [shouldDeleteFiles, setShouldDeleteFiles] = useState(false);
+    const [isDeletingOrder, setIsDeletingOrder] = useState(false);
+    const [stitchCount, setStitchCount] = useState<string>("");
     const [isSendingQuote, setIsSendingQuote] = useState(false);
-    const [isPriceExplainerOpen, setIsPriceExplainerOpen] = useState(false);
-    const [isQuoteViewOpen, setIsQuoteViewOpen] = useState(false);
+    const [isApprovingPrice, setIsApprovingPrice] = useState(false);
 
-    const calculatePrice = (stitches: number) => {
-        let digitizing = 25;
-        let approval = 25;
-        let extra = 0;
 
-        if (stitches >= 30000) {
-            // 30,000+ stitches: flat rate
-            digitizing = 120;
-            approval = 35;
-            extra = 0;
-        } else if (stitches > 7000) {
-            // Extra fee for stitches above 7,000
-            // Formula: $3 × ((stitches - 7000) / 1000)
-            extra = 3 * ((stitches - 7000) / 1000);
-        }
-
-        return {
-            total: digitizing + approval + extra,
-            digitizing,
-            approval,
-            extra
-        };
-    };
-
-    const breakdown = stitchCount !== "" ? calculatePrice(Number(stitchCount)) : null;
-
-    async function handleSendQuote() {
-        if (!price) {
-            toast.error("Lütfen bir fiyat girin.");
-            return;
-        }
-
-        setIsSendingQuote(true);
-        try {
-            const response = await fetch(`/api/orders/${order.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    status: "PRICED",
-                    price: parseFloat(price),
-                }),
-            });
-
-            if (!response.ok) throw new Error("Fiyat teklifi gönderilemedi.");
-
-            toast.success("Fiyat teklifi müşteriye gönderildi.");
-            setStatus("PRICED");
-            setTimeout(() => router.refresh(), 1000);
-        } catch (error) {
-            toast.error("İşlem sırasında bir hata oluştu.");
-            console.error(error);
-        } finally {
-            setIsSendingQuote(false);
-        }
-    }
-
-    async function handleAcceptQuote() {
-        setIsApprovingPrice(true);
-        try {
-            const response = await fetch(`/api/orders/${order.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "IN_PROGRESS" }),
-            });
-
-            if (!response.ok) throw new Error("Teklif onaylanamadı.");
-
-            toast.success("Fiyat teklifini onayladınız. Siparişiniz hazırlanıyor.");
-            setStatus("IN_PROGRESS");
-            setTimeout(() => router.refresh(), 1000);
-        } catch (error) {
-            toast.error("İşlem sırasında bir hata oluştu.");
-            console.error(error);
-        } finally {
-            setIsApprovingPrice(false);
-        }
-    }
 
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
     const finalFiles = order.files.filter((f) => f.type === "final");
+
+    function calculateQuoteFromStitches(count: number): number {
+        const base = 35;
+        const extra = Math.max(0, count - 7000) * 0.003;
+        return Math.round((base + extra) * 100) / 100;
+    }
 
     function handleDeleteFile(fileId: string) {
         setFileToDelete(fileId);
@@ -387,17 +316,9 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     async function handlePreviewApproval() {
         setIsApprovingPreview(true);
         try {
-            const response = await fetch(`/api/orders/${order.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "IN_PROGRESS" }),
-            });
-
-            if (!response.ok) throw new Error("Önizleme onayı başarısız");
-
             toast.success("Tasarım önizlemesi onaylandı.");
 
-            // Update local state for immediate feedback
+            // Önizleme onayı sonrası sipariş IN_PROGRESS'te devam eder
             setStatus("IN_PROGRESS");
 
             setTimeout(() => {
@@ -408,6 +329,58 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.error("İşlem sırasında hata oluştu");
             console.error(error);
             setIsApprovingPreview(false);
+        }
+    }
+
+    async function handleSendQuote() {
+        const count = Number(stitchCount);
+        if (!Number.isFinite(count) || count <= 0) {
+            toast.error("Geçerli bir dikiş sayısı girin.");
+            return;
+        }
+
+        const quote = calculateQuoteFromStitches(count);
+        setIsSendingQuote(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "PRICED", price: quote }),
+            });
+
+            if (!response.ok) throw new Error("Fiyat gönderilemedi");
+
+            setPrice(quote.toString());
+            setStatus("PRICED");
+            toast.success("Fiyat müşteriye gönderildi.");
+            setTimeout(() => router.refresh(), 800);
+        } catch (error) {
+            toast.error("İşlem sırasında hata oluştu");
+            console.error(error);
+        } finally {
+            setIsSendingQuote(false);
+        }
+    }
+
+    async function handleAcceptQuote() {
+        setIsApprovingPrice(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "IN_PROGRESS" }),
+            });
+
+            if (!response.ok) throw new Error("Fiyat onayı başarısız");
+
+            setStatus("IN_PROGRESS");
+            toast.success(t.orders.priceApproved);
+            setTimeout(() => router.refresh(), 800);
+        } catch (error) {
+            toast.error("İşlem sırasında hata oluştu");
+            console.error(error);
+        } finally {
+            setIsApprovingPrice(false);
         }
     }
 
@@ -482,19 +455,9 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     async function handleSendPreview() {
         setIsSendingPreview(true);
         try {
-            const response = await fetch(`/api/orders/${order.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "APPROVAL_AWAITING" }),
-            });
-
-            if (!response.ok) throw new Error("Önizleme gönderilemedi");
-
+            // Just refresh to show new preview files — status stays IN_PROGRESS
             toast.success(t.orders.previewSent);
-
-            // Update local state for immediate feedback
-            setStatus("APPROVAL_AWAITING");
-            setHasNewPreviewFiles(false); // Reset after sending
+            setHasNewPreviewFiles(false);
 
             setTimeout(() => {
                 router.refresh();
@@ -528,6 +491,28 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
+    async function handleDeleteOrder() {
+        setIsDeletingOrder(true);
+        try {
+            const response = await fetch(`/api/orders/${order.id}?deleteFiles=${shouldDeleteFiles}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Sipariş silinemedi");
+            }
+
+            toast.success("Sipariş silindi");
+            router.push("/tr/siparisler");
+        } catch (error: any) {
+            toast.error(error.message || "Bir hata oluştu");
+            console.error(error);
+        } finally {
+            setIsDeletingOrder(false);
+        }
+    }
+
     const formattedComments = order.comments;
 
     return (
@@ -555,75 +540,18 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             {isAdmin && status === "ORDERED" && (
                 <Card className="border-blue-500/50 bg-blue-500/5 overflow-hidden">
                     <CardContent className="p-6">
-                        <div className="flex flex-col gap-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
-                                    <Package className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground">
-                                        Yeni sipariş alındı
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {order.serviceType === "New Digitizing + Sample"
-                                            ? "Bu sipariş için fiyat teklifi hazırlamanız gerekiyor. Lütfen vuruş sayısını girin."
-                                            : order.serviceType === "Approval Sample (Existing DST)"
-                                                ? "Bu sipariş Paket 1 (Onay Örneği). Önizleme dosyalarını yükleyip müşteriye gönderin."
-                                                : "Bu sipariş için çalışmaya başlayın ve final dosyalarını hazırlayın."}
-                                    </p>
-                                </div>
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                                <Package className="h-6 w-6" />
                             </div>
-
-                            {order.serviceType === "New Digitizing + Sample" && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 rounded-xl bg-accent/50 border border-border">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wider">Vuruş Sayısı (Stitch Count)</Label>
-                                        <Input
-                                            type="number"
-                                            value={stitchCount}
-                                            onChange={(e) => {
-                                                const val = e.target.value === "" ? "" : Number(e.target.value);
-                                                setStitchCount(val);
-                                                if (val !== "") {
-                                                    const b = calculatePrice(val);
-                                                    setPrice(b.total.toString());
-                                                }
-                                            }}
-                                            placeholder="Örn: 15000"
-                                            className="bg-background border-border"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wider">Fiyat ($)</Label>
-                                        <div className="flex gap-2">
-                                            <Input
-                                                type="number"
-                                                value={price}
-                                                onChange={(e) => setPrice(e.target.value)}
-                                                className="bg-background border-border font-bold text-violet-500"
-                                            />
-                                            <Button
-                                                onClick={() => setIsPriceExplainerOpen(true)}
-                                                disabled={!price}
-                                                className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 px-6"
-                                            >
-                                                İncele ve Gönder
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {breakdown && (
-                                        <div className="md:col-span-2 lg:col-span-1 p-3 rounded-lg bg-violet-500/5 border border-violet-500/10 flex flex-col justify-center">
-                                            <p className="text-xs font-semibold text-violet-400 mb-1">HESAPLAMA DETAYI:</p>
-                                            <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground">
-                                                <div>Digitizing: <span className="text-foreground font-medium">${breakdown.digitizing}</span></div>
-                                                <div>Approval: <span className="text-foreground font-medium">${breakdown.approval}</span></div>
-                                                {breakdown.extra > 0 && <div>Extra: <span className="text-foreground font-medium">${breakdown.extra}</span></div>}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                    Yeni sipariş alındı
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Bu sipariş için çalışmaya başlayın. Durumu 'İşleniyor' olarak güncelleyin.
+                                </p>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -640,12 +568,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-foreground">
-                                        {order.serviceType === "New Digitizing + Sample" ? "Fiyat Teklifi Bekleniyor" : "Siparişiniz Alındı"}
+                                        Siparişiniz Alındı
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
-                                        {order.serviceType === "New Digitizing + Sample"
-                                            ? "Tasarımınız inceleniyor. Vuruş sayısına göre en kısa sürede fiyat teklifimiz gönderilecektir."
-                                            : "Siparişiniz inceleniyor. Yakında size dönüş yapılacaktır."}
+                                        Siparişiniz inceleniyor. Yakında size dönüş yapılacaktır.
                                     </p>
                                 </div>
                             </div>
@@ -663,56 +589,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
-            {/* Customer - Price Quote Approval Banner */}
-            {!isAdmin && status === "PRICED" && (
-                <Card className="border-cyan-500/50 bg-cyan-500/5 overflow-hidden shadow-2xl shadow-cyan-500/10">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-4 text-center md:text-left">
-                                <div className="p-3 rounded-full bg-cyan-500/20 text-cyan-400">
-                                    <DollarSign className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground">
-                                        Fiyat Teklifiniz Hazır
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        Bu tasarım için belirlenen toplam ücret: <span className="text-cyan-400 font-bold">${Number(order.price).toLocaleString("en-US")}</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <Button
-                                onClick={() => setIsQuoteViewOpen(true)}
-                                className="w-full md:w-auto bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all gap-2"
-                            >
-                                <Eye className="h-4 w-4" />
-                                Detayları Görüntüle
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
 
-            {/* Admin Waiting for Preview Approval Banner */}
-            {isAdmin && status === "APPROVAL_AWAITING" && (
-                <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-orange-500/20 text-orange-400">
-                                <ImageIcon className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-semibold text-foreground">
-                                    Müşteri önizlemeyi inceliyor
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Önizleme dosyaları gönderildi. Müşterinin onayı bekleniyor.
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
 
             {/* Admin Revision Requested Banner */}
             {isAdmin && status === "REVISION" && (
@@ -735,7 +612,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
-            {/* Admin Final Files Upload Warning Banner */}
+            {/* Admin In Progress Banner */}
             {isAdmin && status === "IN_PROGRESS" && (
                 <Card className="border-purple-500/50 bg-purple-500/5 overflow-hidden">
                     <CardContent className="p-6">
@@ -745,10 +622,10 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold text-foreground">
-                                    Final dosyalarını göndermeniz bekleniyor
+                                    Sipariş işleniyor
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Müşteri önizlemeyi onayladı. Şimdi final dosyalarını yükleyin.
+                                    Çalışmayı tamamlayın ve final dosyalarını yükleyin.
                                 </p>
                             </div>
                         </div>
@@ -756,8 +633,75 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
-            {/* Preview Approval Banner for Customer */}
-            {!isAdmin && status === "APPROVAL_AWAITING" && (
+            {/* Admin Fiyatlandırma Kartı - Paket 3 */}
+            {isAdmin && status === "IN_PROGRESS" && order.serviceType === "New Digitizing + Sample" && (
+                <Card className="border-amber-500/40 bg-amber-500/5 overflow-hidden">
+                    <CardContent className="p-6 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <DollarSign className="h-5 w-5 text-amber-500" />
+                            <h3 className="text-base font-semibold text-foreground">Fiyatlandırma</h3>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <Input
+                                type="number"
+                                min="1"
+                                value={stitchCount}
+                                onChange={(e) => setStitchCount(e.target.value)}
+                                placeholder="Dikiş sayısı"
+                                className="bg-background"
+                            />
+                            <Button
+                                onClick={handleSendQuote}
+                                disabled={isSendingQuote}
+                                className="bg-amber-600 hover:bg-amber-500 text-white"
+                            >
+                                {isSendingQuote ? "Gönderiliyor..." : "Fiyatı Gönder"}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Customer Price Approval - Package 3 */}
+            {!isAdmin && status === "PRICED" && order.serviceType === "New Digitizing + Sample" && (
+                <Card className="border-cyan-500/50 bg-cyan-500/5 overflow-hidden">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="p-3 rounded-full bg-cyan-500/20 text-cyan-400">
+                                    <DollarSign className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground">{t.orders.priceApprovalTitle}</h3>
+                                    <p className="text-sm text-muted-foreground">{t.orders.priceApprovalDesc}</p>
+                                    {order.price && (
+                                        <p className="text-base font-semibold text-cyan-500 mt-1">${Number(order.price).toLocaleString("en-US")}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    onClick={() => setIsDeclineDialogOpen(true)}
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white"
+                                >
+                                    Fiyatı Reddet
+                                </Button>
+                                <Button
+                                    onClick={handleAcceptQuote}
+                                    disabled={isApprovingPrice}
+                                    className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white"
+                                >
+                                    {isApprovingPrice ? "Yükleniyor..." : t.orders.approvePrice}
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Customer Preview Approval Banner - Only for New Digitizing + Sample */}
+            {!isAdmin && status === "IN_PROGRESS" && order.serviceType === "New Digitizing + Sample" && previewFiles.length > 0 && (
                 <Card className="border-orange-500/50 bg-orange-500/5 overflow-hidden">
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -806,34 +750,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </Card>
             )}
 
-            {/* Payment Banner for Customer */}
-            {!isAdmin && status === "PAYMENT_PENDING" && (
-                <Card className="border-fuchsia-500/50 bg-fuchsia-500/5 overflow-hidden">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div className="flex items-center gap-4 text-center md:text-left">
-                                <div className="p-3 rounded-full bg-fuchsia-500/20 text-fuchsia-400">
-                                    <CreditCard className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground">
-                                        {t.orders.payButton}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {t.orders.paymentPendingDesc}
-                                    </p>
-                                </div>
-                            </div>
-                            <Link href={`/tr/siparisler/${order.id}/payment`} className="w-full md:w-auto">
-                                <Button className="w-full md:w-auto bg-fuchsia-600 hover:bg-fuchsia-500 text-white gap-2">
-                                    <CreditCard className="h-4 w-4" />
-                                    {t.orders.payButton}
-                                </Button>
-                            </Link>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Content */}
@@ -863,7 +780,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         files={originalFiles}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                        canDelete={isAdmin && order.status !== "COMPLETED" && order.status !== "DELIVERED"}
                                     />
                                 </TabsContent>
                                 <TabsContent value="preview" className="mt-4 space-y-4">
@@ -872,7 +789,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                         showPreview
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && order.status !== "PAYMENT_PENDING" && order.status !== "COMPLETED"}
+                                        canDelete={isAdmin && order.status !== "COMPLETED" && order.status !== "DELIVERED"}
                                     />
                                     {isAdmin && (
                                         <div className="pt-4 border-t border-border">
@@ -931,13 +848,13 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <TabsContent value="final" className="mt-4 space-y-4">
                                     <FileList
                                         files={finalFiles}
-                                        isLocked={!isAdmin && !["COMPLETED", "DELIVERED", "COMPLETED"].includes(status)}
+                                        isLocked={!isAdmin && !["COMPLETED", "DELIVERED"].includes(status)}
                                         isAdmin={isAdmin}
                                         onDelete={handleDeleteFile}
-                                        canDelete={isAdmin && !["PAYMENT_PENDING", "COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status)}
+                                        canDelete={isAdmin && !["COMPLETED", "DELIVERED"].includes(order.status)}
                                     />
                                     {/* Müşteri Toplu İndirme Butonu */}
-                                    {!isAdmin && finalFiles.length > 1 && ["COMPLETED", "DELIVERED", "COMPLETED"].includes(status) && (
+                                    {!isAdmin && finalFiles.length > 1 && ["COMPLETED", "DELIVERED"].includes(status) && (
                                         <div className="pt-4 border-t border-border">
                                             <Button
                                                 onClick={() => {
@@ -996,7 +913,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                     </Card>
 
                     {/* Wilcom Design Data - Admin Only, visible after preview approval */}
-                    {isAdmin && ["IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "COMPLETED"].includes(order.status) && (
+                    {isAdmin && ["IN_PROGRESS", "COMPLETED", "DELIVERED"].includes(order.status) && (
                         <WilcomSection
                             orderId={order.id}
                             wilcomData={order.wilcomData}
@@ -1104,7 +1021,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     <Select
                                         value={status}
                                         onValueChange={(value) => setStatus(value as OrderStatus)}
-                                        disabled={order.status === "COMPLETED"}
+                                        disabled={order.status === "DELIVERED"}
                                     >
                                         <SelectTrigger className="w-full bg-accent hover:bg-blue-50 dark:hover:bg-accent/80 border-border text-foreground h-9 transition-colors">
                                             <SelectValue />
@@ -1125,7 +1042,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
                                 <Button
                                     onClick={handleUpdateOrder}
-                                    disabled={isUpdating || order.status === "COMPLETED"}
+                                    disabled={isUpdating || order.status === "DELIVERED"}
                                     className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isUpdating ? (
@@ -1173,6 +1090,30 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             </CardContent>
                         </Card>
                     )}
+                    {/* Danger Zone - Admin Only */}
+                    {isAdmin && (
+                        <Card className="border-red-500/20 bg-red-500/5">
+                            <CardHeader>
+                                <CardTitle className="text-red-500 text-lg flex items-center gap-2">
+                                    <Trash2 className="h-5 w-5" />
+                                    Tehlikeli Bölge
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <p className="text-xs text-muted-foreground">
+                                    Siparişi tamamen kaldırmak için silin. Bu işlem geri alınamaz.
+                                </p>
+                                <Button
+                                    onClick={() => setIsOrderDeleteDialogOpen(true)}
+                                    variant="destructive"
+                                    className="w-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all font-bold"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Siparişi Sil
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* FAQ Section - Only for customers */}
                     {!isAdmin && (
@@ -1205,7 +1146,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                             <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                         </summary>
                                         <div className="mt-2 ml-0 body text-muted-foreground leading-relaxed bg-accent/50 rounded-lg p-3">
-                                            1) Dosyanızı yükleyin → 2) Fiyat teklifi alın → 3) Onaylayın → 4) Önizleme alın → 5) Onaylayın → 6) Final dosyalarınızı indirin.
+                                            1) Dosya Yükle → 2) İşleme Alınır → 3) Tamamlanır → 4) Teslim Edilir
                                         </div>
                                     </details>
 
@@ -1251,8 +1192,8 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 onOpenChange={setIsDeclineDialogOpen}
                 onConfirm={handleCancelOrder}
                 isPending={isDecliningPrice}
-                title="Teklifi Reddet"
-                description="Fiyat teklifini reddetmek istediğinizden emin misiniz? Bu işlem siparişi kalıcı olarak iptal edecektir."
+                title="Siparişi İptal Et"
+                description="Bu siparişi iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
                 confirmText="İptal Et"
                 cancelText="Vazgeç"
                 variant="destructive"
@@ -1353,201 +1294,36 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 </DialogContent>
             </Dialog>
 
-            {/* Price Explainer Dialog */}
-            <Dialog open={isPriceExplainerOpen} onOpenChange={setIsPriceExplainerOpen}>
-                <DialogContent className="sm:max-w-lg bg-popover border-border overflow-hidden">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                            <DollarSign className="h-5 w-5 text-violet-500" />
-                            Fiyat Teklifi Gönder
-                        </DialogTitle>
-                    </DialogHeader>
 
-                    <div className="space-y-4 py-4">
-                        {/* Calculation Formula Section */}
-                        <div className="p-4 rounded-xl bg-accent/50 border border-border space-y-3">
-                            <h4 className="text-sm font-semibold text-violet-400 uppercase tracking-wider">
-                                Fiyatlandırma Formülü
-                            </h4>
-                            <div className="text-xs text-muted-foreground space-y-2">
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">0 - 7,000</span> vuruş: <span className="text-emerald-400 font-bold">$50</span>
-                                    <span className="text-muted-foreground ml-1">(Digitizing $25 + Approval $25)</span>
-                                </div>
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">7,001 - 29,999</span> vuruş: <span className="text-emerald-400 font-bold">$50</span> + <span className="text-amber-400 font-bold">$3 × ((vuruş - 7000) / 1000)</span>
-                                </div>
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">30,000+</span> vuruş: <span className="text-emerald-400 font-bold">$155</span>
-                                    <span className="text-muted-foreground ml-1">(Digitizing $120 + Approval $35)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Calculation Breakdown */}
-                        {breakdown && (
-                            <div className="p-4 rounded-xl bg-violet-500/10 border border-violet-500/20 space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-muted-foreground">Vuruş Sayısı:</span>
-                                    <span className="text-lg font-bold text-foreground">{Number(stitchCount).toLocaleString('tr-TR')}</span>
-                                </div>
-                                <div className="h-px bg-border/50" />
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Digitizing:</span>
-                                        <span className="text-foreground font-medium">${breakdown.digitizing}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Approval:</span>
-                                        <span className="text-foreground font-medium">${breakdown.approval}</span>
-                                    </div>
-                                    {breakdown.extra > 0 && (
-                                        <div className="flex justify-between col-span-2">
-                                            <span className="text-muted-foreground">Ek Ücret:</span>
-                                            <span className="text-amber-400 font-medium">${breakdown.extra.toFixed(2)}</span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="h-px bg-border/50" />
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-violet-400">Hesaplanan Toplam:</span>
-                                    <span className="text-xl font-bold text-violet-400">${breakdown.total.toFixed(2)}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Editable Price */}
-                        <div className="space-y-2">
-                            <Label className="text-sm font-medium text-muted-foreground">
-                                Son Fiyat (düzenlenebilir)
-                            </Label>
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-bold text-muted-foreground">$</span>
-                                <Input
-                                    type="number"
-                                    value={price}
-                                    onChange={(e) => setPrice(e.target.value)}
-                                    className="bg-background border-border font-bold text-2xl text-violet-500 h-14"
-                                />
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                Fiyatı göndermeden önce değiştirebilirsiniz.
-                            </p>
+            <ActionConfirmDialog
+                isOpen={isOrderDeleteDialogOpen}
+                onOpenChange={setIsOrderDeleteDialogOpen}
+                onConfirm={handleDeleteOrder}
+                isPending={isDeletingOrder}
+                title="Siparişi Sil"
+                description={
+                    <div className="space-y-4">
+                        <p>
+                            Bu siparişi silmek istediğinizden emin misiniz? Bu işlem kalıcıdır ve geri alınamaz.
+                        </p>
+                        <div className="flex items-center space-x-2 pt-2">
+                            <input
+                                type="checkbox"
+                                id="deleteFiles"
+                                checked={shouldDeleteFiles}
+                                onChange={(e) => setShouldDeleteFiles(e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                            />
+                            <label htmlFor="deleteFiles" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-red-500">
+                                Tüm dosyaları (R2/S3 & Yerel) kalıcı olarak sil
+                            </label>
                         </div>
                     </div>
-
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setIsPriceExplainerOpen(false)}
-                            className="text-muted-foreground hover:text-foreground hover:bg-zinc-800"
-                        >
-                            Vazgeç
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                setIsPriceExplainerOpen(false);
-                                handleSendQuote();
-                            }}
-                            disabled={isSendingQuote || !price}
-                            className="bg-violet-600 hover:bg-violet-500 text-white min-w-[140px] shadow-lg shadow-violet-500/20"
-                        >
-                            {isSendingQuote ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Gönderiliyor...
-                                </>
-                            ) : (
-                                <>
-                                    <Send className="mr-2 h-4 w-4" />
-                                    Fiyat Gönder
-                                </>
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Customer Quote View Dialog */}
-            <Dialog open={isQuoteViewOpen} onOpenChange={setIsQuoteViewOpen}>
-                <DialogContent className="sm:max-w-lg bg-popover border-border overflow-hidden">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                            <DollarSign className="h-5 w-5 text-cyan-500" />
-                            Fiyat Teklifi Detayları
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    <div className="space-y-4 py-4">
-                        {/* Pricing Formula Section */}
-                        <div className="p-4 rounded-xl bg-accent/50 border border-border space-y-3">
-                            <h4 className="text-sm font-semibold text-cyan-400 uppercase tracking-wider">
-                                Fiyatlandırma Politikamız
-                            </h4>
-                            <div className="text-xs text-muted-foreground space-y-2">
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">0 - 7,000</span> vuruş: <span className="text-emerald-400 font-bold">$50</span>
-                                    <span className="text-muted-foreground ml-1">(Digitizing $25 + Approval $25)</span>
-                                </div>
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">7,001 - 29,999</span> vuruş: <span className="text-emerald-400 font-bold">$50</span> + <span className="text-amber-400 font-bold">$3 × ((vuruş - 7000) / 1000)</span>
-                                </div>
-                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                    <span className="font-medium text-foreground">30,000+</span> vuruş: <span className="text-emerald-400 font-bold">$155</span>
-                                    <span className="text-muted-foreground ml-1">(Digitizing $120 + Approval $35)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Your Quote */}
-                        <div className="p-6 rounded-xl bg-gradient-to-br from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 text-center space-y-3">
-                            <p className="text-sm text-muted-foreground">
-                                Tasarımınız için belirlenen fiyat
-                            </p>
-                            <div className="text-4xl font-bold text-cyan-400">
-                                ${Number(order.price).toFixed(2)}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                Bu fiyat, tasarımınızın karmaşıklığına göre hesaplanmıştır.
-                            </p>
-                        </div>
-                    </div>
-
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setIsQuoteViewOpen(false);
-                                setIsDeclineDialogOpen(true);
-                            }}
-                            className="text-red-400 border-red-500/50 hover:bg-red-500/10 hover:text-red-300"
-                        >
-                            <X className="mr-2 h-4 w-4" />
-                            Reddet
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                setIsQuoteViewOpen(false);
-                                handleAcceptQuote();
-                            }}
-                            disabled={isApprovingPrice}
-                            className="bg-cyan-600 hover:bg-cyan-500 text-white min-w-[140px] shadow-lg shadow-cyan-500/20"
-                        >
-                            {isApprovingPrice ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Onaylanıyor...
-                                </>
-                            ) : (
-                                <>
-                                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                                    Teklifi Kabul Et
-                                </>
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                }
+                confirmText="Siparişi Sil"
+                cancelText="Vazgeç"
+                variant="destructive"
+            />
         </div>
     );
 }
@@ -1653,7 +1429,7 @@ function FileList({
                                 </Button>
                             )}
                             {isLocked && (
-                                <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Ödeme gerekli">
+                                <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Final dosyaları henüz hazır değil">
                                     <Lock className="h-4 w-4" />
                                 </div>
                             )}

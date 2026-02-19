@@ -11,8 +11,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Users } from "lucide-react";
+import { Trash2, Users, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Customer {
     id: string;
@@ -32,7 +38,39 @@ interface CustomersContentProps {
 
 export function CustomersContent({ customers }: CustomersContentProps) {
     const { t, language } = useLanguage();
+    const router = useRouter();
+    const { data: session } = useSession();
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
+
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<Customer | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    async function handleDeleteUser() {
+        if (!userToDelete) return;
+        setIsDeleting(true);
+
+        try {
+            const response = await fetch(`/api/admin/users/${userToDelete.id}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Failed to delete user");
+            }
+
+            toast.success(language === "tr" ? "Kullanıcı silindi" : "User deleted successfully");
+            setIsDeleteDialogOpen(false);
+            setUserToDelete(null);
+            router.refresh();
+        } catch (error: any) {
+            toast.error(error.message || "Error");
+            console.error(error);
+        } finally {
+            setIsDeleting(false);
+        }
+    }
 
     return (
         <Card className="bg-card border-border">
@@ -50,13 +88,14 @@ export function CustomersContent({ customers }: CustomersContentProps) {
                             <TableHead className="text-muted-foreground">{t.customers.email}</TableHead>
                             <TableHead className="text-muted-foreground">{t.customers.role}</TableHead>
                             <TableHead className="text-muted-foreground">{t.customers.orderCount}</TableHead>
-                            <TableHead className="text-right text-muted-foreground">{t.customers.joinedAt}</TableHead>
+                            <TableHead className="text-muted-foreground">{t.customers.joinedAt}</TableHead>
+                            <TableHead className="text-right text-muted-foreground">{language === "tr" ? "İşlemler" : "Actions"}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {customers.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                                     {t.customers.noCustomers}
                                 </TableCell>
                             </TableRow>
@@ -90,8 +129,23 @@ export function CustomersContent({ customers }: CustomersContentProps) {
                                     <TableCell className="text-muted-foreground pl-8">
                                         {customer._count.orders}
                                     </TableCell>
-                                    <TableCell className="text-right text-muted-foreground">
+                                    <TableCell className="text-muted-foreground">
                                         {new Date(customer.createdAt).toLocaleDateString(dateLocale)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {session?.user?.id !== customer.id && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all rounded-lg"
+                                                onClick={() => {
+                                                    setUserToDelete(customer);
+                                                    setIsDeleteDialogOpen(true);
+                                                }}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -99,6 +153,20 @@ export function CustomersContent({ customers }: CustomersContentProps) {
                     </TableBody>
                 </Table>
             </CardContent>
+
+            <ActionConfirmDialog
+                isOpen={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDeleteUser}
+                isPending={isDeleting}
+                title={language === "tr" ? "Kullanıcıyı Sil" : "Delete User"}
+                description={language === "tr"
+                    ? `"${userToDelete?.name || userToDelete?.email}" adlı kullanıcıyı ve tüm sipariş geçmişini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`
+                    : `Are you sure you want to delete user "${userToDelete?.name || userToDelete?.email}" and all their order history? This action is permanent and cannot be undone.`}
+                confirmText={language === "tr" ? "Kullanıcıyı Sil" : "Delete User"}
+                cancelText={language === "tr" ? "Vazgeç" : "Cancel"}
+                variant="destructive"
+            />
         </Card>
     );
 }

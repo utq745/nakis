@@ -612,7 +612,9 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         </div>
     `).join('');
 
-    const designImageSrc = designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '';
+    const outputImageSrc = artworkImageBase64
+        ? `data:image/png;base64,${artworkImageBase64}`
+        : (designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '');
     const artworkImageSrc = artworkImageBase64 ? `data:image/png;base64,${artworkImageBase64}` : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
     const barcodeText = `*${Math.random().toString(36).substring(2, 12).toUpperCase()}*`;
 
@@ -840,7 +842,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             overflow: hidden;
         }
         
-        .embroidery-placeholder { object-fit: fill; object-position: left bottom; }
+        .embroidery-placeholder { object-fit: cover; object-position: center; }
         
         .bottom-sections { display: none; }
     `;
@@ -895,7 +897,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
                 <div class="vertical-ruler">${verticalMarks.join('')}</div>
                 <div class="horizontal-ruler">${horizontalMarks.join('')}</div>
                 <div class="embroidery-area" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                    ${outputImageSrc ? `<img src="${outputImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
                 </div>
             </div>
         </div>
@@ -1016,7 +1018,9 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         }
     }
 
-    const designImageSrc = designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '';
+    const outputImageSrc = artworkImageBase64
+        ? `data:image/png;base64,${artworkImageBase64}`
+        : (designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '');
 
     const artworkImageSrc = artworkImageBase64
         ? `data:image/png;base64,${artworkImageBase64}`
@@ -1237,7 +1241,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             overflow: hidden;
         }
         
-        .embroidery-placeholder { object-fit: fill; object-position: left bottom; }
+        .embroidery-placeholder { object-fit: cover; object-position: center; }
         
         .bottom-sections {
             position: absolute;
@@ -1305,7 +1309,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
                 <div class="vertical-ruler">${verticalMarks.join('')}</div>
                 <div class="horizontal-ruler">${horizontalMarks.join('')}</div>
                 <div class="embroidery-area" style="width: ${widthInches * PPI}px; height: ${heightInches * PPI}px; margin-top: ${0.5 * PPI}px;">
-                    ${designImageSrc ? `<img src="${designImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
+                    ${outputImageSrc ? `<img src="${outputImageSrc}" alt="Embroidery Design" class="embroidery-placeholder" style="width: 100%; height: 100%;">` : '<div style="color: #999; font-size: 14px; text-align: center;">Embroidery Design</div>'}
                 </div>
             </div>
         </div>
@@ -1734,7 +1738,7 @@ except Exception as e:
 if customer_artwork and os.path.exists(customer_artwork):
     try:
         with open(customer_artwork, 'rb') as f:
-            results['artwork'] = process_and_trim(f.read())
+            results['artwork'] = process_and_trim(f.read(), expected_ratio)
     except Exception as e:
         results['artwork_error'] = str(e)
 

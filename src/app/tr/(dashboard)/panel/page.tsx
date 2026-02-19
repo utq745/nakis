@@ -4,7 +4,7 @@ import { DashboardContent } from "./dashboard-content";
 
 async function getOrderStats(userId: string, isAdmin: boolean) {
     const where = isAdmin ? {} : { customerId: userId };
-    const pendingStatuses = ["ORDERED", "PRICED", "APPROVAL_AWAITING", "REVISION", "PAYMENT_PENDING"];
+    const pendingStatuses = ["ORDERED", "PRICED", "REVISION"];
 
     const [total, pending, inProgress, completed] = await Promise.all([
         prisma.order.count({ where }),

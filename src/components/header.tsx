@@ -9,6 +9,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
+
+
 export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?: boolean; fullWidth?: boolean }) {
     const { language, setLanguage, t } = useLanguage();
     const { data: session } = useSession();
@@ -16,6 +18,11 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isAtTop, setIsAtTop] = useState(!forceSolid);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const isLoggedIn = !!session;
     const isAdmin = session?.user?.role === "ADMIN";
@@ -101,65 +108,72 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                     </div>
 
                     <div className="flex gap-2 items-center">
-                        <Link href={isLoggedIn ? panelUrl : loginUrl} className="hidden sm:inline-block">
-                            <button className={`h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`}>
-                                {isLoggedIn ? t.header.panel : t.header.signIn}
-                            </button>
-                        </Link>
+                        {!mounted ? (
+                            <div className="h-10 w-20" /> // Placeholder for hydration
+                        ) : (
+                            <>
+                                <Link
+                                    href={isLoggedIn ? panelUrl : loginUrl}
+                                    className={`hidden sm:inline-flex h-10 px-4 items-center justify-center rounded-lg text-sm font-bold transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`}
+                                >
+                                    {isLoggedIn ? t.header.panel : t.header.signIn}
+                                </Link>
 
-                        {!isAdmin && (
-                            <Link href={isLoggedIn ? newOrderUrl : registerUrl} className="hidden sm:inline-block">
-                                <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-colors shadow-md transition-all duration-300">
-                                    <span className="truncate">{t.header.startOrder}</span>
-                                </button>
-                            </Link>
-                        )}
+                                {!isAdmin && (
+                                    <Link
+                                        href={isLoggedIn ? newOrderUrl : registerUrl}
+                                        className="hidden sm:inline-flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-all duration-300 shadow-md"
+                                    >
+                                        <span className="truncate">{t.header.startOrder}</span>
+                                    </Link>
+                                )}
 
-                        {/* Desktop Toggles */}
-                        <div className="hidden lg:flex items-center gap-2">
-                            <button
-                                onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
-                                className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none ${isAtTop
-                                    ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
-                                    : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
-                                    }`}
-                                aria-label="Toggle language"
-                            >
-                                <motion.div
-                                    className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
-                                    initial={false}
-                                    animate={{
-                                        x: language === 'tr' ? 28 : 0,
-                                    }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 500,
-                                        damping: 30,
-                                    }}
-                                />
-                                <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
-                                    <div className="flex items-center justify-center h-full">
-                                        <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
-                                    </div>
-                                    <div className="flex items-center justify-center h-full">
-                                        <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
-                                    </div>
+                                {/* Desktop Toggles */}
+                                <div className="hidden lg:flex items-center gap-2">
+                                    <button
+                                        onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                                        className={`relative flex items-center w-[64px] h-8 rounded-full p-1 transition-all duration-300 focus:outline-none ${isAtTop
+                                            ? "bg-blue-50 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-blue-100 dark:border-white/20 backdrop-blur-sm"
+                                            : "bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border dark:border-white/10"
+                                            }`}
+                                        aria-label="Toggle language"
+                                    >
+                                        <motion.div
+                                            className="absolute left-1 h-6 w-7 rounded-full z-0 bg-white"
+                                            initial={false}
+                                            animate={{
+                                                x: language === 'tr' ? 28 : 0,
+                                            }}
+                                            transition={{
+                                                type: "spring",
+                                                stiffness: 500,
+                                                damping: 30,
+                                            }}
+                                        />
+                                        <div className="relative z-10 grid grid-cols-2 w-full h-full items-center">
+                                            <div className="flex items-center justify-center h-full">
+                                                <span className={`text-[10px] font-black transition-colors duration-300 ${language === 'en' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>EN</span>
+                                            </div>
+                                            <div className="flex items-center justify-center h-full">
+                                                <span className={`text-[10px] font-black transition-colors duration-300 translate-x-[1px] ${language === 'tr' ? 'text-primary' : 'text-zinc-500 dark:text-white/50'}`}>TR</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <ThemeToggle isAtTop={isAtTop} />
                                 </div>
-                            </button>
-                            <ThemeToggle isAtTop={isAtTop} />
-                        </div>
 
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            className={`lg:hidden flex items-center justify-center size-10 rounded-lg transition-colors ${isAtTop
-                                ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'
-                                : 'text-[#111318] dark:text-white hover:bg-blue-50 dark:hover:bg-[#2a3441]'
-                                }`}
-                            aria-label="Open menu"
-                        >
-                            <span className="material-symbols-outlined">menu</span>
-                        </button>
+                                <button
+                                    onClick={() => setMobileMenuOpen(true)}
+                                    className={`lg:hidden flex items-center justify-center size-10 rounded-lg transition-colors ${isAtTop
+                                        ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'
+                                        : 'text-[#111318] dark:text-white hover:bg-blue-50 dark:hover:bg-[#2a3441]'
+                                        }`}
+                                    aria-label="Open menu"
+                                >
+                                    <span className="material-symbols-outlined">menu</span>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

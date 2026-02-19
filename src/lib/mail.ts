@@ -15,6 +15,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const MAIL_FROM = process.env.MAIL_FROM || "Approval Stitch <noreply@approvalstitch.com>";
+const SITE_URL = process.env.AUTH_URL || "https://www.approvalstitch.com";
+const LOGO_URL = `${SITE_URL}/images/approval-stich-logo.webp`;
 
 // ────────────────────────────────────────────────
 // Helper — all mails go through this single point
@@ -45,305 +47,415 @@ async function send({
 }
 
 // ────────────────────────────────────────────────
-// Branded HTML wrapper
+// Branded HTML wrapper (Clean & Premium)
 // ────────────────────────────────────────────────
 
 function wrap(body: string) {
     return `
     <!DOCTYPE html>
     <html lang="en">
-    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-    <body style="margin:0;padding:0;background:#f4f6f8;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:40px 0;">
-        <tr><td align="center">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-            <!-- Header -->
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+            body { margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+            .container { width: 100%; max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+            .header { background-color: #0f172a; padding: 32px; text-align: center; }
+            .content { padding: 48px; color: #1e293b; line-height: 1.6; }
+            .footer { background-color: #f1f5f9; padding: 24px; text-align: center; color: #64748b; font-size: 12px; }
+            .button { display: inline-block; padding: 14px 28px; background-color: #2563eb; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; margin-top: 24px; }
+            .logo { width: 180px; height: auto; }
+            h2 { color: #0f172a; font-size: 24px; font-weight: 700; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.025em; }
+            p { margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #475569; }
+            .accent-box { background-color: #f0f9ff; border-radius: 12px; padding: 24px; margin: 24px 0; border: 1px solid #e0f2fe; }
+        </style>
+    </head>
+    <body>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
             <tr>
-              <td style="background:linear-gradient(135deg,#1a365d 0%,#2563eb 100%);padding:32px 40px;text-align:center;">
-                <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;">Approval Stitch</h1>
-              </td>
+                <td align="center" style="padding: 20px 0;">
+                    <div class="container">
+                        <div class="header">
+                            <a href="${SITE_URL}" target="_blank">
+                                <img src="${LOGO_URL}" alt="Approval Stitch Logo" class="logo">
+                            </a>
+                        </div>
+                        <div class="content">
+                            ${body}
+                        </div>
+                        <div class="footer">
+                            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Approval Stitch Inc. All rights reserved.</p>
+                            <p style="margin: 4px 0 0;">Precision in every stitch.</p>
+                        </div>
+                    </div>
+                </td>
             </tr>
-            <!-- Body -->
-            <tr>
-              <td style="padding:40px;">
-                ${body}
-              </td>
-            </tr>
-            <!-- Footer -->
-            <tr>
-              <td style="padding:24px 40px;background:#f9fafb;border-top:1px solid #e5e7eb;text-align:center;">
-                <p style="margin:0;color:#9ca3af;font-size:12px;">
-                  © ${new Date().getFullYear()} Approval Stitch. All rights reserved.
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-      </table>
+        </table>
     </body>
     </html>`;
 }
 
 // ────────────────────────────────────────────────
-// Public API — keeps the same signatures as before
+// Public API
 // ────────────────────────────────────────────────
 
-export async function sendOrderCreatedEmail(to: string, orderTitle: string) {
-    await send({
-        to,
-        subject: `Siparişiniz Alındı — ${orderTitle}`,
-        html: wrap(`
-            <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Siparişiniz Başarıyla Oluşturuldu 🎉</h2>
-            <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                Merhaba,<br>
-                <strong>"${orderTitle}"</strong> başlıklı siparişiniz başarıyla alınmıştır.
-            </p>
-            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
-                Tasarım ekibimiz en kısa sürede incelemeye başlayacaktır. Sipariş detaylarını panelinizden takip edebilirsiniz.
-            </p>
-            <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                <a href="${process.env.AUTH_URL || 'https://www.approvalstitch.com'}/tr/siparisler" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                    Siparişlerime Git →
-                </a>
-            </td></tr></table>
-        `),
-    });
-}
-
-export async function sendOrderStatusUpdatedEmail(
+/**
+ * Membership Verification Email
+ */
+export async function sendVerificationEmail(
     to: string,
-    orderTitle: string,
-    newStatus: string,
-    price?: number
-) {
-    await send({
-        to,
-        subject: `Sipariş Durumu Güncellendi — ${orderTitle}`,
-        html: wrap(`
-            <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Sipariş Durumu Değişti</h2>
-            <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                Merhaba,<br>
-                <strong>"${orderTitle}"</strong> başlıklı siparişinizin durumu güncellendi.
-            </p>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f0f9ff;border-radius:12px;padding:20px;">
-                <tr><td style="padding:16px 20px;">
-                    <p style="margin:0 0 4px;color:#6b7280;font-size:13px;">Yeni Durum</p>
-                    <p style="margin:0;color:#1a365d;font-size:18px;font-weight:700;">${newStatus}</p>
-                    ${price ? `
-                    <p style="margin:12px 0 4px;color:#6b7280;font-size:13px;">Fiyat</p>
-                    <p style="margin:0;color:#1a365d;font-size:18px;font-weight:700;">${price} TL</p>
-                    ` : ""}
-                </td></tr>
-            </table>
-            <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                <a href="${process.env.AUTH_URL || 'https://www.approvalstitch.com'}/tr/siparisler" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                    Detayları Gör →
-                </a>
-            </td></tr></table>
-        `),
-    });
-}
-
-export async function sendNewCommentEmail(
-    to: string,
-    orderTitle: string,
-    commenterName: string,
-    content: string
-) {
-    await send({
-        to,
-        subject: `Yeni Mesaj — ${orderTitle}`,
-        html: wrap(`
-            <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Yeni Mesaj Aldınız 💬</h2>
-            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
-                <strong>${commenterName}</strong>, <strong>"${orderTitle}"</strong> siparişine bir mesaj yazdı:
-            </p>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-                <tr><td style="padding:16px 20px;background:#f9fafb;border-left:4px solid #2563eb;border-radius:0 12px 12px 0;">
-                    <p style="margin:0;color:#374151;font-size:15px;line-height:1.6;font-style:italic;">
-                        "${content}"
-                    </p>
-                </td></tr>
-            </table>
-            <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                <a href="${process.env.AUTH_URL || 'https://www.approvalstitch.com'}/tr/siparisler" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                    Yanıtla →
-                </a>
-            </td></tr></table>
-        `),
-    });
-}
-
-export async function sendDeleteAccountEmail(
-    to: string,
+    name: string,
     token: string,
     locale: "en" | "tr"
 ) {
-    const confirmUrl = `${process.env.AUTH_URL || 'https://www.approvalstitch.com'}/api/user/delete-account/confirm?token=${token}`;
+    const verifyUrl = `${SITE_URL}/api/auth/verify?token=${token}`;
+    const isTr = locale === "tr";
 
-    if (locale === "tr") {
-        await send({
-            to,
-            subject: "Hesap Silme Onayı — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Hesap Silme Talebi</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Merhaba,<br>
-                    Hesabınızı silme talebiniz alınmıştır. Bu işlemi onaylamak için lütfen aşağıdaki butona tıklayın:
-                </p>
-                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#dc2626;border-radius:10px;padding:14px 28px;">
-                    <a href="${confirmUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        Hesabımı Sil →
-                    </a>
-                </td></tr></table>
-                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
-                    Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Hesabınız güvende kalacaktır.
-                </p>
-            `),
-        });
-    } else {
-        await send({
-            to,
-            subject: "Account Deletion Confirmation — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Account Deletion Request</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Hello,<br>
-                    We received a request to delete your account. To confirm this action, please click the button below:
-                </p>
-                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#dc2626;border-radius:10px;padding:14px 28px;">
-                    <a href="${confirmUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        Delete My Account →
-                    </a>
-                </td></tr></table>
-                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
-                    If you did not make this request, please ignore this email. Your account will remain safe.
-                </p>
-            `),
-        });
-    }
+    await send({
+        to,
+        subject: isTr ? "E-posta Adresinizi Doğrulayın — Approval Stitch" : "Verify Your Email — Approval Stitch",
+        html: wrap(`
+            <h2>${isTr ? `Hoş Geldiniz, ${name}!` : `Welcome, ${name}!`}</h2>
+            <p>${isTr
+                ? "Approval Stitch'e katıldığınız için teşekkürler. Hesabınızı kullanmaya başlamadan önce e-posta adresinizi doğrulamanız gerekmektedir."
+                : "Thanks for joining Approval Stitch. Before you can start using your account, we need to verify your email address."
+            }</p>
+            <a href="${verifyUrl}" class="button">${isTr ? "E-postamı Doğrula →" : "Verify My Email →"}</a>
+            <p style="margin-top: 24px; font-size: 13px; color: #94a3b8;">
+                ${isTr
+                ? "Düğmeye tıklayamıyorsanız, bu bağlantıyı tarayıcınıza yapıştırın:"
+                : "If you're having trouble clicking the button, copy and paste this link into your browser:"
+            }<br>
+                ${verifyUrl}
+            </p>
+        `),
+    });
 }
 
-// ────────────────────────────────────────────────
-// Welcome Email — sent when a new user registers
-// ────────────────────────────────────────────────
-
-export async function sendWelcomeEmail(
-    to: string,
-    name: string,
-    locale: "en" | "tr"
-) {
-    const baseUrl = process.env.AUTH_URL || "https://www.approvalstitch.com";
-
-    if (locale === "tr") {
-        await send({
-            to,
-            subject: "Hoş Geldiniz! — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Hoş Geldiniz, ${name}! 🎉</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Approval Stitch ailesine katıldığınız için teşekkür ederiz.
-                </p>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Artık profesyonel nakış dijitalleştirme hizmetlerimizden yararlanabilir, siparişlerinizi kolayca takip edebilirsiniz.
-                </p>
-                <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
-                    Hemen ilk siparişinizi oluşturmaya başlayın!
-                </p>
-                <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                    <a href="${baseUrl}/tr/siparisler/new" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        İlk Siparişi Oluştur →
-                    </a>
-                </td></tr></table>
-            `),
-        });
-    } else {
-        await send({
-            to,
-            subject: "Welcome! — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Welcome, ${name}! 🎉</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Thank you for joining Approval Stitch.
-                </p>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    You can now access our professional embroidery digitizing services and easily track your orders.
-                </p>
-                <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
-                    Start creating your first order now!
-                </p>
-                <table cellpadding="0" cellspacing="0"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                    <a href="${baseUrl}/orders/new" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        Create First Order →
-                    </a>
-                </td></tr></table>
-            `),
-        });
-    }
-}
-
-// ────────────────────────────────────────────────
-// Password Reset Email — token valid for 15 min
-// ────────────────────────────────────────────────
-
+/**
+ * Password Reset Email
+ */
 export async function sendPasswordResetEmail(
     to: string,
     resetUrl: string,
     locale: "en" | "tr"
 ) {
-    if (locale === "tr") {
-        await send({
-            to,
-            subject: "Şifre Sıfırlama — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Şifre Sıfırlama Talebi</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Merhaba,<br>
-                    Hesabınız için bir şifre sıfırlama talebi aldık. Şifrenizi sıfırlamak için aşağıdaki butona tıklayın:
+    const isTr = locale === "tr";
+
+    await send({
+        to,
+        subject: isTr ? "Şifre Sıfırlama — Approval Stitch" : "Password Reset — Approval Stitch",
+        html: wrap(`
+            <h2>${isTr ? "Şifre Sıfırlama Talebi" : "Password Reset Request"}</h2>
+            <p>${isTr
+                ? "Hesabınız için bir şifre sıfırlama talebi aldık. Şifrenizi sıfırlamak için aşağıdaki butona tıklayın:"
+                : "We received a password reset request for your account. Click the button below to reset your password:"
+            }</p>
+            <a href="${resetUrl}" class="button">${isTr ? "Şifremi Sıfırla →" : "Reset My Password →"}</a>
+            <div class="accent-box" style="background-color: #fffbeb; border-color: #fef3c7; color: #92400e;">
+                <p style="margin: 0; font-size: 14px;">
+                    ⏱ ${isTr
+                ? "Bu bağlantı <strong>15 dakika</strong> geçerlidir. Süre dolduktan sonra yeni bir talep oluşturmanız gerekir."
+                : "This link is valid for <strong>15 minutes</strong>. After it expires, you'll need to request a new link."
+            }
                 </p>
-                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                    <a href="${resetUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        Şifremi Sıfırla →
-                    </a>
-                </td></tr></table>
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#fef3c7;border-radius:12px;">
-                    <tr><td style="padding:16px 20px;">
-                        <p style="margin:0;color:#92400e;font-size:13px;line-height:1.6;">
-                            ⏱ Bu bağlantı <strong>15 dakika</strong> geçerlidir. Süre dolduktan sonra yeni bir sıfırlama talebi oluşturmanız gerekecektir.
-                        </p>
-                    </td></tr>
-                </table>
-                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
-                    Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Şifreniz değişmeyecektir.
+            </div>
+            <p style="font-size: 13px; color: #94a3b8;">
+                ${isTr
+                ? "Bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın."
+                : "If you did not make this request, please ignore this email."
+            }
+            </p>
+        `),
+    });
+}
+
+/**
+ * Order Created Email
+ */
+export async function sendOrderCreatedEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr",
+    isAdmin = false
+) {
+    const isTr = locale === "tr";
+    const subject = isAdmin
+        ? `[ADMIN] Yeni Sipariş: ${orderTitle}`
+        : (isTr ? `Siparişiniz Alındı — ${orderTitle}` : `Order Received — ${orderTitle}`);
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2>${isAdmin
+                ? "Yeni Bir Sipariş Var!"
+                : (isTr ? "Siparişiniz Başarıyla Alındı 🎉" : "Order Successfully Received 🎉")
+            }</h2>
+            <p>${isAdmin
+                ? `Sistemde <strong>"${orderTitle}"</strong> başlıklı yeni bir sipariş oluşturuldu.`
+                : (isTr
+                    ? `Merhaba, <strong>"${orderTitle}"</strong> başlıklı siparişiniz başarıyla alınmıştır.`
+                    : `Hello, your order <strong>"${orderTitle}"</strong> has been successfully received.`)
+            }</p>
+            <p>${isTr
+                ? "Ekibimiz en kısa sürede incelemeye başlayacaktır. Detayları panelden takip edebilirsiniz."
+                : "Our team will start reviewing it shortly. You can track the details in your dashboard."
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button">
+                ${isTr ? "Siparişlerime Git →" : "Go to My Orders →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Order Status: CANCELLED
+ */
+export async function sendOrderCancelledEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr",
+    isAdmin = false
+) {
+    const isTr = locale === "tr";
+    const subject = isAdmin
+        ? `[ADMIN] Sipariş İptal Edildi: ${orderTitle}`
+        : (isTr ? `Sipariş İptal Edildi — ${orderTitle}` : `Order Cancelled — ${orderTitle}`);
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2 style="color: #dc2626;">${isTr ? "Sipariş İptal Edildi" : "Order Cancelled"}</h2>
+            <p>${isAdmin
+                ? `Müşteri <strong>"${orderTitle}"</strong> başlıklı siparişi iptal etti.`
+                : (isTr
+                    ? `<strong>"${orderTitle}"</strong> başlıklı siparişiniz iptal edilmiştir.`
+                    : `Your order <strong>"${orderTitle}"</strong> has been cancelled.`)
+            }</p>
+            <div class="accent-box" style="background-color: #fef2f2; border-color: #fee2e2;">
+                <p style="margin: 0; color: #991b1b; font-size: 14px;">
+                    ${isTr
+                ? "Siparişiniz sistemde iptal edildi."
+                : "Your order has been cancelled in the system."}
                 </p>
-            `),
-        });
-    } else {
-        await send({
-            to,
-            subject: "Password Reset — Approval Stitch",
-            html: wrap(`
-                <h2 style="margin:0 0 16px;color:#1a365d;font-size:20px;">Password Reset Request</h2>
-                <p style="margin:0 0 12px;color:#374151;font-size:15px;line-height:1.6;">
-                    Hello,<br>
-                    We received a password reset request for your account. Click the button below to reset your password:
-                </p>
-                <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;"><tr><td style="background:#2563eb;border-radius:10px;padding:14px 28px;">
-                    <a href="${resetUrl}" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                        Reset My Password →
-                    </a>
-                </td></tr></table>
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#fef3c7;border-radius:12px;">
-                    <tr><td style="padding:16px 20px;">
-                        <p style="margin:0;color:#92400e;font-size:13px;line-height:1.6;">
-                            ⏱ This link is valid for <strong>15 minutes</strong>. After it expires, you'll need to request a new reset link.
-                        </p>
-                    </td></tr>
-                </table>
-                <p style="margin:0;color:#9ca3af;font-size:13px;line-height:1.6;">
-                    If you did not request this, please ignore this email. Your password will remain unchanged.
-                </p>
-            `),
-        });
-    }
+            </div>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button" style="background-color: #475569;">
+                ${isTr ? "Paneli Görüntüle →" : "View Dashboard →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Order Status: IN_PROGRESS
+ */
+export async function sendOrderInProgressEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr"
+) {
+    const isTr = locale === "tr";
+    await send({
+        to,
+        subject: isTr ? `Sipariş Hazırlanıyor — ${orderTitle}` : `Order In Progress — ${orderTitle}`,
+        html: wrap(`
+            <h2>${isTr ? "Siparişiniz Hazırlanıyor 🧵" : "Your Order is In Progress 🧵"}</h2>
+            <p>${isTr
+                ? `<strong>"${orderTitle}"</strong> başlıklı siparişiniz üretim ekibimiz tarafından işleme alınmıştır.`
+                : `Your order <strong>"${orderTitle}"</strong> is being processed by our production team.`
+            }</p>
+            <p>${isTr
+                ? "Dosyalarınız büyük bir titizlikle hazırlanıyor. Tamamlandığında size haber vereceğiz."
+                : "Your files are being prepared with great care. We will notify you once completed."
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button">${isTr ? "Sipariş Detayı →" : "Order Details →"}</a>
+        `),
+    });
+}
+
+/**
+ * Order Status: REVISION
+ */
+export async function sendOrderRevisionEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr",
+    isAdmin = false
+) {
+    const isTr = locale === "tr";
+    const subject = isAdmin
+        ? `[ADMIN] Revizyon Talebi: ${orderTitle}`
+        : (isTr ? `Revizyon Talebi Alındı — ${orderTitle}` : `Revision Request Received — ${orderTitle}`);
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2>${isTr ? "Revizyon Talebi" : "Revision Request"}</h2>
+            <p>${isAdmin
+                ? `Müşteri <strong>"${orderTitle}"</strong> başlıklı sipariş için revizyon talep etti.`
+                : (isTr
+                    ? `<strong>"${orderTitle}"</strong> siparişi için revizyon talebiniz alınmıştır.`
+                    : `Your revision request for <strong>"${orderTitle}"</strong> has been received.`)
+            }</p>
+            <p>${isTr
+                ? "Ekibimiz talep ettiğiniz değişiklikleri inceleyip güncelleyecektir."
+                : "Our team will review and apply the requested changes."
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button">${isTr ? "Sipariş Detayı →" : "Order Details →"}</a>
+        `),
+    });
+}
+
+/**
+ * Order Status: COMPLETED (Order Done, Files Ready)
+ */
+export async function sendOrderCompletedEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr",
+    isAdmin = false
+) {
+    const isTr = locale === "tr";
+    const subject = isAdmin
+        ? `[ADMIN] Sipariş Tamamlandı: ${orderTitle}`
+        : (isTr ? `Siparişiniz Tamamlandı — ${orderTitle}` : `Order Completed — ${orderTitle}`);
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2 style="color: #059669;">${isTr ? "Siparişiniz Tamamlandı! 🎉" : "Your Order is Complete! 🎉"}</h2>
+            <p>${isAdmin
+                ? `<strong>"${orderTitle}"</strong> başlıklı sipariş tamamlandı.`
+                : (isTr
+                    ? `<strong>"${orderTitle}"</strong> başlıklı siparişiniz tamamlanmıştır. Final dosyalarınız indirilmeye hazır.`
+                    : `Your order <strong>"${orderTitle}"</strong> has been completed. Your final files are ready to download.`)
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button" style="background-color: #059669;">
+                ${isTr ? "Dosyaları İndir →" : "Download Files →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Order Status: DELIVERED (Files Downloaded)
+ */
+export async function sendOrderDeliveredEmail(
+    to: string,
+    orderTitle: string,
+    locale: "en" | "tr"
+) {
+    const isTr = locale === "tr";
+    await send({
+        to,
+        subject: isTr ? `Sipariş Teslim Edildi — ${orderTitle}` : `Order Delivered — ${orderTitle}`,
+        html: wrap(`
+            <h2 style="color: #059669;">${isTr ? "Sipariş Teslim Edildi ✅" : "Order Delivered ✅"}</h2>
+            <p>${isTr
+                ? `<strong>"${orderTitle}"</strong> başlıklı siparişinizin dosyaları başarıyla teslim edilmiştir.`
+                : `The files for your order <strong>"${orderTitle}"</strong> have been successfully delivered.`
+            }</p>
+            <p>${isTr
+                ? "Bizi tercih ettiğiniz için teşekkürler. Yeni bir sipariş oluşturmak için paneli ziyaret edebilirsiniz."
+                : "Thank you for choosing us. You can visit your dashboard to create a new order."
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button" style="background-color: #059669;">
+                ${isTr ? "Paneli Görüntüle →" : "View Dashboard →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * New Comment Email
+ */
+export async function sendNewCommentEmail(
+    to: string,
+    orderTitle: string,
+    commenterName: string,
+    content: string,
+    locale: "en" | "tr" = "en"
+) {
+    const isTr = locale === "tr";
+    await send({
+        to,
+        subject: isTr ? `Yeni Mesaj — ${orderTitle}` : `New Message — ${orderTitle}`,
+        html: wrap(`
+            <h2>${isTr ? "Yeni Mesaj Aldınız 💬" : "You Have a New Message 💬"}</h2>
+            <p><strong>${commenterName}</strong>, <strong>"${orderTitle}"</strong> ${isTr ? "siparişine bir mesaj yazdı:" : "wrote a message for the order:"}</p>
+            <div class="accent-box" style="font-style: italic; border-left: 4px solid #2563eb;">
+                "${content}"
+            </div>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button">
+                ${isTr ? "Yanıtla →" : "Reply →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Welcome Email (Legacy support + branding update)
+ */
+export async function sendWelcomeEmail(
+    to: string,
+    name: string,
+    locale: "en" | "tr"
+) {
+    const isTr = locale === "tr";
+    await send({
+        to,
+        subject: isTr ? "Hoş Geldiniz! — Approval Stitch" : "Welcome! — Approval Stitch",
+        html: wrap(`
+            <h2>${isTr ? `Hoş Geldiniz, ${name}! 🎉` : `Welcome, ${name}! 🎉`}</h2>
+            <p>${isTr
+                ? "Approval Stitch ailesine katıldığınız için teşekkür ederiz."
+                : "Thank you for joining Approval Stitch."
+            }</p>
+            <p>${isTr
+                ? "Artık profesyonel nakış dijitalleştirme hizmetlerimizden yararlanabilir, siparişlerinizi kolayca takip edebilirsiniz."
+                : "You can now access our professional embroidery digitizing services and easily track your orders."
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders/new" class="button">
+                ${isTr ? "İlk Siparişi Oluştur →" : "Create First Order →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Delete Account Email
+ */
+export async function sendDeleteAccountEmail(
+    to: string,
+    token: string,
+    locale: "en" | "tr"
+) {
+    const confirmUrl = `${SITE_URL}/api/user/delete-account/confirm?token=${token}`;
+    const isTr = locale === "tr";
+
+    await send({
+        to,
+        subject: isTr ? "Hesap Silme Onayı — Approval Stitch" : "Account Deletion Confirmation — Approval Stitch",
+        html: wrap(`
+            <h2>${isTr ? "Hesap Silme Talebi" : "Account Deletion Request"}</h2>
+            <p>${isTr
+                ? "Hesabınızı silme talebiniz alınmıştır. Bu işlemi onaylamak için lütfen aşağıdaki butona tıklayın:"
+                : "We received a request to delete your account. To confirm this action, please click the button below:"
+            }</p>
+            <a href="${confirmUrl}" class="button" style="background-color: #dc2626;">
+                ${isTr ? "Hesabımı Sil →" : "Delete My Account →"}
+            </a>
+            <p style="margin-top: 24px; font-size: 13px; color: #94a3b8;">
+                ${isTr
+                ? "Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Hesabınız güvende kalacaktır."
+                : "If you did not make this request, please ignore this email. Your account will remain safe."
+            }
+            </p>
+        `),
+    });
 }

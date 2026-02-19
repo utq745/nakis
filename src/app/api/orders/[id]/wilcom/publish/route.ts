@@ -76,10 +76,10 @@ export async function POST(
             }
         }
 
-        // Update order status to PAYMENT_PENDING
+        // Update order status to COMPLETED
         await prisma.order.update({
             where: { id: orderId },
-            data: { status: "PAYMENT_PENDING" },
+            data: { status: "COMPLETED" },
         });
 
         // Create system comments
@@ -92,7 +92,7 @@ export async function POST(
                     isSystem: true,
                 },
                 {
-                    content: `Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`,
+                    content: `Order Status Changed: Completed | Sipariş Durumu Değişti: Tamamlandı`,
                     orderId,
                     userId: session.user.id,
                     isSystem: true,
@@ -104,7 +104,7 @@ export async function POST(
         await createOrderNotification(
             order.customerId,
             "Approval Cards Ready | Onay Kartları Hazır",
-            "Your approval cards have been published. Please review and proceed to payment. | Onay kartlarınız yayınlandı. Lütfen kontrol edip ödemeye geçiniz.",
+            "Your approval cards have been published and your order is complete. | Onay kartlarınız yayınlandı ve siparişiniz tamamlandı.",
             `/orders/${orderId}`
         );
 

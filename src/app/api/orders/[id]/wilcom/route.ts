@@ -52,7 +52,7 @@ export async function POST(
             include: {
                 files: {
                     where: {
-                        type: { in: ["original", "preview"] },
+                        type: { in: ["original", "preview", "final"] },
                         OR: [
                             { name: { endsWith: ".png" } },
                             { name: { endsWith: ".jpg" } },
@@ -72,9 +72,11 @@ export async function POST(
             }
         });
 
+        // Prefer admin-provided preview/scan image over original customer artwork.
         const artworkFile =
-            order?.files?.find((f) => f.type === "original") ||
-            order?.files?.find((f) => f.type === "preview");
+            order?.files?.find((f) => f.type === "preview") ||
+            order?.files?.find((f) => f.type === "final") ||
+            order?.files?.find((f) => f.type === "original");
         let artworkPath: string | null = null;
         if (artworkFile) {
             const normalizedName = artworkFile.url.includes("/")
@@ -83,6 +85,7 @@ export async function POST(
 
             const candidates = [
                 path.join(process.cwd(), "uploads", orderId, "preview", normalizedName),
+                path.join(process.cwd(), "uploads", orderId, "final", normalizedName),
                 path.join(process.cwd(), "uploads", orderId, "original", normalizedName),
                 path.join(process.cwd(), "uploads", artworkFile.url),
                 path.join(process.cwd(), "public", artworkFile.url),
@@ -137,9 +140,9 @@ export async function POST(
                 totalBobbinM: result.data.totalBobbinM,
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: result.designImagePath
-                    ? `/api/orders/${orderId}/wilcom/image/design`
-                    : (result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null),
+                designImageUrl: result.artworkImagePath
+                    ? `/api/orders/${orderId}/wilcom/image/artwork`
+                    : (result.designImagePath ? `/api/orders/${orderId}/wilcom/image/design` : null),
                 customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,
@@ -166,9 +169,9 @@ export async function POST(
                 totalBobbinM: result.data.totalBobbinM,
                 colors: JSON.stringify(result.data.colors),
                 colorSequence: JSON.stringify(result.data.colorSequence),
-                designImageUrl: result.designImagePath
-                    ? `/api/orders/${orderId}/wilcom/image/design`
-                    : (result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null),
+                designImageUrl: result.artworkImagePath
+                    ? `/api/orders/${orderId}/wilcom/image/artwork`
+                    : (result.designImagePath ? `/api/orders/${orderId}/wilcom/image/design` : null),
                 customerArtworkUrl: result.artworkImagePath ? `/api/orders/${orderId}/wilcom/image/artwork` : null,
                 operatorApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/operator`,
                 customerApprovalPdf: `/api/orders/${orderId}/wilcom/pdf/customer`,

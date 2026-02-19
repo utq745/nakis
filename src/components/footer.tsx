@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
+
 export function Footer() {
     const { t, language } = useLanguage();
 

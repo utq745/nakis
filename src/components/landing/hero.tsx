@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,9 +8,16 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { HeroBackground } from "./hero-background";
 import { useSession } from "next-auth/react";
 
+
+
 export function Hero() {
     const { t, language } = useLanguage();
     const { data: session } = useSession();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const isLoggedIn = !!session;
     const isAdmin = session?.user?.role === "ADMIN";
@@ -54,28 +62,30 @@ export function Hero() {
 
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-wrap gap-4">
-                                {isLoggedIn ? (
-                                    <Link href={newOrderUrl}>
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                        >
-                                            {t.landing.hero.uploadBtn}
-                                            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                        </motion.button>
-                                    </Link>
-                                ) : (
-                                    <Link href={loginUrl}>
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                        >
-                                            {t.landing.hero.uploadBtn}
-                                            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                        </motion.button>
-                                    </Link>
+                                {mounted && (
+                                    isLoggedIn ? (
+                                        <Link href={newOrderUrl}>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                            >
+                                                {t.landing.hero.uploadBtn}
+                                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                            </motion.button>
+                                        </Link>
+                                    ) : (
+                                        <Link href={loginUrl}>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                            >
+                                                {t.landing.hero.uploadBtn}
+                                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                            </motion.button>
+                                        </Link>
+                                    )
                                 )}
                             </div>
 

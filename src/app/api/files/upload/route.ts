@@ -123,15 +123,15 @@ export async function POST(request: Request) {
             });
         }
 
-        // If final files were uploaded, update order status to PAYMENT_PENDING
+        // If final files were uploaded, update order status to COMPLETED
         if (type === "final" && isAdmin) {
             await prisma.order.update({
                 where: { id: orderId },
-                data: { status: "PAYMENT_PENDING" }
+                data: { status: "COMPLETED" }
             });
 
             // Create system message
-            const systemMessageContent = `Order Status Changed: Payment Pending | Sipariş Durumu Değişti: Ödeme Bekleniyor`;
+            const systemMessageContent = `Order Status Changed: Completed | Sipariş Durumu Değişti: Tamamlandı`;
             await prisma.comment.create({
                 data: {
                     content: systemMessageContent,

@@ -20,6 +20,19 @@ const createOrderSchema = z.object({
     customProduct: z.string().optional(),
     addKnockdownStitch: z.boolean().default(false),
     priority: z.enum(["NORMAL", "URGENT"]).default("NORMAL"),
+}).superRefine((data, ctx) => {
+    if (data.serviceType !== "New Digitizing + Sample") return;
+
+    const hasWidth = typeof data.designWidth === "number" && data.designWidth > 0;
+    const hasHeight = typeof data.designHeight === "number" && data.designHeight > 0;
+
+    if (!hasWidth && !hasHeight) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "For New Digitizing + Sample, provide at least one valid size (width or height).",
+            path: ["designWidth"],
+        });
+    }
 });
 
 export async function GET(request: Request) {
@@ -93,8 +106,11 @@ export async function POST(request: Request) {
         const sanitizedTitle = validatedData.title ? sanitizeString(validatedData.title) : undefined;
         const sanitizedDescription = validatedData.description ? sanitizeString(validatedData.description) : undefined;
         const sanitizedCustomProduct = validatedData.customProduct ? sanitizeString(validatedData.customProduct) : undefined;
-        const sizeLine = validatedData.designWidth && validatedData.designHeight && validatedData.designUnit
-            ? `Design Size: ${validatedData.designWidth} x ${validatedData.designHeight} ${validatedData.designUnit}`
+        const sizeParts: string[] = [];
+        if (validatedData.designWidth) sizeParts.push(`W:${validatedData.designWidth}`);
+        if (validatedData.designHeight) sizeParts.push(`H:${validatedData.designHeight}`);
+        const sizeLine = sizeParts.length > 0 && validatedData.designUnit
+            ? `Design Size: ${sizeParts.join(" ")} ${validatedData.designUnit}`
             : undefined;
         const capLine = validatedData.capType && validatedData.capPlacement
             ? `Cap Details: ${validatedData.capType}, ${validatedData.capPlacement}`
@@ -143,20 +159,33 @@ export async function POST(request: Request) {
         const projectTitle = order.title || "Yeni Sipariş";
 
         // Send email notifications
-        if (session.user.email) {
-            const { sendOrderCreatedEmail } = await import("@/lib/mail");
+        if (session.user.id) {
+            const mail = await import("@/lib/mail");
 
-            // Notify Customer
-            await sendOrderCreatedEmail(
-                session.user.email,
-                projectTitle
-            ).catch((err) => console.error("Failed to send customer email:", err));
+            // Fetch user language for personalized email
+            const dbUser = await prisma.user.findUnique({
+                where: { id: session.user.id },
+                select: { language: true, email: true }
+            });
 
-            // Notify Admin
-            await sendOrderCreatedEmail(
-                "admin@nakis.com",
-                `YENİ SİPARİŞ: ${projectTitle}`
-            ).catch((err) => console.error("Failed to send admin email:", err));
+            if (dbUser?.email) {
+                const userLocale = dbUser.language === "tr" ? "tr" : "en";
+
+                // Notify Customer
+                await mail.sendOrderCreatedEmail(
+                    dbUser.email,
+                    projectTitle,
+                    userLocale
+                ).catch((err) => console.error("Failed to send customer email:", err));
+
+                // Notify Admin
+                await mail.sendOrderCreatedEmail(
+                    "admin@nakis.com",
+                    projectTitle,
+                    userLocale,
+                    true
+                ).catch((err) => console.error("Failed to send admin email:", err));
+            }
         }
 
         // Create In-App Notification for Admins
@@ -183,6 +212,41 @@ export async function POST(request: Request) {
         console.error("Order creation core error:", error);
         return NextResponse.json(
             { error: "Order creation failed [v2]. Please check your data." },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const session = await auth();
+        if (session?.user?.role !== "ADMIN") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const { searchParams } = new URL(request.url);
+        const ids = searchParams.get("ids")?.split(",") || [];
+
+        if (ids.length === 0) {
+            return NextResponse.json({ error: "No IDs provided" }, { status: 400 });
+        }
+
+        // We delete from database. 
+        // Note: Cascade deletion in schema should handle related files, comments, etc records.
+        // If we want to delete PHYSICAL files from R2/Disk, it would be slow here.
+        // For bulk delete, we usually just want to clear the entries.
+
+        const result = await prisma.order.deleteMany({
+            where: {
+                id: { in: ids }
+            }
+        });
+
+        return NextResponse.json({ success: true, count: result.count });
+    } catch (error) {
+        console.error("Error bulk deleting orders:", error);
+        return NextResponse.json(
+            { error: "Bulk deletion failed" },
             { status: 500 }
         );
     }

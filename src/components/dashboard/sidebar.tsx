@@ -21,6 +21,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { useSidebar } from "@/components/providers/sidebar-provider";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
+
 export function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
@@ -84,7 +85,7 @@ export function Sidebar() {
     const navItems = session?.user?.role === "ADMIN" ? adminNav : customerNav;
 
     return (
-            <aside className={cn(
+        <aside className={cn(
             "h-screen bg-background border-r border-border transition-all duration-300",
             isCollapsed ? "w-16" : "w-64"
         )}>

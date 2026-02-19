@@ -74,9 +74,9 @@ export default function NewOrderPage() {
                     description: notes,
                     machineBrand: machine,
                     serviceType,
-                    designWidth: serviceType === "New Digitizing + Sample" ? Number(designWidth) : undefined,
-                    designHeight: serviceType === "New Digitizing + Sample" ? Number(designHeight) : undefined,
-                    designUnit: serviceType === "New Digitizing + Sample" ? designUnit : undefined,
+                    designWidth: serviceType === "New Digitizing + Sample" && designWidth ? Number(designWidth) : undefined,
+                    designHeight: serviceType === "New Digitizing + Sample" && designHeight ? Number(designHeight) : undefined,
+                    designUnit: serviceType === "New Digitizing + Sample" && (designWidth || designHeight) ? designUnit : undefined,
                     productType,
                     capType: productType === "Cap" ? capType : undefined,
                     capPlacement: productType === "Cap" ? capPlacement : undefined,
@@ -146,10 +146,14 @@ export default function NewOrderPage() {
             return;
         }
         if (step === 3 && serviceType === "New Digitizing + Sample") {
+            const hasWidth = !!designWidth;
+            const hasHeight = !!designHeight;
             const width = Number(designWidth);
             const height = Number(designHeight);
-            if (!designWidth || !designHeight || Number.isNaN(width) || Number.isNaN(height) || width <= 0 || height <= 0) {
-                toast.error("Please enter valid width and height values");
+            const invalidWidth = hasWidth && (Number.isNaN(width) || width <= 0);
+            const invalidHeight = hasHeight && (Number.isNaN(height) || height <= 0);
+            if ((!hasWidth && !hasHeight) || invalidWidth || invalidHeight) {
+                toast.error("Please enter at least one valid value for width or height");
                 return;
             }
         }
@@ -400,7 +404,7 @@ export default function NewOrderPage() {
                         </div>
                         {serviceType === "New Digitizing + Sample" && (
                             <div className="p-5 rounded-xl border border-violet-500/40 bg-violet-500/5 space-y-4">
-                                <p className="text-sm font-semibold text-foreground">Design Size (required)</p>
+                                <p className="text-sm font-semibold text-foreground">Design Size (at least one required)</p>
                                 <div className="flex gap-2">
                                     {(["cm", "inch"] as const).map((unit) => (
                                         <button
@@ -748,7 +752,7 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    1) Upload File → 2) Pricing → 3) Price Approval → 4) Preview Approval → 5) Payment → 6) Download
+                                    1) Upload File → 2) In Progress → 3) Priced (New Digitizing only) → 4) Completed → 5) Download
                                 </div>
                             </details>
 
@@ -760,7 +764,7 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    Yes! After receiving your preview, request revisions through the "Messages & Order Status" section.
+                                    Yes! After receiving your preview, request revisions through the Messages &amp; Order Status section.
                                 </div>
                             </details>
 

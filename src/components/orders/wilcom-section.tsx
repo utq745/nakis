@@ -212,7 +212,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                     <Button
                                         asChild
                                         className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
-                                        disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                        disabled={isUploading || status === "COMPLETED" || status === "DELIVERED"}
                                     >
                                         <span>
                                             <Upload className="mr-2 h-4 w-4" />
@@ -375,7 +375,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                                 variant="outline"
                                                 size="sm"
                                                 className="bg-accent/40 dark:bg-transparent border-border text-foreground dark:text-muted-foreground hover:bg-accent hover:text-foreground dark:hover:bg-accent dark:hover:text-white"
-                                                disabled={isUploading || status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                                disabled={isUploading || status === "COMPLETED" || status === "DELIVERED"}
                                             >
                                                 <span>
                                                     <RefreshCw className="mr-2 h-4 w-4" />
@@ -388,7 +388,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                             variant="outline"
                                             size="sm"
                                             className="bg-red-50 dark:bg-transparent border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white hover:border-red-700 dark:hover:bg-red-500 dark:hover:text-white dark:hover:border-red-600 transition-all"
-                                            disabled={isDeleting || status === "COMPLETED"}
+                                            disabled={isDeleting || status === "COMPLETED" || status === "DELIVERED"}
                                             onClick={() => setIsDeleteDialogOpen(true)}
                                         >
                                             <Trash2 className="mr-2 h-4 w-4" />
@@ -402,7 +402,7 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                 <div className="ml-auto">
                                     <Button
                                         size="sm"
-                                        disabled={status === "PAYMENT_PENDING" || status === "COMPLETED"}
+                                        disabled={status === "COMPLETED" || status === "DELIVERED"}
                                         className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold transition-all shadow-lg shadow-violet-900/20 gap-2 disabled:opacity-50"
                                         onClick={() => setIsPublishDialogOpen(true)}
                                     >

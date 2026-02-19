@@ -42,13 +42,13 @@ export async function GET(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // PAYMENT PROTECTION: If it's a final file, check if payment is done
+        // Final files are accessible only after they are ready
         if (file.type === "final" && !isAdmin) {
             const allowedStatuses = ["COMPLETED", "DELIVERED"];
             if (!allowedStatuses.includes(file.order.status)) {
                 return NextResponse.json(
-                    { error: "Payment required to access final files" },
-                    { status: 402 }
+                    { error: "Final files are not ready yet" },
+                    { status: 403 }
                 );
             }
 
@@ -225,9 +225,9 @@ export async function DELETE(
         }
 
         // Check if deletion is allowed based on order status
-        if (file.order.status === "PAYMENT_PENDING" || file.order.status === "COMPLETED") {
+        if (file.order.status === "COMPLETED" || file.order.status === "DELIVERED") {
             return NextResponse.json(
-                { error: "Cannot delete files when payment is pending or order is completed" },
+                { error: "Cannot delete files when order is completed or delivered" },
                 { status: 400 }
             );
         }

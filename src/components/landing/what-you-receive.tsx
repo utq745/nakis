@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
-const ASSET_VERSION = "20260217";
 
 export function WhatYouReceive() {
     const { t } = useLanguage();

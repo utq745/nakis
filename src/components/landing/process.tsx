@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 
+
 export function Process() {
     const { t } = useLanguage();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);

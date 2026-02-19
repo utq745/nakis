@@ -53,6 +53,10 @@ export async function POST(request: Request) {
         // Hash password
         const hashedPassword = await hash(validatedData.password, 12);
 
+        // Generate verification token
+        const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
         // Create user
         const user = await prisma.user.create({
             data: {
@@ -60,15 +64,17 @@ export async function POST(request: Request) {
                 password: hashedPassword,
                 name: validatedData.name,
                 role: "CUSTOMER",
-                emailVerified: new Date(), // Auto-verify for now
+                emailVerified: null, // Require verification
                 language: selectedLanguage,
+                emailVerificationToken: verificationToken,
+                emailVerificationTokenExpires: verificationTokenExpires,
             },
         });
 
-        // Send welcome email (fire-and-forget — don't block registration)
-        import("@/lib/mail").then(({ sendWelcomeEmail }) => {
-            sendWelcomeEmail(user.email!, user.name || "User", selectedLanguage).catch((err) =>
-                console.error("Welcome email failed:", err)
+        // Send verification email
+        import("@/lib/mail").then(({ sendVerificationEmail }) => {
+            sendVerificationEmail(user.email!, user.name || "User", verificationToken, selectedLanguage).catch((err) =>
+                console.error("Verification email failed:", err)
             );
         });
 

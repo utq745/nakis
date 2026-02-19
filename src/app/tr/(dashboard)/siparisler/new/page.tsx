@@ -72,9 +72,9 @@ export default function NewOrderPage() {
                 body: JSON.stringify({
                     machineBrand: machine,
                     serviceType,
-                    designWidth: serviceType === "New Digitizing + Sample" ? Number(designWidth) : undefined,
-                    designHeight: serviceType === "New Digitizing + Sample" ? Number(designHeight) : undefined,
-                    designUnit: serviceType === "New Digitizing + Sample" ? designUnit : undefined,
+                    designWidth: serviceType === "New Digitizing + Sample" && designWidth ? Number(designWidth) : undefined,
+                    designHeight: serviceType === "New Digitizing + Sample" && designHeight ? Number(designHeight) : undefined,
+                    designUnit: serviceType === "New Digitizing + Sample" && (designWidth || designHeight) ? designUnit : undefined,
                     productType,
                     capType: productType === "Cap" ? capType : undefined,
                     capPlacement: productType === "Cap" ? capPlacement : undefined,
@@ -141,10 +141,14 @@ export default function NewOrderPage() {
             return;
         }
         if (step === 3 && serviceType === "New Digitizing + Sample") {
+            const hasWidth = !!designWidth;
+            const hasHeight = !!designHeight;
             const width = Number(designWidth);
             const height = Number(designHeight);
-            if (!designWidth || !designHeight || Number.isNaN(width) || Number.isNaN(height) || width <= 0 || height <= 0) {
-                toast.error("Lütfen geçerli en ve boy bilgisi girin");
+            const invalidWidth = hasWidth && (Number.isNaN(width) || width <= 0);
+            const invalidHeight = hasHeight && (Number.isNaN(height) || height <= 0);
+            if ((!hasWidth && !hasHeight) || invalidWidth || invalidHeight) {
+                toast.error("Lütfen en veya boy için en az bir geçerli değer girin");
                 return;
             }
         }
@@ -395,7 +399,7 @@ export default function NewOrderPage() {
                         </div>
                         {serviceType === "New Digitizing + Sample" && (
                             <div className="p-5 rounded-xl border border-violet-500/40 bg-violet-500/5 space-y-4">
-                                <p className="text-sm font-semibold text-foreground">Tasarım Ölçüsü (zorunlu)</p>
+                                <p className="text-sm font-semibold text-foreground">Tasarım Ölçüsü (en az biri zorunlu)</p>
                                 <div className="flex gap-2">
                                     {(["cm", "inch"] as const).map((unit) => (
                                         <button
@@ -743,7 +747,7 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    1) Dosya Yükle → 2) Fiyatlandırma → 3) Fiyat Onayı → 4) Önizleme Onayı → 5) Ödeme → 6) İndir
+                                    1) Dosya Yükle → 2) İşleme Alınır → 3) Fiyatlandırılır (sadece New Digitizing) → 4) Tamamlanır → 5) İndir
                                 </div>
                             </details>
 
@@ -755,7 +759,7 @@ export default function NewOrderPage() {
                                     <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-open:rotate-180" />
                                 </summary>
                                 <div className="mt-3 text-muted-foreground leading-relaxed bg-accent/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    Evet! Önizleme aldıktan sonra "Mesajlar ve Sipariş Durumu" bölümünden revizyon talebinde bulunabilirsiniz.
+                                    Evet! Önizleme aldıktan sonra Mesajlar ve Sipariş Durumu bölümünden revizyon talebinde bulunabilirsiniz.
                                 </div>
                             </details>
 

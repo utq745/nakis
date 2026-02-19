@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
+
 export function Portfolio() {
     const { t } = useLanguage();
 

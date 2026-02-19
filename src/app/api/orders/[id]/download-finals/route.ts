@@ -49,11 +49,11 @@ export async function GET(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // Payment protection: non-admin users can only download finals after payment
+        // Final files can be downloaded only after order completion
         if (!isAdmin && !["COMPLETED", "DELIVERED"].includes(order.status)) {
             return NextResponse.json(
-                { error: "Payment required to access final files" },
-                { status: 402 }
+                { error: "Final files are not ready yet" },
+                { status: 403 }
             );
         }
 

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createOrderNotification } from "@/lib/notifications";
 
 const updateOrderSchema = z.object({
-    status: z.enum(["ORDERED", "PRICED", "APPROVAL_AWAITING", "REVISION", "IN_PROGRESS", "PAYMENT_PENDING", "COMPLETED", "DELIVERED", "CANCELLED"]).optional(),
+    status: z.enum(["ORDERED", "IN_PROGRESS", "PRICED", "REVISION", "COMPLETED", "DELIVERED", "CANCELLED"]).optional(),
     price: z.number().nonnegative().nullable().optional(),
     hidden: z.boolean().optional(),
     title: z.string().optional(),
@@ -130,8 +130,65 @@ export async function PATCH(
             return NextResponse.json({ error: "Only admins can update price or visibility" }, { status: 403 });
         }
 
+        const isNewDigitizingOrder = currentOrder.serviceType === "New Digitizing + Sample";
+
         // NEW WORKFLOW: Status update rules
         if (validatedData.status && validatedData.status !== currentOrder.status) {
+            // Closed state guard
+            if (currentOrder.status === "CANCELLED") {
+                return NextResponse.json(
+                    { error: "Cancelled orders cannot be updated to a different status." },
+                    { status: 400 }
+                );
+            }
+
+            // PRICED status is only valid for New Digitizing workflow
+            if (validatedData.status === "PRICED" && !isNewDigitizingOrder) {
+                return NextResponse.json(
+                    { error: "PRICED status is only allowed for New Digitizing + Sample orders." },
+                    { status: 400 }
+                );
+            }
+            if (validatedData.status === "REVISION" && !isNewDigitizingOrder) {
+                return NextResponse.json(
+                    { error: "REVISION status is only allowed for New Digitizing + Sample orders." },
+                    { status: 400 }
+                );
+            }
+
+            // Customer can cancel only from ORDERED or PRICED (price rejection flow)
+            if (
+                validatedData.status === "CANCELLED" &&
+                !["ORDERED", "PRICED"].includes(currentOrder.status)
+            ) {
+                return NextResponse.json(
+                    { error: `Order can only be cancelled from ORDERED or PRICED status. Current status: ${currentOrder.status}` },
+                    { status: 400 }
+                );
+            }
+
+            if (isAdmin) {
+                // Admin-side transitions for the new workflow
+                const from = currentOrder.status;
+                const to = validatedData.status;
+                const isAllowedAdminTransition =
+                    (from === "ORDERED" && to === "IN_PROGRESS") ||
+                    (from === "ORDERED" && to === "CANCELLED") ||
+                    (from === "IN_PROGRESS" && to === "PRICED" && isNewDigitizingOrder) ||
+                    (from === "PRICED" && to === "IN_PROGRESS" && isNewDigitizingOrder) ||
+                    (from === "PRICED" && to === "CANCELLED" && isNewDigitizingOrder) ||
+                    (from === "IN_PROGRESS" && to === "COMPLETED") ||
+                    (from === "REVISION" && to === "IN_PROGRESS" && isNewDigitizingOrder) ||
+                    (from === "COMPLETED" && to === "DELIVERED");
+
+                if (!isAllowedAdminTransition) {
+                    return NextResponse.json(
+                        { error: `Invalid admin status transition: ${from} -> ${to}` },
+                        { status: 400 }
+                    );
+                }
+            }
+
             if (!isAdmin) {
                 // Check if user owns the order
                 if (currentOrder.customerId !== session.user.id) {
@@ -140,22 +197,22 @@ export async function PATCH(
                 }
 
                 // Customer allowed transitions:
-                // 1. APPROVAL_AWAITING -> IN_PROGRESS (approve preview)
-                // 2. APPROVAL_AWAITING -> REVISION (request revision)
-                // 3. ORDERED -> CANCELLED (cancel before work starts)
-                // 4. PRICED -> IN_PROGRESS (accept quote)
-                // 5. PRICED -> CANCELLED (decline quote)
-                // 6. PAYMENT_PENDING -> COMPLETED (complete payment)
-                const isApprovingPreview = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "IN_PROGRESS";
-                const isRequestingRevision = currentOrder.status === "APPROVAL_AWAITING" && validatedData.status === "REVISION";
-                const isCancelling = validatedData.status === "CANCELLED" && (currentOrder.status === "ORDERED" || currentOrder.status === "PRICED");
-                const isAcceptingQuote = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS";
-                const isCompletingPayment = currentOrder.status === "PAYMENT_PENDING" && validatedData.status === "COMPLETED";
+                // 1. ORDERED -> CANCELLED (cancel before work starts)
+                // 2. PRICED -> IN_PROGRESS (accept quote, only for "New Digitizing + Sample")
+                // 3. PRICED -> CANCELLED (reject quote, only for "New Digitizing + Sample")
+                // 4. IN_PROGRESS -> REVISION (only for "New Digitizing + Sample")
+                const isCancelling = currentOrder.status === "ORDERED" && validatedData.status === "CANCELLED";
+                const isRejectingQuote = currentOrder.status === "PRICED" && validatedData.status === "CANCELLED"
+                    && isNewDigitizingOrder;
+                const isAcceptingQuote = currentOrder.status === "PRICED" && validatedData.status === "IN_PROGRESS"
+                    && isNewDigitizingOrder;
+                const isRequestingRevision = currentOrder.status === "IN_PROGRESS" && validatedData.status === "REVISION"
+                    && isNewDigitizingOrder;
 
-                console.log(`[PATCH_ORDER] isApprovingPreview=${isApprovingPreview}, isRequestingRevision=${isRequestingRevision}, isCancelling=${isCancelling}, isAcceptingQuote=${isAcceptingQuote}, isCompletingPayment=${isCompletingPayment}`);
-                console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}"`);
+                console.log(`[PATCH_ORDER] isCancelling=${isCancelling}, isRejectingQuote=${isRejectingQuote}, isAcceptingQuote=${isAcceptingQuote}, isRequestingRevision=${isRequestingRevision}`);
+                console.log(`[PATCH_ORDER] currentOrder.status="${currentOrder.status}", validatedData.status="${validatedData.status}", serviceType="${currentOrder.serviceType}"`);
 
-                if (!isApprovingPreview && !isRequestingRevision && !isCancelling && !isAcceptingQuote && !isCompletingPayment) {
+                if (!isCancelling && !isRejectingQuote && !isAcceptingQuote && !isRequestingRevision) {
                     console.error(`[PATCH_ORDER] 403 INVALID TRANSITION: ${currentOrder.status} -> ${validatedData.status}`);
                     return NextResponse.json({ error: `Forbidden status change: ${currentOrder.status} to ${validatedData.status}` }, { status: 403 });
                 }
@@ -177,15 +234,6 @@ export async function PATCH(
             finalData.cancelledAt = null;
         }
 
-        // Add revision fee for Package 1 (Approval Sample) - $10 extra per revision
-        if (validatedData.status === "REVISION" &&
-            currentOrder.status === "APPROVAL_AWAITING" &&
-            currentOrder.serviceType === "Approval Sample (Existing DST)" &&
-            currentOrder.price) {
-            finalData.price = currentOrder.price + 10;
-            console.log(`[PATCH_ORDER] Revision fee added: $${currentOrder.price} + $10 = $${finalData.price}`);
-        }
-
         console.log(`[PATCH_ORDER] Final data to update:`, JSON.stringify(finalData));
 
         const order = await prisma.order.update({
@@ -193,7 +241,7 @@ export async function PATCH(
             data: finalData,
             include: {
                 customer: {
-                    select: { email: true, name: true }
+                    select: { email: true, name: true, language: true }
                 }
             }
         });
@@ -202,11 +250,9 @@ export async function PATCH(
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
                 ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
-                PRICED: { en: "Quote Sent", tr: "Fiyat Teklifi Gönderildi" },
-                APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
-                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
-                PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
+                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
+                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
                 DELIVERED: { en: "Delivered", tr: "Teslim Edildi" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
@@ -226,26 +272,41 @@ export async function PATCH(
                 },
             });
         }
-        // Send email notification to customer
-        if (order.customer.email && (validatedData.status || validatedData.price)) {
-            const { sendOrderStatusUpdatedEmail } = await import("@/lib/mail");
-            await sendOrderStatusUpdatedEmail(
-                order.customer.email,
-                order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
-                order.status,
-                validatedData.price ?? undefined
-            ).catch(console.error);
+        // Send email notification to customer & admin
+        if (order.customer.email && validatedData.status) {
+            const mail = await import("@/lib/mail");
+            const userLocale = order.customer.language === "tr" ? "tr" : "en";
+            const orderTitle = order.title || `Order #${order.id.slice(-6).toUpperCase()}`;
+
+            switch (validatedData.status) {
+                case "CANCELLED":
+                    await mail.sendOrderCancelledEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    await mail.sendOrderCancelledEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    break;
+                case "IN_PROGRESS":
+                    await mail.sendOrderInProgressEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    break;
+                case "REVISION":
+                    await mail.sendOrderRevisionEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    await mail.sendOrderRevisionEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    break;
+                case "COMPLETED":
+                    await mail.sendOrderCompletedEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    await mail.sendOrderCompletedEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    break;
+                case "DELIVERED":
+                    await mail.sendOrderDeliveredEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    break;
+            }
         }
 
         // Create In-App Notification
         if (validatedData.status && validatedData.status !== currentOrder.status) {
             const statusLabels: Record<string, { en: string; tr: string }> = {
                 ORDERED: { en: "Order Received", tr: "Sipariş Alındı" },
-                PRICED: { en: "Quote Sent", tr: "Fiyat Teklifi Gönderildi" },
-                APPROVAL_AWAITING: { en: "Awaiting Preview Approval", tr: "Önizleme Onayı Bekleniyor" },
-                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 IN_PROGRESS: { en: "In Progress", tr: "Sipariş Hazırlanıyor" },
-                PAYMENT_PENDING: { en: "Payment Pending", tr: "Ödeme Bekleniyor" },
+                PRICED: { en: "Priced", tr: "Fiyatlandırıldı" },
+                REVISION: { en: "Revision Requested", tr: "Revizyon İstendi" },
                 COMPLETED: { en: "Completed", tr: "Tamamlandı" },
                 DELIVERED: { en: "Delivered", tr: "Teslim Edildi" },
                 CANCELLED: { en: "Cancelled", tr: "İptal Edildi" },
@@ -286,6 +347,81 @@ export async function PATCH(
         console.error("Error updating order:", error);
         return NextResponse.json(
             { error: "Failed to update order" },
+            { status: 500 }
+        );
+    }
+}
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user || session.user.role !== "ADMIN") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        const { id } = await params;
+        const { searchParams } = new URL(request.url);
+        const deleteFiles = searchParams.get("deleteFiles") === "true";
+
+        // Get order and its files
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: { files: true }
+        });
+
+        if (!order) {
+            return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        }
+
+        if (deleteFiles && order.files.length > 0) {
+            const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+            const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
+            const { unlink, rmdir } = await import("fs/promises");
+            const { existsSync } = await import("fs");
+            const { join } = await import("path");
+
+            for (const file of order.files) {
+                // 1. Delete from R2
+                try {
+                    await s3Client.send(new DeleteObjectCommand({
+                        Bucket: R2_BUCKET_NAME,
+                        Key: file.url,
+                    }));
+                } catch (s3Error) {
+                    console.error(`Error deleting file ${file.id} from S3:`, s3Error);
+                }
+
+                // 2. Delete from Local Disk
+                const urlPath = file.url;
+                const filename = urlPath.includes("/") ? urlPath.split("/").pop() || "" : urlPath;
+                const securePath = join(process.cwd(), "uploads", file.orderId, file.type, filename);
+                const publicPath = join(process.cwd(), "public", urlPath);
+                const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, filename);
+
+                if (existsSync(securePath)) await unlink(securePath).catch(() => { });
+                if (existsSync(publicPath)) await unlink(publicPath).catch(() => { });
+                if (existsSync(oldPublicPath)) await unlink(oldPublicPath).catch(() => { });
+            }
+
+            // Cleaning up empty local directories
+            const orderUploadsDir = join(process.cwd(), "uploads", order.id);
+            if (existsSync(orderUploadsDir)) {
+                await rmdir(orderUploadsDir, { recursive: true }).catch(() => { });
+            }
+        }
+
+        // Delete from database (onDelete: Cascade in schema should handle related comments, wilcomData, and files)
+        await prisma.order.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error deleting order:", error);
+        return NextResponse.json(
+            { error: "Failed to delete order" },
             { status: 500 }
         );
     }
