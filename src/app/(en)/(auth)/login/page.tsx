@@ -99,10 +99,15 @@ export default function LoginPage() {
                 {/* Left Side: Visual Sidebar */}
                 <div className="hidden lg:flex lg:flex-1 relative overflow-hidden bg-slate-900">
                     {/* Background Image */}
-                    <div
-                        className="absolute inset-0 w-full h-full bg-cover bg-center opacity-90"
-                        style={{ backgroundImage: "url('/images/hero/login-cover.png')" }}
-                    >
+                    <div className="absolute inset-0 flex items-center justify-center opacity-90">
+                        <Image
+                            src="/images/hero/login-cover.png"
+                            alt="Login Background"
+                            width={711}
+                            height={887}
+                            priority
+                            className="w-[711px] h-[887px] min-w-[711px] min-h-[887px] object-cover pointer-events-none"
+                        />
                     </div>
                     {/* Overlay Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
