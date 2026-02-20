@@ -46,14 +46,14 @@ export default function NewOrderPage() {
 
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const hasTrackedConversion = useRef(false);
 
     useEffect(() => {
-        if (showSuccessModal && typeof window !== "undefined" && (window as any).gtag) {
+        if (showSuccessModal && !hasTrackedConversion.current && typeof window !== "undefined" && (window as any).gtag) {
             (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-17962211871/lead',
-                'value': 1.0,
-                'currency': 'USD'
+                'send_to': 'AW-17962211871/Ai09CN3S7_sbEJ-0hvVC'
             });
+            hasTrackedConversion.current = true;
         }
     }, [showSuccessModal]);
 
