@@ -13,11 +13,32 @@ interface SeoLandingPageProps {
     content: React.ReactNode;
     imageSrc: string;
     imageAlt: string;
+    description: string;
 }
 
-export function SeoLandingPage({ title, content, imageSrc, imageAlt }: SeoLandingPageProps) {
+export function SeoLandingPage({ title, content, imageSrc, imageAlt, description }: SeoLandingPageProps) {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": title,
+        "description": description,
+        "publisher": {
+            "@type": "Organization",
+            "name": "Approval Stitch",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.approvalstitch.com/logo.png"
+            }
+        },
+        "image": `https://www.approvalstitch.com${imageSrc}`
+    };
+
     return (
         <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f8fafc] dark:bg-[#09090b] font-sans selection:bg-primary selection:text-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Header />
 
             <main className="flex-grow flex flex-col items-center pt-24 md:pt-32">

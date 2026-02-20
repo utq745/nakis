@@ -40,6 +40,7 @@ export default function EmbroideryApprovalSamplePage() {
     return (
         <SeoLandingPage
             title="Embroidery Approval Sample"
+            description="Secure your production run with a physical embroidery approval sample. Stop relying on 3D software renders and demand a real stitched proof."
             content={content}
             imageSrc="/images/landing/make-order.webp"
             imageAlt="Embroidery approval sample process"

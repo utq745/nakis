@@ -41,6 +41,7 @@ export default function EmbroiderySampleServicePage() {
     return (
         <SeoLandingPage
             title="Professional Embroidery Sample Service"
+            description="Eliminate production risk with our specialized embroidery sample service. We test your designs on real commercial machines before mass production."
             content={content}
             imageSrc="/images/hero/hero.webp"
             imageAlt="Embroidery sample service close-up"

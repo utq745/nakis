@@ -41,6 +41,7 @@ export default function EmbroideryTestStitchPage() {
     return (
         <SeoLandingPage
             title="Embroidery Test Stitch"
+            description="Get a professional embroidery test stitch done on Tajima machines before mass production to identify digitizing errors early."
             content={content}
             imageSrc="/images/landing/rutgers-real-stitched.webp"
             imageAlt="Embroidery test stitch sample macro photography"
