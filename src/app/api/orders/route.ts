@@ -11,7 +11,7 @@ const createOrderSchema = z.object({
     serviceType: z.string().optional(),
     designWidth: z.number().positive().optional(),
     designHeight: z.number().positive().optional(),
-    designUnit: z.enum(["cm", "inch"]).optional(),
+    designUnit: z.enum(["mm", "inch"]).optional(),
     capType: z.enum(["Constructed", "Unconstructed"]).optional(),
     capPlacement: z.enum(["Front", "Side", "Back"]).optional(),
     productType: z.string().optional(),

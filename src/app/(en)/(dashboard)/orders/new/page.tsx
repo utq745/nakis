@@ -32,7 +32,7 @@ export default function NewOrderPage() {
     const [serviceType, setServiceType] = useState<string>("");
     const [designWidth, setDesignWidth] = useState<string>("");
     const [designHeight, setDesignHeight] = useState<string>("");
-    const [designUnit, setDesignUnit] = useState<"cm" | "inch">("cm");
+    const [designUnit, setDesignUnit] = useState<"mm" | "inch">("mm");
     const [productType, setProductType] = useState<string>("");
     const [capType, setCapType] = useState<"" | "Constructed" | "Unconstructed">("");
     const [capPlacement, setCapPlacement] = useState<"" | "Front" | "Side" | "Back">("");
@@ -46,16 +46,9 @@ export default function NewOrderPage() {
 
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const hasTrackedConversion = useRef(false);
 
-    useEffect(() => {
-        if (showSuccessModal && !hasTrackedConversion.current && typeof window !== "undefined" && (window as any).gtag) {
-            (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-17962211871/Ai09CN3S7_sbEJ-0hvVC'
-            });
-            hasTrackedConversion.current = true;
-        }
-    }, [showSuccessModal]);
+
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -104,6 +97,13 @@ export default function NewOrderPage() {
             }
 
             const order = await response.json();
+
+            // Track conversion right after successful order creation
+            if (typeof window !== "undefined" && (window as any).gtag) {
+                (window as any).gtag('event', 'conversion', {
+                    'send_to': 'AW-17962211871/Ai09CN3S7_sbEJ-OhvVC'
+                });
+            }
 
             // Upload files
             const uploadFormData = new FormData();
@@ -377,7 +377,7 @@ export default function NewOrderPage() {
                                         if (s.id !== "New Digitizing + Sample") {
                                             setDesignWidth("");
                                             setDesignHeight("");
-                                            setDesignUnit("cm");
+                                            setDesignUnit("mm");
                                         }
                                     }}
                                     className={cn(
@@ -416,7 +416,7 @@ export default function NewOrderPage() {
                             <div className="p-5 rounded-xl border border-violet-500/40 bg-violet-500/5 space-y-4">
                                 <p className="text-sm font-semibold text-foreground">Design Size (at least one required)</p>
                                 <div className="flex gap-2">
-                                    {(["cm", "inch"] as const).map((unit) => (
+                                    {(["mm", "inch"] as const).map((unit) => (
                                         <button
                                             key={unit}
                                             type="button"
