@@ -87,6 +87,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
+        async signIn({ user, account, profile }) {
+            console.log("Authentication attempt:", {
+                provider: account?.provider,
+                userId: user?.id,
+                email: user?.email
+            });
+            return true;
+        },
         async jwt({ token, user, trigger, session }) {
             const userId = (user?.id || token.id) as string | undefined;
 
