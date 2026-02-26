@@ -316,23 +316,26 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             toast.error(language === "tr" ? "Geçerli bir dikiş sayısı girin." : "Enter a valid stitch count.");
             return;
         }
+        setPrice(calculateQuoteFromStitches(count).toString());
         setIsQuoteDialogOpen(true);
     }
 
     async function handleSendQuote() {
-        const count = Number(stitchCount);
-        const quote = calculateQuoteFromStitches(count);
+        if (!price) {
+            toast.error(language === "tr" ? "Lütfen bir fiyat girin." : "Please enter a price.");
+            return;
+        }
+
         setIsSendingQuote(true);
         try {
             const response = await fetch(`/api/orders/${order.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "PRICED", price: quote }),
+                body: JSON.stringify({ status: "PRICED", price: parseFloat(price) }),
             });
 
             if (!response.ok) throw new Error("Failed to send quote");
 
-            setPrice(quote.toString());
             setStatus("PRICED");
             setIsQuoteDialogOpen(false);
             toast.success(language === "tr" ? "Fiyat müşteriye gönderildi." : "Quote sent to customer.");
@@ -1278,20 +1281,102 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 variant="destructive"
             />
 
-            <ActionConfirmDialog
-                isOpen={isQuoteDialogOpen}
-                onOpenChange={setIsQuoteDialogOpen}
-                onConfirm={handleSendQuote}
-                isPending={isSendingQuote}
-                title={language === "tr" ? "Siparişi Fiyatlandır" : "Send Quote"}
-                description={
-                    language === "tr"
-                        ? `Bu sipariş için ${stitchCount} dikiş üzerinden fiyatlandırma yansıtılacaktır.\n\nÖnerilen Fiyat: $${calculateQuoteFromStitches(Number(stitchCount) || 0).toLocaleString("en-US")}\n\nMüşteriye göndermek istediğinize emin misiniz?`
-                        : `Details for this order (${stitchCount} stitches) will be reflected.\n\nSuggested Price: $${calculateQuoteFromStitches(Number(stitchCount) || 0).toLocaleString("en-US")}\n\nAre you sure you want to send this quote?`
-                }
-                confirmText={language === "tr" ? "Fiyatı Gönder" : "Send Quote"}
-                cancelText={language === "tr" ? "İptal" : "Cancel"}
-            />
+            <Dialog open={isQuoteDialogOpen} onOpenChange={setIsQuoteDialogOpen}>
+                <DialogContent className="sm:max-w-lg bg-popover border-border overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <DollarSign className="h-5 w-5 text-violet-500" />
+                            {language === "tr" ? "Fiyat Teklifi Gönder" : "Send Price Quote"}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="p-4 rounded-xl bg-accent/50 border border-border space-y-3">
+                            <h4 className="text-sm font-semibold text-violet-400 uppercase tracking-wider">
+                                {language === "tr" ? "Fiyatlandırma Formülü" : "Pricing Formula"}
+                            </h4>
+                            <div className="text-xs text-muted-foreground space-y-2">
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">0 - 7,000</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$35</span>
+                                    <span className="text-muted-foreground ml-1">({language === "tr" ? "Sabit Ücret" : "Base Fee"})</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                    <span className="font-medium text-foreground">7,001+</span> {language === "tr" ? "vuruş" : "stitches"}: <span className="text-emerald-400 font-bold">$35</span> + <span className="text-amber-400 font-bold">$3 × (({language === "tr" ? "vuruş" : "stitches"} - 7000) / 1000)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {stitchCount && (
+                            <div className="p-4 rounded-xl bg-violet-500/10 border border-violet-500/20 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">{language === "tr" ? "Vuruş Sayısı:" : "Stitch Count:"}</span>
+                                    <span className="text-lg font-bold text-foreground">{Number(stitchCount).toLocaleString(language === "tr" ? 'tr-TR' : 'en-US')}</span>
+                                </div>
+                                <div className="h-px bg-border/50" />
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">{language === "tr" ? "Sabit Ücret:" : "Base Fee:"}</span>
+                                        <span className="text-foreground font-medium">$35.00</span>
+                                    </div>
+                                    {Number(stitchCount) > 7000 && (
+                                        <div className="flex justify-between col-span-2">
+                                            <span className="text-muted-foreground">{language === "tr" ? "Ek Ücret:" : "Extra Fee:"}</span>
+                                            <span className="text-amber-400 font-medium">${((Number(stitchCount) - 7000) * 0.003).toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="h-px bg-border/50" />
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium text-violet-400">{language === "tr" ? "Hesaplanan Toplam:" : "Calculated Total:"}</span>
+                                    <span className="text-xl font-bold text-violet-400">${calculateQuoteFromStitches(Number(stitchCount)).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                {language === "tr" ? "Son Fiyat (düzenlenebilir)" : "Final Price (editable)"}
+                            </Label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold text-muted-foreground">$</span>
+                                <Input
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    className="bg-background border-border font-bold text-2xl text-violet-500 h-14"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsQuoteDialogOpen(false)}
+                            className="text-muted-foreground hover:text-foreground hover:bg-zinc-800"
+                        >
+                            {t.common.cancel}
+                        </Button>
+                        <Button
+                            onClick={handleSendQuote}
+                            disabled={isSendingQuote || !price}
+                            className="bg-violet-600 hover:bg-violet-500 text-white min-w-[140px] shadow-lg shadow-violet-500/20"
+                        >
+                            {isSendingQuote ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {language === "tr" ? "Gönderiliyor..." : "Sending..."}
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="mr-2 h-4 w-4" />
+                                    {language === "tr" ? "Fiyatı Gönder" : "Send Quote"}
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={isRevisionDialogOpen} onOpenChange={setIsRevisionDialogOpen}>
                 <DialogContent className="sm:max-w-xl bg-popover border-border overflow-hidden">
