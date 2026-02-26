@@ -173,6 +173,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const [stitchCount, setStitchCount] = useState<string>("");
     const [isSendingQuote, setIsSendingQuote] = useState(false);
     const [isApprovingPrice, setIsApprovingPrice] = useState(false);
+    const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
 
 
 
@@ -309,13 +310,17 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
         }
     }
 
-    async function handleSendQuote() {
+    function handlePrepareQuote() {
         const count = Number(stitchCount);
         if (!Number.isFinite(count) || count <= 0) {
             toast.error(language === "tr" ? "Geçerli bir dikiş sayısı girin." : "Enter a valid stitch count.");
             return;
         }
+        setIsQuoteDialogOpen(true);
+    }
 
+    async function handleSendQuote() {
+        const count = Number(stitchCount);
         const quote = calculateQuoteFromStitches(count);
         setIsSendingQuote(true);
         try {
@@ -329,6 +334,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
 
             setPrice(quote.toString());
             setStatus("PRICED");
+            setIsQuoteDialogOpen(false);
             toast.success(language === "tr" ? "Fiyat müşteriye gönderildi." : "Quote sent to customer.");
 
             setTimeout(() => {
@@ -682,7 +688,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 className="bg-background"
                             />
                             <Button
-                                onClick={handleSendQuote}
+                                onClick={handlePrepareQuote}
                                 disabled={isSendingQuote}
                                 className="bg-amber-600 hover:bg-amber-500 text-white"
                             >
@@ -1270,6 +1276,21 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                 confirmText={language === "tr" ? "İptal Et" : "Cancel Order"}
                 cancelText={language === "tr" ? "Vazgeç" : "Go Back"}
                 variant="destructive"
+            />
+
+            <ActionConfirmDialog
+                isOpen={isQuoteDialogOpen}
+                onOpenChange={setIsQuoteDialogOpen}
+                onConfirm={handleSendQuote}
+                isPending={isSendingQuote}
+                title={language === "tr" ? "Siparişi Fiyatlandır" : "Send Quote"}
+                description={
+                    language === "tr"
+                        ? `Bu sipariş için ${stitchCount} dikiş üzerinden fiyatlandırma yansıtılacaktır.\n\nÖnerilen Fiyat: $${calculateQuoteFromStitches(Number(stitchCount) || 0).toLocaleString("en-US")}\n\nMüşteriye göndermek istediğinize emin misiniz?`
+                        : `Details for this order (${stitchCount} stitches) will be reflected.\n\nSuggested Price: $${calculateQuoteFromStitches(Number(stitchCount) || 0).toLocaleString("en-US")}\n\nAre you sure you want to send this quote?`
+                }
+                confirmText={language === "tr" ? "Fiyatı Gönder" : "Send Quote"}
+                cancelText={language === "tr" ? "İptal" : "Cancel"}
             />
 
             <Dialog open={isRevisionDialogOpen} onOpenChange={setIsRevisionDialogOpen}>
