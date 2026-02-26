@@ -174,6 +174,7 @@ export async function PATCH(
                 const isAllowedAdminTransition =
                     (from === "ORDERED" && to === "IN_PROGRESS") ||
                     (from === "ORDERED" && to === "CANCELLED") ||
+                    (from === "ORDERED" && to === "PRICED" && isNewDigitizingOrder) ||
                     (from === "IN_PROGRESS" && to === "PRICED" && isNewDigitizingOrder) ||
                     (from === "PRICED" && to === "IN_PROGRESS" && isNewDigitizingOrder) ||
                     (from === "PRICED" && to === "CANCELLED" && isNewDigitizingOrder) ||

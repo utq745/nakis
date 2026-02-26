@@ -663,7 +663,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
             )}
 
             {/* Admin Quote Card - Package 3 */}
-            {isAdmin && status === "IN_PROGRESS" && order.serviceType === "New Digitizing + Sample" && (
+            {isAdmin && (status === "ORDERED" || status === "IN_PROGRESS" || status === "PRICED") && order.serviceType === "New Digitizing + Sample" && (
                 <Card className="border-amber-500/40 bg-amber-500/5 overflow-hidden">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-3">

@@ -66,7 +66,7 @@ model Order {
   id                 String      @id @default(cuid())
   title              String?
   description        String?
-  status             String      @default("ORDERED")
+  status             String      @default("PRICE_ACCEPTED")
   price              Float?
   hidden             Boolean     @default(false)
   machineBrand       String?
@@ -133,19 +133,19 @@ model WilcomData {
 }
 
 model File {
-  id            String   @id @default(cuid())
-  name          String
-  url           String
-  type          String
-  size          Int?
-  version       Int      @default(1)
+  id             String   @id @default(cuid())
+  name           String
+  url            String
+  type           String
+  size           Int?
+  version        Int      @default(1)
   replacesFileId String?
-  orderId       String
-  commentId     String?
-  uploadedBy    String
-  createdAt     DateTime @default(now())
-  comment       Comment? @relation(fields: [commentId], references: [id])
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  commentId      String?
+  uploadedBy     String
+  createdAt      DateTime @default(now())
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  comment        Comment? @relation(fields: [commentId], references: [id])
 
   @@index([orderId])
   @@index([type])
