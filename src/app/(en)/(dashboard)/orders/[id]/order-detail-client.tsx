@@ -1314,7 +1314,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 </div>
                                 <div className="h-px bg-border/50" />
                                 <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="flex justify-between">
+                                    <div className="flex justify-between col-span-2">
                                         <span className="text-muted-foreground">{language === "tr" ? "Sabit Ücret:" : "Base Fee:"}</span>
                                         <span className="text-foreground font-medium">$35.00</span>
                                     </div>
