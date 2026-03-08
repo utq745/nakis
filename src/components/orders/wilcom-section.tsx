@@ -81,6 +81,7 @@ interface WilcomSectionProps {
     isAdmin: boolean;
     status: OrderStatus;
     wilcomSourceFiles?: Array<{ id: string, name: string, url: string }>;
+    hasPreviewImage?: boolean;
 }
 
 function getContrastColor(hexColor: string): string {
@@ -92,7 +93,7 @@ function getContrastColor(hexColor: string): string {
     return brightness > 128 ? '#000000' : '#FFFFFF';
 }
 
-export function WilcomSection({ orderId, wilcomData, isAdmin, status, wilcomSourceFiles = [] }: WilcomSectionProps) {
+export function WilcomSection({ orderId, wilcomData, isAdmin, status, wilcomSourceFiles = [], hasPreviewImage = false }: WilcomSectionProps) {
     const router = useRouter();
     const { t, language } = useLanguage();
     const [isUploading, setIsUploading] = useState(false);
@@ -219,7 +220,22 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status, wilcomSour
                             {t.orders.wilcomUpload}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
+                        {!hasPreviewImage && (
+                            <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400">
+                                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-semibold text-sm">
+                                        {language === 'tr' ? 'Önce preview görseli yükleyin' : 'Upload a preview image first'}
+                                    </p>
+                                    <p className="text-xs mt-1 text-amber-600/80 dark:text-amber-400/80">
+                                        {language === 'tr'
+                                            ? 'Wilcom dosyası yükleyebilmek için önce "Dosyalar" bölümünden bir önizleme görseli yüklemeniz gerekiyor. Bu görsel, onay kartlarındaki ölçek alanında kullanılacaktır.'
+                                            : 'You need to upload a preview image from the "Files" section first. This image will be used in the scale area of approval cards.'}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                         <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="p-4 rounded-full bg-violet-500/10">
@@ -239,13 +255,13 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status, wilcomSour
                                     onChange={handleFileUpload}
                                     className="hidden"
                                     id="wilcom-upload"
-                                    disabled={isUploading}
+                                    disabled={isUploading || !hasPreviewImage}
                                 />
                                 <label htmlFor="wilcom-upload">
                                     <Button
                                         asChild
-                                        className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
-                                        disabled={isUploading || status === "COMPLETED" || status === "DELIVERED"}
+                                        className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
+                                        disabled={isUploading || !hasPreviewImage || status === "COMPLETED" || status === "DELIVERED"}
                                     >
                                         <span>
                                             <Upload className="mr-2 h-4 w-4" />

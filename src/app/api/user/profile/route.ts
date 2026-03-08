@@ -7,6 +7,7 @@ import { z } from "zod";
 const profileSchema = z.object({
     language: z.enum(["en", "tr"]).optional(),
     timezone: z.string().optional(),
+    timeFormat: z.enum(["12", "24"]).optional(),
     billingAddress: z.string().optional(),
     image: z.string().optional(),
     name: z.string().optional(),
@@ -29,6 +30,7 @@ export async function GET() {
                 role: true,
                 language: true,
                 timezone: true,
+                timeFormat: true,
                 billingAddress: true,
                 image: true,
                 pendingEmail: true,
@@ -78,6 +80,7 @@ export async function PATCH(request: Request) {
             }
         }
         if (validatedData.billingAddress !== undefined) updateData.billingAddress = validatedData.billingAddress;
+        if (validatedData.timeFormat !== undefined) updateData.timeFormat = validatedData.timeFormat;
         if (validatedData.image !== undefined) updateData.image = validatedData.image;
 
         // Check if name or email is changing

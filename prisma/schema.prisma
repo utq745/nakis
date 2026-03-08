@@ -17,6 +17,7 @@ model User {
   role                          String         @default("CUSTOMER")
   language                      String         @default("en")
   timezone                      String         @default("Europe/Istanbul")
+  timeFormat                    String         @default("24")
   billingAddress                String?
   createdAt                     DateTime       @default(now())
   updatedAt                     DateTime       @updatedAt

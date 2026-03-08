@@ -46,13 +46,13 @@ export async function POST(
         const buffer = Buffer.from(bytes);
         await fs.writeFile(pdfPath, buffer);
 
-        // Fetch order to check for user-provided title and get artwork file
+        // Fetch order to check for user-provided title and get artwork/preview files
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
                 files: {
                     where: {
-                        type: { in: ["original", "preview", "final"] },
+                        type: { in: ["original", "preview"] },
                         OR: [
                             { name: { endsWith: ".png" } },
                             { name: { endsWith: ".jpg" } },
@@ -65,54 +65,62 @@ export async function POST(
                         ]
                     },
                     orderBy: {
-                        createdAt: "desc" // Use the latest preview
+                        createdAt: "desc"
                     },
                     take: 20
                 }
             }
         });
 
-        // Fetch original customer artwork from order creation
-        const artworkFile = order?.files?.find((f) => f.type === "original");
-        let artworkPath: string | null = null;
-        if (artworkFile) {
-            const normalizedName = artworkFile.url.includes("/")
-                ? artworkFile.url.split("/").pop() || artworkFile.url
-                : artworkFile.url;
+        // Helper: resolve a file record to a local path (check local, fallback to R2)
+        async function resolveFilePath(file: { url: string; name: string } | undefined, label: string): Promise<string | null> {
+            if (!file) return null;
+            const normalizedName = file.url.includes("/")
+                ? file.url.split("/").pop() || file.url
+                : file.url;
 
             const candidates = [
+                path.join(process.cwd(), "uploads", orderId, "original", normalizedName),
                 path.join(process.cwd(), "uploads", orderId, "preview", normalizedName),
                 path.join(process.cwd(), "uploads", orderId, "final", normalizedName),
-                path.join(process.cwd(), "uploads", orderId, "original", normalizedName),
-                path.join(process.cwd(), "uploads", artworkFile.url),
-                path.join(process.cwd(), "public", artworkFile.url),
+                path.join(process.cwd(), "uploads", file.url),
+                path.join(process.cwd(), "public", file.url),
             ];
 
-            artworkPath = candidates.find((candidate) => existsSync(candidate)) || null;
+            const localPath = candidates.find((candidate) => existsSync(candidate)) || null;
+            if (localPath) return localPath;
 
-            // If not found locally, pull from R2 (url field stores key for new uploads)
-            if (!artworkPath && artworkFile.url) {
+            // Pull from R2
+            if (file.url) {
                 try {
                     const r2Object = await s3Client.send(new GetObjectCommand({
                         Bucket: R2_BUCKET_NAME,
-                        Key: artworkFile.url,
+                        Key: file.url,
                     }));
-
                     if (r2Object.Body) {
-                        const ext = path.extname(artworkFile.name || "") || ".png";
-                        const localArtworkPath = path.join(uploadsDir, `customer_artwork${ext}`);
-                        const artworkBuffer = await streamToBuffer(r2Object.Body);
-                        await fs.writeFile(localArtworkPath, artworkBuffer);
-                        artworkPath = localArtworkPath;
+                        const ext = path.extname(file.name || "") || ".png";
+                        const localFilePath = path.join(uploadsDir, `${label}${ext}`);
+                        const buffer = await streamToBuffer(r2Object.Body);
+                        await fs.writeFile(localFilePath, buffer);
+                        return localFilePath;
                     }
                 } catch (err) {
-                    console.error("[WILCOM_ARTWORK_R2_FETCH_ERROR]", err);
+                    console.error(`[WILCOM_${label.toUpperCase()}_R2_FETCH_ERROR]`, err);
                 }
             }
+            return null;
         }
 
+        // Customer artwork = the original file uploaded by the customer (for CUSTOMER ARTWORK box)
+        const artworkFile = order?.files?.find((f) => f.type === "original");
+        const artworkPath = await resolveFilePath(artworkFile, "customer_artwork");
+
+        // Preview image = the admin-uploaded preview (for the scale/ruler area)
+        const previewFile = order?.files?.find((f) => f.type === "preview");
+        const previewPath = await resolveFilePath(previewFile, "preview_image");
+
         // Process the PDF
-        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title, artworkPath);
+        const result = await processWilcomPdf(pdfPath, orderId, uploadsDir, order?.title, artworkPath, previewPath);
 
         // Save/Update in database
         const wilcomData = await prisma.wilcomData.upsert({

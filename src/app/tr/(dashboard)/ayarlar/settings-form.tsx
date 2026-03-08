@@ -13,7 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff, Camera, Upload, X, Palette, Sun, Moon, Monitor } from "lucide-react";
+import { Loader2, ChevronDown, User, Shield, Globe, MapPin, Pencil, Trash2, Plus, Check, ChevronsUpDown, Building2, Eye, EyeOff, Camera, Upload, X, Palette, Sun, Moon, Monitor, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -55,7 +55,11 @@ const texts = {
         updateLanguage: "Save Preferences",
         theme: "Theme",
         timezone: "Time Zone",
-        timezonePlaceholder: "Select time zone",
+        timezonePlaceholder: "Search time zone...",
+        timezoneNotFound: "No time zone found.",
+        timeFormat: "Time Format",
+        timeFormat12: "12-hour (AM/PM)",
+        timeFormat24: "24-hour",
         themeLight: "Light",
         themeDark: "Dark",
         themeSystem: "System",
@@ -125,7 +129,11 @@ const texts = {
         updateLanguage: "Tercihleri Kaydet",
         theme: "Tema",
         timezone: "Saat Dilimi",
-        timezonePlaceholder: "Saat dilimi seçin",
+        timezonePlaceholder: "Saat dilimi ara...",
+        timezoneNotFound: "Saat dilimi bulunamadı.",
+        timeFormat: "Saat Biçimi",
+        timeFormat12: "12 saat (AM/PM)",
+        timeFormat24: "24 saat",
         themeLight: "Açık",
         themeDark: "Koyu",
         themeSystem: "Sistem",
@@ -262,29 +270,65 @@ const countries = [
     { code: "ZW", name: "Zimbabwe" },
 ];
 
-const COMMON_TIMEZONES = [
-    "Europe/Istanbul",
-    "Europe/London",
-    "Europe/Berlin",
-    "Europe/Paris",
-    "Europe/Moscow",
-    "America/New_York",
-    "America/Chicago",
-    "America/Denver",
-    "America/Los_Angeles",
-    "America/Toronto",
-    "America/Sao_Paulo",
-    "Asia/Dubai",
-    "Asia/Riyadh",
-    "Asia/Kolkata",
-    "Asia/Bangkok",
-    "Asia/Singapore",
-    "Asia/Shanghai",
-    "Asia/Tokyo",
-    "Australia/Sydney",
-    "Pacific/Auckland",
-    "UTC",
-];
+interface TimezoneOption {
+    value: string;  // e.g. "Europe/Istanbul"
+    label: string;  // e.g. "Europe/Istanbul (GMT +03:00)"
+    offset: number; // numeric offset in minutes for sorting
+}
+
+function getTimezoneOffset(tz: string): { offsetStr: string; offsetMin: number } {
+    try {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            timeZoneName: 'shortOffset',
+        });
+        const parts = formatter.formatToParts(now);
+        const tzPart = parts.find(p => p.type === 'timeZoneName')?.value || '';
+        // tzPart is like "GMT+3", "GMT-5:30", "GMT" etc.
+        if (tzPart === 'GMT' || tzPart === 'UTC') return { offsetStr: 'GMT +00:00', offsetMin: 0 };
+        const match = tzPart.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+        if (!match) return { offsetStr: tzPart, offsetMin: 0 };
+        const sign = match[1];
+        const hours = match[2].padStart(2, '0');
+        const minutes = (match[3] || '00').padStart(2, '0');
+        const offsetMin = (parseInt(match[2]) * 60 + parseInt(match[3] || '0')) * (sign === '+' ? 1 : -1);
+        return { offsetStr: `GMT ${sign}${hours}:${minutes}`, offsetMin };
+    } catch {
+        return { offsetStr: 'GMT +00:00', offsetMin: 0 };
+    }
+}
+
+function getAllTimezones(): TimezoneOption[] {
+    let tzNames: string[];
+    try {
+        tzNames = Intl.supportedValuesOf('timeZone');
+    } catch {
+        tzNames = [
+            "UTC",
+            "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+            "America/Toronto", "America/Sao_Paulo", "America/Mexico_City",
+            "Europe/London", "Europe/Berlin", "Europe/Paris", "Europe/Istanbul", "Europe/Moscow",
+            "Asia/Dubai", "Asia/Riyadh", "Asia/Kolkata", "Asia/Bangkok", "Asia/Singapore",
+            "Asia/Shanghai", "Asia/Tokyo", "Asia/Seoul",
+            "Australia/Sydney", "Australia/Melbourne",
+            "Pacific/Auckland", "Pacific/Honolulu",
+            "Africa/Cairo", "Africa/Lagos", "Africa/Johannesburg",
+        ];
+    }
+    const options = tzNames.map(tz => {
+        const { offsetStr, offsetMin } = getTimezoneOffset(tz);
+        return {
+            value: tz,
+            label: `${tz.replace(/_/g, ' ')} (${offsetStr})`,
+            offset: offsetMin,
+        };
+    });
+    options.sort((a, b) => a.offset - b.offset || a.value.localeCompare(b.value));
+    return options;
+}
+
+const ALL_TIMEZONES = getAllTimezones();
 
 const PRESET_AVATARS = [
     // People
@@ -486,6 +530,8 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(user?.language || "en");
     const [selectedTimezone, setSelectedTimezone] = useState(user?.timezone || "Europe/Istanbul");
+    const [selectedTimeFormat, setSelectedTimeFormat] = useState<string>(user?.timeFormat || "24");
+    const [timezoneSearchOpen, setTimezoneSearchOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const [selectedTheme, setSelectedTheme] = useState<string>(theme || "system");
 
@@ -613,7 +659,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             const response = await fetch("/api/user/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ language: selectedLanguage, timezone: selectedTimezone }),
+                body: JSON.stringify({ language: selectedLanguage, timezone: selectedTimezone, timeFormat: selectedTimeFormat }),
             });
 
             if (!response.ok) throw new Error("Failed to update preferences");
@@ -1363,7 +1409,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <CardContent className="pt-0 space-y-6">
-                            {/* Theme and Language Row */}
+                            {/* Row 1: Theme (left) + Language (right) */}
                             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
                                 {/* Theme Selection - Left */}
                                 <div className="space-y-2.5 flex-1">
@@ -1411,7 +1457,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                     </div>
                                 </div>
 
-                                {/* Language & Time Zone - Right */}
+                                {/* Language - Right */}
                                 <div className="space-y-2.5 w-full sm:w-auto">
                                     <Label className="text-muted-foreground text-sm font-medium">{t.language}</Label>
                                     <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
@@ -1427,19 +1473,102 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <Label className="text-muted-foreground text-sm font-medium pt-2 block">{t.timezone}</Label>
-                                    <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
-                                        <SelectTrigger className="w-full sm:w-[240px] bg-accent/50 border-border text-foreground hover:bg-accent hover:border-violet-500/30 transition-all duration-200">
-                                            <SelectValue placeholder={t.timezonePlaceholder} />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-card border-border max-h-80">
-                                            {COMMON_TIMEZONES.map((tz) => (
-                                                <SelectItem key={tz} value={tz} className="text-foreground focus:bg-violet-500/10 focus:text-violet-400">
-                                                    {tz}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                </div>
+                            </div>
+
+                            {/* Row 2: Timezone (left) + Time Format (right) — side by side */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {/* Timezone - searchable */}
+                                <div className="space-y-2.5">
+                                    <Label className="text-muted-foreground text-sm font-medium flex items-center gap-1.5">
+                                        <Globe className="h-3.5 w-3.5" />
+                                        {t.timezone}
+                                    </Label>
+                                    <Popover open={timezoneSearchOpen} onOpenChange={setTimezoneSearchOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={timezoneSearchOpen}
+                                                className="w-full justify-between bg-accent/50 border-border text-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30 transition-all duration-200"
+                                            >
+                                                <span className="truncate">{ALL_TIMEZONES.find(tz => tz.value === selectedTimezone)?.label || selectedTimezone}</span>
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="p-0 bg-card border-border"
+                                            style={{ width: "var(--radix-popover-trigger-width)" }}
+                                            align="start"
+                                        >
+                                            <Command className="bg-card">
+                                                <CommandInput
+                                                    placeholder={t.timezonePlaceholder}
+                                                    className="text-foreground placeholder:text-muted-foreground"
+                                                />
+                                                <CommandList>
+                                                    <CommandEmpty className="text-muted-foreground text-sm py-6 text-center">
+                                                        {t.timezoneNotFound}
+                                                    </CommandEmpty>
+                                                    <CommandGroup className="max-h-64 overflow-auto">
+                                                        {ALL_TIMEZONES.map((tz) => (
+                                                            <CommandItem
+                                                                key={tz.value}
+                                                                value={tz.label}
+                                                                onSelect={() => {
+                                                                    setSelectedTimezone(tz.value);
+                                                                    setTimezoneSearchOpen(false);
+                                                                }}
+                                                                className="text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        selectedTimezone === tz.value ? "opacity-100 text-violet-400" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {tz.label}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+
+                                {/* Time Format */}
+                                <div className="space-y-2.5">
+                                    <Label className="text-muted-foreground text-sm font-medium flex items-center gap-1.5">
+                                        <Clock className="h-3.5 w-3.5" />
+                                        {t.timeFormat}
+                                    </Label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedTimeFormat("24")}
+                                            className={cn(
+                                                "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all duration-200 text-sm font-medium",
+                                                selectedTimeFormat === "24"
+                                                    ? "bg-violet-500/10 border-violet-500/50 text-violet-400"
+                                                    : "bg-accent/50 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30"
+                                            )}
+                                        >
+                                            {t.timeFormat24}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedTimeFormat("12")}
+                                            className={cn(
+                                                "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all duration-200 text-sm font-medium",
+                                                selectedTimeFormat === "12"
+                                                    ? "bg-violet-500/10 border-violet-500/50 text-violet-400"
+                                                    : "bg-accent/50 border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-violet-500/30"
+                                            )}
+                                        >
+                                            {t.timeFormat12}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1451,7 +1580,8 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                         isLanguageLoading
                                         || (selectedLanguage === user?.language
                                             && selectedTheme === theme
-                                            && selectedTimezone === (user?.timezone || "Europe/Istanbul"))
+                                            && selectedTimezone === (user?.timezone || "Europe/Istanbul")
+                                            && selectedTimeFormat === (user?.timeFormat || "24"))
                                     }
                                     className="bg-violet-600 hover:bg-violet-500 text-white transition-all duration-200"
                                 >

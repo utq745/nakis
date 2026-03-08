@@ -971,6 +971,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             isAdmin={isAdmin}
                             status={order.status}
                             wilcomSourceFiles={wilcomSourceFiles}
+                            hasPreviewImage={previewFiles.some(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name))}
                         />
                     )}
 

@@ -529,8 +529,9 @@ export async function extractPdfImages(
 export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
     designImageBase64?: string;
     artworkImageBase64?: string;
+    previewImageBase64?: string;
 }): string {
-    const { designImageBase64, artworkImageBase64 } = images;
+    const { designImageBase64, artworkImageBase64, previewImageBase64 } = images;
 
     // Convert mm to inches for display
     const heightInches = parseFloat((data.heightMm / 25.4).toFixed(2));
@@ -612,9 +613,11 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         </div>
     `).join('');
 
-    const outputImageSrc = artworkImageBase64
-        ? `data:image/png;base64,${artworkImageBase64}`
+    // Preview image goes into the ruler/scale area
+    const outputImageSrc = previewImageBase64
+        ? `data:image/png;base64,${previewImageBase64}`
         : (designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '');
+    // Customer artwork (original upload) goes into the small CUSTOMER ARTWORK box
     const artworkImageSrc = artworkImageBase64 ? `data:image/png;base64,${artworkImageBase64}` : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
     const barcodeText = `*${Math.random().toString(36).substring(2, 12).toUpperCase()}*`;
 
@@ -954,8 +957,9 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
 export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
     designImageBase64?: string;
     artworkImageBase64?: string;
+    previewImageBase64?: string;
 }): string {
-    const { designImageBase64, artworkImageBase64 } = images;
+    const { designImageBase64, artworkImageBase64, previewImageBase64 } = images;
 
     // Convert mm to inches for display
     const heightInches = parseFloat((data.heightMm / 25.4).toFixed(2));
@@ -1016,10 +1020,12 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
         }
     }
 
-    const outputImageSrc = artworkImageBase64
-        ? `data:image/png;base64,${artworkImageBase64}`
+    // Preview image goes into the ruler/scale area
+    const outputImageSrc = previewImageBase64
+        ? `data:image/png;base64,${previewImageBase64}`
         : (designImageBase64 ? `data:image/png;base64,${designImageBase64}` : '');
 
+    // Customer artwork (original upload) goes into the small CUSTOMER ARTWORK box
     const artworkImageSrc = artworkImageBase64
         ? `data:image/png;base64,${artworkImageBase64}`
         : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='12' text-anchor='middle' fill='%23999'%3ELogo%3C/text%3E%3C/svg%3E";
@@ -1373,7 +1379,8 @@ export async function processWilcomPdf(
     orderId: string,
     outputDir: string,
     orderTitle?: string | null,
-    customerArtworkPath?: string | null
+    customerArtworkPath?: string | null,
+    previewImagePath?: string | null
 ): Promise<{
     data: WilcomParsedData;
     operatorPdfPath: string;
@@ -1395,6 +1402,7 @@ export async function processWilcomPdf(
     // Extract images using Python helper
     let designImageBase64: string | undefined;
     let artworkImageBase64: string | undefined;
+    let previewImageBase64: string | undefined;
 
     try {
         const { execFileSync } = await import('child_process');
@@ -1736,9 +1744,18 @@ except Exception as e:
 if customer_artwork and os.path.exists(customer_artwork):
     try:
         with open(customer_artwork, 'rb') as f:
-            results['artwork'] = process_and_trim(f.read(), expected_ratio)
+            results['artwork'] = process_and_trim(f.read(), None)
     except Exception as e:
         results['artwork_error'] = str(e)
+
+# 3. Process preview image if provided
+preview_image = sys.argv[4] if len(sys.argv) > 4 else ""
+if preview_image and os.path.exists(preview_image):
+    try:
+        with open(preview_image, 'rb') as f:
+            results['preview'] = process_and_trim(f.read(), expected_ratio)
+    except Exception as e:
+        results['preview_error'] = str(e)
 
 print(json.dumps(results))
 `;
@@ -1747,7 +1764,7 @@ print(json.dumps(results))
         const expectedRatio = data.widthMm > 0 && data.heightMm > 0
             ? (data.widthMm / data.heightMm).toFixed(6)
             : "";
-        const pythonArgs = [tempScriptPath, wilcomPdfPath, customerArtworkPath || "", expectedRatio];
+        const pythonArgs = [tempScriptPath, wilcomPdfPath, customerArtworkPath || "", expectedRatio, previewImagePath || ""];
         const result = execFileSync('python3', pythonArgs, {
             encoding: 'utf-8',
             maxBuffer: 50 * 1024 * 1024
@@ -1757,6 +1774,7 @@ print(json.dumps(results))
             const parsed = JSON.parse(result.trim());
             designImageBase64 = parsed.design;
             artworkImageBase64 = parsed.artwork;
+            previewImageBase64 = parsed.preview;
         } catch (e) {
             console.error('Failed to parse Python result:', e);
         }
@@ -1782,11 +1800,13 @@ print(json.dumps(results))
     // Generate approval card HTML
     const operatorHtml = generateOperatorApprovalHtml(data, {
         designImageBase64,
-        artworkImageBase64
+        artworkImageBase64,
+        previewImageBase64,
     });
     const customerHtml = generateCustomerApprovalHtml(data, {
         designImageBase64,
-        artworkImageBase64
+        artworkImageBase64,
+        previewImageBase64,
     });
 
     // Generate PDFs
