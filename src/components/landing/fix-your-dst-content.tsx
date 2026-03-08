@@ -156,7 +156,7 @@ export default function FixYourDstClient({
                             <div className="relative lg:ml-10 animate-in fade-in slide-in-from-right-8 duration-700 fill-mode-both">
                                 <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group bg-slate-100 dark:bg-slate-900">
                                     <Image
-                                        src="/images/fix-your-dst/crosspoint-artwork.webp"
+                                        src="/images/fix-your-dst/crosspoint-artwork.webp?v=3"
                                         alt="Original source"
                                         width={600}
                                         height={600}

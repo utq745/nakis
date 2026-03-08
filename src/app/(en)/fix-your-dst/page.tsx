@@ -64,7 +64,7 @@ const comparisonBlocks = [
     title: "RAW DST RESULT",
     line1: "Runs exactly as delivered",
     line2: "Unstable stitch behavior",
-    imageSrc: "/images/fix-your-dst/raw-dst-result.webp",
+    imageSrc: "/images/fix-your-dst/raw-dst-result.webp?v=3",
     imageAlt:
       "Raw DST stitch result showing unstable edges and production issues on fabric",
   },
@@ -72,7 +72,7 @@ const comparisonBlocks = [
     title: "TARGETED FIXES",
     line1: "Stabilized within the same file",
     line2: "No redesign involved",
-    imageSrc: "/images/fix-your-dst/targeted-fixes-applied.webp",
+    imageSrc: "/images/fix-your-dst/targeted-fixes-applied.webp?v=3",
     imageAlt:
       "Annotated stitch sample highlighting targeted correction points in the DST file",
   },
@@ -80,7 +80,7 @@ const comparisonBlocks = [
     title: "PRODUCTION RESULT",
     line1: "Predictable stitching outcome",
     line2: "Ready for repeat production",
-    imageSrc: "/images/fix-your-dst/final-stitch-result.webp",
+    imageSrc: "/images/fix-your-dst/final-stitch-result.webp?v=3",
     imageAlt:
       "Final stitch result after DST stabilization with cleaner satin and improved structure",
   },
