@@ -74,14 +74,17 @@ export async function GET(
         let fileSize = file.size;
 
         if (existsSync(securePath)) {
-            const { createReadStream } = await import("fs");
+            const { createReadStream, statSync } = await import("fs");
             fileStream = createReadStream(securePath);
+            fileSize = statSync(securePath).size;
         } else if (existsSync(publicPath)) {
-            const { createReadStream } = await import("fs");
+            const { createReadStream, statSync } = await import("fs");
             fileStream = createReadStream(publicPath);
+            fileSize = statSync(publicPath).size;
         } else if (existsSync(oldPublicPath)) {
-            const { createReadStream } = await import("fs");
+            const { createReadStream, statSync } = await import("fs");
             fileStream = createReadStream(oldPublicPath);
+            fileSize = statSync(oldPublicPath).size;
         } else {
             // Try fetching from R2
             try {
@@ -181,14 +184,19 @@ export async function GET(
         const safeName = file.name.replace(/"/g, '\\"');
         const encodedName = encodeURIComponent(file.name);
 
-        return new NextResponse(readableStream, {
-            headers: {
-                "Content-Type": contentType,
-                "Content-Disposition": `${disposition}; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
-                "Content-Length": (fileSize || 0).toString(),
-                "Cache-Control": "private, max-age=3600",
-            },
-        });
+        const headers: Record<string, string> = {
+            "Content-Type": contentType,
+            "Content-Disposition": `${disposition}; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
+            "Cache-Control": "private, max-age=3600",
+        };
+
+        // Only set Content-Length if we have a real positive value
+        // Setting Content-Length: 0 when file has content causes browsers to show empty/broken files
+        if (fileSize && fileSize > 0) {
+            headers["Content-Length"] = fileSize.toString();
+        }
+
+        return new NextResponse(readableStream, { headers });
     } catch (error) {
         console.error("Error serving file:", error);
         return NextResponse.json(
