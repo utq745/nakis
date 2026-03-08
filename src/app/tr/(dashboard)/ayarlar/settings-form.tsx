@@ -54,6 +54,8 @@ const texts = {
         languageUpdated: "Preferences saved",
         updateLanguage: "Save Preferences",
         theme: "Theme",
+        timezone: "Time Zone",
+        timezonePlaceholder: "Select time zone",
         themeLight: "Light",
         themeDark: "Dark",
         themeSystem: "System",
@@ -122,6 +124,8 @@ const texts = {
         languageUpdated: "Tercihler kaydedildi",
         updateLanguage: "Tercihleri Kaydet",
         theme: "Tema",
+        timezone: "Saat Dilimi",
+        timezonePlaceholder: "Saat dilimi seçin",
         themeLight: "Açık",
         themeDark: "Koyu",
         themeSystem: "Sistem",
@@ -256,6 +260,30 @@ const countries = [
     { code: "YE", name: "Yemen" },
     { code: "ZM", name: "Zambia" },
     { code: "ZW", name: "Zimbabwe" },
+];
+
+const COMMON_TIMEZONES = [
+    "Europe/Istanbul",
+    "Europe/London",
+    "Europe/Berlin",
+    "Europe/Paris",
+    "Europe/Moscow",
+    "America/New_York",
+    "America/Chicago",
+    "America/Denver",
+    "America/Los_Angeles",
+    "America/Toronto",
+    "America/Sao_Paulo",
+    "Asia/Dubai",
+    "Asia/Riyadh",
+    "Asia/Kolkata",
+    "Asia/Bangkok",
+    "Asia/Singapore",
+    "Asia/Shanghai",
+    "Asia/Tokyo",
+    "Australia/Sydney",
+    "Pacific/Auckland",
+    "UTC",
 ];
 
 const PRESET_AVATARS = [
@@ -457,6 +485,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(user?.language || "en");
+    const [selectedTimezone, setSelectedTimezone] = useState(user?.timezone || "Europe/Istanbul");
     const { theme, setTheme } = useTheme();
     const [selectedTheme, setSelectedTheme] = useState<string>(theme || "system");
 
@@ -584,7 +613,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
             const response = await fetch("/api/user/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ language: selectedLanguage }),
+                body: JSON.stringify({ language: selectedLanguage, timezone: selectedTimezone }),
             });
 
             if (!response.ok) throw new Error("Failed to update preferences");
@@ -597,6 +626,7 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
         } catch (error) {
             toast.error(t.error);
             setSelectedLanguage(user?.language || "en");
+            setSelectedTimezone(user?.timezone || "Europe/Istanbul");
         } finally {
             setIsLanguageLoading(false);
         }
@@ -1381,8 +1411,8 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                     </div>
                                 </div>
 
-                                {/* Language Selection - Right */}
-                                <div className="space-y-2.5">
+                                {/* Language & Time Zone - Right */}
+                                <div className="space-y-2.5 w-full sm:w-auto">
                                     <Label className="text-muted-foreground text-sm font-medium">{t.language}</Label>
                                     <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
                                         <SelectTrigger className="w-[160px] bg-accent/50 border-border text-foreground hover:bg-accent hover:border-violet-500/30 transition-all duration-200">
@@ -1397,6 +1427,19 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    <Label className="text-muted-foreground text-sm font-medium pt-2 block">{t.timezone}</Label>
+                                    <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+                                        <SelectTrigger className="w-full sm:w-[240px] bg-accent/50 border-border text-foreground hover:bg-accent hover:border-violet-500/30 transition-all duration-200">
+                                            <SelectValue placeholder={t.timezonePlaceholder} />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-card border-border max-h-80">
+                                            {COMMON_TIMEZONES.map((tz) => (
+                                                <SelectItem key={tz} value={tz} className="text-foreground focus:bg-violet-500/10 focus:text-violet-400">
+                                                    {tz}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
 
@@ -1404,7 +1447,12 @@ export function SettingsForm({ user, locale = "en" }: SettingsFormProps) {
                             <div className="flex justify-end pt-2">
                                 <Button
                                     onClick={handleLanguageUpdate}
-                                    disabled={isLanguageLoading || (selectedLanguage === user?.language && selectedTheme === theme)}
+                                    disabled={
+                                        isLanguageLoading
+                                        || (selectedLanguage === user?.language
+                                            && selectedTheme === theme
+                                            && selectedTimezone === (user?.timezone || "Europe/Istanbul"))
+                                    }
                                     className="bg-violet-600 hover:bg-violet-500 text-white transition-all duration-200"
                                 >
                                     {isLanguageLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

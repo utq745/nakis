@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const profileSchema = z.object({
     language: z.enum(["en", "tr"]).optional(),
+    timezone: z.string().optional(),
     billingAddress: z.string().optional(),
     image: z.string().optional(),
     name: z.string().optional(),
@@ -26,6 +28,7 @@ export async function GET() {
                 name: true,
                 role: true,
                 language: true,
+                timezone: true,
                 billingAddress: true,
                 image: true,
                 pendingEmail: true,
@@ -35,7 +38,7 @@ export async function GET() {
         });
 
         return NextResponse.json(user);
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Failed to fetch profile" },
             { status: 500 }
@@ -61,8 +64,19 @@ export async function PATCH(request: Request) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        const updateData: any = {};
+        const updateData: Prisma.UserUpdateInput = {};
         if (validatedData.language) updateData.language = validatedData.language;
+        if (validatedData.timezone !== undefined) {
+            try {
+                Intl.DateTimeFormat("en-US", { timeZone: validatedData.timezone });
+                updateData.timezone = validatedData.timezone;
+            } catch {
+                return NextResponse.json(
+                    { error: "Geçersiz saat dilimi" },
+                    { status: 400 }
+                );
+            }
+        }
         if (validatedData.billingAddress !== undefined) updateData.billingAddress = validatedData.billingAddress;
         if (validatedData.image !== undefined) updateData.image = validatedData.image;
 

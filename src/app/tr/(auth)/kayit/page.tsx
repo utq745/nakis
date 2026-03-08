@@ -42,6 +42,7 @@ export default function RegisterPage() {
         }
 
         try {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const response = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -49,7 +50,8 @@ export default function RegisterPage() {
                     name: `${firstName} ${lastName}`.trim(),
                     email,
                     password,
-                    language: "tr"
+                    language: "tr",
+                    timezone,
                 }),
             });
 

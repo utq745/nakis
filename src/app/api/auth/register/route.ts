@@ -10,6 +10,7 @@ const registerSchema = z.object({
     password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
     name: z.string().min(2, "İsim en az 2 karakter olmalı"),
     language: z.enum(["en", "tr"]).optional(),
+    timezone: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -35,6 +36,14 @@ export async function POST(request: Request) {
         }
 
         const validatedData = registerSchema.parse(body);
+        const timezone = validatedData.timezone || "Europe/Istanbul";
+        let validTimezone = "Europe/Istanbul";
+        try {
+            Intl.DateTimeFormat("en-US", { timeZone: timezone });
+            validTimezone = timezone;
+        } catch {
+            validTimezone = "Europe/Istanbul";
+        }
 
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
@@ -66,6 +75,7 @@ export async function POST(request: Request) {
                 role: "CUSTOMER",
                 emailVerified: null, // Require verification
                 language: selectedLanguage,
+                timezone: validTimezone,
                 emailVerificationToken: verificationToken,
                 emailVerificationTokenExpires: verificationTokenExpires,
             },

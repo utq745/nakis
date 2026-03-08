@@ -16,11 +16,20 @@ interface DashboardContentProps {
     };
     recentOrders: any[];
     isAdmin: boolean;
+    timezone: string;
 }
 
-export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardContentProps) {
+export function DashboardContent({ stats, recentOrders, isAdmin, timezone }: DashboardContentProps) {
     const { t, language } = useLanguage();
     const dateLocale = language === "tr" ? "tr-TR" : "en-US";
+    const formatOrderDateTime = (value: string) => new Intl.DateTimeFormat(dateLocale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: timezone,
+    }).format(new Date(value));
 
     return (
         <div className="space-y-8">
@@ -114,7 +123,7 @@ export function DashboardContent({ stats, recentOrders, isAdmin }: DashboardCont
                                             {(t.status as any)[order.status] || order.status}
                                         </Badge>
                                         <span className="text-sm text-muted-foreground">
-                                            {new Date(order.createdAt).toLocaleDateString(dateLocale)}
+                                            {formatOrderDateTime(order.createdAt)}
                                         </span>
                                     </div>
                                 </Link>

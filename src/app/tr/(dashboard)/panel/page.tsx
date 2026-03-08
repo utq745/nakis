@@ -34,7 +34,12 @@ async function getRecentOrders(userId: string, isAdmin: boolean) {
 export default async function DashboardPage() {
     const session = await auth();
     const isAdmin = session?.user?.role === "ADMIN";
-    const userId = session?.user?.id!;
+    const userId = session?.user?.id;
+    if (!userId) return null;
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { timezone: true },
+    });
 
     const stats = await getOrderStats(userId, isAdmin);
     const recentOrders = await getRecentOrders(userId, isAdmin);
@@ -44,6 +49,7 @@ export default async function DashboardPage() {
             stats={stats}
             recentOrders={recentOrders}
             isAdmin={isAdmin}
+            timezone={user?.timezone || "Europe/Istanbul"}
         />
     );
 }
