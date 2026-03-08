@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 const MAIL_FROM = process.env.MAIL_FROM || "Approval Stitch <noreply@approvalstitch.com>";
 const SITE_URL = process.env.AUTH_URL || "https://www.approvalstitch.com";
-const LOGO_URL = `${SITE_URL}/images/approval-stich-logo.webp`;
+const LOGO_URL = `${SITE_URL}/images/approval-stich-logo-w.webp`;
 
 // ────────────────────────────────────────────────
 // Helper — all mails go through this single point
@@ -178,10 +178,10 @@ export async function sendOrderCreatedEmail(
     to: string,
     orderTitle: string,
     locale: "en" | "tr",
-    isAdmin = false
+    isAdminNotification = false
 ) {
     const isTr = locale === "tr";
-    const subject = isAdmin
+    const subject = isAdminNotification
         ? `[ADMIN] Yeni Sipariş: ${orderTitle}`
         : (isTr ? `Siparişiniz Alındı — ${orderTitle}` : `Order Received — ${orderTitle}`);
 
@@ -189,22 +189,95 @@ export async function sendOrderCreatedEmail(
         to,
         subject,
         html: wrap(`
-            <h2>${isAdmin
+            <h2>${isAdminNotification
                 ? "Yeni Bir Sipariş Var!"
                 : (isTr ? "Siparişiniz Başarıyla Alındı 🎉" : "Order Successfully Received 🎉")
             }</h2>
-            <p>${isAdmin
+            <p>${isAdminNotification
                 ? `Sistemde <strong>"${orderTitle}"</strong> başlıklı yeni bir sipariş oluşturuldu.`
                 : (isTr
                     ? `Merhaba, <strong>"${orderTitle}"</strong> başlıklı siparişiniz başarıyla alınmıştır.`
                     : `Hello, your order <strong>"${orderTitle}"</strong> has been successfully received.`)
             }</p>
             <p>${isTr
-                ? "Ekibimiz en kısa sürede incelemeye başlayacaktır. Detayları panelden takip edebilirsiniz."
-                : "Our team will start reviewing it shortly. You can track the details in your dashboard."
+                ? (isAdminNotification ? "Siparişi incelemek için paneli kullanabilirsiniz." : "Ekibimiz en kısa sürede incelemeye başlayacaktır. Detayları panelden takip edebilirsiniz.")
+                : (isAdminNotification ? "You can use the dashboard to review the order." : "Our team will start reviewing it shortly. You can track the details in your dashboard.")
+            }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}${isAdminNotification ? 'panel/siparisler' : 'orders'}" class="button">
+                ${isAdminNotification ? (isTr ? "Siparişi Görüntüle →" : "View Order →") : (isTr ? "Siparişlerime Git →" : "Go to My Orders →")}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Price Quote Email (Admin -> Customer)
+ */
+export async function sendPriceQuoteEmail(
+    to: string,
+    orderTitle: string,
+    price: number,
+    locale: "en" | "tr"
+) {
+    const isTr = locale === "tr";
+    await send({
+        to,
+        subject: isTr ? `Fiyat Teklifi Hazır — ${orderTitle}` : `Price Quote Ready — ${orderTitle}`,
+        html: wrap(`
+            <h2>${isTr ? "Fiyat Teklifi Hazır! 💰" : "Your Price Quote is Ready! 💰"}</h2>
+            <p>${isTr
+                ? `<strong>"${orderTitle}"</strong> başlıklı siparişiniz için fiyat teklifi hazırlandı.`
+                : `A price quote has been prepared for your order <strong>"${orderTitle}"</strong>.`
+            }</p>
+            <div class="accent-box" style="text-align: center;">
+                <p style="margin: 0; font-size: 20px; font-weight: 700; color: #0f172a;">
+                    ${isTr ? "Teklif Tutarı" : "Quote Amount"}: <span style="color: #2563eb;">$${price}</span>
+                </p>
+            </div>
+            <p>${isTr
+                ? "Siparişi başlatmak için teklifi panel üzerinden onaylamanız gerekmektedir. Teklifi kabul ettiğinizde ekibimiz hemen çalışmaya başlayacaktır."
+                : "To start the order, you need to approve the quote via your dashboard. Once you accept, our team will begin work immediately."
             }</p>
             <a href="${SITE_URL}/${isTr ? 'tr/' : ''}orders" class="button">
-                ${isTr ? "Siparişlerime Git →" : "Go to My Orders →"}
+                ${isTr ? "Teklifi İncele →" : "Review Quote →"}
+            </a>
+        `),
+    });
+}
+
+/**
+ * Quote Action Email (Customer -> Admin)
+ */
+export async function sendQuoteActionEmail(
+    to: string,
+    orderTitle: string,
+    customerName: string,
+    action: "ACCEPTED" | "REJECTED",
+    locale: "en" | "tr"
+) {
+    const isTr = locale === "tr";
+    const isAccepted = action === "ACCEPTED";
+    const subject = isTr
+        ? `[ADMIN] Teklif ${isAccepted ? 'Kabul Edildi' : 'Reddedildi'}: ${orderTitle}`
+        : `[ADMIN] Quote ${isAccepted ? 'Accepted' : 'Rejected'}: ${orderTitle}`;
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2>${isTr ? "Teklif Hakkında Güncelleme" : "Order Quote Update"}</h2>
+            <p><strong>${customerName}</strong>, <strong>"${orderTitle}"</strong> siparişi için gönderdiğiniz fiyat teklifini <strong>${isTr ? (isAccepted ? 'KABUL ETTİ' : 'REDDETTİ') : action}</strong>.</p>
+            ${isAccepted ? `
+            <p>${isTr
+                    ? "Müşteri ödemeye hazır veya işin başlamasını bekliyor. Lütfen siparişi hazırlamaya başlayın."
+                    : "The customer is ready for payment or waiting for work to start. Please begin preparing the order."
+                }</p>` : `
+            <p>${isTr
+                ? "Müşteri teklifi reddetti ve siparişi iptal etti."
+                : "The customer rejected the quote and cancelled the order."
+            }</p>`}
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}panel/siparisler" class="button">
+                ${isTr ? "Siparişi Görüntüle →" : "View Order →"}
             </a>
         `),
     });

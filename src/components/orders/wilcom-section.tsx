@@ -80,6 +80,7 @@ interface WilcomSectionProps {
     wilcomData: WilcomData | null;
     isAdmin: boolean;
     status: OrderStatus;
+    wilcomSourceFiles?: Array<{ id: string, name: string, url: string }>;
 }
 
 function getContrastColor(hexColor: string): string {
@@ -91,7 +92,7 @@ function getContrastColor(hexColor: string): string {
     return brightness > 128 ? '#000000' : '#FFFFFF';
 }
 
-export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSectionProps) {
+export function WilcomSection({ orderId, wilcomData, isAdmin, status, wilcomSourceFiles = [] }: WilcomSectionProps) {
     const router = useRouter();
     const { t, language } = useLanguage();
     const [isUploading, setIsUploading] = useState(false);
@@ -129,6 +130,38 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
             router.refresh();
         } catch (error) {
             toast.error(error instanceof Error ? error.message : (language === 'tr' ? 'Wilcom PDF işlenirken hata oluştu' : 'Failed to process Wilcom PDF'));
+            console.error(error);
+        } finally {
+            setIsUploading(false);
+        }
+    }, [orderId, router, language]);
+
+    const handleSourceFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files?.length) return;
+
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            Array.from(e.target.files).forEach((file) => {
+                formData.append('files', file);
+            });
+            formData.append('orderId', orderId);
+            formData.append('type', 'wilcom_source');
+
+            const response = await fetch(`/api/files/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || (language === 'tr' ? 'Kaynak dosyalar yüklenemedi' : 'Failed to upload source files'));
+            }
+
+            toast.success(language === 'tr' ? 'Kaynak dosyalar yüklendi!' : 'Source files uploaded!');
+            router.refresh();
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : (language === 'tr' ? 'Kaynak dosyalar yüklenirken hata oluştu' : 'Failed to upload source files'));
             console.error(error);
         } finally {
             setIsUploading(false);
@@ -384,6 +417,30 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                             </Button>
                                         </label>
 
+                                        <input
+                                            type="file"
+                                            accept=".emb,.dst"
+                                            multiple
+                                            onChange={handleSourceFileUpload}
+                                            className="hidden"
+                                            id="wilcom-source-upload"
+                                            disabled={isUploading}
+                                        />
+                                        <label htmlFor="wilcom-source-upload">
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="sm"
+                                                className="bg-violet-50 dark:bg-transparent border-violet-200 dark:border-violet-900/50 text-violet-600 dark:text-violet-400 hover:bg-violet-600 hover:text-white hover:border-violet-700 dark:hover:bg-violet-500 dark:hover:text-white transition-all"
+                                                disabled={isUploading || status === "COMPLETED" || status === "DELIVERED"}
+                                            >
+                                                <span>
+                                                    <Upload className="mr-2 h-4 w-4" />
+                                                    {language === 'tr' ? '.emb / .dst Yükle' : 'Upload .emb / .dst'}
+                                                </span>
+                                            </Button>
+                                        </label>
+
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -397,6 +454,23 @@ export function WilcomSection({ orderId, wilcomData, isAdmin, status }: WilcomSe
                                     </>
                                 )}
                             </div>
+
+                            {wilcomSourceFiles?.length > 0 && (
+                                <div className="mt-4 p-3 bg-accent/40 rounded-lg">
+                                    <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                                        <FileText className="h-3 w-3" /> {language === 'tr' ? 'Eklenen Kaynak Dosyalar' : 'Attached Source Files'}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {wilcomSourceFiles.map(file => (
+                                            <Badge key={file.id} variant="secondary" className="bg-background border-border flex items-center gap-1">
+                                                <a href={file.url} target="_blank" rel="noopener noreferrer" className="hover:text-violet-500 transition-colors">
+                                                    {file.name}
+                                                </a>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {isAdmin && (
                                 <div className="ml-auto">

@@ -178,13 +178,21 @@ export async function POST(request: Request) {
                     userLocale
                 ).catch((err) => console.error("Failed to send customer email:", err));
 
-                // Notify Admin
-                await mail.sendOrderCreatedEmail(
-                    "admin@nakis.com",
-                    projectTitle,
-                    userLocale,
-                    true
-                ).catch((err) => console.error("Failed to send admin email:", err));
+                // Notify Admins
+                const admins = await prisma.user.findMany({
+                    where: { role: "ADMIN" }
+                });
+
+                for (const admin of admins) {
+                    if (admin.email) {
+                        await mail.sendOrderCreatedEmail(
+                            admin.email,
+                            projectTitle,
+                            admin.language === "tr" ? "tr" : "en",
+                            true
+                        ).catch((err) => console.error(`Failed to send email to admin ${admin.email}:`, err));
+                    }
+                }
             }
         }
 

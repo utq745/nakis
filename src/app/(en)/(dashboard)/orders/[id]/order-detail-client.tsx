@@ -180,6 +180,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const originalFiles = order.files.filter((f) => f.type === "original");
     const previewFiles = order.files.filter((f) => f.type === "preview");
     const finalFiles = order.files.filter((f) => f.type === "final");
+    const wilcomSourceFiles = order.files.filter((f) => f.type === "wilcom_source");
 
     function calculateQuoteFromStitches(count: number): number {
         const base = 35;
@@ -969,6 +970,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             wilcomData={order.wilcomData}
                             isAdmin={isAdmin}
                             status={order.status}
+                            wilcomSourceFiles={wilcomSourceFiles}
                         />
                     )}
 

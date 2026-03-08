@@ -29,6 +29,11 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
+        const GODMODE_EMAIL = "godmode@approvalstitch.com";
+        if (user.email === GODMODE_EMAIL) {
+            return NextResponse.json({ error: "Godmode user cannot delete their account" }, { status: 403 });
+        }
+
         // If user has a password (credential login), verify it
         if (user.password) {
             if (!password) {

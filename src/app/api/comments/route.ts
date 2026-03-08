@@ -72,90 +72,48 @@ export async function POST(request: Request) {
                     type: "comment",
                 },
             });
-
-            // Refetch comment with files
-            const updatedComment = await prisma.comment.findUnique({
-                where: { id: comment.id },
-                include: {
-                    user: {
-                        select: { id: true, name: true, email: true, role: true, image: true },
-                    },
-                    files: {
-                        select: { id: true, name: true, url: true, size: true },
-                    },
-                },
-            });
-
-            if (updatedComment) {
-                // Send Email Notification
-                const { sendNewCommentEmail } = await import("@/lib/mail");
-                const recipientEmail = isAdmin ? order.customer.email : "admin@nakis.com";
-                const senderName = session.user.name || session.user.email || "User";
-
-                if (recipientEmail) {
-                    await sendNewCommentEmail(
-                        recipientEmail,
-                        order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
-                        senderName,
-                        validatedData.content
-                    ).catch(console.error);
-                }
-
-                // Create In-App Notification
-                if (isAdmin) {
-                    await createCommentNotification(
-                        order.customerId,
-                        "New Message | Yeni Mesaj",
-                        `${senderName}: ${validatedData.content}`,
-                        `/orders/${order.id}`
-                    );
-                } else {
-                    const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
-                    for (const admin of admins) {
-                        await createCommentNotification(
-                            admin.id,
-                            "New Message | Yeni Mesaj",
-                            `${senderName}: ${validatedData.content}`,
-                            `/orders/${order.id}`
-                        );
-                    }
-                }
-
-                return NextResponse.json({
-                    ...updatedComment,
-                    attachments: updatedComment.files.map((file: { id: string; name: string; url: string; size: number | null }) => ({
-                        ...file,
-                        url: `/api/files/${file.id}`,
-                    })),
-                }, { status: 201 });
-            }
         }
 
-        // Send Email Notification
+        // Notification logic
         const { sendNewCommentEmail } = await import("@/lib/mail");
-        const recipientEmail = isAdmin ? order.customer.email : "admin@nakis.com";
         const senderName = session.user.name || session.user.email || "User";
+        const orderSubtitle = order.title || `Order #${order.id.slice(-6).toUpperCase()}`;
 
-        if (recipientEmail) {
-            await sendNewCommentEmail(
-                recipientEmail,
-                order.title || `Order #${order.id.slice(-6).toUpperCase()}`,
-                senderName,
-                validatedData.content
-            ).catch(console.error);
-        }
-
-        // Create In-App Notification
         if (isAdmin) {
-            await createCommentNotification(
-                order.customerId,
-                "New Message | Yeni Mesaj",
-                `${senderName}: ${validatedData.content}`,
-                `/orders/${order.id}`
-            );
+            // Admin commented -> Notify customer
+            if (order.customer.email) {
+                // We need to fetch customer language if not in include.
+                const customer = await prisma.user.findUnique({ where: { id: order.customerId }, select: { language: true } });
+                const customerLocale = customer?.language === "tr" ? "tr" : "en";
+                await sendNewCommentEmail(
+                    order.customer.email,
+                    orderSubtitle,
+                    senderName,
+                    validatedData.content,
+                    customerLocale
+                ).catch(console.error);
+
+                await createCommentNotification(
+                    order.customerId,
+                    "New Message | Yeni Mesaj",
+                    `${senderName}: ${validatedData.content}`,
+                    `/orders/${order.id}`
+                );
+            }
         } else {
+            // Customer commented -> Notify all admins
             const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
             for (const admin of admins) {
+                if (admin.email) {
+                    const adminLocale = admin.language === "tr" ? "tr" : "en";
+                    await sendNewCommentEmail(
+                        admin.email,
+                        orderSubtitle,
+                        senderName,
+                        validatedData.content,
+                        adminLocale
+                    ).catch(console.error);
+                }
                 await createCommentNotification(
                     admin.id,
                     "New Message | Yeni Mesaj",
@@ -165,9 +123,20 @@ export async function POST(request: Request) {
             }
         }
 
+        // Return comment with attachments
+        const finalComment = await prisma.comment.findUnique({
+            where: { id: comment.id },
+            include: {
+                user: { select: { id: true, name: true, email: true, role: true, image: true } },
+                files: { select: { id: true, name: true, url: true, size: true } },
+            },
+        });
+
+        if (!finalComment) throw new Error("Comment created but could not be refetched");
+
         return NextResponse.json({
-            ...comment,
-            attachments: comment.files.map((file: { id: string; name: string; url: string; size: number | null }) => ({
+            ...finalComment,
+            attachments: finalComment.files.map((file) => ({
                 ...file,
                 url: `/api/files/${file.id}`,
             })),

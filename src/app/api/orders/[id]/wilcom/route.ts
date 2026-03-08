@@ -72,11 +72,8 @@ export async function POST(
             }
         });
 
-        // Prefer admin-provided preview/scan image over original customer artwork.
-        const artworkFile =
-            order?.files?.find((f) => f.type === "preview") ||
-            order?.files?.find((f) => f.type === "final") ||
-            order?.files?.find((f) => f.type === "original");
+        // Fetch original customer artwork from order creation
+        const artworkFile = order?.files?.find((f) => f.type === "original");
         let artworkPath: string | null = null;
         if (artworkFile) {
             const normalizedName = artworkFile.url.includes("/")

@@ -76,6 +76,17 @@ export async function POST(
             }
         }
 
+        // Publish uploaded .emb / .dst source files
+        await prisma.file.updateMany({
+            where: {
+                orderId,
+                type: "wilcom_source"
+            },
+            data: {
+                type: "final"
+            }
+        });
+
         // Update order status to COMPLETED
         await prisma.order.update({
             where: { id: orderId },

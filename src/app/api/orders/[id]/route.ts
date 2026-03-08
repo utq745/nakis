@@ -276,27 +276,63 @@ export async function PATCH(
         // Send email notification to customer & admin
         if (order.customer.email && validatedData.status) {
             const mail = await import("@/lib/mail");
-            const userLocale = order.customer.language === "tr" ? "tr" : "en";
+            const customerLocale = order.customer.language === "tr" ? "tr" : "en";
             const orderTitle = order.title || `Order #${order.id.slice(-6).toUpperCase()}`;
 
+            const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+            const notifyAdmins = async (templateFn: any, ...args: any[]) => {
+                for (const admin of admins) {
+                    if (admin.email) {
+                        const adminLocale = admin.language === "tr" ? "tr" : "en";
+                        // Re-evaluate template call if it takes locale as last arg or similar
+                        // For generic status emails: (to, title, locale, isAdmin)
+                        await templateFn(admin.email, ...args, adminLocale, true).catch(console.error);
+                    }
+                }
+            };
+
             switch (validatedData.status) {
+                case "PRICED":
+                    // Admin set the price, notify customer
+                    if (validatedData.price) {
+                        await mail.sendPriceQuoteEmail(order.customer.email, orderTitle, validatedData.price, customerLocale).catch(console.error);
+                    }
+                    break;
                 case "CANCELLED":
-                    await mail.sendOrderCancelledEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
-                    await mail.sendOrderCancelledEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    if (!isAdmin && currentOrder.status === "PRICED") {
+                        // Customer rejected the quote
+                        for (const admin of admins) {
+                            if (admin.email) {
+                                await mail.sendQuoteActionEmail(admin.email, orderTitle, order.customer.name || order.customer.email || "Customer", "REJECTED", admin.language === "tr" ? "tr" : "en").catch(console.error);
+                            }
+                        }
+                    } else {
+                        await mail.sendOrderCancelledEmail(order.customer.email, orderTitle, customerLocale).catch(console.error);
+                        await notifyAdmins(mail.sendOrderCancelledEmail, orderTitle);
+                    }
                     break;
                 case "IN_PROGRESS":
-                    await mail.sendOrderInProgressEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    if (!isAdmin && currentOrder.status === "PRICED") {
+                        // Customer accepted the quote
+                        for (const admin of admins) {
+                            if (admin.email) {
+                                await mail.sendQuoteActionEmail(admin.email, orderTitle, order.customer.name || order.customer.email || "Customer", "ACCEPTED", admin.language === "tr" ? "tr" : "en").catch(console.error);
+                            }
+                        }
+                    } else {
+                        await mail.sendOrderInProgressEmail(order.customer.email, orderTitle, customerLocale).catch(console.error);
+                    }
                     break;
                 case "REVISION":
-                    await mail.sendOrderRevisionEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
-                    await mail.sendOrderRevisionEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    await mail.sendOrderRevisionEmail(order.customer.email, orderTitle, customerLocale).catch(console.error);
+                    await notifyAdmins(mail.sendOrderRevisionEmail, orderTitle);
                     break;
                 case "COMPLETED":
-                    await mail.sendOrderCompletedEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
-                    await mail.sendOrderCompletedEmail("admin@nakis.com", orderTitle, userLocale, true).catch(console.error);
+                    await mail.sendOrderCompletedEmail(order.customer.email, orderTitle, customerLocale).catch(console.error);
+                    await notifyAdmins(mail.sendOrderCompletedEmail, orderTitle);
                     break;
                 case "DELIVERED":
-                    await mail.sendOrderDeliveredEmail(order.customer.email, orderTitle, userLocale).catch(console.error);
+                    await mail.sendOrderDeliveredEmail(order.customer.email, orderTitle, customerLocale).catch(console.error);
                     break;
             }
         }

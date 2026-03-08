@@ -19,6 +19,16 @@ export async function DELETE(
             return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 });
         }
 
+        const userToDelete = await prisma.user.findUnique({
+            where: { id },
+            select: { email: true }
+        });
+
+        const GODMODE_EMAIL = "godmode@approvalstitch.com";
+        if (userToDelete?.email === GODMODE_EMAIL) {
+            return NextResponse.json({ error: "Godmode user cannot be deleted" }, { status: 403 });
+        }
+
         const user = await prisma.user.findUnique({
             where: { id },
             include: {

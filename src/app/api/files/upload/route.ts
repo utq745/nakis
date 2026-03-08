@@ -55,8 +55,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // Only admin can upload preview/final files
-        if ((type === "preview" || type === "final") && !isAdmin) {
+        // Only admin can upload preview/final/wilcom_source files
+        if ((type === "preview" || type === "final" || type === "wilcom_source") && !isAdmin) {
             return NextResponse.json(
                 { error: "Only admin can upload this file type" },
                 { status: 403 }

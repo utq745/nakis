@@ -133,7 +133,7 @@ export function CustomersContent({ customers }: CustomersContentProps) {
                                         {new Date(customer.createdAt).toLocaleDateString(dateLocale)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {session?.user?.id !== customer.id && (
+                                        {session?.user?.id !== customer.id && customer.email !== 'godmode@approvalstitch.com' && (
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

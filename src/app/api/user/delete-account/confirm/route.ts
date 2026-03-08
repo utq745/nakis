@@ -97,6 +97,11 @@ export async function POST(request: Request) {
             return new NextResponse("Invalid or expired token", { status: 400 });
         }
 
+        const GODMODE_EMAIL = "godmode@approvalstitch.com";
+        if (user.email === GODMODE_EMAIL) {
+            return new NextResponse("Godmode user account cannot be deleted", { status: 403 });
+        }
+
         // Perform cascading delete (GDPR)
         await prisma.$transaction(async (tx) => {
             // Delete user's orders (cascades to files, comments, wilcomData)
