@@ -5,6 +5,7 @@ import { copyFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 import { createOrderNotification } from "@/lib/notifications";
+import { sendOrderCompletedEmail } from "@/lib/mail";
 
 export async function POST(
     request: Request,
@@ -21,7 +22,10 @@ export async function POST(
         // Check if order exists
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { wilcomData: true },
+            include: {
+                wilcomData: true,
+                customer: true
+            },
         });
 
         if (!order || !order.wilcomData) {
@@ -118,6 +122,16 @@ export async function POST(
             "Your approval cards have been published and your order is complete. | Onay kartlarınız yayınlandı ve siparişiniz tamamlandı.",
             `/orders/${orderId}`
         );
+
+        // Send Email Notification
+        if (order.customer && order.customer.email) {
+            await sendOrderCompletedEmail(
+                order.customer.email,
+                order.title || "Order",
+                (order.customer as any).language || "en",
+                false
+            ).catch(err => console.error("Failed to send order completed email:", err));
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

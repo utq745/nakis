@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import { createOrderNotification } from "@/lib/notifications";
+import { sendOrderCompletedEmail } from "@/lib/mail";
 
 export async function POST(request: Request) {
     try {
@@ -44,6 +46,7 @@ export async function POST(request: Request) {
         // Check order access
         const order = await prisma.order.findUnique({
             where: { id: orderId },
+            include: { customer: true },
         });
 
         if (!order) {
@@ -140,6 +143,23 @@ export async function POST(request: Request) {
                     isSystem: true,
                 },
             });
+
+            // Create notification and send email
+            await createOrderNotification(
+                order.customerId,
+                "Approval Cards Ready | Onay Kartları Hazır",
+                "Your approval cards have been published and your order is complete. | Onay kartlarınız yayınlandı ve siparişiniz tamamlandı.",
+                `/orders/${orderId}`
+            );
+
+            if (order.customer && order.customer.email) {
+                await sendOrderCompletedEmail(
+                    order.customer.email,
+                    order.title || "Order",
+                    (order.customer as any).language || "en",
+                    false
+                ).catch(err => console.error("Failed to send final file email:", err));
+            }
         }
 
         return NextResponse.json({ files: uploadedFiles }, { status: 201 });
