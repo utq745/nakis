@@ -27,14 +27,14 @@ export function Process() {
             title: t.landing.process.step1Title,
             desc: t.landing.process.step1Desc,
             image: "/images/landing/make-order.webp",
-            video: "/videos/landing/new-order.webm"
+            video: "/videos/landing/new-order.mp4"
         },
         {
             step: "02",
             title: t.landing.process.step2Title,
             desc: t.landing.process.step2Desc,
             image: "/images/landing/What_You_Receive_Real_stitched_photos.webp",
-            video: "/videos/landing/Real-Approval-Stitch.webm"
+            video: "/videos/landing/Real-Approval-Stitch.mp4"
         },
         {
             step: "03",
@@ -222,6 +222,7 @@ export function Process() {
                                 src={selectedVideo}
                                 controls
                                 autoPlay
+                                playsInline
                                 className="w-full h-full"
                             />
                         </motion.div>

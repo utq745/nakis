@@ -1,26 +1,4 @@
-- [x] Anasayfada What You Receive bölümündeki 1. kutuya /Users/utkusakallioglu/Documents/nakis/public/images/landing/What_You_Receive_Real_stitched_photos.webp görseli eklenmeli. Video popup ı falan olmayacak sadece görsel eklenecek.
-- [x] Anasayfada How It Works bölümündeki 1. kutuya kapak görseli olarak /Users/utkusakallioglu/Documents/nakis/make-order.webp görseli, tıklandığında açılacak video popup için /Users/utkusakallioglu/Documents/nakis/make-order-video.webm videosu eklenecek.
-- [x] How It Works bölümündeki 2. kutuya public/images/landing/howitsworks-Real-Approval-Stitch.webp görseli eklenecek.
-- [x] How It Works bölümündeki 3. kutuya public/images/landing/Approval-Package.webp görseli eklenecek.
-- [x] pricing kısmında You upload your DST kısmını şu şekilde değiştirelim: Upload your embroidery file (DST / EMB / PES)
-- [x] gene pricing kısmında How is it calculated? kısmını aşağıdaki şekilde değiştireceğiz akordion şeklinde değil, belki bir ton açık: "Simple pricing by stitch count Up to 7,000 stitches → $50 flat 7,001–30,000 stitches → +$3 per 1,000 stitches 30,000+ stitches → $155 flat We calculate the stitch count for you and apply this pricing — no surprises." olacak.
-- [x] footer kısmında logonun altındaki yazıyı "Real stitched embroidery approvals, backed by experience since 1990<br>Trusted by production teams who need to approve before going live." şeklinde değiştirelim.
-- [x] YENİ HERO -> Başlık (H1) Real Stitched Approval Samples<br>For Confident Embroidery Production -> Alt Başlık (H2) We stitch your design on real production machines so you can approve before mass production. -> Proof Line (kritik yeni ek) Processed on production-grade Tajima & Barudan machines. No renders. No simulations. Just real stitched samples.
-- [x] Footerda call action kısmındaki rating bölümünü kaldıralım. Sadece "Get Your Approval Sample" yazan buton kalsın.
-- [x] About sayfasında Why Real Stitched Approval Samples bölümmündeki kutuların altındaki metinleri şu şekilde değiştirelim lütfen: Costly mistakes        Rejections        Production delays          Brand risk
-- [x] ve en alttaki yazıyı şu şekilde revize edelim: "ApprovalStitch is built on over 35 years of real embroidery production experience — not studio assumptions."
-- [x] Login sayfasında sol taraftaki "10k+ Professionals Trust us daily" bölümünü ve user avatarlarını kaldıralım.
-- [x] Sipariş oluşturma sayfasındaki geri butonuna hafif bir border ekleyelim.
-- [x] Paneldeki last name güncellenmiyor sorunu düzeltildi (name değişikliği artık direkt güncelleniyor, email verification gerektirmiyor).
-- [x] Paneldeki logo site logosuyla değiştirildi.
-- [x] Sipariş oluşturma sayfasındaki geri butonu ileri butonu ile aynı sitilde olmalı yalnızca iç rengi siyah, text rengi beyaz olacak dark modda. Aynı ilerii butonyndaki gibi ok simgesi olmalı. Light modu sen site temasına uygun olarak düzenle.
-- [x] Paneldeki last name güncellendiği halde paneldeki sol altta görünen isim soyisim güncellenmiyor.
-- [x] Paneldeki logoyu büyütelim. heigth değeri 52px olsun.
-- [x] Admin panelinde Wilcom PDF yüklendiğinde preview görüntüsü görünmeme sorunu düzeltildi. (Vektör PDF deteği ve Cloudflare R2 entegrasyonu eklendi.)
-- [x] About sayfasında Real Stitched Approval Results bölümündeki metin şöyle değiştirildi: "ApprovalStitch provides real stitched approval results that show how an embroidery design actually behaves under production conditions.<br><br>All samples are stitched on industrial <strong>Tajima</strong> or <strong>Barudan</strong> production machines — the same class of equipment used in full-scale manufacturing.<br><br>Instead of relying on screen simulations, clean PDFs, or theoretical previews, we demonstrate how the design performs on the fabric you choose, using real stitching conditions. This allows approvals to be made based on reality, not assumptions."
-- [x] Anasayfadaki ve about sayfasındaki How It Works bölümündeki 2. kutuya kapak görseli olarak /nakis/public/images/landing/What_You_Receive_Real_stitched_photos.webp görseli, tıklandığında açılacak video popup için /nakis/Real-Approval-Stitch.webm videosu eklenecek.
-- [x] About sayfasında Why Real Stitched Approval Samples bölümündeki 4 kutunun altındaki metinlerin ilk harfi büyük olacak şekilde düzenlendi. 4 kutunun altındaki alanda yer alan yazı şöyle değiştirildi: "These factors can only be evaluated accurately through actual stitching.<br> ApprovalStitch makes these results visible before production begins — because one incorrect approval can lead to thousands of pieces produced wrong."
-- [x] anasayfadaki heroda "precision stitched reality" yazısını ve ikonunu kaldıralım.
-- [x] login sayfasındaki soldaki görseli şununla değiştirelim: /Users/utkusakallioglu/Documents/nakis/login-cover.png
-- [x] How It Works kısmındaki 3. kutuya tıklayınca açılan popupın altındaki yazıyı kaldıralım. sadece görsel açılsın. 
-- [x] anasayfanın en alttaki cta kısmındaki metni şu şekilde değiştirelim: "Ready to approve your next production?<br>See how your design really stitches before you run it on the line.<br>Upload your file — receive a real stitched sample and production approval data."
+- [ ] preview görseli onay süreci sadece New Digitizing siparişlerinde olacak. Diğer iki pakette onay süreci olmadan sipariş tamamlanacak.
+- [ ] login sayfasında soldaki görsel cover olmasın. tam kaplamasın. ortalı %150 ölçekli olsun.
+
+- Final belgelerinde (pdf lerde) gerçek dikiş fotoğraf olacak
