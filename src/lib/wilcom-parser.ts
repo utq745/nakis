@@ -667,7 +667,6 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         }
         
         .header-left h1 { font-size: 16px; font-weight: 700; margin-bottom: 1px; }
-        .header-left p { font-size: 10px; color: #666; }
         
         .header-right {
             text-align: right;
@@ -851,7 +850,6 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
         <div class="header">
             <div class="header-left">
                 <h1>www.APPROVALSTITCH.com</h1>
-                <p>High-End Embroidery Digitizing Services</p>
             </div>
             <div class="header-right">
                 <div class="barcode">${barcodeText}</div>

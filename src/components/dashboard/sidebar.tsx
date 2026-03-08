@@ -15,6 +15,7 @@ import {
     Home,
     ChevronLeft,
     ChevronRight,
+    PenSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/providers/language-provider";
@@ -76,6 +77,11 @@ export function Sidebar() {
             icon: FileText,
         },
         {
+            title: language === 'tr' ? 'Blog' : 'Blog',
+            href: language === 'tr' ? '/tr/panel/manage-blog' : '/dashboard/manage-blog',
+            icon: PenSquare,
+        },
+        {
             title: t.sidebar.settings,
             href: language === 'tr' ? '/tr/ayarlar' : '/settings',
             icon: Settings,
@@ -117,12 +123,21 @@ export function Sidebar() {
                     ) : (
                         <div className="h-[50px] flex items-center">
                             <Image
+                                src="/images/approval-stich-logo.webp"
+                                alt="Approval Stitch"
+                                width={160}
+                                height={50}
+                                priority
+                                className="object-contain shrink-0 !h-[50px] w-auto dark:hidden"
+                                style={{ height: "50px", maxHeight: "50px" }}
+                            />
+                            <Image
                                 src="/images/approval-stich-logo-w.webp"
                                 alt="Approval Stitch"
                                 width={160}
                                 height={50}
                                 priority
-                                className="object-contain shrink-0 !h-[50px] w-auto"
+                                className="object-contain hidden shrink-0 !h-[50px] w-auto dark:block"
                                 style={{ height: "50px", maxHeight: "50px" }}
                             />
                         </div>

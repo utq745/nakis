@@ -104,6 +104,8 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                         <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr' : '/'}>{t.header.home}</Link>
                         <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About'}</Link>
                         <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
+                        <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>{t.header.fixYourDst}</Link>
+
                         <Link className={`px-4 py-2 rounded-lg text-sm font-bold leading-normal transition-all duration-300 ${isAtTop ? 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10' : 'text-primary dark:text-white hover:bg-blue-50 dark:hover:bg-white/10'}`} href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.header.contact}</Link>
                     </div>
 
@@ -119,7 +121,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                     {isLoggedIn ? t.header.panel : t.header.signIn}
                                 </Link>
 
-                                {!isAdmin && (
+                                {session?.user?.role !== "ADMIN" && (
                                     <Link
                                         href={isLoggedIn ? newOrderUrl : registerUrl}
                                         className="hidden sm:inline-flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary-dark transition-all duration-300 shadow-md"
@@ -241,6 +243,14 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 >
                                     {t.header.pricing}
                                 </Link>
+                                <Link
+                                    href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="px-6 py-3 text-center text-[#111318] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] rounded-xl transition-colors font-bold text-base"
+                                >
+                                    {t.header.fixYourDst}
+                                </Link>
+
                                 <Link
                                     href={language === 'tr' ? '/tr/iletisim' : '/contact'}
                                     onClick={() => setMobileMenuOpen(false)}

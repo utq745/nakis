@@ -34,6 +34,7 @@ model User {
   notifications                 Notification[] @relation("UserNotifications")
   orders                        Order[]        @relation("CustomerOrders")
   sessions                      Session[]
+  blogPosts                     BlogPost[]     @relation("BlogPosts")
 }
 
 model Account {
@@ -182,4 +183,31 @@ model Notification {
   @@index([userId])
   @@index([read])
   @@index([createdAt])
+}
+
+model BlogPost {
+  id                 String    @id @default(cuid())
+  translationGroupId String?   @default(cuid()) // Links posts across different locales
+  title              String
+  slug               String
+  content            String    // HTML content from WYSIWYG editor
+  excerpt            String?   // Short description for listing cards
+  coverImage         String?   // URL to cover image
+  status             String    @default("DRAFT") // DRAFT, PUBLISHED
+  locale             String    @default("en") // en, tr
+  seoTitle           String?   // Custom SEO title (falls back to title)
+  seoDescription     String?   // Custom meta description
+  publishedAt        DateTime?
+  deletedAt          DateTime?
+  authorId           String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  author             User      @relation("BlogPosts", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([status])
+  @@index([locale])
+  @@index([publishedAt])
+  @@index([translationGroupId])
+  @@unique([slug, locale])
 }

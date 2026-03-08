@@ -41,7 +41,7 @@ export function Footer() {
                         <div className="flex flex-col gap-2">
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/hakkimizda' : '/about'}>{language === 'tr' ? 'Hakkımızda' : 'About Us'}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/fiyatlandirma' : '/pricing'}>{t.header.pricing}</Link>
-
+                            <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>{t.header.fixYourDst}</Link>
                             <Link className="text-muted-foreground hover:text-primary transition-colors text-sm" href={language === 'tr' ? '/tr/iletisim' : '/contact'}>{t.footer.contact}</Link>
                         </div>
                     </div>

@@ -57,6 +57,8 @@ export function LanguageProvider({
             'delivery-and-returns': { en: '/delivery-and-returns', tr: '/tr/teslimat-ve-iade' },
             'teslimat-ve-iade': { en: '/delivery-and-returns', tr: '/tr/teslimat-ve-iade' },
             // Dashboard pages
+            'dashboard/manage-blog': { en: '/dashboard/manage-blog', tr: '/tr/panel/manage-blog' },
+            'panel/manage-blog': { en: '/dashboard/manage-blog', tr: '/tr/panel/manage-blog' },
             'dashboard': { en: '/dashboard', tr: '/tr/panel' },
             'panel': { en: '/dashboard', tr: '/tr/panel' },
             'orders': { en: '/orders', tr: '/tr/siparisler' },
