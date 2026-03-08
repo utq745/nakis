@@ -21,16 +21,15 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ stats, recentOrders, isAdmin, timezone }: DashboardContentProps) {
-    const { t, language } = useLanguage();
-    const dateLocale = language === "tr" ? "tr-TR" : "en-US";
-    const formatOrderDateTime = (value: string) => new Intl.DateTimeFormat(dateLocale, {
+    const { t, language, formatDateTime } = useLanguage();
+    const formatOrderDateTime = (value: string) => formatDateTime(value, {
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         timeZone: timezone,
-    }).format(new Date(value));
+    });
 
     return (
         <div className="space-y-8">

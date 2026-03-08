@@ -1,13 +1,18 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { translations, Locale } from "@/lib/dictionary";
 import { useRouter, usePathname } from "next/navigation";
+
+type TimeFormat = "12" | "24";
 
 type LanguageContextType = {
     language: Locale;
     setLanguage: (lang: Locale) => void;
     t: typeof translations["tr"];
+    timeFormat: TimeFormat;
+    setTimeFormat: (format: TimeFormat) => void;
+    formatDateTime: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -20,8 +25,42 @@ export function LanguageProvider({
     initialLang: Locale;
 }) {
     const [language, setLanguageState] = useState<Locale>(initialLang);
+    const [timeFormat, setTimeFormatState] = useState<TimeFormat>("24");
     const router = useRouter();
     const pathname = usePathname();
+
+    // Fetch user's timeFormat preference on mount
+    useEffect(() => {
+        fetch("/api/user/profile")
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data?.timeFormat) {
+                    setTimeFormatState(data.timeFormat as TimeFormat);
+                }
+            })
+            .catch(() => { /* Not logged in or error, keep default */ });
+    }, []);
+
+    const setTimeFormat = useCallback((format: TimeFormat) => {
+        setTimeFormatState(format);
+    }, []);
+
+    const formatDateTime = useCallback((date: string | Date, options?: Intl.DateTimeFormatOptions) => {
+        const dateLocale = language === "tr" ? "tr-TR" : "en-US";
+        const dateObj = typeof date === "string" ? new Date(date) : date;
+        const mergedOptions: Intl.DateTimeFormatOptions = {
+            ...options,
+        };
+        // Only set hour12 if the options include time components
+        if (mergedOptions.hour || mergedOptions.hour === undefined && (mergedOptions.minute !== undefined || mergedOptions.second !== undefined)) {
+            mergedOptions.hour12 = timeFormat === "12";
+        }
+        // If options have hour/minute but no explicit hour12, inject it
+        if (options?.hour || options?.minute) {
+            mergedOptions.hour12 = timeFormat === "12";
+        }
+        return new Intl.DateTimeFormat(dateLocale, mergedOptions).format(dateObj);
+    }, [language, timeFormat]);
 
     const setLanguage = (lang: Locale) => {
         setLanguageState(lang);
@@ -101,6 +140,9 @@ export function LanguageProvider({
         language,
         setLanguage,
         t: translations[language],
+        timeFormat,
+        setTimeFormat,
+        formatDateTime,
     };
 
     return (

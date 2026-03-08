@@ -144,7 +144,7 @@ interface OrderDetailClientProps {
 
 export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const router = useRouter();
-    const { t, language } = useLanguage();
+    const { t, language, formatDateTime } = useLanguage();
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [status, setStatus] = useState<OrderStatus>(order.status);
@@ -959,7 +959,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             <div className="flex justify-between items-center py-1.5 border-b border-border">
                                 <span className="text-foreground font-medium">Oluşturulma</span>
                                 <span className="text-sm text-muted-foreground">
-                                    {new Date(order.createdAt).toLocaleDateString("tr-TR", {
+                                    {formatDateTime(order.createdAt, {
                                         year: "numeric",
                                         month: "short",
                                         day: "numeric",
@@ -971,7 +971,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             <div className="flex justify-between items-center py-1.5 border-b border-border">
                                 <span className="text-foreground font-medium">Son Güncelleme</span>
                                 <span className="text-sm text-muted-foreground">
-                                    {new Date(order.updatedAt).toLocaleDateString("tr-TR", {
+                                    {formatDateTime(order.updatedAt, {
                                         year: "numeric",
                                         month: "short",
                                         day: "numeric",
@@ -984,7 +984,7 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <div className="flex justify-between items-center py-1.5 border-b border-border">
                                     <span className="text-foreground font-medium">Sipariş Teslimi</span>
                                     <span className="text-sm text-muted-foreground">
-                                        {new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))).toLocaleDateString("tr-TR", {
+                                        {formatDateTime(new Date(Math.max(...finalFiles.map(f => new Date(f.createdAt).getTime()))), {
                                             year: "numeric",
                                             month: "short",
                                             day: "numeric",
