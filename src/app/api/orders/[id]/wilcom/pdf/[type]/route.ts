@@ -36,6 +36,10 @@ export async function GET(
         let pdfPath: string;
         let fileName: string;
 
+        const shortId = orderId.slice(0, 8);
+        const baseName = order.title || order.wilcomData?.designName || shortId;
+        const safeName = baseName.replace(/[^a-zA-Z0-9-ığüşöçİĞÜŞÖÇ ]/g, "_").trim().replace(/\s+/g, "_");
+
         switch (type) {
             case "operator":
                 // Only admin can access operator approval card
@@ -43,11 +47,11 @@ export async function GET(
                     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
                 }
                 pdfPath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_operator_approval.pdf`);
-                fileName = `operator_approval_${order.wilcomData?.designName || orderId}.pdf`;
+                fileName = `${safeName}-operator-approval-card.pdf`;
                 break;
             case "customer":
                 pdfPath = join(process.cwd(), "uploads", orderId, "wilcom", `${orderId}_customer_approval.pdf`);
-                fileName = `customer_approval_${order.wilcomData?.designName || orderId}.pdf`;
+                fileName = `${safeName}-customer-approval-card.pdf`;
                 break;
             case "original":
                 // Only admin can access original Wilcom PDF
@@ -55,7 +59,7 @@ export async function GET(
                     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
                 }
                 pdfPath = join(process.cwd(), "uploads", orderId, "wilcom", "wilcom.pdf");
-                fileName = `wilcom_${order.wilcomData?.designName || orderId}.pdf`;
+                fileName = `${safeName}-wilcom-original.pdf`;
                 break;
             default:
                 return NextResponse.json({ error: "Invalid PDF type" }, { status: 400 });

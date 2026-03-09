@@ -140,7 +140,7 @@ export async function GET(
 
         // Generate filename
         const orderTitle = order.title || `Order_${id.slice(-6)}`;
-        const safeTitle = orderTitle.replace(/[^a-zA-Z0-9-_]/g, "_");
+        const safeTitle = orderTitle.replace(/[^a-zA-Z0-9-ığüşöçİĞÜŞÖÇ ]/g, "_").trim().replace(/\s+/g, "_");
         const zipFilename = `${safeTitle}_Finals.zip`;
 
         // Return the ZIP file

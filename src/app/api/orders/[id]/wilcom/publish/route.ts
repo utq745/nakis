@@ -37,17 +37,19 @@ export async function POST(
         await mkdir(finalDir, { recursive: true });
 
         const shortId = orderId.slice(0, 8);
+        const baseName = order.title || order.wilcomData?.designName || shortId;
+        const safeName = baseName.replace(/[^a-zA-Z0-9-ığüşöçİĞÜŞÖÇ ]/g, "_").trim().replace(/\s+/g, "_");
 
         // Files to publish
         const publishFiles = [
             {
                 src: join(wilcomDir, `${orderId}_customer_approval.pdf`),
-                destName: `${shortId}-customer-approval-card.pdf`,
+                destName: `${safeName}-customer-approval-card.pdf`,
                 type: "final"
             },
             {
                 src: join(wilcomDir, `${orderId}_operator_approval.pdf`),
-                destName: `${shortId}-operator-approval-card.pdf`,
+                destName: `${safeName}-operator-approval-card.pdf`,
                 type: "final"
             }
         ];
