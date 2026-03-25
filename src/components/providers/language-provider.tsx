@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { translations, Locale } from "@/lib/dictionary";
 import { useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type TimeFormat = "12" | "24";
 
@@ -29,17 +30,21 @@ export function LanguageProvider({
     const router = useRouter();
     const pathname = usePathname();
 
-    // Fetch user's timeFormat preference on mount
+    const { status } = useSession();
+
+    // Fetch user's timeFormat preference on mount or when auth status changes
     useEffect(() => {
-        fetch("/api/user/profile")
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-                if (data?.timeFormat) {
-                    setTimeFormatState(data.timeFormat as TimeFormat);
-                }
-            })
-            .catch(() => { /* Not logged in or error, keep default */ });
-    }, []);
+        if (status === "authenticated") {
+            fetch("/api/user/profile")
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (data?.timeFormat) {
+                        setTimeFormatState(data.timeFormat as TimeFormat);
+                    }
+                })
+                .catch(() => { /* Error fetching, keep default */ });
+        }
+    }, [status]);
 
     const setTimeFormat = useCallback((format: TimeFormat) => {
         setTimeFormatState(format);
