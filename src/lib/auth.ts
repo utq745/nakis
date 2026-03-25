@@ -93,6 +93,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 userId: user?.id,
                 email: user?.email
             });
+
+            // For credentials login, check email verification
+            if (account?.provider === "credentials" && user?.id) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: user.id },
+                    select: { emailVerified: true },
+                });
+                if (!dbUser?.emailVerified) {
+                    return false; // Block login
+                }
+            }
+
             return true;
         },
         async jwt({ token, user, trigger, session }) {

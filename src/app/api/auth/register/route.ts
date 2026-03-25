@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { registerRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
 import { translations, Locale } from "@/lib/dictionary";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const registerSchema = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
@@ -11,6 +12,7 @@ const registerSchema = z.object({
     name: z.string().min(2, "İsim en az 2 karakter olmalı"),
     language: z.enum(["en", "tr"]).optional(),
     timezone: z.string().optional(),
+    turnstileToken: z.string().min(1, "Bot doğrulaması gerekli"),
 });
 
 export async function POST(request: Request) {
@@ -36,6 +38,16 @@ export async function POST(request: Request) {
         }
 
         const validatedData = registerSchema.parse(body);
+
+        // Verify Turnstile token
+        const isTurnstileValid = await verifyTurnstile(validatedData.turnstileToken);
+        if (!isTurnstileValid) {
+            return NextResponse.json(
+                { error: "Bot doğrulaması başarısız. Lütfen tekrar deneyin." },
+                { status: 400 }
+            );
+        }
+
         const timezone = validatedData.timezone || "Europe/Istanbul";
         let validTimezone = "Europe/Istanbul";
         try {
@@ -88,11 +100,11 @@ export async function POST(request: Request) {
                 console.error("Verification email failed:", err)
             );
 
-            // 2. Notify Admins
+            // 2. Notify Admins (always in Turkish)
             try {
                 const admins = await prisma.user.findMany({
                     where: { role: "ADMIN" },
-                    select: { email: true, language: true }
+                    select: { email: true }
                 });
 
                 for (const admin of admins) {
@@ -101,7 +113,6 @@ export async function POST(request: Request) {
                             admin.email,
                             user.name || "User",
                             user.email!,
-                            admin.language === "tr" ? "tr" : "en"
                         ).catch((err) => console.error(`Failed to notify admin ${admin.email}:`, err));
                     }
                 }
@@ -113,6 +124,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
             {
                 message: selectedLanguage === "tr" ? "Kayıt başarılı" : "Registration successful",
+                requiresVerification: true,
                 user: {
                     id: user.id,
                     email: user.email,

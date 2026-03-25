@@ -1,11 +1,37 @@
 import type { MetadataRoute } from 'next'
+import prisma from '@/lib/prisma'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://www.approvalstitch.com'
     const currentDate = new Date().toISOString()
 
+    // Fetch blog posts from the database
+    let blogPosts: any[] = []
+    try {
+        blogPosts = await prisma.blogPost.findMany({
+            where: {
+                status: 'PUBLISHED',
+                deletedAt: null,
+            },
+            select: {
+                slug: true,
+                locale: true,
+                updatedAt: true,
+            },
+        })
+    } catch (error) {
+        console.error('Sitemap: Failed to fetch blog posts from Prisma', error)
+    }
+
+    const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+        url: `${baseUrl}${post.locale === 'en' ? '' : '/tr'}/blog/${post.slug}`,
+        lastModified: post.updatedAt.toISOString(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+    }))
+
     // English pages
-    const enPages = [
+    const enPages: MetadataRoute.Sitemap = [
         {
             url: baseUrl,
             lastModified: currentDate,
@@ -16,6 +42,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
             url: `${baseUrl}/about`,
             lastModified: currentDate,
             changeFrequency: 'monthly' as const,
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/services`,
+            lastModified: currentDate,
+            changeFrequency: 'monthly' as const,
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/pricing`,
+            lastModified: currentDate,
+            changeFrequency: 'weekly' as const,
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/blog`,
+            lastModified: currentDate,
+            changeFrequency: 'weekly' as const,
             priority: 0.8,
         },
         {
@@ -43,18 +87,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/services`,
-            lastModified: currentDate,
-            changeFrequency: 'monthly' as const,
-            priority: 0.9,
-        },
-        {
-            url: `${baseUrl}/pricing`,
-            lastModified: currentDate,
-            changeFrequency: 'weekly' as const,
-            priority: 0.9,
-        },
-        {
             url: `${baseUrl}/contact`,
             lastModified: currentDate,
             changeFrequency: 'monthly' as const,
@@ -65,6 +97,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified: currentDate,
             changeFrequency: 'monthly' as const,
             priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/corporate-account`,
+            lastModified: currentDate,
+            changeFrequency: 'monthly' as const,
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/delivery-and-returns`,
+            lastModified: currentDate,
+            changeFrequency: 'yearly' as const,
+            priority: 0.3,
         },
         {
             url: `${baseUrl}/privacy-policy`,
@@ -84,22 +128,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'yearly' as const,
             priority: 0.3,
         },
-        {
-            url: `${baseUrl}/login`,
-            lastModified: currentDate,
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        },
-        {
-            url: `${baseUrl}/register`,
-            lastModified: currentDate,
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        },
     ]
 
     // Turkish pages
-    const trPages = [
+    const trPages: MetadataRoute.Sitemap = [
         {
             url: `${baseUrl}/tr`,
             lastModified: currentDate,
@@ -125,6 +157,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         {
+            url: `${baseUrl}/tr/blog`,
+            lastModified: currentDate,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+        },
+        {
             url: `${baseUrl}/tr/iletisim`,
             lastModified: currentDate,
             changeFrequency: 'monthly' as const,
@@ -135,6 +173,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified: currentDate,
             changeFrequency: 'monthly' as const,
             priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/tr/teslimat-ve-iade`,
+            lastModified: currentDate,
+            changeFrequency: 'yearly' as const,
+            priority: 0.3,
         },
         {
             url: `${baseUrl}/tr/gizlilik-politikasi`,
@@ -154,19 +198,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'yearly' as const,
             priority: 0.3,
         },
-        {
-            url: `${baseUrl}/tr/giris`,
-            lastModified: currentDate,
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        },
-        {
-            url: `${baseUrl}/tr/kayit`,
-            lastModified: currentDate,
-            changeFrequency: 'monthly' as const,
-            priority: 0.6,
-        },
     ]
 
-    return [...enPages, ...trPages]
+    return [...enPages, ...trPages, ...blogEntries]
 }

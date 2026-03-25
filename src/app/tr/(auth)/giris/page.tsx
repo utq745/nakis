@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Header } from "@/components/header";
+import Script from "next/script";
 
 import { useLanguage } from "@/components/providers/language-provider";
+
+const TURNSTILE_SITE_KEY = "0x4AAAAAACv2SXP3BNohEDuF";
 
 export default function LoginPage() {
     const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
@@ -19,7 +22,10 @@ export default function LoginPage() {
     const [lastName, setLastName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [verificationMessage, setVerificationMessage] = useState<{ type: 'success' | 'error' | 'warning'; text: string } | null>(null);
+    const [verificationMessage, setVerificationMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; text: string } | null>(null);
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const turnstileRef = useRef<HTMLDivElement>(null);
+    const turnstileWidgetId = useRef<string | null>(null);
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useLanguage();
@@ -40,10 +46,44 @@ export default function LoginPage() {
         }
     }, [searchParams]);
 
+    const renderTurnstile = useCallback(() => {
+        if (turnstileRef.current && (window as any).turnstile) {
+            // Remove existing widget if any
+            if (turnstileWidgetId.current) {
+                try { (window as any).turnstile.remove(turnstileWidgetId.current); } catch {}
+            }
+            turnstileWidgetId.current = (window as any).turnstile.render(turnstileRef.current, {
+                sitekey: TURNSTILE_SITE_KEY,
+                callback: (token: string) => setTurnstileToken(token),
+                "expired-callback": () => setTurnstileToken(""),
+                theme: "auto",
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        // Re-render turnstile when tab changes
+        const timeout = setTimeout(() => renderTurnstile(), 100);
+        return () => clearTimeout(timeout);
+    }, [activeTab, renderTurnstile]);
+
+    const resetTurnstile = () => {
+        setTurnstileToken("");
+        if (turnstileWidgetId.current && (window as any).turnstile) {
+            try { (window as any).turnstile.reset(turnstileWidgetId.current); } catch {}
+        }
+    };
+
     const handleCredentialsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+
+        if (!turnstileToken) {
+            setError("Lütfen güvenlik doğrulamasını tamamlayın.");
+            setIsLoading(false);
+            return;
+        }
 
         if (activeTab === 'signup') {
             // Register new user
@@ -54,35 +94,52 @@ export default function LoginPage() {
                     body: JSON.stringify({
                         name: `${firstName} ${lastName}`.trim(),
                         email,
-                        password
+                        password,
+                        language: "tr",
+                        turnstileToken,
                     }),
                 });
 
                 if (!res.ok) {
                     const data = await res.json();
-                    throw new Error(data.error || "Registration failed");
+                    throw new Error(data.error || "Kayıt başarısız");
                 }
 
-                // Auto login after registration
-                const result = await signIn("credentials", {
-                    email,
-                    password,
-                    redirect: false,
+                // Show verification message instead of auto-login
+                setVerificationMessage({
+                    type: 'info',
+                    text: 'Lütfen e-posta adresinize gönderilen onay linkine tıklayarak hesabınızı aktifleştirin.',
                 });
-
-                if (result?.error) {
-                    setError(result.error);
-                } else {
-                    // Fetch user language preference
-                    const userRes = await fetch("/api/user/profile");
-                    const userData = await userRes.json();
-                    const redirectPath = userData?.language === "tr" ? "/tr/panel" : "/dashboard";
-                    router.push(redirectPath);
-                }
+                setActiveTab('signin');
+                setEmail("");
+                setPassword("");
+                setFirstName("");
+                setLastName("");
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Registration failed");
+                setError(err instanceof Error ? err.message : "Kayıt başarısız");
             }
         } else {
+            // Verify turnstile first for login
+            try {
+                const turnstileRes = await fetch("/api/auth/verify-turnstile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: turnstileToken }),
+                });
+
+                if (!turnstileRes.ok) {
+                    setError("Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin.");
+                    resetTurnstile();
+                    setIsLoading(false);
+                    return;
+                }
+            } catch {
+                setError("Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin.");
+                resetTurnstile();
+                setIsLoading(false);
+                return;
+            }
+
             // Sign in
             const result = await signIn("credentials", {
                 email,
@@ -91,7 +148,7 @@ export default function LoginPage() {
             });
 
             if (result?.error) {
-                setError("Invalid email or password");
+                setError("Geçersiz e-posta veya şifre, ya da e-posta adresiniz henüz doğrulanmamış.");
             } else {
                 // Fetch user language preference
                 const userRes = await fetch("/api/user/profile");
@@ -101,6 +158,7 @@ export default function LoginPage() {
             }
         }
 
+        resetTurnstile();
         setIsLoading(false);
     };
 
@@ -110,6 +168,11 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f6f6f8] dark:bg-[#101622] font-[family-name:var(--font-inter)]">
+            <Script
+                src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
+                strategy="afterInteractive"
+                onReady={() => renderTurnstile()}
+            />
             <Header forceSolid fullWidth />
 
             <main className="flex-grow flex flex-col lg:flex-row w-full animate-in fade-in duration-500 min-h-screen pt-16">
@@ -145,13 +208,13 @@ export default function LoginPage() {
                         <div className="mb-8">
                             <div className="flex border-b border-slate-200 dark:border-slate-700 w-full">
                                 <button
-                                    onClick={() => { setActiveTab('signin'); setError(""); }}
+                                    onClick={() => { setActiveTab('signin'); setError(""); setVerificationMessage(null); }}
                                     className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signin' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                 >
                                     {lp.signIn}
                                 </button>
                                 <button
-                                    onClick={() => { setActiveTab('signup'); setError(""); }}
+                                    onClick={() => { setActiveTab('signup'); setError(""); setVerificationMessage(null); }}
                                     className={`relative pb-4 px-4 font-semibold text-sm transition-colors ${activeTab === 'signup' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                 >
                                     {lp.createAccount}
@@ -179,14 +242,16 @@ export default function LoginPage() {
                                         ? 'bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30'
                                         : verificationMessage.type === 'warning'
                                         ? 'bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30'
+                                        : verificationMessage.type === 'info'
+                                        ? 'bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30'
                                         : 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30'
                                 }`}
                             >
                                 <span className={`material-symbols-outlined text-[20px] ${
-                                    verificationMessage.type === 'success' ? 'text-green-500' : verificationMessage.type === 'warning' ? 'text-amber-500' : 'text-red-500'
-                                }`}>{verificationMessage.type === 'success' ? 'check_circle' : verificationMessage.type === 'warning' ? 'warning' : 'error'}</span>
+                                    verificationMessage.type === 'success' ? 'text-green-500' : verificationMessage.type === 'warning' ? 'text-amber-500' : verificationMessage.type === 'info' ? 'text-blue-500' : 'text-red-500'
+                                }`}>{verificationMessage.type === 'success' ? 'check_circle' : verificationMessage.type === 'warning' ? 'warning' : verificationMessage.type === 'info' ? 'mail' : 'error'}</span>
                                 <p className={`text-sm font-medium ${
-                                    verificationMessage.type === 'success' ? 'text-green-600 dark:text-green-400' : verificationMessage.type === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
+                                    verificationMessage.type === 'success' ? 'text-green-600 dark:text-green-400' : verificationMessage.type === 'warning' ? 'text-amber-600 dark:text-amber-400' : verificationMessage.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'
                                 }`}>{verificationMessage.text}</p>
                             </motion.div>
                         )}
@@ -311,10 +376,15 @@ export default function LoginPage() {
                                 </div>
                             )}
 
+                            {/* Cloudflare Turnstile */}
+                            <div className="flex justify-center">
+                                <div ref={turnstileRef}></div>
+                            </div>
+
                             {/* Submit Button */}
                             <button
                                 type="submit"
-                                disabled={isLoading}
+                                disabled={isLoading || !turnstileToken}
                                 className="flex w-full justify-center items-center rounded-lg bg-primary py-3 px-4 text-sm font-bold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? (

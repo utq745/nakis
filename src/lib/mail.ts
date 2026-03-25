@@ -534,36 +534,28 @@ export async function sendDeleteAccountEmail(
 }
 
 /**
- * New User Admin Notification
+ * New User Admin Notification — Always sent in Turkish
  */
 export async function sendNewUserAdminNotification(
     to: string,
     userName: string,
     userEmail: string,
-    locale: "en" | "tr" = "en"
 ) {
-    const isTr = locale === "tr";
-    const subject = isTr ? `[ADMIN] Yeni Kullanıcı Kaydı: ${userName}` : `[ADMIN] New User Registered: ${userName}`;
+    const subject = `[ADMIN] Yeni Kullanıcı Kaydı: ${userName}`;
 
     await send({
         to,
         subject,
         html: wrap(`
-            <h2>${isTr ? "Yeni Kullanıcı Kaydı! 👤" : "New User Registration! 👤"}</h2>
-            <p>${isTr
-        ? `Sisteme <strong>${userName}</strong> adında yeni bir kullanıcı kayıt oldu.`
-        : `A new user named <strong>${userName}</strong> has registered in the system.`
-    }</p>
+            <h2>Yeni Kullanıcı Kaydı! 👤</h2>
+            <p>Sisteme <strong>${userName}</strong> adında yeni bir kullanıcı kayıt oldu.</p>
             <div class="accent-box">
-                <p style="margin: 0;"><strong>${isTr ? "E-posta" : "Email"}:</strong> ${userEmail}</p>
-                <p style="margin: 8px 0 0;"><strong>${isTr ? "İsim" : "Name"}:</strong> ${userName}</p>
+                <p style="margin: 0;"><strong>E-posta:</strong> ${userEmail}</p>
+                <p style="margin: 8px 0 0;"><strong>İsim:</strong> ${userName}</p>
             </div>
-            <p>${isTr
-        ? "Kullanıcı detaylarını görmek için admin panelini ziyaret edebilirsiniz."
-        : "You can visit the admin panel to view user details."
-    }</p>
-            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}panel/kullanicilar" class="button">
-                ${isTr ? "Kullanıcıları Görüntüle →" : "View Users →"}
+            <p>Kullanıcı detaylarını görmek için admin panelini ziyaret edebilirsiniz.</p>
+            <a href="${SITE_URL}/tr/musteriler" class="button">
+                Müşterileri Görüntüle →
             </a>
         `),
     });

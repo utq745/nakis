@@ -16,7 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
         description: dict.landing.hero.description,
         metadataBase: new URL('https://www.approvalstitch.com'),
         alternates: {
-            canonical: `/tr`,
             languages: {
                 'en': '/',
                 'tr': '/tr',
