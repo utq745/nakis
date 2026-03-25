@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 const MAIL_FROM = process.env.MAIL_FROM || "Approval Stitch <noreply@approvalstitch.com>";
 const SITE_URL = process.env.AUTH_URL || "https://www.approvalstitch.com";
-const LOGO_URL = `${SITE_URL}/images/approval-stich-logo-w.webp`;
+const LOGO_URL = `${SITE_URL}/images/approval-stich-logo-w.png`;
 
 // ────────────────────────────────────────────────
 // Helper — all mails go through this single point

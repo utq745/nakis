@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Header } from "@/components/header";
@@ -19,9 +19,26 @@ export default function LoginPage() {
     const [lastName, setLastName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [verificationMessage, setVerificationMessage] = useState<{ type: 'success' | 'error' | 'warning'; text: string } | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useLanguage();
     const lp = t.auth.loginPage;
+
+    useEffect(() => {
+        const errorParam = searchParams.get('error');
+        const verified = searchParams.get('verified');
+
+        if (verified === 'true') {
+            setVerificationMessage({ type: 'success', text: 'E-posta adresiniz başarıyla doğrulandı! Artık giriş yapabilirsiniz.' });
+        } else if (errorParam === 'TokenExpired') {
+            setVerificationMessage({ type: 'warning', text: 'Doğrulama bağlantınızın süresi dolmuş. Lütfen profil ayarlarından yeni bir bağlantı talep edin.' });
+        } else if (errorParam === 'InvalidToken') {
+            setVerificationMessage({ type: 'error', text: 'Geçersiz doğrulama bağlantısı. Lütfen e-postanızı kontrol edin veya yeni bağlantı isteyin.' });
+        } else if (errorParam === 'UnknownError') {
+            setVerificationMessage({ type: 'error', text: 'Doğrulama sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.' });
+        }
+    }, [searchParams]);
 
     const handleCredentialsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -151,6 +168,28 @@ export default function LoginPage() {
                                 {activeTab === 'signin' ? lp.enterDetails : lp.createAccountDesc}
                             </p>
                         </div>
+
+                        {/* Verification Message */}
+                        {verificationMessage && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+                                    verificationMessage.type === 'success'
+                                        ? 'bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30'
+                                        : verificationMessage.type === 'warning'
+                                        ? 'bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30'
+                                        : 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30'
+                                }`}
+                            >
+                                <span className={`material-symbols-outlined text-[20px] ${
+                                    verificationMessage.type === 'success' ? 'text-green-500' : verificationMessage.type === 'warning' ? 'text-amber-500' : 'text-red-500'
+                                }`}>{verificationMessage.type === 'success' ? 'check_circle' : verificationMessage.type === 'warning' ? 'warning' : 'error'}</span>
+                                <p className={`text-sm font-medium ${
+                                    verificationMessage.type === 'success' ? 'text-green-600 dark:text-green-400' : verificationMessage.type === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
+                                }`}>{verificationMessage.text}</p>
+                            </motion.div>
+                        )}
 
                         {/* Error Message */}
                         {error && (
