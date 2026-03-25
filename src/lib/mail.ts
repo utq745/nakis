@@ -517,18 +517,54 @@ export async function sendDeleteAccountEmail(
         html: wrap(`
             <h2>${isTr ? "Hesap Silme Talebi" : "Account Deletion Request"}</h2>
             <p>${isTr
-                ? "Hesabınızı silme talebiniz alınmıştır. Bu işlemi onaylamak için lütfen aşağıdaki butona tıklayın:"
-                : "We received a request to delete your account. To confirm this action, please click the button below:"
-            }</p>
+        ? "Hesabınızı silme talebiniz alınmıştır. Bu işlemi onaylamak için lütfen aşağıdaki butona tıklayın:"
+        : "We received a request to delete your account. To confirm this action, please click the button below:"
+    }</p>
             <a href="${confirmUrl}" class="button" style="background-color: #dc2626;">
                 ${isTr ? "Hesabımı Sil →" : "Delete My Account →"}
             </a>
             <p style="margin-top: 24px; font-size: 13px; color: #94a3b8;">
                 ${isTr
-                ? "Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Hesabınız güvende kalacaktır."
-                : "If you did not make this request, please ignore this email. Your account will remain safe."
-            }
+        ? "Eğer bu talebi siz yapmadıysanız lütfen bu e-postayı dikkate almayın. Hesabınız güvende kalacaktır."
+        : "If you did not make this request, please ignore this email. Your account will remain safe."
+    }
             </p>
+        `),
+    });
+}
+
+/**
+ * New User Admin Notification
+ */
+export async function sendNewUserAdminNotification(
+    to: string,
+    userName: string,
+    userEmail: string,
+    locale: "en" | "tr" = "en"
+) {
+    const isTr = locale === "tr";
+    const subject = isTr ? `[ADMIN] Yeni Kullanıcı Kaydı: ${userName}` : `[ADMIN] New User Registered: ${userName}`;
+
+    await send({
+        to,
+        subject,
+        html: wrap(`
+            <h2>${isTr ? "Yeni Kullanıcı Kaydı! 👤" : "New User Registration! 👤"}</h2>
+            <p>${isTr
+        ? `Sisteme <strong>${userName}</strong> adında yeni bir kullanıcı kayıt oldu.`
+        : `A new user named <strong>${userName}</strong> has registered in the system.`
+    }</p>
+            <div class="accent-box">
+                <p style="margin: 0;"><strong>${isTr ? "E-posta" : "Email"}:</strong> ${userEmail}</p>
+                <p style="margin: 8px 0 0;"><strong>${isTr ? "İsim" : "Name"}:</strong> ${userName}</p>
+            </div>
+            <p>${isTr
+        ? "Kullanıcı detaylarını görmek için admin panelini ziyaret edebilirsiniz."
+        : "You can visit the admin panel to view user details."
+    }</p>
+            <a href="${SITE_URL}/${isTr ? 'tr/' : ''}panel/kullanicilar" class="button">
+                ${isTr ? "Kullanıcıları Görüntüle →" : "View Users →"}
+            </a>
         `),
     });
 }

@@ -81,11 +81,33 @@ export async function POST(request: Request) {
             },
         });
 
-        // Send verification email
-        import("@/lib/mail").then(({ sendVerificationEmail }) => {
+        // Send verification email & Notify Admins
+        import("@/lib/mail").then(async ({ sendVerificationEmail, sendNewUserAdminNotification }) => {
+            // 1. Notify User (Verification)
             sendVerificationEmail(user.email!, user.name || "User", verificationToken, selectedLanguage).catch((err) =>
                 console.error("Verification email failed:", err)
             );
+
+            // 2. Notify Admins
+            try {
+                const admins = await prisma.user.findMany({
+                    where: { role: "ADMIN" },
+                    select: { email: true, language: true }
+                });
+
+                for (const admin of admins) {
+                    if (admin.email) {
+                        await sendNewUserAdminNotification(
+                            admin.email,
+                            user.name || "User",
+                            user.email!,
+                            admin.language === "tr" ? "tr" : "en"
+                        ).catch((err) => console.error(`Failed to notify admin ${admin.email}:`, err));
+                    }
+                }
+            } catch (adminErr) {
+                console.error("Failed to fetch admins for registration notification:", adminErr);
+            }
         });
 
         return NextResponse.json(

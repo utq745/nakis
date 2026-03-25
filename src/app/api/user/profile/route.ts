@@ -105,13 +105,22 @@ export async function PATCH(request: Request) {
         }
 
         // Email changes require verification
-        if (isEmailChanging) {
-            updateData.pendingEmail = validatedData.email || currentProfile.pendingEmail || currentProfile.email;
+        if (isEmailChanging && validatedData.email) {
+            updateData.pendingEmail = validatedData.email;
             updateData.pendingName = validatedData.name || currentProfile.name;
-            updateData.emailVerificationToken = crypto.randomUUID();
+            const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            updateData.emailVerificationToken = verificationToken;
             updateData.emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-            // TODO: Send verification email to validatedData.email || currentProfile.email
+            import("@/lib/mail").then(({ sendVerificationEmail }) => {
+                const nameToSend = (validatedData.name || currentProfile.name || "User") as string;
+                sendVerificationEmail(
+                    validatedData.email!,
+                    nameToSend,
+                    verificationToken,
+                    (validatedData.language || currentProfile.language || "en") as "en" | "tr"
+                ).catch((err) => console.error("Verification email failed:", err));
+            });
         }
 
         const updatedUser = await prisma.user.update({
