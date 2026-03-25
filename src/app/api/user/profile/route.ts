@@ -84,8 +84,16 @@ export async function PATCH(request: Request) {
         if (validatedData.image !== undefined) updateData.image = validatedData.image;
 
         // Check if name or email is changing
-        const isNameChanging = validatedData.name && validatedData.name !== currentProfile.name;
-        const isEmailChanging = validatedData.email && validatedData.email !== (currentProfile.pendingEmail || currentProfile.email);
+        const isNameChanging = validatedData.name !== undefined && validatedData.name !== currentProfile.name;
+        const isEmailChanging = validatedData.email !== undefined && validatedData.email !== currentProfile.email;
+
+        console.log("Profile update attempt:", {
+            userId: session.user.id,
+            isNameChanging,
+            isEmailChanging,
+            newEmail: validatedData.email,
+            newName: validatedData.name
+        });
 
         if (isEmailChanging && validatedData.email) {
             const existingUser = await prisma.user.findUnique({
@@ -99,8 +107,9 @@ export async function PATCH(request: Request) {
             }
         }
 
-        // Name changes are applied directly
-        if (isNameChanging && validatedData.name) {
+        // Name changes are applied directly ONLY IF not also changing email
+        // (Wait, if changing email, we keep name in pendingName too to apply together after verification)
+        if (isNameChanging && validatedData.name && !isEmailChanging) {
             updateData.name = validatedData.name;
         }
 
@@ -114,6 +123,7 @@ export async function PATCH(request: Request) {
 
             import("@/lib/mail").then(({ sendVerificationEmail }) => {
                 const nameToSend = (validatedData.name || currentProfile.name || "User") as string;
+                console.log(`Sending verification email to: ${validatedData.email}`);
                 sendVerificationEmail(
                     validatedData.email!,
                     nameToSend,
@@ -128,8 +138,10 @@ export async function PATCH(request: Request) {
             data: updateData,
         });
 
+        console.log("Profile updated successfully:", { userId: session.user.id });
         return NextResponse.json(updatedUser);
     } catch (error) {
+        console.error("Profile update error detail:", error);
         if (error instanceof z.ZodError) {
             return NextResponse.json(
                 { error: error.issues[0].message },
