@@ -114,6 +114,12 @@ interface OrderDetailClientProps {
             notes: string | null;
         };
         serviceType: string | null;
+        machineBrand: string | null;
+        productType: string | null;
+        garmentType: string | null;
+        isNotSure: boolean;
+        customProduct: string | null;
+        addKnockdownStitch: boolean;
         files: Array<{
             id: string;
             name: string;
@@ -1004,6 +1010,64 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Sipariş Detayları - Sadece Admin */}
+                    {isAdmin && (order.serviceType || order.machineBrand || order.productType || order.garmentType) && (
+                        <Card className="border-violet-500/20">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                                    <ClipboardList className="h-5 w-5 text-violet-400" />
+                                    Sipariş Detayları
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-0">
+                                {order.serviceType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">Hizmet Türü</span>
+                                        <span className="text-sm text-muted-foreground text-right max-w-[60%]">{order.serviceType}</span>
+                                    </div>
+                                )}
+                                {order.machineBrand && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">Makine Markası</span>
+                                        <span className="text-sm text-muted-foreground">{order.machineBrand}</span>
+                                    </div>
+                                )}
+                                {order.productType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">Ürün Türü</span>
+                                        <span className="text-sm text-muted-foreground">{order.productType}</span>
+                                    </div>
+                                )}
+                                {order.garmentType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">Kumaş Türü</span>
+                                        <span className="text-sm text-muted-foreground">{order.garmentType}</span>
+                                    </div>
+                                )}
+                                {order.customProduct && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">Özel Ürün</span>
+                                        <span className="text-sm text-muted-foreground text-right max-w-[60%]">{order.customProduct}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium text-sm">Knockdown Dikiş</span>
+                                    <Badge className={order.addKnockdownStitch ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-accent text-muted-foreground border-border"}>
+                                        {order.addKnockdownStitch ? "Evet" : "Hayır"}
+                                    </Badge>
+                                </div>
+                                {order.isNotSure && (
+                                    <div className="flex justify-between items-center py-1.5">
+                                        <span className="text-foreground font-medium text-sm">Emin Değil</span>
+                                        <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                                            Evet
+                                        </Badge>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Description - Moved to sidebar */}
                     {order.description && (

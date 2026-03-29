@@ -115,6 +115,12 @@ interface OrderDetailClientProps {
         };
         priority: string;
         serviceType: string | null;
+        machineBrand: string | null;
+        productType: string | null;
+        garmentType: string | null;
+        isNotSure: boolean;
+        customProduct: string | null;
+        addKnockdownStitch: boolean;
         estimatedDelivery: string | null;
         files: Array<{
             id: string;
@@ -1061,6 +1067,64 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Order Specifications - Admin Only */}
+                    {isAdmin && (order.serviceType || order.machineBrand || order.productType || order.garmentType) && (
+                        <Card className="border-violet-500/20">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-foreground text-lg flex items-center gap-2">
+                                    <ClipboardList className="h-5 w-5 text-violet-400" />
+                                    {language === "tr" ? "Sipariş Detayları" : "Order Specifications"}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-0">
+                                {order.serviceType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Hizmet Türü" : "Service Type"}</span>
+                                        <span className="text-sm text-muted-foreground text-right max-w-[60%]">{order.serviceType}</span>
+                                    </div>
+                                )}
+                                {order.machineBrand && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Makine Markası" : "Machine Brand"}</span>
+                                        <span className="text-sm text-muted-foreground">{order.machineBrand}</span>
+                                    </div>
+                                )}
+                                {order.productType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Ürün Türü" : "Product Type"}</span>
+                                        <span className="text-sm text-muted-foreground">{order.productType}</span>
+                                    </div>
+                                )}
+                                {order.garmentType && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Kumaş Türü" : "Garment Type"}</span>
+                                        <span className="text-sm text-muted-foreground">{order.garmentType}</span>
+                                    </div>
+                                )}
+                                {order.customProduct && (
+                                    <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Özel Ürün" : "Custom Product"}</span>
+                                        <span className="text-sm text-muted-foreground text-right max-w-[60%]">{order.customProduct}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center py-1.5 border-b border-border">
+                                    <span className="text-foreground font-medium text-sm">{language === "tr" ? "Knockdown Dikiş" : "Knockdown Stitch"}</span>
+                                    <Badge className={order.addKnockdownStitch ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-accent text-muted-foreground border-border"}>
+                                        {order.addKnockdownStitch ? (language === "tr" ? "Evet" : "Yes") : (language === "tr" ? "Hayır" : "No")}
+                                    </Badge>
+                                </div>
+                                {order.isNotSure && (
+                                    <div className="flex justify-between items-center py-1.5">
+                                        <span className="text-foreground font-medium text-sm">{language === "tr" ? "Emin Değil" : "Not Sure"}</span>
+                                        <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                                            {language === "tr" ? "Evet" : "Yes"}
+                                        </Badge>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Description - Moved to sidebar */}
                     {order.description && (
