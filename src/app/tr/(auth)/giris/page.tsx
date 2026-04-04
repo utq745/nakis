@@ -24,12 +24,20 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const [verificationMessage, setVerificationMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; text: string } | null>(null);
     const [turnstileToken, setTurnstileToken] = useState("");
+    const [isDev, setIsDev] = useState(false);
     const turnstileRef = useRef<HTMLDivElement>(null);
     const turnstileWidgetId = useRef<string | null>(null);
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useLanguage();
     const lp = t.auth.loginPage;
+
+    useEffect(() => {
+        if (process.env.NODE_ENV === 'development') {
+            setIsDev(true);
+            setTurnstileToken("local-dev-token");
+        }
+    }, []);
 
     useEffect(() => {
         const errorParam = searchParams.get('error');
@@ -168,11 +176,13 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f6f6f8] dark:bg-[#101622] font-[family-name:var(--font-inter)]">
-            <Script
-                src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
-                strategy="afterInteractive"
-                onReady={() => renderTurnstile()}
-            />
+            {!isDev && (
+                <Script
+                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
+                    strategy="afterInteractive"
+                    onReady={() => renderTurnstile()}
+                />
+            )}
             <Header forceSolid fullWidth />
 
             <main className="flex-grow flex flex-col lg:flex-row w-full animate-in fade-in duration-500 min-h-screen pt-16">
@@ -377,9 +387,11 @@ export default function LoginPage() {
                             )}
 
                             {/* Cloudflare Turnstile */}
-                            <div className="flex justify-center">
-                                <div ref={turnstileRef}></div>
-                            </div>
+                            {!isDev && (
+                                <div className="flex justify-center">
+                                    <div ref={turnstileRef}></div>
+                                </div>
+                            )}
 
                             {/* Submit Button */}
                             <button

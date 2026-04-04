@@ -34,8 +34,10 @@ import {
     FilePlus,
     Package,
     DollarSign,
+    Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { CommentSection } from "@/components/orders/comment-section";
 import { WilcomSection } from "@/components/orders/wilcom-section";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_LABELS_TR, ORDER_STATUS_COLORS, type OrderStatus } from "@/types";
@@ -47,6 +49,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -833,7 +836,6 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                     {(isAdmin || (status === "IN_PROGRESS" && order.serviceType === "New Digitizing + Sample" && previewFiles.length > 0)) && (
                                         <FileList
                                             files={previewFiles}
-                                            showPreview
                                             emptyText={t.orders.noFiles}
                                             isAdmin={isAdmin}
                                             onDelete={handleDeleteFile}
@@ -1600,6 +1602,9 @@ function FileList({
     onDelete?: (id: string) => void;
     canDelete?: boolean;
 }) {
+    const { language } = useLanguage();
+    const [previewSelectedImage, setPreviewSelectedImage] = useState<string | null>(null);
+
     if (files.length === 0) {
         return (
             <div className="text-center py-8 text-muted-foreground">
@@ -1610,71 +1615,121 @@ function FileList({
 
     return (
         <div className="space-y-2">
-            {files.map((file) => (
-                <div key={file.id}>
-                    {showPreview && file.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
-                        <div className="mb-2 rounded-lg overflow-hidden bg-accent">
-                            <img
-                                src={file.url}
-                                alt={file.name}
-                                className="w-full h-auto max-h-64 object-contain"
-                            />
-                        </div>
-                    )}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
-                        <div className="flex items-center gap-3">
-                            {showPreview ? (
-                                <ImageIcon className="h-5 w-5 text-violet-400" />
-                            ) : (
-                                <FileIcon className="h-5 w-5 text-violet-400" />
-                            )}
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm text-foreground">{file.name}</p>
-                                    {file.version && file.version > 1 && (
-                                        <span className="px-2 py-0.5 text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full">
-                                            v{file.version}
-                                        </span>
+            {files.map((file) => {
+                const isImage = /\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$/.test(file.name) || 
+                              /\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$/.test(file.url);
+                const isPDF = /\.pdf$|\.PDF$/.test(file.name) || /\.pdf$|\.PDF$/.test(file.url);
+                const isPreviewable = isImage || isPDF;
+                return (
+                    <div key={file.id}>
+                        {showPreview && isImage && (
+                            <div className="mb-2 rounded-lg overflow-hidden bg-accent">
+                                <img
+                                    src={file.url}
+                                    alt={file.name}
+                                    className="w-full h-auto max-h-64 object-contain"
+                                />
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
+                            <div className="flex items-center gap-3">
+                                {isImage ? (
+                                    <ImageIcon className="h-5 w-5 text-violet-400" />
+                                ) : isPDF ? (
+                                    <FileIcon className="h-5 w-5 text-red-400" />
+                                ) : (
+                                    <FileIcon className="h-5 w-5 text-violet-400" />
+                                )}
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm text-foreground">{file.name}</p>
+                                        {file.version && file.version > 1 && (
+                                            <span className="px-2 py-0.5 text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-full">
+                                                v{file.version}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {file.size && (
+                                        <p className="text-xs text-muted-foreground">
+                                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                                        </p>
                                     )}
                                 </div>
-                                {file.size && (
-                                    <p className="text-xs text-muted-foreground">
-                                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
-                                )}
                             </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            {!isLocked && (
-                                <a href={`${file.url}?download=1`} download={file.name}>
+                            <div className="flex items-center gap-1">
+                                {isPreviewable && (
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        onClick={() => setPreviewSelectedImage(file.url)}
                                         className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 transition-colors"
+                                        title={language === 'tr' ? 'Önizle' : 'Preview'}
                                     >
-                                        <Download className="h-4 w-4" />
+                                        <Eye className="h-4 w-4" />
                                     </Button>
-                                </a>
-                            )}
-                            {isAdmin && canDelete && onDelete && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => onDelete(file.id)}
-                                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.1)] transition-all duration-300"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            )}
-                            {isLocked && (
-                                <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Final files are not ready yet">
-                                    <Lock className="h-4 w-4" />
-                                </div>
-                            )}
+                                )}
+                                {!isLocked && (
+                                    <a href={`${file.url}?download=1`} download={file.name}>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-muted-foreground hover:text-violet-500 hover:bg-violet-500/10 transition-colors"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </a>
+                                )}
+                                {isAdmin && canDelete && onDelete && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => onDelete(file.id)}
+                                        className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.1)] transition-all duration-300"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                )}
+                                {isLocked && (
+                                    <div className="p-2 rounded-lg bg-accent/50 text-muted-foreground" title="Final files are not ready yet">
+                                        <Lock className="h-4 w-4" />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
+
+            <Dialog open={!!previewSelectedImage} onOpenChange={(open) => !open && setPreviewSelectedImage(null)}>
+                <DialogContent className={cn(
+                    "p-6 sm:p-10 overflow-visible",
+                    previewSelectedImage?.toLowerCase().endsWith('.pdf') ? "max-w-5xl h-[95vh]" : "max-w-4xl"
+                )}>
+                    <DialogTitle className="sr-only">
+                        {language === 'tr' ? 'Dosya Önizleme' : 'File Preview'}
+                    </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        {language === 'tr' ? 'Dosyanın önizlemesi görüntüleniyor' : 'Viewing file preview'}
+                    </DialogDescription>
+                    {previewSelectedImage && (
+                        <div className="relative flex items-center justify-center w-full h-full">
+                            {/\.pdf($|\?)|\.PDF($|\?)/.test(previewSelectedImage) ? (
+                                <iframe
+                                    src={previewSelectedImage}
+                                    className="w-full h-[80vh] bg-white rounded-lg shadow-lg border border-border"
+                                    title="PDF Preview"
+                                />
+                            ) : (
+                                <img
+                                    src={previewSelectedImage}
+                                    alt="Preview"
+                                    className="max-w-full max-h-[75vh] rounded-lg shadow-xl object-contain"
+                                />
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

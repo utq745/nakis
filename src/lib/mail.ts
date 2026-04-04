@@ -31,6 +31,12 @@ async function send({
     subject: string;
     html: string;
 }) {
+    // Suppress all emails in local development
+    if (process.env.NODE_ENV === "development") {
+        console.log(`📧 [DEV] Mail suppressed → to: ${to} | subject: ${subject}`);
+        return;
+    }
+
     try {
         const info = await transporter.sendMail({
             from: MAIL_FROM,

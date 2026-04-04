@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
@@ -28,9 +30,19 @@ export function Sidebar() {
     const { data: session } = useSession();
     const { t, language } = useLanguage();
     const { isCollapsed, toggle } = useSidebar();
+    
+    const { theme, systemTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const prefix = language === 'tr' ? '/tr' : '';
     const homeUrl = language === 'tr' ? '/tr' : '/';
+    
+    const currentTheme = mounted ? (theme === 'system' ? systemTheme : theme) : 'light';
+    const isDark = currentTheme === 'dark';
 
     const customerNav = [
         {
@@ -101,47 +113,52 @@ export function Sidebar() {
                     "flex h-20 items-center border-b border-border transition-all duration-300 overflow-hidden shrink-0",
                     isCollapsed ? "justify-center px-2" : "px-6"
                 )}>
-                    {isCollapsed ? (
-                        <div className="h-10 w-10 shrink-0 flex items-center justify-center">
-                            <Image
-                                src="/icon.png"
-                                alt="Approval Stitch"
-                                width={40}
-                                height={40}
-                                priority
-                                className="h-10 w-10 object-contain dark:hidden"
-                            />
-                            <Image
-                                src="/icon-white.png"
-                                alt="Approval Stitch"
-                                width={40}
-                                height={40}
-                                priority
-                                className="hidden h-10 w-10 object-contain dark:block"
-                            />
-                        </div>
-                    ) : (
-                        <div className="h-[50px] flex items-center">
+                    {/* Logo area with CSS-powered responsiveness and theme toggling for hydration safety */}
+                    <div className="relative flex items-center justify-center transition-all duration-300">
+                        {/* Expanded Logo: Hidden when collapsed */}
+                        <div className={cn(
+                            "flex items-center transition-all duration-300",
+                            isCollapsed ? "hidden" : "block"
+                        )}>
                             <Image
                                 src="/images/approval-stich-logo.webp"
-                                alt="Approval Stitch"
+                                alt="Approval Stitch Logo"
                                 width={160}
                                 height={50}
                                 priority
-                                className="object-contain shrink-0 !h-[50px] w-auto dark:hidden"
-                                style={{ height: "50px", maxHeight: "50px" }}
+                                className="object-contain block dark:hidden !h-[50px] w-auto"
                             />
                             <Image
                                 src="/images/approval-stich-logo-w.webp"
-                                alt="Approval Stitch"
+                                alt="Approval Stitch Logo"
                                 width={160}
                                 height={50}
                                 priority
-                                className="object-contain hidden shrink-0 !h-[50px] w-auto dark:block"
-                                style={{ height: "50px", maxHeight: "50px" }}
+                                className="object-contain hidden dark:block !h-[50px] w-auto"
                             />
                         </div>
-                    )}
+
+                        {/* Collapsed Icon: Hidden when expanded */}
+                        <div className={cn(
+                            "flex items-center justify-center transition-all duration-300",
+                            isCollapsed ? "block" : "hidden"
+                        )}>
+                            <Image
+                                src="/icon.png"
+                                alt="Approval Stitch Icon"
+                                width={40}
+                                height={40}
+                                className="h-10 w-10 object-contain block dark:hidden"
+                            />
+                            <Image
+                                src="/icon-white.png"
+                                alt="Approval Stitch Icon"
+                                width={40}
+                                height={40}
+                                className="h-10 w-10 object-contain hidden dark:block"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Navigation */}

@@ -1,9 +1,9 @@
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || "";
 
 export async function verifyTurnstile(token: string): Promise<boolean> {
-    if (!TURNSTILE_SECRET_KEY) {
-        console.warn("TURNSTILE_SECRET_KEY not set, skipping verification");
-        return true; // Allow in development
+    if (process.env.NODE_ENV === 'development' || !TURNSTILE_SECRET_KEY) {
+        console.warn("Skipping Turnstile verification in development or if secret key is missing");
+        return true; 
     }
 
     try {

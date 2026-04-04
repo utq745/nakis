@@ -6,6 +6,7 @@ import { join } from "path";
 import { existsSync } from "fs";
 import { createOrderNotification } from "@/lib/notifications";
 import { sendOrderCompletedEmail } from "@/lib/mail";
+import { syncOrderToCloudflare } from "@/lib/sync-cloudflare";
 
 export async function POST(
     request: Request,
@@ -98,6 +99,9 @@ export async function POST(
             where: { id: orderId },
             data: { status: "COMPLETED" },
         });
+
+        // Sync all local files to Cloudflare R2 now that order is complete
+        await syncOrderToCloudflare(orderId);
 
         // Create system comments
         await prisma.comment.createMany({

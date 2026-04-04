@@ -153,8 +153,8 @@ function parseNumber(value: string | undefined): number | null {
 
 function parseDate(dateStr: string | undefined): Date | null {
     if (!dateStr) return null;
-    // Format: "14.12.2025 18:39:03"
-    const match = dateStr.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    // Format: "14.12.2025 18:39:03" or "1.06.2024 11:46:14"
+    const match = dateStr.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})/);
     if (!match) return null;
     const [, day, month, year, hour, minute, second] = match;
     return new Date(
@@ -226,7 +226,7 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
 
     // Parse design name - try common labels
     let designName = '';
-    const designMatch = text.match(/(?:Design|Design Name):\s*(.+?)(?:\n|$)/i);
+    const designMatch = text.match(/(?:Design|Design Name|Desen):\s*(.+?)(?:\n|$)/i);
     if (designMatch) {
         designName = designMatch[1].trim();
     }
@@ -240,26 +240,26 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
     if (designName) result.designName = designName;
 
     // Parse dimensions
-    const heightMatch = text.match(/Height:\s*([\d.,]+)\s*mm/);
+    const heightMatch = text.match(/(?:Height|Yükseklik):\s*([\d.,]+)\s*mm/);
     if (heightMatch) result.heightMm = parseNumber(heightMatch[1]) || 0;
 
-    const widthMatch = text.match(/Width:\s*([\d.,]+)\s*mm/);
+    const widthMatch = text.match(/(?:Width|Genişlik):\s*([\d.,]+)\s*mm/);
     if (widthMatch) result.widthMm = parseNumber(widthMatch[1]) || 0;
 
     // Parse stitch count
-    const stitchMatch = text.match(/Stitches?:\s*([\d.,]+)/);
+    const stitchMatch = text.match(/(?:Stitches|Stitche|Dikişler):\s*([\d.,]+)/);
     if (stitchMatch) result.stitchCount = parseInt(stitchMatch[1].replace(/[.,]/g, '')) || 0;
 
     // Parse color count
-    const colorCountMatch = text.match(/Colors:\s*(\d+)/);
+    const colorCountMatch = text.match(/(?:Colors|Renkler):\s*(\d+)/);
     if (colorCountMatch) result.colorCount = parseInt(colorCountMatch[1]) || 0;
 
     // Parse colorway
-    const colorwayMatch = text.match(/Colorway:\s*(.+)/);
+    const colorwayMatch = text.match(/(?:Colorway|Renk sıralaması):\s*(.+)/);
     if (colorwayMatch) result.colorway = colorwayMatch[1].trim();
 
     // Parse machine format
-    const machineFormatMatch = text.match(/Machine format:\s*(\S+)/);
+    const machineFormatMatch = text.match(/(?:Machine format|Makina formatı):\s*(\S+)/);
     if (machineFormatMatch) result.machineFormat = machineFormatMatch[1];
 
     // Parse machine runtime - format can be multi-line:
@@ -291,51 +291,51 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
     if (runtimeMatch) result.machineRuntime = runtimeMatch[1];
 
     // Parse other machine info
-    const colorChangesMatch = text.match(/Color changes:\s*(\d+)/);
+    const colorChangesMatch = text.match(/(?:Color changes|Renk değişimleri):\s*(\d+)/);
     if (colorChangesMatch) result.colorChanges = parseInt(colorChangesMatch[1]);
 
-    const stopsMatch = text.match(/Stops:\s*(\d+)/);
+    const stopsMatch = text.match(/(?:Stops|Stop):\s*(\d+)/);
     if (stopsMatch) result.stops = parseInt(stopsMatch[1]);
 
-    const trimsMatch = text.match(/Trims:\s*(\d+)/);
+    const trimsMatch = text.match(/(?:Trims|Kesler):\s*(\d+)/);
     if (trimsMatch) result.trims = parseInt(trimsMatch[1]);
 
-    const maxStitchMatch = text.match(/Max stitch:\s*([\d.,]+)\s*mm/);
+    const maxStitchMatch = text.match(/(?:Max stitch|Max dikiş):\s*([\d.,]+)\s*mm/);
     if (maxStitchMatch) result.maxStitchMm = parseNumber(maxStitchMatch[1]);
 
-    const minStitchMatch = text.match(/Min stitch:\s*([\d.,]+)\s*mm/);
+    const minStitchMatch = text.match(/(?:Min stitch|Min dikiş):\s*([\d.,]+)\s*mm/);
     if (minStitchMatch) result.minStitchMm = parseNumber(minStitchMatch[1]);
 
-    const maxJumpMatch = text.match(/Max jump:\s*([\d.,]+)\s*mm/);
+    const maxJumpMatch = text.match(/(?:Max jump|Max atlama):\s*([\d.,]+)\s*mm/);
     if (maxJumpMatch) result.maxJumpMm = parseNumber(maxJumpMatch[1]);
 
-    const totalThreadMatch = text.match(/Total thread:\s*([\d.,]+)m/);
+    const totalThreadMatch = text.match(/(?:Total thread|Toplam iplik):\s*([\d.,]+)\s*m/);
     if (totalThreadMatch) result.totalThreadM = parseNumber(totalThreadMatch[1]);
 
-    const totalBobbinMatch = text.match(/Total bobbin:\s*([\d.,]+)m/);
+    const totalBobbinMatch = text.match(/(?:Total bobbin|Toplam bobin):\s*([\d.,]+)\s*m/);
     if (totalBobbinMatch) result.totalBobbinM = parseNumber(totalBobbinMatch[1]);
 
     // Parse position info
-    const leftMatch = text.match(/Left:\s*([\d.,]+)\s*mm/);
+    const leftMatch = text.match(/(?:Left|Sol):\s*([\d.,]+)\s*mm/);
     if (leftMatch) result.leftMm = parseNumber(leftMatch[1]);
 
-    const rightMatch = text.match(/Right:\s*([\d.,]+)\s*mm/);
+    const rightMatch = text.match(/(?:Right|Sağ):\s*([\d.,]+)\s*mm/);
     if (rightMatch) result.rightMm = parseNumber(rightMatch[1]);
 
-    const upMatch = text.match(/Up:\s*([\d.,]+)\s*mm/);
+    const upMatch = text.match(/(?:Up|Yukarı):\s*([\d.,]+)\s*mm/);
     if (upMatch) result.upMm = parseNumber(upMatch[1]);
 
-    const downMatch = text.match(/Down:\s*([\d.,]+)\s*mm/);
+    const downMatch = text.match(/(?:Down|Aşağı):\s*([\d.,]+)\s*mm/);
     if (downMatch) result.downMm = parseNumber(downMatch[1]);
 
-    const areaMatch = text.match(/Area\s*([\d.,]+)\s*mm/);
+    const areaMatch = text.match(/(?:Area|Alan)\s*([\d.,]+)\s*mm/);
     if (areaMatch) result.areaMm2 = parseNumber(areaMatch[1]);
 
     // Parse dates
-    const lastSavedMatch = text.match(/Design last saved\s*:\s*(.+)/);
+    const lastSavedMatch = text.match(/(?:Design last saved|Tasarım son kaydedilen)\s*:\s*(.+)/);
     if (lastSavedMatch) result.designLastSaved = parseDate(lastSavedMatch[1]);
 
-    const printedMatch = text.match(/Date printed:\s*(.+)/);
+    const printedMatch = text.match(/(?:Date printed|Baskı tarihi):\s*(.+)/);
     if (printedMatch) result.datePrinted = parseDate(printedMatch[1]);
 
     // Parse color sequence from Stop Sequence section
@@ -345,7 +345,7 @@ export async function parseWilcomPdf(pdfPath: string): Promise<WilcomParsedData>
     // 1.279
     // 10 Orange
     // Default
-    const stopSequenceMatch = text.match(/Stop Sequence:[\s\S]*?(?=Machine runtime:|$)/);
+    const stopSequenceMatch = text.match(/(?:Stop Sequence|Stop' dizisi):[\s\S]*?(?=(?:Machine runtime|Makina çalişma zamani):|$)/i);
     console.log('Stop Sequence section found:', !!stopSequenceMatch);
 
     if (stopSequenceMatch) {
@@ -844,7 +844,7 @@ export function generateOperatorApprovalHtml(data: WilcomParsedData, images: {
             overflow: hidden;
         }
         
-        .embroidery-placeholder { object-fit: cover; object-position: center; }
+        .embroidery-placeholder { object-fit: contain; object-position: bottom left; }
         
         .bottom-sections { display: none; }
     `;
@@ -1245,7 +1245,7 @@ export function generateCustomerApprovalHtml(data: WilcomParsedData, images: {
             overflow: hidden;
         }
         
-        .embroidery-placeholder { object-fit: cover; object-position: center; }
+        .embroidery-placeholder { object-fit: contain; object-position: bottom left; }
         
         .bottom-sections {
             position: absolute;

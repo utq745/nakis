@@ -184,35 +184,7 @@ export async function POST(
             },
         });
 
-        // 4. Upload everything to Cloudflare R2 for persistence
-        try {
-            const filesToUpload = [
-                { path: pdfPath, key: `wilcom/${orderId}/wilcom.pdf`, contentType: 'application/pdf' },
-                { path: result.operatorPdfPath, key: `wilcom/${orderId}/operator_approval.pdf`, contentType: 'application/pdf' },
-                { path: result.customerPdfPath, key: `wilcom/${orderId}/customer_approval.pdf`, contentType: 'application/pdf' }
-            ];
-
-            if (result.designImagePath) {
-                filesToUpload.push({ path: result.designImagePath, key: `wilcom/${orderId}/design.png`, contentType: 'image/png' });
-            }
-            if (result.artworkImagePath) {
-                filesToUpload.push({ path: result.artworkImagePath, key: `wilcom/${orderId}/artwork.png`, contentType: 'image/png' });
-            }
-
-            await Promise.all(filesToUpload.map(async (file) => {
-                const fileBuffer = await fs.readFile(file.path);
-                return s3Client.send(new PutObjectCommand({
-                    Bucket: R2_BUCKET_NAME,
-                    Key: file.key,
-                    Body: fileBuffer,
-                    ContentType: file.contentType,
-                }));
-            }));
-            console.log(`[WILCOM_POST] Successfully uploaded ${filesToUpload.length} files to R2`);
-        } catch (r2Error) {
-            console.error("[WILCOM_R2_UPLOAD_ERROR]", r2Error);
-            // We don't fail the request if R2 upload fails, but we log it
-        }
+        // Skip uploading to R2 here, we'll do it when order is completed.
 
         // Note: Status changes are now handled explicitly via the UI/workflow, not automatically
 

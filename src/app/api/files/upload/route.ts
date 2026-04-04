@@ -5,6 +5,7 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { createOrderNotification } from "@/lib/notifications";
 import { sendOrderCompletedEmail } from "@/lib/mail";
+import { syncOrderToCloudflare } from "@/lib/sync-cloudflare";
 
 export async function POST(request: Request) {
     try {
@@ -78,16 +79,11 @@ export async function POST(request: Request) {
             const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
             const fileName = `${orderId}/${type}/${uuid}-${safeName}`;
 
-            // Upload to Cloudflare R2 using the new s3Client
-            const { PutObjectCommand } = await import("@aws-sdk/client-s3");
-            const { s3Client, R2_BUCKET_NAME } = await import("@/lib/s3");
-
-            await s3Client.send(new PutObjectCommand({
-                Bucket: R2_BUCKET_NAME,
-                Key: fileName,
-                Body: buffer,
-                ContentType: file.type || "application/octet-stream",
-            }));
+            // Save Locally Instead of Direct R2 Upload
+            const targetDir = join(process.cwd(), "uploads", orderId, type);
+            await mkdir(targetDir, { recursive: true });
+            const localPath = join(targetDir, `${uuid}-${safeName}`);
+            await writeFile(localPath, buffer);
 
             // Store API URL path (proxy through our server for auth checks)
             // url in DB will now be the R2 Key (fileName)
@@ -143,6 +139,9 @@ export async function POST(request: Request) {
                     isSystem: true,
                 },
             });
+            
+            // Sync all order files to Cloudflare now that it's complete
+            await syncOrderToCloudflare(orderId);
 
             // Create notification and send email
             await createOrderNotification(
