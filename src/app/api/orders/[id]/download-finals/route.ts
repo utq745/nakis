@@ -92,19 +92,29 @@ export async function GET(
             const urlPath = file.url;
             const filename = urlPath.includes("/") ? urlPath.split("/").pop() || "" : urlPath;
 
-            // Try different path locations
+            // Determine local path based on URL format
             let filePath: string | null = null;
+            
+            if (file.url.includes("/")) {
+                // Scenario 1: URL is already a full relative path from 'uploads/'
+                const fullPath = join(process.cwd(), "uploads", file.url);
+                if (existsSync(fullPath)) filePath = fullPath;
+            } else {
+                // Scenario 2: URL is just a filename, look in the specific order folder
+                const standardPath = join(process.cwd(), "uploads", file.orderId, file.type, file.url);
+                if (existsSync(standardPath)) filePath = standardPath;
+            }
 
-            const securePath = join(process.cwd(), "uploads", file.orderId, file.type, filename);
-            const publicPath = join(process.cwd(), "public", urlPath);
-            const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, filename);
-
-            if (existsSync(securePath)) {
-                filePath = securePath;
-            } else if (existsSync(publicPath)) {
-                filePath = publicPath;
-            } else if (existsSync(oldPublicPath)) {
-                filePath = oldPublicPath;
+            // Fallbacks for legacy paths or public files
+            if (!filePath) {
+                const publicPath = join(process.cwd(), "public", file.url);
+                const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, file.url);
+                
+                if (existsSync(publicPath)) {
+                    filePath = publicPath;
+                } else if (existsSync(oldPublicPath)) {
+                    filePath = oldPublicPath;
+                }
             }
 
             if (filePath && existsSync(filePath)) {

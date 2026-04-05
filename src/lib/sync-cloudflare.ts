@@ -16,8 +16,15 @@ export async function syncOrderToCloudflare(orderId: string) {
     // 1. Sync all files in `file` table
     const files = await prisma.file.findMany({ where: { orderId } });
     for (const f of files) {
-        const filename = f.url.includes("/") ? f.url.split("/").pop() || "" : f.url;
-        const localPath = join(process.cwd(), "uploads", f.orderId, f.type, filename);
+        let localPath: string;
+        
+        if (f.url.includes("/")) {
+            // If URL contains slashes, it's already a relative path from 'uploads/'
+            localPath = join(process.cwd(), "uploads", f.url);
+        } else {
+            // Otherwise it's a simple filename relative to orderId/type/
+            localPath = join(process.cwd(), "uploads", f.orderId, f.type, f.url);
+        }
         
         if (existsSync(localPath)) {
             const buffer = await readFile(localPath);
