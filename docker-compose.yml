@@ -1,38 +1,62 @@
 services:
-  web:
+  nginx:
+    image: nginx:alpine
+    container_name: nakis-proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - blue
+      - green
+
+  blue:
     build: .
-    container_name: netjs-site
+    container_name: nakis-blue
     restart: always
     env_file:
       - .env
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - HOSTNAME=0.0.0.0
-    ports:
-      - "80:3000"
+    expose:
+      - "3000"
     volumes:
-      # Veritabanını korumak için prisma klasörü bağlanıyor (SQLite journal dosyaları için gerekli)
       - ./prisma:/app/prisma
-      # Yüklenen dosyaların kaybolmaması için uploads klasörü bağlanıyor
       - ./uploads:/app/uploads
-      # Projeye özel diğer resimler/assetlar varsa onları da buraya ekleyebilirsiniz
       - ./public/images:/app/public/images
-    stop_grace_period: 30s
-    # Health check - container sağlığını izle
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ > /dev/null || exit 1"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-    # Docker Compose (Swarm değil) için çalışan kaynak limitleri
-    mem_limit: 2g
-    mem_reservation: 512m
-    cpus: 1.0
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    mem_limit: 1g
+    mem_reservation: 256m
+    cpus: 0.5
+
+  green:
+    build: .
+    container_name: nakis-green
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - "3000"
+    volumes:
+      - ./prisma:/app/prisma
+      - ./uploads:/app/uploads
+      - ./public/images:/app/public/images
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: 1g
+    mem_reservation: 256m
+    cpus: 0.5
