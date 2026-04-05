@@ -58,8 +58,8 @@ if [ "$HEALTHY" == "true" ]; then
         sed -i 's/http:\/\/blue:3000/http:\/\/green:3000/g' "$NGINX_CONF"
     fi
     
-    # Reload Nginx
-    docker exec $CONTAINER_PROXY nginx -s reload
+    # Reload Nginx (Restarting is more reliable to force DNS re-resolution)
+    docker restart $CONTAINER_PROXY
     
     echo "=== Swap Complete! Traffic is now on $NEXT ==="
     
