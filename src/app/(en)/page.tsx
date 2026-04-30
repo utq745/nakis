@@ -7,6 +7,7 @@ import { WhatYouReceive } from "@/components/landing/what-you-receive";
 import { Portfolio } from "@/components/landing/portfolio";
 import { CTA } from "@/components/landing/cta";
 import { IntroSection } from "@/components/landing/intro-section";
+import { FixYourDstBlock } from "@/components/landing/fix-your-dst-block";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -50,6 +51,7 @@ export default function LandingPage() {
         <IntroSection />
         <WhatYouReceive />
         <Process />
+        <FixYourDstBlock />
         <CTA />
       </main>
       <Footer />

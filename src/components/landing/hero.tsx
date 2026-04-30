@@ -43,10 +43,15 @@ export function Hero() {
 
 
                             <h1 className="text-[clamp(1.75rem,5vw,3.75rem)] font-black tracking-tight text-primary dark:text-white leading-[1.1] break-words">
-                                {t.landing.hero.titleLine1} <br />
-                                <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                                    {t.landing.hero.titleLine2}
-                                </span>
+                                {t.landing.hero.titleLine1}
+                                {t.landing.hero.titleLine2 && (
+                                    <>
+                                        <br />
+                                        <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                                            {t.landing.hero.titleLine2}
+                                        </span>
+                                    </>
+                                )}
                             </h1>
 
                             <div className="flex flex-col gap-4">
@@ -63,8 +68,8 @@ export function Hero() {
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-wrap gap-4">
                                 {mounted && (
-                                    isLoggedIn ? (
-                                        <Link href={newOrderUrl}>
+                                    <>
+                                        <Link href={isLoggedIn ? newOrderUrl : loginUrl}>
                                             <motion.button
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
@@ -74,18 +79,17 @@ export function Hero() {
                                                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                             </motion.button>
                                         </Link>
-                                    ) : (
-                                        <Link href={loginUrl}>
+                                        <Link href={language === 'tr' ? '/tr/portfolio' : '/portfolio'}>
                                             <motion.button
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
-                                                className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                                className="px-8 h-14 bg-white dark:bg-white/10 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 rounded-xl font-black text-lg hover:bg-slate-50 dark:hover:bg-white/20 transition-all flex items-center gap-3"
                                             >
-                                                {t.landing.hero.uploadBtn}
-                                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                {t.landing.hero.pricingBtn}
+                                                <span className="material-symbols-outlined">grid_view</span>
                                             </motion.button>
                                         </Link>
-                                    )
+                                    </>
                                 )}
                             </div>
 

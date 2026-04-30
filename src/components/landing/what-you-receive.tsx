@@ -19,23 +19,23 @@ export function WhatYouReceive() {
 
     const items = [
         {
-            title: t.landing.receive.item3Title,
-            desc: t.landing.receive.item3Desc,
+            title: t.landing.receive.item1Title,
+            desc: t.landing.receive.item1Desc,
             image: "/images/landing/rutgers-real-stitched.webp",
             alt: "Real stitched photos"
         },
         {
-            title: t.landing.receive.item1Title,
-            desc: t.landing.receive.item1Desc,
-            image: "/images/landing/What_You_Receive_Approval_card_customer_version.webp",
-            alt: "Approval Card (Client Version)",
+            title: t.landing.receive.item2Title,
+            desc: t.landing.receive.item2Desc,
+            image: "/images/landing/What_You_Receive_Approval_card_operator_version.webp", // Assuming this is the best for DST file representation or we have another one
+            alt: "Production-ready DST file",
             isImagePopup: true
         },
         {
-            title: t.landing.receive.item2Title,
-            desc: t.landing.receive.item2Desc,
-            image: "/images/landing/What_You_Receive_Approval_card_operator_version.webp",
-            alt: "Approval Card (Production / Operator Version)",
+            title: t.landing.receive.item3Title,
+            desc: t.landing.receive.item3Desc,
+            image: "/images/landing/What_You_Receive_Approval_card_customer_version.webp",
+            alt: "Approval cards (Client & Operator)",
             isImagePopup: true
         }
     ];
@@ -62,7 +62,7 @@ export function WhatYouReceive() {
                     ></motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16">
                     {items.map((item, index) => (
                         <motion.div
                             key={index}
@@ -119,6 +119,19 @@ export function WhatYouReceive() {
                         </motion.div>
                     ))}
                 </div>
+
+                {t.landing.receive.subText && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="flex justify-center"
+                    >
+                        <p className="text-xl md:text-2xl font-black text-primary dark:text-white text-center tracking-tight">
+                            {t.landing.receive.subText}
+                        </p>
+                    </motion.div>
+                )}
             </div>
 
             {/* Image Popup Modal */}

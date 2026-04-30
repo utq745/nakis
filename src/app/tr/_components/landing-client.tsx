@@ -9,6 +9,7 @@ import { WhatYouReceive } from "@/components/landing/what-you-receive";
 import { Portfolio } from "@/components/landing/portfolio";
 import { CTA } from "@/components/landing/cta";
 import { IntroSection } from "@/components/landing/intro-section";
+import { FixYourDstBlock } from "@/components/landing/fix-your-dst-block";
 
 export function LandingClient() {
     return (
@@ -19,6 +20,7 @@ export function LandingClient() {
                 <IntroSection />
                 <WhatYouReceive />
                 <Process />
+                <FixYourDstBlock />
                 <CTA />
             </main>
             <Footer />

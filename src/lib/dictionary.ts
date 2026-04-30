@@ -285,12 +285,13 @@ export const translations = {
             receive: {
                 badge: "Teslimat",
                 title: "Neler Alacaksınız?",
-                item1Title: "Approval Card (Client Version)",
-                item1Desc: "Üretim öncesi onay için müşteriye hazır onay kartı.",
-                item2Title: "Approval Card (Production / Operator Version)",
-                item2Desc: "Dikiş, renk ve kurulum detaylarını içeren üretim onay kartı.",
-                item3Title: "Real stitched photos",
-                item3Desc: "Tajima veya Barudan makinelerimizde dikilmiş gerçek numune fotoğrafları."
+                item1Title: "Gerçek dikişli sonuç",
+                item1Desc: "Tajima veya Barudan makinelerimizde dikilmiş gerçek numune fotoğrafları.",
+                item2Title: "Üretime hazır DST dosyası",
+                item2Desc: "Makineleriniz için optimize edilmiş ve test edilmiş nakış dosyası.",
+                item3Title: "Onay kartları (Müşteri & Operatör)",
+                item3Desc: "Hem müşteriniz hem de üretim katınız için detaylı teknik belgeler.",
+                subText: "Simülasyon yok. Tahmin yok. Sadece gerçek dikişli sonuçlar."
             },
             process: {
                 badge: "Süreç",
@@ -306,7 +307,12 @@ export const translations = {
                 step4Desc: "Monthly invoicing.<br>International wire transfer settlement.",
                 corporateModalTitle: "Corporate Production Account",
                 corporateModalDesc: "ApprovalStitch operates under a corporate production account model.<br>Invoices are issued at the end of each month.<br>Payments are settled via international wire transfer.",
-                corporateModalBtn: "Register Corporate Account"
+                corporateModalBtn: "Kurumsal Hesap Kaydı",
+                fixYourDstBlock: {
+                    title: "Zaten bir DST'niz mi var?",
+                    text: "Mevcut dosyanızı gönderin. Temizliyoruz, seçtiğiniz Tajima veya Barudan makinesinde test dikiyoruz ve dikilmiş kanıtıyla birlikte üretime hazır bir versiyonunu iade ediyoruz.",
+                    cta: "DST'mi Düzelt"
+                }
             },
             portfolio: {
                 badge: "Portfolyo",
@@ -899,12 +905,12 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Real Approval Stitch",
-                titleLine1: "Real Stitched Approval Samples",
-                titleLine2: "For Confident Embroidery Production",
-                description: "We stitch your design on real production machines so you can approve before mass production.",
-                subText: "Processed on production-grade Tajima & Barudan machines. No renders. No simulations. Just real stitched samples.",
-                uploadBtn: "Start Order",
-                pricingBtn: "View Samples",
+                titleLine1: "We digitize your design, stitch it on your chosen Tajima or Barudan machine, and deliver it ready for production.",
+                titleLine2: "",
+                description: "Every embroidery file is created, tested on your selected machine, and delivered with stitched proof and approval-ready documentation.",
+                subText: "Each order includes approval cards for your client and detailed production cards for your operator.",
+                uploadBtn: "Upload Your Design",
+                pricingBtn: "View Real Samples",
                 labBadge: "Real Stitch Lab",
                 readyBadge: "Production Ready",
                 precisionBadge: "Precision",
@@ -929,12 +935,13 @@ export const translations = {
             receive: {
                 badge: "What You Receive",
                 title: "What You Receive",
-                item1Title: "Approval Card (Client Version)",
-                item1Desc: "Client-ready approval card for sign-off before production.",
-                item2Title: "Approval Card (Production / Operator Version)",
-                item2Desc: "Production approval card with stitch, color, and setup details.",
-                item3Title: "Real stitched photos",
-                item3Desc: "Photos of the real sample stitches on Tajima or Barudan Machines."
+                item1Title: "Real stitched result",
+                item1Desc: "High-resolution photos of the real sample stitched on Tajima or Barudan Machines.",
+                item2Title: "Production-ready DST file",
+                item2Desc: "Optimized and tested embroidery file ready for your machines.",
+                item3Title: "Approval cards (Client & Operator)",
+                item3Desc: "Detailed technical documentation for both your client and production floor.",
+                subText: "No simulations. No guesswork. Just real stitched results."
             },
             process: {
                 badge: "Process",
@@ -950,7 +957,12 @@ export const translations = {
                 step4Desc: "Monthly invoicing.<br>International wire transfer settlement.",
                 corporateModalTitle: "Corporate Production Account",
                 corporateModalDesc: "ApprovalStitch operates under a corporate production account model.<br>Invoices are issued at the end of each month.<br>Payments are settled via international wire transfer.",
-                corporateModalBtn: "Register Corporate Account"
+                corporateModalBtn: "Register Corporate Account",
+                fixYourDstBlock: {
+                    title: "Already have a DST?",
+                    text: "Send your existing file. We clean it, test stitch it on your selected Tajima or Barudan machine, and return a production-ready version with stitched proof.",
+                    cta: "Fix My DST"
+                }
             },
             portfolio: {
                 badge: "Portfolio",
@@ -969,9 +981,9 @@ export const translations = {
             },
             cta: {
                 rating: "5.0 Rating",
-                title: "Ready to approve your next production?",
-                description: "See how your design really stitches before you run it on the line.<br>Upload your file — receive a real stitched sample and production approval data.",
-                startBtn: "Start Order",
+                title: "Stop guessing how your design will stitch. See the real result before production.",
+                description: "Upload your file — receive a real stitched sample and production approval data.",
+                startBtn: "Start Your Order",
                 contactBtn: "Talk About your Project",
                 testimonial: "\"Approval Stitch has been our go-to for 3 years. The turnaround is incredibly fast, but what really matters is that the files run smooth on our machines every single time. No thread breaks, perfect density.\"",
                 author: "Michael Chen",
