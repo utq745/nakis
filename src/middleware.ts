@@ -48,8 +48,20 @@ export function middleware(request: NextRequest) {
 
     // CSRF protection for API routes (POST, PUT, PATCH, DELETE)
     if (pathname.startsWith('/api/')) {
-        // Skip manual CSRF check for Auth.js routes as it has its own CSRF protection
-        if (pathname.startsWith('/api/auth/')) {
+        // Skip manual CSRF check only for Auth.js (NextAuth) built-in routes,
+        // which have their own CSRF protection. Custom auth endpoints
+        // (register, forgot-password, reset-password, verify, ...) still get checked.
+        const nextAuthPaths = [
+            '/api/auth/signin',
+            '/api/auth/signout',
+            '/api/auth/callback',
+            '/api/auth/session',
+            '/api/auth/csrf',
+            '/api/auth/providers',
+            '/api/auth/error',
+            '/api/auth/verify-request',
+        ];
+        if (nextAuthPaths.some((p) => pathname.startsWith(p))) {
             return response;
         }
 

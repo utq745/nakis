@@ -44,7 +44,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
         }),
         Credentials({
             name: "credentials",
@@ -87,12 +86,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
+        async redirect({ url, baseUrl }) {
+            // Allow relative URLs and same-origin URLs only
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            try {
+                const target = new URL(url);
+                if (target.origin === baseUrl) return url;
+            } catch {
+                // fall through
+            }
+            return baseUrl;
+        },
         async signIn({ user, account, profile }) {
-            console.log("Authentication attempt:", {
-                provider: account?.provider,
-                userId: user?.id,
-                email: user?.email
-            });
+            if (process.env.NODE_ENV !== "production") {
+                console.log("Authentication attempt:", {
+                    provider: account?.provider,
+                    userId: user?.id,
+                });
+            }
 
             // For credentials login, check email verification
             if (account?.provider === "credentials" && user?.id) {

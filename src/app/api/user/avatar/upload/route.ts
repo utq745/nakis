@@ -23,16 +23,29 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "File size exceeds 5MB limit" }, { status: 400 });
         }
 
-        // Validate image type
-        if (!file.type.startsWith("image/")) {
-            return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
+        // Allowlist MIME types
+        const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+        if (!allowedMimeTypes.includes(file.type)) {
+            return NextResponse.json(
+                { error: "Only JPEG, PNG, WebP, and GIF images are allowed" },
+                { status: 400 }
+            );
+        }
+
+        // Allowlist file extensions (defense in depth — MIME types can be spoofed)
+        const allowedExts = ["jpg", "jpeg", "png", "webp", "gif"];
+        const ext = file.name.split(".").pop()?.toLowerCase();
+        if (!ext || !allowedExts.includes(ext)) {
+            return NextResponse.json(
+                { error: "Invalid file extension" },
+                { status: 400 }
+            );
         }
 
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
         // Generate unique filename
-        const ext = file.name.split(".").pop() || "png";
         const fileName = `avatar-${session.user.id}-${Date.now()}.${ext}`;
         const uploadDir = join(process.cwd(), "public", "uploads", "avatars");
 

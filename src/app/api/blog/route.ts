@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "node:crypto";
+import DOMPurify from "isomorphic-dompurify";
 
 // GET /api/blog — List blog posts
 export async function GET(request: Request) {
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
             data: {
                 title,
                 slug: finalSlug,
-                content,
+                content: DOMPurify.sanitize(content),
                 excerpt: excerpt || null,
                 coverImage: coverImage || null,
                 status: status || "DRAFT",

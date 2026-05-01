@@ -34,6 +34,7 @@ function ResetPasswordForm() {
             requestNewLink: "Request New Link",
             passwordMismatch: "Passwords do not match",
             passwordTooShort: "Password must be at least 8 characters",
+            passwordNoSpecial: "Password must contain at least one special character",
         },
         tr: {
             title: "Şifre Sıfırla",
@@ -51,6 +52,7 @@ function ResetPasswordForm() {
             requestNewLink: "Yeni Bağlantı İste",
             passwordMismatch: "Şifreler eşleşmiyor",
             passwordTooShort: "Şifre en az 8 karakter olmalıdır",
+            passwordNoSpecial: "Şifre en az bir özel karakter içermelidir",
         },
     };
 
@@ -63,6 +65,11 @@ function ResetPasswordForm() {
 
         if (password.length < 8) {
             setError(t.passwordTooShort);
+            return;
+        }
+
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            setError(t.passwordNoSpecial);
             return;
         }
 

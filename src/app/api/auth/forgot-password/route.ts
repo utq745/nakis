@@ -20,7 +20,8 @@ export async function POST(request: Request) {
 
         const { email, language } = await request.json();
         const locale = language === "tr" ? "tr" : "en";
-        console.log(`[FORGOT_PASSWORD] Requested for: ${email} (Locale: ${locale})`);
+        const isDev = process.env.NODE_ENV !== "production";
+        if (isDev) console.log(`[FORGOT_PASSWORD] Requested for: ${email} (Locale: ${locale})`);
 
         if (!email) {
             return NextResponse.json(
@@ -33,11 +34,11 @@ export async function POST(request: Request) {
             where: { email },
         });
 
-        console.log(`[FORGOT_PASSWORD] User found? ${!!user}`);
+        if (isDev) console.log(`[FORGOT_PASSWORD] User found? ${!!user}`);
 
         // Always return success to prevent email enumeration attacks
         if (!user) {
-            console.log(`[FORGOT_PASSWORD] No user found for ${email}. Returning early.`);
+            if (isDev) console.log(`[FORGOT_PASSWORD] No user found. Returning early.`);
             return NextResponse.json({
                 message: locale === "tr"
                     ? "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
             });
         }
 
-        console.log(`[FORGOT_PASSWORD] Sending email to: ${user.email}`);
+        if (isDev) console.log(`[FORGOT_PASSWORD] Sending email to user id: ${user.id}`);
 
         // Generate reset token
         const resetToken = crypto.randomBytes(32).toString("hex");

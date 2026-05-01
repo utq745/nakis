@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ApprovalStitch — Güvenlik Açıkları Raporu</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f6f7f8;
+    color: #1f2937;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+    color: #fff;
+    padding: 50px 60px;
+  }
+  header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  header .subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+  }
+  header .meta {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    opacity: 0.95;
+    flex-wrap: wrap;
+  }
+  header .meta span { display: flex; gap: 6px; align-items: center; }
+  main { padding: 50px 60px; }
+  h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #172136;
+    margin: 40px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #e5e7eb;
+  }
+  h2:first-child { margin-top: 0; }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 24px 0 12px;
+    color: #1f2937;
+  }
+  p { margin-bottom: 12px; }
+
+  .progress-card {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #6ee7b7;
+    padding: 24px 32px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .progress-card .icon {
+    font-size: 48px;
+  }
+  .progress-card .text { flex: 1; }
+  .progress-card h3 { margin: 0 0 4px; color: #065f46; font-size: 18px; }
+  .progress-card p { margin: 0; color: #065f46; font-size: 14px; }
+  .progress-bar {
+    height: 10px;
+    background: #d1fae5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 999px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 24px 0 32px;
+  }
+  .stat-card {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    color: #fff;
+  }
+  .stat-card .num { font-size: 32px; font-weight: 900; display: block; }
+  .stat-card .label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+  .stat-card .breakdown { font-size: 11px; opacity: 0.85; margin-top: 4px; }
+  .stat-critical { background: #991b1b; }
+  .stat-high { background: #dc2626; }
+  .stat-medium { background: #f59e0b; }
+  .stat-low { background: #3b82f6; }
+  .stat-info { background: #6b7280; }
+
+  .vuln {
+    border-left: 5px solid #d1d5db;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .vuln.critical { border-color: #991b1b; background: #fef2f2; }
+  .vuln.high { border-color: #dc2626; background: #fef2f2; }
+  .vuln.medium { border-color: #f59e0b; background: #fffbeb; }
+  .vuln.low { border-color: #3b82f6; background: #eff6ff; }
+  .vuln.info { border-color: #6b7280; background: #f9fafb; }
+  .vuln.fixed { background: #ecfdf5 !important; border-color: #10b981 !important; }
+  .vuln.skipped { background: #f9fafb !important; border-color: #9ca3af !important; }
+
+  .vuln-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .badge.critical { background: #991b1b; }
+  .badge.high { background: #dc2626; }
+  .badge.medium { background: #f59e0b; }
+  .badge.low { background: #3b82f6; }
+  .badge.info { background: #6b7280; }
+  .badge.status-fixed { background: #10b981; }
+  .badge.status-open { background: #ef4444; }
+  .badge.status-skipped { background: #9ca3af; }
+  .badge.status-noop { background: #14b8a6; }
+
+  .vuln-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #111827;
+  }
+  .vuln.fixed .vuln-title {
+    text-decoration: line-through;
+    text-decoration-color: #9ca3af;
+    text-decoration-thickness: 1.5px;
+  }
+  .vuln-meta {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    font-family: "SF Mono", Monaco, monospace;
+  }
+  .vuln-section {
+    margin-top: 12px;
+  }
+  .vuln-section strong {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  .fix-note {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: #d1fae5;
+    border-left: 3px solid #10b981;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #065f46;
+  }
+  .fix-note strong { color: #064e3b; }
+
+  code {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: "SF Mono", Monaco, monospace;
+  }
+  pre {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 14px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    font-family: "SF Mono", Monaco, monospace;
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+
+  .action-list {
+    list-style: none;
+    padding: 0;
+  }
+  .action-list li {
+    padding: 14px 18px;
+    background: #f9fafb;
+    border-left: 4px solid #2563eb;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .action-list li.done {
+    background: #ecfdf5;
+    border-color: #10b981;
+  }
+  .action-list li.done .num { color: #059669; }
+  .action-list li.done .text { text-decoration: line-through; opacity: 0.75; }
+  .action-list li .num {
+    font-weight: 900;
+    color: #2563eb;
+    min-width: 28px;
+  }
+  .action-list li .checkmark {
+    color: #10b981;
+    font-weight: 900;
+    margin-left: auto;
+    font-size: 18px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #374151;
+  }
+  td code { font-size: 12px; }
+
+  .toc {
+    background: #f9fafb;
+    padding: 24px 32px;
+    border-radius: 12px;
+    margin: 24px 0 32px;
+    border: 1px solid #e5e7eb;
+  }
+  .toc h3 { margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; }
+  .toc ol { padding-left: 24px; column-count: 2; column-gap: 32px; }
+  .toc a { color: #059669; text-decoration: line-through; }
+  .toc li.skipped a { color: #6b7280; text-decoration: none; }
+
+  footer {
+    background: #f3f4f6;
+    padding: 30px 60px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  @media (max-width: 768px) {
+    main, header, footer { padding-left: 28px; padding-right: 28px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .toc ol { column-count: 1; }
+    .progress-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Güvenlik Açıkları Raporu</h1>
+    <div class="subtitle">ApprovalStitch — Next.js Embroidery Service · Final Sürüm</div>
+    <div class="meta">
+      <span><strong>Tarih:</strong> 2026-05-01</span>
+      <span><strong>Toplam Bulgular:</strong> 22</span>
+      <span><strong>Çözüldü:</strong> 21</span>
+      <span><strong>Atlandı:</strong> 1 (refactor)</span>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="progress-card">
+      <div class="icon">🎯</div>
+      <div class="text">
+        <h3>Tüm risk teşkil eden bulgular kapatıldı</h3>
+        <p>Kritik, Yüksek, Orta, Düşük ve Bilgi seviyelerindeki tüm bulgular ele alındı. <strong>21/22 çözüldü</strong>; geriye kalan 1 bulgu güvenlik açığı değil, opsiyonel bir code-quality refactor'ı (sipariş erişim kontrolü helper'ı). Bonus olarak, ilk taramada tespit edilmemiş ek bir <code>Math.random()</code> kullanımı (profile endpoint) da düzeltildi.</p>
+        <div class="progress-bar"><div class="fill" style="width: 100%"></div></div>
+      </div>
+    </div>
+
+    <h2>Yönetici Özeti</h2>
+    <p>
+      İlk taramada toplam <strong>22 bulgu</strong> tespit edilmişti — 1 Kritik, 4 Yüksek, 7 Orta, 7 Düşük ve 3 Bilgi. Bu güncellemede tüm Kritik, Yüksek, Orta, Düşük ve Bilgi seviyeli bulgular ele alındı.
+      Geriye kalan 1 bulgu (#12 — sipariş erişim kontrolü helper'ı) gerçek bir güvenlik açığı değil; mevcut yetki kontrolü doğru çalışıyor, sadece tekrar eden kodu helper'a çevirme önerisi.
+    </p>
+    <p>
+      Defense-in-depth yaklaşımı uygulandı: blog içeriği hem render anında (frontend), hem yazılma anında (backend POST/PUT) sanitize ediliyor. CSP, HSTS, X-Frame-Options gibi güvenlik header'ları eksiksiz set edildi. Kayıt, şifre sıfırlama ve dosya yükleme endpoint'leri rate-limit altına alındı. Production loglarında PII (e-posta) artık redact ediliyor.
+    </p>
+
+    <div class="stats">
+      <div class="stat-card stat-critical">
+        <span class="num">1/1</span>
+        <span class="label">Kritik</span>
+        <span class="breakdown">Doğrulandı, risk yok</span>
+      </div>
+      <div class="stat-card stat-high">
+        <span class="num">4/4</span>
+        <span class="label">Yüksek</span>
+        <span class="breakdown">Çözüldü</span>
+      </div>
+      <div class="stat-card stat-medium">
+        <span class="num">6/7</span>
+        <span class="label">Orta</span>
+        <span class="breakdown">1 atlandı (refactor)</span>
+      </div>
+      <div class="stat-card stat-low">
+        <span class="num">7/7</span>
+        <span class="label">Düşük</span>
+        <span class="breakdown">Çözüldü</span>
+      </div>
+      <div class="stat-card stat-info">
+        <span class="num">3/3</span>
+        <span class="label">Bilgi</span>
+        <span class="breakdown">Çözüldü / Doğrulandı</span>
+      </div>
+    </div>
+
+    <div class="toc">
+      <h3>İçindekiler — Tüm Bulgular Çözüldü</h3>
+      <ol>
+        <li><a href="#v1">.env Dosyasında Plaintext Sırlar</a></li>
+        <li><a href="#v2">Tehlikeli OAuth Hesap Bağlama</a></li>
+        <li><a href="#v3">Zayıf E-posta Doğrulama Token Üretimi</a></li>
+        <li><a href="#v4">Blog İçeriğinde XSS Açığı</a></li>
+        <li><a href="#v5">Şifre Politikası</a></li>
+        <li><a href="#v6">Hata Loglarında Hassas Veri</a></li>
+        <li><a href="#v7">Eksik CSRF Koruması</a></li>
+        <li><a href="#v8">Yetersiz Rate Limiting (Kayıt)</a></li>
+        <li><a href="#v9">Şifre Sıfırlama Token Yönetimi</a></li>
+        <li><a href="#v10">Sanitize Edilmemiş Blog Girdisi</a></li>
+        <li><a href="#v11">CRON Endpoint Timing Attack</a></li>
+        <li class="skipped"><a href="#v12">Sipariş Erişim Kontrolü (atlandı)</a></li>
+        <li><a href="#v13">Dosya Yüklemede Rate Limit Yok</a></li>
+        <li><a href="#v14">Avatar Yükleme Doğrulaması</a></li>
+        <li><a href="#v15">API Yanıtlarında Token Sızıntısı</a></li>
+        <li><a href="#v16">Reset-Password Rate Limit Yok</a></li>
+        <li><a href="#v17">Eksik CSP Header</a></li>
+        <li><a href="#v18">Dosya İndirme Yol Yapılandırması</a></li>
+        <li><a href="#v19">OAuth redirect_uri Doğrulaması</a></li>
+        <li><a href="#v20">Loglarda E-posta Bilgisi</a></li>
+        <li><a href="#v21">Verification Token URL'de</a></li>
+        <li><a href="#v22">Blog İmaj ACL Yapılandırması</a></li>
+      </ol>
+    </div>
+
+    <h2>Detaylı Bulgular</h2>
+
+    <!-- 1 -->
+    <div class="vuln critical fixed" id="v1">
+      <div class="vuln-header">
+        <span class="badge critical">Kritik</span>
+        <span class="badge status-noop">Risk Yok</span>
+        <span class="vuln-title">.env Dosyasında Plaintext Sırlar</span>
+      </div>
+      <div class="vuln-meta">📁 /.env</div>
+      <div class="fix-note">
+        <strong>✅ Doğrulandı:</strong>
+        <code>.env</code> dosyası <code>.gitignore</code>'da (<code>.env</code> ve <code>.env.*</code>) ve git'te tracked değil. Repository'de sızdırılmış değil. Production sırları için Vercel Env / GitHub Secrets kullanmaya devam et.
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="vuln high fixed" id="v2">
+      <div class="vuln-header">
+        <span class="badge high">Yüksek</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Tehlikeli E-posta Hesap Bağlama Açık</span>
+      </div>
+      <div class="vuln-meta">📁 src/lib/auth.ts:47</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <code>allowDangerousEmailAccountLinking</code> Google provider'dan kaldırıldı. NextAuth varsayılan güvenli davranışla çalışıyor.
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="vuln high fixed" id="v3">
+      <div class="vuln-header">
+        <span class="badge high">Yüksek</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Zayıf E-posta Doğrulama Token Üretimi</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/auth/register/route.ts:78 + src/app/api/user/profile/route.ts:120 (bonus bulgu)</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong>
+        <pre>const verificationToken = crypto.randomBytes(32).toString("hex");</pre>
+        Aynı zayıflığın bir kopyası <strong>profile</strong> endpoint'inde (e-posta değişikliği akışı) tespit edildi ve düzeltildi.
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="vuln high fixed" id="v4">
+      <div class="vuln-header">
+        <span class="badge high">Yüksek</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Blog İçeriğinde XSS Açığı</span>
+      </div>
+      <div class="vuln-meta">📁 blog-post-content.tsx, blog/route.ts (POST), blog/[slug]/route.ts (PUT)</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü (defense-in-depth):</strong>
+        <code>isomorphic-dompurify</code> hem frontend render'da hem backend storage'da uygulanıyor.
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="vuln high fixed" id="v5">
+      <div class="vuln-header">
+        <span class="badge high">Yüksek</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Şifre Politikası</span>
+      </div>
+      <div class="vuln-meta">📁 register, reset-password, user/password endpointleri + 4 frontend formu</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <strong>min 8 karakter + en az 1 özel karakter</strong>. Backend Zod ile doğrulama, frontend formlarda <code>minLength={8}</code> + reset-password'da JS özel karakter kontrolü.
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="vuln medium fixed" id="v6">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Hata Loglarında Hassas Veri</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/auth/register/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> Production'da yalnızca <code>error.message</code>; dev'de detaylı stack trace.
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="vuln medium fixed" id="v7">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Eksik CSRF Koruması (Custom Auth Endpointleri)</span>
+      </div>
+      <div class="vuln-meta">📁 src/middleware.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> CSRF skip listesi sadeleştirildi — sadece NextAuth dahili route'ları (signin, signout, callback, session, csrf, providers, error, verify-request) skip ediliyor. Custom endpoint'ler (<code>register</code>, <code>forgot-password</code>, <code>reset-password</code>, <code>verify</code>) artık <code>Origin</code>/<code>Referer</code> kontrolünden geçiyor.
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="vuln medium fixed" id="v8">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Yetersiz Rate Limiting (Kayıt)</span>
+      </div>
+      <div class="vuln-meta">📁 src/lib/rate-limit.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <code>points: 100 → 5</code> per saat per IP.
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="vuln medium fixed" id="v9">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-noop">Zaten Doğru</span>
+        <span class="vuln-title">Şifre Sıfırlama Token Yönetimi</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/auth/{forgot,reset}-password/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Doğrulandı:</strong> Token <code>crypto.randomBytes</code> ile üretiliyor, 15 dk expiry, başarılı reset sonrası null'a çekiliyor (tek-kullanımlık).
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="vuln medium fixed" id="v10">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Sanitize Edilmemiş Blog Girdisi</span>
+      </div>
+      <div class="vuln-meta">📁 blog/route.ts (POST), blog/[slug]/route.ts (PUT)</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <code>content: DOMPurify.sanitize(content)</code> hem POST hem PUT'ta.
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="vuln medium fixed" id="v11">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">CRON Endpoint Timing Attack</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/cron/cleanup-orders/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> Uzunluk kontrolü + <code>crypto.timingSafeEqual</code> ile sabit zamanlı karşılaştırma.
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="vuln medium skipped" id="v12">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-skipped">Atlandı (Refactor)</span>
+        <span class="vuln-title">Sipariş Erişim Kontrolü Tekrarlanmış</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/orders/[id]/route.ts</div>
+      <div class="fix-note" style="background: #f3f4f6; border-color: #9ca3af; color: #374151;">
+        <strong>⏭ Atlandı:</strong>
+        Bu bir güvenlik açığı değil, code-quality önerisi. Mevcut yetki kontrolleri doğru çalışıyor; ileride helper fonksiyona çevirme refactor olarak ele alınabilir.
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="vuln medium fixed" id="v13">
+      <div class="vuln-header">
+        <span class="badge medium">Orta</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Dosya Yüklemede Rate Limit Yok</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/files/upload/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <code>uploadRateLimiter</code> (saatte 20 yükleme / kullanıcı), 429 yanıtı + <code>Retry-After</code>.
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="vuln low fixed" id="v14">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Avatar Yükleme Doğrulaması</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/user/avatar/upload/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> Hem MIME (<code>image/jpeg|png|webp|gif</code>) hem dosya uzantısı (<code>jpg, jpeg, png, webp, gif</code>) beyaz listesi. MIME spoofing'e karşı defense-in-depth.
+      </div>
+    </div>
+
+    <!-- 15 -->
+    <div class="vuln low fixed" id="v15">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">API Yanıtlarında Token Sızıntısı</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/user/profile/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> GET ve PATCH yanıtlarındaki <code>select</code> daraltıldı; <code>emailVerificationToken</code>, <code>password</code>, <code>resetPasswordToken</code> gibi hassas alanlar artık döndürülmüyor.
+      </div>
+    </div>
+
+    <!-- 16 -->
+    <div class="vuln low fixed" id="v16">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Reset-Password Rate Limit Yok</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/auth/reset-password/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> <code>passwordResetRateLimiter</code> uygulandı (3 deneme / saat / IP).
+      </div>
+    </div>
+
+    <!-- 17 -->
+    <div class="vuln low fixed" id="v17">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Eksik CSP Header</span>
+      </div>
+      <div class="vuln-meta">📁 next.config.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> Kapsamlı CSP eklendi:
+        <pre>default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'
+  https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'
+  https://fonts.googleapis.com; img-src 'self' data: blob: https:;
+  font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'
+  https://challenges.cloudflare.com https://*.r2.cloudflarestorage.com;
+  frame-src 'self' https://challenges.cloudflare.com;
+  frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+  object-src 'none'; upgrade-insecure-requests</pre>
+        Ek olarak <code>Permissions-Policy</code> (camera/mic/geo kapatıldı) eklendi.
+      </div>
+    </div>
+
+    <!-- 18 -->
+    <div class="vuln low fixed" id="v18">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-noop">Zaten Doğru</span>
+        <span class="vuln-title">Dosya İndirme Yol Yapılandırması</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/orders/[id]/wilcom/pdf/[type]/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Doğrulandı:</strong> Mevcut sanitize logic <code>order.title</code>'ı güvenli şekilde işliyor (problemli karakterler temizleniyor). Path traversal riski yok. Ek aksiyon gerekmedi.
+      </div>
+    </div>
+
+    <!-- 19 -->
+    <div class="vuln low fixed" id="v19">
+      <div class="vuln-header">
+        <span class="badge low">Düşük</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">OAuth redirect_uri Doğrulaması</span>
+      </div>
+      <div class="vuln-meta">📁 src/lib/auth.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> NextAuth <code>callbacks.redirect</code> eklendi — sadece relative URL'ler veya same-origin URL'ler kabul ediliyor; aksi durumda <code>baseUrl</code>'a yönlendiriyor (open redirect koruması).
+      </div>
+    </div>
+
+    <!-- 20 -->
+    <div class="vuln info fixed" id="v20">
+      <div class="vuln-header">
+        <span class="badge info">Bilgi</span>
+        <span class="badge status-fixed">Çözüldü</span>
+        <span class="vuln-title">Loglarda E-posta Bilgisi</span>
+      </div>
+      <div class="vuln-meta">📁 orders/[id]/route.ts, profile/route.ts, auth/forgot-password/route.ts, lib/auth.ts</div>
+      <div class="fix-note">
+        <strong>✅ Çözüldü:</strong> Production'da PII (e-posta) içeren loglar redact edildi. Sadece <code>userId</code> loglanıyor. Development'ta detaylı log debug için korundu.
+      </div>
+    </div>
+
+    <!-- 21 -->
+    <div class="vuln info fixed" id="v21">
+      <div class="vuln-header">
+        <span class="badge info">Bilgi</span>
+        <span class="badge status-noop">Risk Azaltıldı</span>
+        <span class="vuln-title">Verification Token URL'de</span>
+      </div>
+      <div class="vuln-meta">📁 src/app/api/auth/verify/route.ts</div>
+      <div class="fix-note">
+        <strong>✅ Risk minimuma indirildi:</strong>
+        <ul style="padding-left: 20px; margin-top: 6px;">
+          <li>Token başarılı doğrulamada anında null'lanıyor (tek-kullanımlık).</li>
+          <li><code>Referrer-Policy: strict-origin-when-cross-origin</code> ile 3rd-party site'lara token sızması engelleniyor.</li>
+          <li>Doğrulama sonrası redirect URL'i token içermiyor (<code>?verified=true</code>).</li>
+        </ul>
+        E-posta doğrulama akışı için URL parametresi standart bir tasarım; mevcut önlemlerle riski kabul edilebilir seviyeye indirildi.
+      </div>
+    </div>
+
+    <!-- 22 -->
+    <div class="vuln info fixed" id="v22">
+      <div class="vuln-header">
+        <span class="badge info">Bilgi</span>
+        <span class="badge status-noop">Doğrulandı</span>
+        <span class="vuln-title">Blog İmaj ACL Yapılandırması</span>
+      </div>
+      <div class="vuln-meta">📁 blog/upload-image/route.ts, lib/sync-cloudflare.ts</div>
+      <div class="fix-note">
+        <strong>✅ Doğrulandı:</strong>
+        <ul style="padding-left: 20px; margin-top: 6px;">
+          <li>Blog imajları: <code>ACL: "public-read"</code> — uygun (public içerik).</li>
+          <li>Sipariş dosyaları (<code>sync-cloudflare.ts</code>): ACL belirtilmemiş — R2 default = private. Sipariş dosyaları korumalı proxy (<code>/api/files/[id]</code>) üzerinden serve ediliyor.</li>
+        </ul>
+        Ek aksiyon gerekmedi.
+      </div>
+    </div>
+
+    <h2>Aksiyon Planı — Tüm Adımlar Tamamlandı</h2>
+    <ol class="action-list">
+      <li class="done"><span class="num">1.</span><div class="text">.env'in git'e dahil olmadığını doğrula</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">2.</span><div class="text"><code>allowDangerousEmailAccountLinking</code>'i kaldır</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">3.</span><div class="text"><code>Math.random()</code> → <code>crypto.randomBytes()</code> (register + profile)</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">4.</span><div class="text">DOMPurify (frontend render + backend storage POST &amp; PUT)</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">5.</span><div class="text">Şifre politikası: min 8 + özel karakter (3 backend + 4 form)</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">6.</span><div class="text">CRON secret için <code>crypto.timingSafeEqual</code></div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">7.</span><div class="text">Register rate limit 100 → 5</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">8.</span><div class="text">Custom auth endpoint'lerinde CSRF (Origin/Referer)</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">9.</span><div class="text">Production'da hassas error logging azalt</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">10.</span><div class="text">Dosya yükleme rate limiting</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">11.</span><div class="text">CSP + Permissions-Policy header (next.config.ts)</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">12.</span><div class="text">Profile endpoint'inden <code>emailVerificationToken</code> &amp; password çıkar</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">13.</span><div class="text">Reset-password endpoint'ine rate limiting</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">14.</span><div class="text">Avatar yüklemede MIME + extension beyaz liste</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">15.</span><div class="text">OAuth redirect URL whitelisting</div><span class="checkmark">✓</span></li>
+      <li class="done"><span class="num">16.</span><div class="text">Loglarda PII (e-posta) redaction (production)</div><span class="checkmark">✓</span></li>
+    </ol>
+
+    <h2>Etkilenen Dosyalar — Tam Liste</h2>
+    <table>
+      <thead>
+        <tr><th>Dosya</th><th>Değişiklik</th><th>Durum</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>src/lib/auth.ts</code></td><td>OAuth ayarı, redirect callback, log redaction</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/middleware.ts</code></td><td>CSRF whitelist daraltıldı</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/lib/rate-limit.ts</code></td><td>Register limit 100 → 5</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>next.config.ts</code></td><td>CSP + Permissions-Policy header</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/auth/register/route.ts</code></td><td>crypto token, şifre policy, prod logging</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/auth/reset-password/route.ts</code></td><td>Zod schema, şifre policy, rate limit</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/auth/forgot-password/route.ts</code></td><td>Log redaction (e-posta)</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/user/password/route.ts</code></td><td>Şifre policy</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/user/profile/route.ts</code></td><td>crypto token, hassas alan filtresi, log redaction</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/user/avatar/upload/route.ts</code></td><td>MIME + extension allowlist</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/orders/[id]/route.ts</code></td><td>Log redaction (e-posta)</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/cron/cleanup-orders/route.ts</code></td><td>Timing-safe compare</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/files/upload/route.ts</code></td><td>Upload rate limit</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/blog/route.ts</code></td><td>DOMPurify (POST)</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/app/api/blog/[slug]/route.ts</code></td><td>DOMPurify (PUT)</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>src/components/blog/blog-post-content.tsx</code></td><td>DOMPurify render</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>4 × frontend form</code></td><td>minLength=8, JS özel karakter kontrolü</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+        <tr><td><code>package.json</code></td><td><code>isomorphic-dompurify</code> eklendi</td><td><span class="badge status-fixed">Çözüldü</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Öneriler — İlerleyen Aşamalar</h2>
+    <p>Tüm bulgular kapatıldı; aşağıdaki best-practice'ler hâlâ ileride dikkate alınmalı:</p>
+    <ul style="padding-left:24px">
+      <li><strong>Bağımlılık taraması:</strong> <code>npm audit</code> şu an 15 vulnerability gösteriyor (3 critical, 5 high). Bağımlılık güncellemeleri yapılmalı (Dependabot/Renovate önerilir).</li>
+      <li><strong>Sipariş erişim kontrolü helper'ı (#12):</strong> Refactor olarak <code>src/lib/authz.ts</code> dosyasına merkezi <code>ensureOrderAccess</code> fonksiyonu eklenebilir.</li>
+      <li><strong>Audit logging:</strong> Admin işlemleri, başarısız login denemeleri, yetki değişiklikleri için ayrı audit log.</li>
+      <li><strong>2FA:</strong> Kullanıcılar (özellikle adminler) için iki faktörlü kimlik doğrulama.</li>
+      <li><strong>Penetrasyon testi:</strong> Yılda en az bir kez profesyonel pentest.</li>
+      <li><strong>Backup şifreleme:</strong> Veritabanı yedeklerinin şifrelendiğinden emin ol.</li>
+      <li><strong>CSP raporlama:</strong> CSP'ye <code>report-uri</code> ekleyerek production'da ihlalleri toplayabilirsin.</li>
+    </ul>
+
+  </main>
+
+  <footer>
+    <p>ApprovalStitch Güvenlik Raporu — Final Sürüm · 2026-05-01</p>
+    <p style="margin-top:8px">Production deploy öncesi düzeltmelerin runtime'da doğrulanması (özellikle CSP — beyaz olmayan kaynaklar bloke olabilir) önerilir.</p>
+  </footer>
+
+</div>
+</body>
+</html>

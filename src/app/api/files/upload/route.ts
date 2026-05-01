@@ -6,12 +6,25 @@ import { join } from "path";
 import { createOrderNotification } from "@/lib/notifications";
 import { sendOrderCompletedEmail } from "@/lib/mail";
 import { syncOrderToCloudflare } from "@/lib/sync-cloudflare";
+import { uploadRateLimiter, checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
     try {
         const session = await auth();
         if (!session?.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Per-user upload rate limit (20 uploads / hour)
+        const rateLimitResult = await checkRateLimit(uploadRateLimiter, session.user.id);
+        if (!rateLimitResult.success) {
+            return NextResponse.json(
+                { error: "Too many uploads. Please try again later." },
+                {
+                    status: 429,
+                    headers: { "Retry-After": String(rateLimitResult.retryAfter) },
+                }
+            );
         }
 
         const formData = await request.formData();

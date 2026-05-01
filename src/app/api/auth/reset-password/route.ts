@@ -1,24 +1,42 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { hash } from "bcryptjs";
+import { z } from "zod";
+import { passwordResetRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
+
+const resetPasswordSchema = z.object({
+    token: z.string().min(1, "Token is required"),
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+});
 
 export async function POST(request: Request) {
     try {
-        const { token, password } = await request.json();
-
-        if (!token || !password) {
+        const clientIP = getClientIP(request);
+        const rateLimitResult = await checkRateLimit(passwordResetRateLimiter, clientIP);
+        if (!rateLimitResult.success) {
             return NextResponse.json(
-                { error: "Token and password are required" },
+                { error: "Too many attempts. Please try again later." },
+                {
+                    status: 429,
+                    headers: { "Retry-After": String(rateLimitResult.retryAfter) },
+                }
+            );
+        }
+
+        const body = await request.json();
+        const parsed = resetPasswordSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.issues[0].message },
                 { status: 400 }
             );
         }
 
-        if (password.length < 8) {
-            return NextResponse.json(
-                { error: "Password must be at least 8 characters" },
-                { status: 400 }
-            );
-        }
+        const { token, password } = parsed.data;
 
         // Find user with valid token
         const user = await prisma.user.findFirst({

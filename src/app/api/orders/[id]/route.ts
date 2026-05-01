@@ -107,7 +107,7 @@ export async function PATCH(
         // Check if user is customer or admin
         const isAdmin = session.user.role === "ADMIN";
 
-        console.log(`[PATCH_ORDER] User: ${session.user.email} (ID: ${session.user.id}, Role: ${session.user.role})`);
+        console.log(`[PATCH_ORDER] User ID: ${session.user.id}, Role: ${session.user.role}`);
         console.log(`[PATCH_ORDER] Order: ${id}`);
         console.log(`[PATCH_ORDER] Data:`, JSON.stringify(validatedData));
 
@@ -126,7 +126,7 @@ export async function PATCH(
 
         // Only admin can update price
         if (!isAdmin && (validatedData.price !== undefined || validatedData.hidden !== undefined)) {
-            console.error(`[PATCH_ORDER] 403: Customer ${session.user.email} tried to update restricted fields`);
+            console.error(`[PATCH_ORDER] 403: Customer ${session.user.id} tried to update restricted fields`);
             return NextResponse.json({ error: "Only admins can update price or visibility" }, { status: 403 });
         }
 

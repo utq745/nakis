@@ -6,7 +6,10 @@ import { compare, hash } from "bcryptjs";
 
 const passwordSchema = z.object({
     currentPassword: z.string().min(1, "Mevcut şifre gerekli"),
-    newPassword: z.string().min(6, "Yeni şifre en az 6 karakter olmalıdır"),
+    newPassword: z
+        .string()
+        .min(8, "Yeni şifre en az 8 karakter olmalıdır")
+        .regex(/[^A-Za-z0-9]/, "Şifre en az bir özel karakter içermeli"),
 });
 
 export async function PATCH(request: Request) {

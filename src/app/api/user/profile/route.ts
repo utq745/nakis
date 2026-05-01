@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
+import crypto from "crypto";
 
 const profileSchema = z.object({
     language: z.enum(["en", "tr"]).optional(),
@@ -35,7 +36,6 @@ export async function GET() {
                 image: true,
                 pendingEmail: true,
                 pendingName: true,
-                emailVerificationToken: true
             },
         });
 
@@ -87,13 +87,13 @@ export async function PATCH(request: Request) {
         const isNameChanging = validatedData.name !== undefined && validatedData.name !== currentProfile.name;
         const isEmailChanging = validatedData.email !== undefined && validatedData.email !== currentProfile.email;
 
-        console.log("Profile update attempt:", {
-            userId: session.user.id,
-            isNameChanging,
-            isEmailChanging,
-            newEmail: validatedData.email,
-            newName: validatedData.name
-        });
+        if (process.env.NODE_ENV !== "production") {
+            console.log("Profile update attempt:", {
+                userId: session.user.id,
+                isNameChanging,
+                isEmailChanging,
+            });
+        }
 
         if (isEmailChanging && validatedData.email) {
             const existingUser = await prisma.user.findUnique({
@@ -117,7 +117,7 @@ export async function PATCH(request: Request) {
         if (isEmailChanging && validatedData.email) {
             updateData.pendingEmail = validatedData.email;
             updateData.pendingName = validatedData.name || currentProfile.name;
-            const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            const verificationToken = crypto.randomBytes(32).toString("hex");
             updateData.emailVerificationToken = verificationToken;
             updateData.emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -136,6 +136,19 @@ export async function PATCH(request: Request) {
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },
             data: updateData,
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                language: true,
+                timezone: true,
+                timeFormat: true,
+                billingAddress: true,
+                image: true,
+                pendingEmail: true,
+                pendingName: true,
+            },
         });
 
         console.log("Profile updated successfully:", { userId: session.user.id });

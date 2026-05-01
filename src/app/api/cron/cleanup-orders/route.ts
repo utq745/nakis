@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { rm } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import crypto from "crypto";
 
 /**
  * CRON Job: Cleanup Cancelled Orders
@@ -21,8 +22,15 @@ export async function GET(request: Request) {
         const secret = searchParams.get('secret') || request.headers.get('x-cron-secret');
 
         // In production, define CRON_SECRET in environment variables
-        if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (process.env.CRON_SECRET) {
+            const provided = Buffer.from(secret || "");
+            const expected = Buffer.from(process.env.CRON_SECRET);
+            const isValid =
+                provided.length === expected.length &&
+                crypto.timingSafeEqual(provided, expected);
+            if (!isValid) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
         }
 
         const thirtyDaysAgo = new Date();

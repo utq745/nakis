@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Calendar, User, ArrowLeft, Share2 } from "lucide-react";
+import DOMPurify from "isomorphic-dompurify";
+import { useMemo } from "react";
 
 interface BlogPostContentProps {
     post: {
@@ -22,6 +24,11 @@ interface BlogPostContentProps {
 
 export function BlogPostContent({ post, locale }: BlogPostContentProps) {
     const isTR = locale === "tr";
+
+    const sanitizedContent = useMemo(
+        () => DOMPurify.sanitize(post.content),
+        [post.content]
+    );
 
     const handleShare = async () => {
         const url = window.location.href;
@@ -102,7 +109,7 @@ export function BlogPostContent({ post, locale }: BlogPostContentProps) {
                     prose-li:text-foreground/80
                     prose-strong:text-foreground
                     prose-hr:border-border prose-hr:my-10"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
 
             {/* Footer */}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import crypto from "crypto";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { registerRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
@@ -8,7 +9,10 @@ import { verifyTurnstile } from "@/lib/turnstile";
 
 const registerSchema = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
-    password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
+    password: z
+        .string()
+        .min(8, "Şifre en az 8 karakter olmalı")
+        .regex(/[^A-Za-z0-9]/, "Şifre en az bir özel karakter içermeli"),
     name: z.string().min(2, "İsim en az 2 karakter olmalı"),
     language: z.enum(["en", "tr"]).optional(),
     timezone: z.string().optional(),
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
         const hashedPassword = await hash(validatedData.password, 12);
 
         // Generate verification token
-        const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const verificationToken = crypto.randomBytes(32).toString("hex");
         const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
         // Create user
@@ -144,12 +148,15 @@ export async function POST(request: Request) {
             );
         }
 
-        // Detailed error logging for VPS troubleshooting
-        console.error("Registration error FULL DETAILS:", {
-            message: error instanceof Error ? error.message : "Unknown error",
-            stack: error instanceof Error ? error.stack : undefined,
-            raw: error
-        });
+        if (process.env.NODE_ENV === "production") {
+            console.error("Registration error:", error instanceof Error ? error.message : "Unknown error");
+        } else {
+            console.error("Registration error FULL DETAILS:", {
+                message: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+                raw: error,
+            });
+        }
 
         return NextResponse.json(
             { error: t.auth.errors.registrationError },
