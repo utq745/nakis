@@ -255,12 +255,12 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Gerçek Onaylı Nakış",
-                titleLine1: "Gerçek Dikişli Onay Örnekleri",
-                titleLine2: "Güvenli Nakış Üretimi İçin",
+                titleLine1: "Tasarımınızı sayısallaştırıp seçtiğiniz <span class=\"text-black dark:text-black\">Tajima</span> veya <span class=\"text-black dark:text-black\">Barudan</span> makinede diktirip üretime hazır hale getiriyoruz.",
+                titleLine2: "",
                 description: "Tasarımınızı, seri üretime geçmeden önce onaylayabilmeniz için gerçek üretim makinelerinde dikiyoruz.",
                 subText: "Üretim sınıfı Tajima ve Barudan makinelerinde işlenir. Render yok. Simülasyon yok. Sadece gerçek dikişli örnekler.",
-                uploadBtn: "Siparişi Başlat",
-                pricingBtn: "Örnekleri Gör",
+                uploadBtn: "Yeni Tasarım Başlat",
+                pricingBtn: "DST Dosyamı Düzelt",
                 labBadge: "Gerçek Nakış Laboratuvarı",
                 readyBadge: "Üretime Hazır",
                 precisionBadge: "Hassasiyet",
@@ -905,12 +905,12 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Real Approval Stitch",
-                titleLine1: "We digitize your design, stitch it on your chosen Tajima or Barudan machine, and deliver it ready for production.",
+                titleLine1: "We digitize your design, stitch it on your chosen <span class=\"text-black dark:text-black\">Tajima</span> or <span class=\"text-black dark:text-black\">Barudan</span> machine, and deliver it ready for production.",
                 titleLine2: "",
                 description: "Every embroidery file is created, tested on your selected machine, and delivered with stitched proof and approval-ready documentation.",
                 subText: "Each order includes approval cards for your client and detailed production cards for your operator.",
-                uploadBtn: "Upload Your Design",
-                pricingBtn: "View Real Samples",
+                uploadBtn: "Start New Design",
+                pricingBtn: "Fix My DST",
                 labBadge: "Real Stitch Lab",
                 readyBadge: "Production Ready",
                 precisionBadge: "Precision",

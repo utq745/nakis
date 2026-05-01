@@ -42,16 +42,7 @@ export function Hero() {
                         <div className="flex flex-col gap-6">
 
 
-                            <h1 className="text-[clamp(1.75rem,5vw,3.75rem)] font-black tracking-tight text-primary dark:text-white leading-[1.1] break-words">
-                                {t.landing.hero.titleLine1}
-                                {t.landing.hero.titleLine2 && (
-                                    <>
-                                        <br />
-                                        <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                                            {t.landing.hero.titleLine2}
-                                        </span>
-                                    </>
-                                )}
+                            <h1 className="text-[clamp(1rem,2.5vw,1.5rem)] font-black tracking-tight text-primary dark:text-white leading-[1.4] break-words" dangerouslySetInnerHTML={{ __html: t.landing.hero.titleLine1 + (t.landing.hero.titleLine2 ? `<br /><span class="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">${t.landing.hero.titleLine2}</span>` : '') }}>
                             </h1>
 
                             <div className="flex flex-col gap-4">
@@ -79,7 +70,7 @@ export function Hero() {
                                                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                             </motion.button>
                                         </Link>
-                                        <Link href={language === 'tr' ? '/tr/portfolio' : '/portfolio'}>
+                                        <Link href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>
                                             <motion.button
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
