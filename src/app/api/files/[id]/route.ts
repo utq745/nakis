@@ -67,6 +67,13 @@ export async function GET(
         // If urlPath contains a slash and doesn't exist locally, it's likely an R2 key
         const filename = urlPath.includes("/") ? urlPath.split("/").pop() || "" : urlPath;
         const securePath = join(process.cwd(), "uploads", file.orderId, file.type, filename);
+        
+        // Security check: Ensure the path is within the uploads directory
+        const absoluteUploadsDir = join(process.cwd(), "uploads");
+        if (!securePath.startsWith(absoluteUploadsDir)) {
+            return NextResponse.json({ error: "Access denied" }, { status: 403 });
+        }
+
         const publicPath = join(process.cwd(), "public", urlPath);
         const oldPublicPath = join(process.cwd(), "public", "uploads", file.orderId, file.type, filename);
 

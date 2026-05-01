@@ -38,6 +38,11 @@ export const uploadRateLimiter = new RateLimiterMemory({
 
 // Helper function to get client IP
 export function getClientIP(request: Request): string {
+    // Cloudflare connects using this header
+    const cfIP = request.headers.get("cf-connecting-ip");
+    if (cfIP) {
+        return cfIP;
+    }
     const forwardedFor = request.headers.get("x-forwarded-for");
     if (forwardedFor) {
         return forwardedFor.split(",")[0].trim();

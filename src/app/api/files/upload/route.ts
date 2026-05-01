@@ -42,6 +42,10 @@ export async function POST(request: Request) {
         // --- SECURITY VALIDATION ---
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
         const ALLOWED_EXTENSIONS = ['dst', 'emb', 'pdf', 'ai', 'eps', 'svg', 'png', 'jpg', 'jpeg', 'pes', 'jef', 'exp', 'vp3', 'hus'];
+        const ALLOWED_MIME_TYPES = [
+            'image/png', 'image/jpeg', 'application/pdf', 'image/svg+xml', 
+            'application/postscript', 'application/octet-stream'
+        ];
 
         for (const file of files) {
             // Check size
@@ -53,6 +57,11 @@ export async function POST(request: Request) {
             const ext = file.name.split('.').pop()?.toLowerCase();
             if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
                 return NextResponse.json({ error: `File type .${ext} is not allowed.` }, { status: 400 });
+            }
+
+            // Check MIME type
+            if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
+                return NextResponse.json({ error: `Invalid file content type for ${file.name}` }, { status: 400 });
             }
         }
         // ---------------------------
