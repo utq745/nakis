@@ -4,21 +4,28 @@ import { hash } from "bcryptjs";
 import { z } from "zod";
 import { passwordResetRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
 
-const resetPasswordSchema = z.object({
-    token: z.string().min(1, "Token is required"),
-    password: z
-        .string()
-        .min(8, "Password must be at least 8 characters")
-        .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-});
+import { translations, Locale } from "@/lib/dictionary";
 
 export async function POST(request: Request) {
+    let locale: Locale = "en";
     try {
+        const body = await request.json();
+        locale = body.language === "tr" ? "tr" : "en";
+        const t = translations[locale];
+
+        const resetPasswordSchema = z.object({
+            token: z.string().min(1, t.auth.errors.invalidToken),
+            password: z
+                .string()
+                .min(8, t.auth.validation.passwordMin)
+                .regex(/[^A-Za-z0-9]/, t.auth.validation.passwordSpecial),
+        });
+
         const clientIP = getClientIP(request);
         const rateLimitResult = await checkRateLimit(passwordResetRateLimiter, clientIP);
         if (!rateLimitResult.success) {
             return NextResponse.json(
-                { error: "Too many attempts. Please try again later." },
+                { error: t.auth.errors.tooManyAttempts },
                 {
                     status: 429,
                     headers: { "Retry-After": String(rateLimitResult.retryAfter) },
@@ -26,7 +33,6 @@ export async function POST(request: Request) {
             );
         }
 
-        const body = await request.json();
         const parsed = resetPasswordSchema.safeParse(body);
 
         if (!parsed.success) {
@@ -50,7 +56,7 @@ export async function POST(request: Request) {
 
         if (!user) {
             return NextResponse.json(
-                { error: "Invalid or expired reset token" },
+                { error: t.auth.errors.invalidToken },
                 { status: 400 }
             );
         }
@@ -69,12 +75,13 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({
-            message: "Password reset successfully",
+            message: t.auth.messages.passwordResetSuccess,
         });
     } catch (error) {
         console.error("Reset password error:", error);
+        const t = translations[locale];
         return NextResponse.json(
-            { error: "Failed to reset password" },
+            { error: t.auth.errors.resetFailed },
             { status: 500 }
         );
     }

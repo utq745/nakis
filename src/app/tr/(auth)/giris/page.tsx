@@ -44,15 +44,15 @@ export default function LoginPage() {
         const verified = searchParams.get('verified');
 
         if (verified === 'true') {
-            setVerificationMessage({ type: 'success', text: 'E-posta adresiniz başarıyla doğrulandı! Artık giriş yapabilirsiniz.' });
+            setVerificationMessage({ type: 'success', text: t.auth.verification.success });
         } else if (errorParam === 'TokenExpired') {
-            setVerificationMessage({ type: 'warning', text: 'Doğrulama bağlantınızın süresi dolmuş. Lütfen profil ayarlarından yeni bir bağlantı talep edin.' });
+            setVerificationMessage({ type: 'warning', text: t.auth.verification.expired });
         } else if (errorParam === 'InvalidToken') {
-            setVerificationMessage({ type: 'error', text: 'Geçersiz doğrulama bağlantısı. Lütfen e-postanızı kontrol edin veya yeni bağlantı isteyin.' });
+            setVerificationMessage({ type: 'error', text: t.auth.verification.invalid });
         } else if (errorParam === 'UnknownError') {
-            setVerificationMessage({ type: 'error', text: 'Doğrulama sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.' });
+            setVerificationMessage({ type: 'error', text: t.auth.verification.error });
         }
-    }, [searchParams]);
+    }, [searchParams, t.auth.verification]);
 
     const renderTurnstile = useCallback(() => {
         if (turnstileRef.current && (window as any).turnstile) {
@@ -88,7 +88,7 @@ export default function LoginPage() {
         setError("");
 
         if (!turnstileToken) {
-            setError("Lütfen güvenlik doğrulamasını tamamlayın.");
+            setError(t.auth.errors.securityCheck);
             setIsLoading(false);
             return;
         }
@@ -110,13 +110,13 @@ export default function LoginPage() {
 
                 if (!res.ok) {
                     const data = await res.json();
-                    throw new Error(data.error || "Kayıt başarısız");
+                    throw new Error(data.error || t.auth.errors.registrationError);
                 }
 
                 // Show verification message instead of auto-login
                 setVerificationMessage({
                     type: 'info',
-                    text: 'Lütfen e-posta adresinize gönderilen onay linkine tıklayarak hesabınızı aktifleştirin.',
+                    text: t.auth.verification.checkEmail,
                 });
                 setActiveTab('signin');
                 setEmail("");
@@ -124,7 +124,7 @@ export default function LoginPage() {
                 setFirstName("");
                 setLastName("");
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Kayıt başarısız");
+                setError(err instanceof Error ? err.message : t.auth.errors.registrationError);
             }
         } else {
             // Verify turnstile first for login
@@ -136,13 +136,13 @@ export default function LoginPage() {
                 });
 
                 if (!turnstileRes.ok) {
-                    setError("Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin.");
+                    setError(t.auth.errors.securityFailed);
                     resetTurnstile();
                     setIsLoading(false);
                     return;
                 }
             } catch {
-                setError("Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin.");
+                setError(t.auth.errors.securityFailed);
                 resetTurnstile();
                 setIsLoading(false);
                 return;
@@ -156,7 +156,7 @@ export default function LoginPage() {
             });
 
             if (result?.error) {
-                setError("Geçersiz e-posta veya şifre, ya da e-posta adresiniz henüz doğrulanmamış.");
+                setError(t.auth.errors.invalidCredentials);
             } else {
                 // Fetch user language preference
                 const userRes = await fetch("/api/user/profile");

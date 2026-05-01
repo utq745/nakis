@@ -3,14 +3,22 @@ import prisma from "@/lib/prisma";
 import crypto from "crypto";
 import { passwordResetRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-limit";
 
+import { translations, Locale } from "@/lib/dictionary";
+
 export async function POST(request: Request) {
+    let locale: Locale = "en";
     try {
+        const body = await request.json();
+        const { email, language } = body;
+        locale = language === "tr" ? "tr" : "en";
+        const t = translations[locale];
+
         // Rate limiting
         const clientIP = getClientIP(request);
         const rateLimitResult = await checkRateLimit(passwordResetRateLimiter, clientIP);
         if (!rateLimitResult.success) {
             return NextResponse.json(
-                { error: "Too many requests. Please try again later." },
+                { error: t.auth.errors.tooManyAttempts },
                 {
                     status: 429,
                     headers: { "Retry-After": String(rateLimitResult.retryAfter) }
@@ -18,14 +26,12 @@ export async function POST(request: Request) {
             );
         }
 
-        const { email, language } = await request.json();
-        const locale = language === "tr" ? "tr" : "en";
         const isDev = process.env.NODE_ENV !== "production";
         if (isDev) console.log(`[FORGOT_PASSWORD] Requested for: ${email} (Locale: ${locale})`);
 
         if (!email) {
             return NextResponse.json(
-                { error: "Email is required" },
+                { error: t.auth.validation.emailRequired },
                 { status: 400 }
             );
         }
@@ -40,9 +46,7 @@ export async function POST(request: Request) {
         if (!user) {
             if (isDev) console.log(`[FORGOT_PASSWORD] No user found. Returning early.`);
             return NextResponse.json({
-                message: locale === "tr"
-                    ? "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
-                    : "If an account exists with this email, a password reset link has been sent.",
+                message: t.auth.messages.resetLinkSent,
             });
         }
 
@@ -72,14 +76,13 @@ export async function POST(request: Request) {
         await sendPasswordResetEmail(user.email!, resetUrl, locale);
 
         return NextResponse.json({
-            message: locale === "tr"
-                ? "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi."
-                : "If an account exists with this email, a password reset link has been sent.",
+            message: t.auth.messages.resetLinkSent,
         });
     } catch (error) {
         console.error("Forgot password error:", error);
+        const t = translations[locale];
         return NextResponse.json(
-            { error: "Failed to process request" },
+            { error: t.common.error || "Failed to process request" },
             { status: 500 }
         );
     }

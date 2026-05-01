@@ -80,7 +80,34 @@ export const translations = {
             errors: {
                 alreadyRegistered: "Bu e-posta adresi zaten kayıtlı",
                 registrationError: "Kayıt sırasında bir hata oluştu",
-                tooManyAttempts: "Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin."
+                tooManyAttempts: "Çok fazla kayıt denemesi. Lütfen daha sonra tekrar deneyin.",
+                invalidToken: "Geçersiz veya süresi dolmuş anahtar",
+                resetFailed: "Şifre sıfırlama başarısız oldu",
+                invalidCredentials: "Geçersiz e-posta veya şifre, ya da e-posta adresiniz henüz doğrulanmamış.",
+                securityCheck: "Lütfen güvenlik doğrulamasını tamamlayın.",
+                securityFailed: "Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin."
+            },
+            verification: {
+                success: "E-posta adresiniz başarıyla doğrulandı! Artık giriş yapabilirsiniz.",
+                expired: "Doğrulama bağlantınızın süresi dolmuş. Lütfen profil ayarlarından yeni bir bağlantı talep edin.",
+                invalid: "Geçersiz doğrulama bağlantısı. Lütfen e-postanızı kontrol edin veya yeni bağlantı isteyin.",
+                error: "Doğrulama sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+                checkEmail: "Lütfen e-posta adresinize gönderilen onay linkine tıklayarak hesabınızı aktifleştirin."
+            },
+            validation: {
+                emailInvalid: "Geçerli bir e-posta adresi girin",
+                passwordMin: "Şifre en az 8 karakter olmalı",
+                passwordSpecial: "Şifre en az bir özel karakter içermeli",
+                nameMin: "İsim en az 2 karakter olmalı",
+                botCheck: "Bot doğrulaması gerekli",
+                botFailed: "Bot doğrulaması başarısız. Lütfen tekrar deneyin.",
+                passwordMismatch: "Şifreler eşleşmiyor",
+                emailRequired: "E-posta adresi gerekli"
+            },
+            messages: {
+                registrationSuccess: "Kayıt başarılı",
+                resetLinkSent: "Bu e-posta adresiyle bir hesap varsa, şifre sıfırlama bağlantısı gönderildi.",
+                passwordResetSuccess: "Şifre başarıyla sıfırlandı"
             }
         },
         customers: {
@@ -728,7 +755,34 @@ export const translations = {
             errors: {
                 alreadyRegistered: "This email address is already registered",
                 registrationError: "An error occurred during registration",
-                tooManyAttempts: "Too many registration attempts. Please try again later."
+                tooManyAttempts: "Too many registration attempts. Please try again later.",
+                invalidToken: "Invalid or expired reset token",
+                resetFailed: "Failed to reset password",
+                invalidCredentials: "Invalid email or password, or your email has not been verified yet.",
+                securityCheck: "Please complete the security verification.",
+                securityFailed: "Security verification failed. Please try again."
+            },
+            verification: {
+                success: "Your email has been verified successfully! You can now sign in.",
+                expired: "Your verification link has expired. Please request a new one from your profile settings.",
+                invalid: "Invalid verification link. Please check your email or request a new link.",
+                error: "An error occurred during verification. Please try again later.",
+                checkEmail: "Please click the verification link sent to your email address to activate your account."
+            },
+            validation: {
+                emailInvalid: "Please enter a valid email address",
+                passwordMin: "Password must be at least 8 characters long",
+                passwordSpecial: "Password must contain at least one special character",
+                nameMin: "Name must be at least 2 characters long",
+                botCheck: "Bot verification required",
+                botFailed: "Bot verification failed. Please try again.",
+                passwordMismatch: "Passwords do not match",
+                emailRequired: "Email is required"
+            },
+            messages: {
+                registrationSuccess: "Registration successful",
+                resetLinkSent: "If an account exists with this email, a password reset link has been sent.",
+                passwordResetSuccess: "Password reset successfully"
             }
         },
         customers: {

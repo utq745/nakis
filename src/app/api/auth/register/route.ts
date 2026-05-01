@@ -7,29 +7,29 @@ import { registerRateLimiter, getClientIP, checkRateLimit } from "@/lib/rate-lim
 import { translations, Locale } from "@/lib/dictionary";
 import { verifyTurnstile } from "@/lib/turnstile";
 
-const registerSchema = z.object({
-    email: z.string().email("Geçerli bir e-posta adresi girin"),
-    password: z
-        .string()
-        .min(8, "Şifre en az 8 karakter olmalı")
-        .regex(/[^A-Za-z0-9]/, "Şifre en az bir özel karakter içermeli"),
-    name: z.string().min(2, "İsim en az 2 karakter olmalı"),
-    language: z.enum(["en", "tr"]).optional(),
-    timezone: z.string().optional(),
-    turnstileToken: z.string().min(1, "Bot doğrulaması gerekli"),
-});
-
 export async function POST(request: Request) {
     let selectedLanguage: Locale = "en";
 
     try {
-        // Rate limiting
-        const clientIP = getClientIP(request);
-        const rateLimitResult = await checkRateLimit(registerRateLimiter, clientIP);
-
         const body = await request.json();
         selectedLanguage = body.language || "en";
         const t = translations[selectedLanguage];
+
+        const registerSchema = z.object({
+            email: z.string().email(t.auth.validation.emailInvalid),
+            password: z
+                .string()
+                .min(8, t.auth.validation.passwordMin)
+                .regex(/[^A-Za-z0-9]/, t.auth.validation.passwordSpecial),
+            name: z.string().min(2, t.auth.validation.nameMin),
+            language: z.enum(["en", "tr"]).optional(),
+            timezone: z.string().optional(),
+            turnstileToken: z.string().min(1, t.auth.validation.botCheck),
+        });
+
+        // Rate limiting
+        const clientIP = getClientIP(request);
+        const rateLimitResult = await checkRateLimit(registerRateLimiter, clientIP);
 
         if (!rateLimitResult.success) {
             return NextResponse.json(
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         const isTurnstileValid = await verifyTurnstile(validatedData.turnstileToken);
         if (!isTurnstileValid) {
             return NextResponse.json(
-                { error: "Bot doğrulaması başarısız. Lütfen tekrar deneyin." },
+                { error: t.auth.validation.botFailed },
                 { status: 400 }
             );
         }
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(
             {
-                message: selectedLanguage === "tr" ? "Kayıt başarılı" : "Registration successful",
+                message: t.auth.messages.registrationSuccess,
                 requiresVerification: true,
                 user: {
                     id: user.id,

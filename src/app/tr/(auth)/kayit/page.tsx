@@ -36,7 +36,7 @@ export default function RegisterPage() {
         const confirmPassword = formData.get("confirmPassword") as string;
 
         if (password !== confirmPassword) {
-            setError(t.common.error); // Generic error for mismatch, or could add specific key
+            setError(t.auth.validation.passwordMismatch);
             setIsLoading(false);
             return;
         }
