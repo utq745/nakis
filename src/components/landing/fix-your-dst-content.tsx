@@ -127,7 +127,7 @@ export default function FixYourDstClient({
                                         <Link href="/orders/new">
                                             <button className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
                                                 {translations.buttonText}
-                                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_fix_high</span>
                                             </button>
                                         </Link>
                                     </div>

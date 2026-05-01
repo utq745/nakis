@@ -77,7 +77,7 @@ export function Hero() {
                                                 className="px-8 h-14 bg-white dark:bg-white/10 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 rounded-xl font-black text-lg hover:bg-slate-50 dark:hover:bg-white/20 transition-all flex items-center gap-3"
                                             >
                                                 {t.landing.hero.pricingBtn}
-                                                <span className="material-symbols-outlined">grid_view</span>
+                                                <span className="material-symbols-outlined">auto_fix_high</span>
                                             </motion.button>
                                         </Link>
                                     </>
