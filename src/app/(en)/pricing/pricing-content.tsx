@@ -7,17 +7,12 @@ import { Footer } from "@/components/footer";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HeroBackground } from "@/components/landing/hero-background";
+import { CreditCard, CheckCircle2, X, HelpCircle, ChevronDown, Mail } from "lucide-react";
 
 export default function PricingContent() {
     const { language, t } = useLanguage();
-    const [mounted, setMounted] = useState(false);
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0); // İlk FAQ açık başlasın
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted || !t || !t.pricingPage) return null;
+    if (!t || !t.pricingPage) return null;
 
     const pricingPlans = [
         {
@@ -77,7 +72,7 @@ export default function PricingContent() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>payments</span>
+                                <CreditCard className="size-5 text-primary dark:text-white" />
                                 <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">{t.pricingPage.hero.badge}</span>
                             </div>
 
@@ -130,9 +125,7 @@ export default function PricingContent() {
                                     <ul className="space-y-3 mb-6 flex-grow">
                                         {plan.features.map((feature, fIndex) => (
                                             <li key={fIndex} className="flex items-start gap-3">
-                                                <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} style={{ fontSize: '20px' }}>
-                                                    check_circle
-                                                </span>
+                                                <CheckCircle2 className={`size-5 shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} />
                                                 <span className={`text-sm ${plan.highlighted ? 'text-white/90' : 'text-[#616f89] dark:text-gray-300'}`} dangerouslySetInnerHTML={{ __html: feature }} />
                                             </li>
                                         ))}
@@ -156,9 +149,7 @@ export default function PricingContent() {
                                             <ul className="space-y-2">
                                                 {plan.notIncluded.map((item, nIndex) => (
                                                     <li key={nIndex} className="flex items-start gap-2">
-                                                        <span className="material-symbols-outlined shrink-0 text-red-500" style={{ fontSize: '16px' }}>
-                                                            close
-                                                        </span>
+                                                        <X className="size-4 shrink-0 text-red-500" />
                                                         <span className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`} dangerouslySetInnerHTML={{ __html: item }} />
                                                     </li>
                                                 ))}
@@ -233,13 +224,11 @@ export default function PricingContent() {
                                     >
                                         <div className="flex items-center gap-3 flex-1">
                                             <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                                <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>help</span>
+                                                <HelpCircle className="size-4 text-primary" />
                                             </span>
                                             <h3 className="font-bold text-[#111318] dark:text-white">{faq.q}</h3>
                                         </div>
-                                        <span className={`material-symbols-outlined transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
-                                            expand_more
-                                        </span>
+                                        <ChevronDown className={`size-5 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`} />
                                     </button>
 
                                     <div
@@ -273,7 +262,7 @@ export default function PricingContent() {
                                 </p>
                                 <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'}>
                                     <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl">
-                                        <span className="material-symbols-outlined">mail</span>
+                                        <Mail className="size-5" />
                                         {t.pricingPage.faq.contactUs}
                                     </button>
                                 </Link>

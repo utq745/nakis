@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { BadgeCheck, Wrench, Gem, Layers, ArrowLeftRight, Settings, Layout, Type, Texture, ArrowRight, Cpu } from "lucide-react";
 
 export default function ServicesContent() {
     const { language, t } = useLanguage();
@@ -12,7 +13,7 @@ export default function ServicesContent() {
     const mainServices = [
         {
             id: "approval",
-            icon: "verified",
+            icon: BadgeCheck,
             title: language === 'tr' ? "Onay Örneği (Stitch Proof)" : "Real Stitched Approval",
             desc: language === 'tr'
                 ? "Mevcut DST dosyanızı kalibre edilmiş Tajima makinelerimizde işliyor ve size yüksek çözünürlüklü taramasını gönderiyoruz."
@@ -25,7 +26,7 @@ export default function ServicesContent() {
         },
         {
             id: "fix",
-            icon: "build",
+            icon: Wrench,
             title: language === 'tr' ? "Dosya Düzeltme & Çözüm" : "Fix & Verify Service",
             desc: language === 'tr'
                 ? "Sorunlu dosyalarınızı analiz eder, teknik hataları düzeltir ve sonucu dikiş yaparak kanıtlarız."
@@ -39,7 +40,7 @@ export default function ServicesContent() {
         },
         {
             id: "digitizing",
-            icon: "diamond",
+            icon: Gem,
             title: language === 'tr' ? "Tam Dijitalleştirme" : "Full Master Digitizing",
             desc: language === 'tr'
                 ? "Çizimlerinizi sıfırdan, endüstriyel standartlarda en temiz dikiş yollarıyla dijitalleştiriyoruz."
@@ -53,21 +54,21 @@ export default function ServicesContent() {
     ];
 
     const technicalExpertise = [
-        { icon: "layers", title: "Density & Underlay", desc: "Optimal structure for every fabric type." },
-        { icon: "swap_horiz", title: "Push-Pull Compensation", desc: "Precise adjustments for distortion prevention." },
-        { icon: "settings", title: "Thread Selection", desc: "Expert thread and needle pairing." },
-        { icon: "dashboard_customize", title: "Stabilizer Choice", desc: "Fabric-specific backing recommendations." },
-        { icon: "text_fields", title: "Small Text Tuning", desc: "Optimized legibility for fine lettering." },
-        { icon: "texture", title: "Fabric Analysis", desc: "Industrial testing for various materials." },
+        { icon: Layers, title: "Density & Underlay", desc: "Optimal structure for every fabric type." },
+        { icon: ArrowLeftRight, title: "Push-Pull Compensation", desc: "Precise adjustments for distortion prevention." },
+        { icon: Settings, title: "Thread Selection", desc: "Expert thread and needle pairing." },
+        { icon: Layout, title: "Stabilizer Choice", desc: "Fabric-specific backing recommendations." },
+        { icon: Type, title: "Small Text Tuning", desc: "Optimized legibility for fine lettering." },
+        { icon: Texture, title: "Fabric Analysis", desc: "Industrial testing for various materials." },
     ];
 
     const trTechnicalExpertise = [
-        { icon: "layers", title: "Yoğunluk ve Alt Dikiş", desc: "Her kumaş türü için optimize edilmiş yapı." },
-        { icon: "swap_horiz", title: "Push-Pull Telafisi", desc: "Kumaş esnemesini önleyen hassas ayarlar." },
-        { icon: "settings", title: "İplik ve İğne Seçimi", desc: "En iyi sonuçlar için uzman eşleşmeleri." },
-        { icon: "dashboard_customize", title: "Tela Seçimi", desc: "Kumaşa özel destekleme tavsiyeleri." },
-        { icon: "text_fields", title: "Küçük Yazı Ayarı", desc: "Okunabilir ince yazı dijitalleştirmesi." },
-        { icon: "texture", title: "Kumaş Analizi", desc: "Farklı materyaller için endüstriyel testler." },
+        { icon: Layers, title: "Yoğunluk ve Alt Dikiş", desc: "Her kumaş türü için optimize edilmiş yapı." },
+        { icon: ArrowLeftRight, title: "Push-Pull Telafisi", desc: "Kumaş esnemesini önleyen hassas ayarlar." },
+        { icon: Settings, title: "İplik ve İğne Seçimi", desc: "En iyi sonuçlar için uzman eşleşmeleri." },
+        { icon: Layout, title: "Tela Seçimi", desc: "Kumaşa özel destekleme tavsiyeleri." },
+        { icon: Type, title: "Küçük Yazı Ayarı", desc: "Okunabilir ince yazı dijitalleştirmesi." },
+        { icon: Texture, title: "Kumaş Analizi", desc: "Farklı materyaller için endüstriyel testler." },
     ];
 
     const activeExpertise = language === 'tr' ? trTechnicalExpertise : technicalExpertise;
@@ -101,7 +102,7 @@ export default function ServicesContent() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>precision_manufacturing</span>
+                                <Cpu className="size-5 text-white" />
                                 <span className="text-white/90 text-sm font-bold uppercase tracking-wider">
                                     {language === 'tr' ? "Endüstriyel Standartlar" : "Industrial Standards"}
                                 </span>
@@ -144,7 +145,7 @@ export default function ServicesContent() {
                                     className="p-8 rounded-3xl bg-card dark:bg-[#1e2a3d] shadow-xl hover:shadow-2xl transition-all border border-border dark:border-white/10 hover:border-primary/20"
                                 >
                                     <div className="mb-6 flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 dark:bg-white/10 text-primary dark:text-white shadow-inner">
-                                        <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                                        <item.icon className="size-8" />
                                     </div>
                                     <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground">{item.desc}</p>
@@ -183,7 +184,7 @@ export default function ServicesContent() {
                                         service.color === 'indigo' ? 'bg-indigo-50 text-indigo-600' :
                                             'bg-cyan-50 text-cyan-600'
                                         }`}>
-                                        <span className="material-symbols-outlined text-3xl font-bold">{service.icon}</span>
+                                        <service.icon className="size-8" />
                                     </div>
 
                                     <h3 className="text-2xl font-black text-foreground mb-4">
@@ -214,7 +215,7 @@ export default function ServicesContent() {
                                         </div>
                                         <Link href={language === 'tr' ? '/tr/giris' : '/login'}>
                                             <button className="p-4 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors shadow-lg">
-                                                <span className="material-symbols-outlined">arrow_forward</span>
+                                                <ArrowRight className="size-6" />
                                             </button>
                                         </Link>
                                     </div>
@@ -256,7 +257,7 @@ export default function ServicesContent() {
                                             href={language === 'tr' ? '/tr/iletisim' : '/contact'}
                                             className="text-white/70 hover:text-white text-sm font-bold flex items-center gap-1 mt-4 hover:gap-2 transition-all"
                                         >
-                                            {language === 'tr' ? 'Daha fazla bilgi al' : 'Learn more about our lab'} <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                            {language === 'tr' ? 'Daha fazla bilgi al' : 'Learn more about our lab'} <ArrowRight className="size-4" />
                                         </Link>
                                     </div>
                                 </div>

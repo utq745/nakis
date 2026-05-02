@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
+import { Truck } from "lucide-react";
 
 export function DeliveryPolicyClient() {
     return (
@@ -33,7 +34,7 @@ export function DeliveryPolicyClient() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>local_shipping</span>
+                                <Truck className="text-white size-5" />
                                 <span className="text-white/90 text-sm font-bold uppercase tracking-wider">Delivery & Returns</span>
                             </div>
 

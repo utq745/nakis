@@ -8,6 +8,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { HeroBackground } from "./hero-background";
 import { HeroVisual } from "./hero-visual";
 import { useSession } from "next-auth/react";
+import { ArrowRight, Wand2, BadgeCheck, CheckCircle2 } from "lucide-react";
 
 
 
@@ -66,7 +67,7 @@ export function Hero() {
                                         className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
                                     >
                                         {t.landing.hero.uploadBtn}
-                                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                        <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
                                     </motion.button>
                                 </Link>
                                 <Link href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>
@@ -76,7 +77,7 @@ export function Hero() {
                                         className="px-8 h-14 bg-white dark:bg-white/10 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 rounded-xl font-black text-lg hover:bg-slate-50 dark:hover:bg-white/20 transition-all flex items-center gap-3"
                                     >
                                         {t.landing.hero.pricingBtn}
-                                        <span className="material-symbols-outlined">auto_fix_high</span>
+                                        <Wand2 className="size-5" />
                                     </motion.button>
                                 </Link>
                             </div>
@@ -84,7 +85,7 @@ export function Hero() {
                             <div className="flex flex-wrap items-center gap-6 pt-2">
                                 <div className="flex items-center gap-2 group">
                                     <div className="size-10 rounded-full bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <span className="material-symbols-outlined text-[20px] text-green-600 dark:text-green-400 font-bold">verified</span>
+                                        <BadgeCheck className="size-5 text-green-600 dark:text-green-400" />
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.labBadge}</span>
@@ -92,7 +93,7 @@ export function Hero() {
                                 </div>
                                 <div className="flex items-center gap-2 group">
                                     <div className="size-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <span className="material-symbols-outlined text-[20px] text-blue-600 dark:text-blue-400 font-bold">check_circle</span>
+                                        <CheckCircle2 className="size-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{t.landing.hero.readyBadge}</span>

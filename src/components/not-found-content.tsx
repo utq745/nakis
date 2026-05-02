@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SearchX, Home, Headset } from "lucide-react";
 
 export function NotFoundContent() {
     const { t, language } = useLanguage();
@@ -25,9 +26,7 @@ export function NotFoundContent() {
                             404
                         </h1>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[100px] text-primary animate-bounce">
-                                search_off
-                            </span>
+                            <SearchX className="size-[100px] text-primary animate-bounce" strokeWidth={1.5} />
                         </div>
                     </motion.div>
 
@@ -46,13 +45,13 @@ export function NotFoundContent() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link href={language === 'tr' ? '/tr' : '/'}>
                                 <button className="px-8 py-4 bg-primary text-white rounded-xl font-bold text-lg hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
-                                    <span className="material-symbols-outlined">home</span>
+                                    <Home className="size-5" />
                                     {t.notFound.backHome}
                                 </button>
                             </Link>
                             <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'}>
                                 <button className="px-8 py-4 bg-white dark:bg-[#18181b] text-[#172136] dark:text-white rounded-xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-[#27272a] border border-[#e5e7eb] dark:border-[#27272a] transition-all flex items-center gap-2">
-                                    <span className="material-symbols-outlined">support_agent</span>
+                                    <Headset className="size-5" />
                                     {t.notFound.contactSupport}
                                 </button>
                             </Link>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { useLanguage } from "@/components/providers/language-provider";
+import { KeyRound, Mail, CheckCircle2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -79,7 +80,7 @@ export default function ForgotPasswordPage() {
                                 {/* Header */}
                                 <div className="text-center mb-8">
                                     <div className="mx-auto w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center mb-4">
-                                        <span className="material-symbols-outlined text-white text-3xl">lock_reset</span>
+                                        <KeyRound className="text-white size-8" />
                                     </div>
                                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                                         {t.title}
@@ -104,7 +105,7 @@ export default function ForgotPasswordPage() {
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                                <span className="material-symbols-outlined text-[20px]">mail</span>
+                                                <Mail className="size-5" />
                                             </div>
                                             <input
                                                 type="email"
@@ -140,7 +141,7 @@ export default function ForgotPasswordPage() {
                                 {/* Success State */}
                                 <div className="text-center">
                                     <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-                                        <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-3xl">check_circle</span>
+                                        <CheckCircle2 className="text-green-600 dark:text-green-400 size-8" />
                                     </div>
                                     <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                                         {t.successTitle}

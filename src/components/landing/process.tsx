@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Search, Play, Briefcase, X, ArrowDown } from "lucide-react";
 
 
 export function Process() {
@@ -149,17 +150,11 @@ export function Process() {
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors z-10">
                                                 <div className="w-20 h-20 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                                     {item.isCorporate ? (
-                                                        <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
-                                                            business_center
-                                                        </span>
+                                                        <Briefcase className="size-8 text-primary" />
                                                     ) : item.isImagePopup ? (
-                                                        <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
-                                                            search
-                                                        </span>
+                                                        <Search className="size-8 text-primary" />
                                                     ) : (
-                                                        <span className="material-symbols-outlined text-primary ml-1" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2vw" }}>
-                                                            play_arrow
-                                                        </span>
+                                                        <Play className="size-8 text-primary ml-1" />
                                                     )}
                                                 </div>
                                             </div>
@@ -186,7 +181,7 @@ export function Process() {
                                 {/* Arrow for connection (mobile/tablet) */}
                                 {index < steps.length - 1 && (
                                     <div className="lg:hidden my-6 opacity-20">
-                                        <span className="material-symbols-outlined text-[40px] text-primary dark:text-white">arrow_downward</span>
+                                        <ArrowDown className="size-10 text-primary dark:text-white" />
                                     </div>
                                 )}
                             </motion.div>
@@ -216,7 +211,7 @@ export function Process() {
                                 onClick={() => setSelectedVideo(null)}
                                 className="absolute top-4 right-4 z-20 size-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-md transition-colors"
                             >
-                                <span className="material-symbols-outlined">close</span>
+                                <X className="size-6" />
                             </button>
                             <video
                                 src={selectedVideo}
@@ -251,7 +246,7 @@ export function Process() {
                                 onClick={() => setIsCorporateModalOpen(false)}
                                 className="absolute top-4 right-4 size-10 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-foreground dark:text-white flex items-center justify-center transition-colors"
                             >
-                                <span className="material-symbols-outlined">close</span>
+                                <X className="size-6" />
                             </button>
 
                             <h3 className="text-2xl font-black text-foreground dark:text-white mb-4">
@@ -294,7 +289,7 @@ export function Process() {
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
                             >
-                                <span className="material-symbols-outlined">close</span>
+                                <X className="size-7" />
                             </button>
 
                             <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden min-h-[50vh] max-h-[90vh]">

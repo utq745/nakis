@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Search, CheckCircle2, X } from "lucide-react";
 
 export function HeroVisual() {
     const { t } = useLanguage();
@@ -60,16 +61,14 @@ export function HeroVisual() {
                                     src="/images/hero/hero.webp"
                                     alt="New Digitizing Sample"
                                     fill
-                                    sizes="(max-width: 768px) 90vw, 420px"
+                                    sizes="(max-width: 768px) 95vw, (max-width: 1200px) 50vw, 800px"
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     priority
                                     loading="eager"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                     <div className="w-14 h-14 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <span className="material-symbols-outlined text-[#145BEC]" style={{ fontVariationSettings: "'FILL' 1", fontSize: "28px" }}>
-                                            search
-                                        </span>
+                                        <Search className="size-7 text-[#145BEC]" />
                                     </div>
                                 </div>
                                 <div className="absolute inset-0 bg-[#145BEC]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -87,11 +86,11 @@ export function HeroVisual() {
                             {/* Checkmarks */}
                             <div className="flex flex-col gap-2 mt-auto items-center">
                                 <div className="flex items-center gap-2.5">
-                                    <span className="material-symbols-outlined text-green-500" style={{ fontSize: '20px' }}>check_circle</span>
+                                    <CheckCircle2 className="size-5 text-green-500" />
                                     <span className="text-sm sm:text-[15px] font-bold text-slate-800 dark:text-slate-200">{v.realProof}</span>
                                 </div>
                                 <div className="flex items-center gap-2.5">
-                                    <span className="material-symbols-outlined text-green-500" style={{ fontSize: '20px' }}>check_circle</span>
+                                    <CheckCircle2 className="size-5 text-green-500" />
                                     <span className="text-sm sm:text-[15px] font-bold text-slate-800 dark:text-slate-200">{v.approvalCards}</span>
                                 </div>
                             </div>
@@ -148,15 +147,13 @@ export function HeroVisual() {
                                         src="/images/hero/before-after.webp"
                                         alt="Stitch Test Before After"
                                         fill
-                                        sizes="(max-width: 768px) 90vw, 420px"
+                                        sizes="(max-width: 768px) 95vw, (max-width: 1200px) 50vw, 800px"
                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         loading="lazy"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                         <div className="w-14 h-14 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                            <span className="material-symbols-outlined text-[#145BEC]" style={{ fontVariationSettings: "'FILL' 1", fontSize: "28px" }}>
-                                                search
-                                            </span>
+                                            <Search className="size-7 text-[#145BEC]" />
                                         </div>
                                     </div>
                                     <div className="absolute inset-0 bg-[#145BEC]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -168,9 +165,9 @@ export function HeroVisual() {
                                     <div className="bg-white dark:bg-slate-900 p-3">
                                         <p className="text-sm sm:text-base font-black text-slate-800 dark:text-white mb-1.5">{v.before}</p>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-[11px] sm:text-xs font-bold text-red-500">{v.distortedShape}</span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-red-500">{v.unevenEdges}</span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-red-500">{v.poorFlow}</span>
+                                            <span className="text-[11px] sm:text-xs font-bold text-red-700">{v.distortedShape}</span>
+                                            <span className="text-[11px] sm:text-xs font-bold text-red-700">{v.unevenEdges}</span>
+                                            <span className="text-[11px] sm:text-xs font-bold text-red-700">{v.poorFlow}</span>
                                         </div>
                                     </div>
                                     {/* After */}
@@ -178,15 +175,15 @@ export function HeroVisual() {
                                         <p className="text-sm sm:text-base font-black text-slate-800 dark:text-white mb-1.5">{v.after}</p>
                                         <div className="flex flex-col gap-0.5">
                                             <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.cleanShape}</span>
                                             </span>
                                             <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.sharpBorders}</span>
                                             </span>
                                             <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.smoothFlow}</span>
                                             </span>
                                         </div>
@@ -234,10 +231,10 @@ export function HeroVisual() {
                     <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
-                        className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
-                        aria-label="Close"
+                        className="absolute top-4 right-4 z-10 size-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        aria-label={t?.common?.close || "Close"}
                     >
-                        <span className="material-symbols-outlined text-white text-2xl">close</span>
+                        <X className="size-6 text-white" />
                     </button>
 
                     {/* Image Container */}

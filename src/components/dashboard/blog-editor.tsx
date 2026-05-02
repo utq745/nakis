@@ -5,6 +5,31 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/language-provider";
 import { SeoSnippetEditor } from "./seo-snippet-editor";
 import Image from "next/image";
+import { 
+    Bold, 
+    Italic, 
+    Underline, 
+    Strikethrough, 
+    List, 
+    ListOrdered, 
+    AlignLeft, 
+    AlignCenter, 
+    AlignRight, 
+    Link as LinkIcon, 
+    Image as ImageIcon, 
+    Quote, 
+    Minus, 
+    Undo, 
+    Redo, 
+    Eraser, 
+    Loader2, 
+    Settings, 
+    Languages, 
+    Edit2, 
+    Plus, 
+    CloudUpload, 
+    Type 
+} from "lucide-react";
 
 interface BlogPost {
     id?: string;
@@ -30,12 +55,12 @@ interface BlogEditorProps {
 // Toolbar button component
 function ToolbarButton({
     onClick,
-    icon,
+    icon: Icon,
     title,
     active,
 }: {
     onClick: () => void;
-    icon: string;
+    icon: any;
     title: string;
     active?: boolean;
 }) {
@@ -49,7 +74,7 @@ function ToolbarButton({
                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
         >
-            <span className="material-symbols-outlined text-[18px]">{icon}</span>
+            <Icon className="size-4.5" />
         </button>
     );
 }
@@ -389,10 +414,10 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                     <div className="rounded-xl border border-border bg-card overflow-hidden">
                         <div className="flex items-center flex-wrap gap-0.5 px-3 py-2 bg-muted/50 border-b border-border">
                             {/* Text formatting */}
-                            <ToolbarButton onClick={() => exec("bold")} icon="format_bold" title="Bold (⌘B)" />
-                            <ToolbarButton onClick={() => exec("italic")} icon="format_italic" title="Italic (⌘I)" />
-                            <ToolbarButton onClick={() => exec("underline")} icon="format_underlined" title="Underline (⌘U)" />
-                            <ToolbarButton onClick={() => exec("strikeThrough")} icon="strikethrough_s" title="Strikethrough" />
+                            <ToolbarButton onClick={() => exec("bold")} icon={Bold} title="Bold (⌘B)" />
+                            <ToolbarButton onClick={() => exec("italic")} icon={Italic} title="Italic (⌘I)" />
+                            <ToolbarButton onClick={() => exec("underline")} icon={Underline} title="Underline (⌘U)" />
+                            <ToolbarButton onClick={() => exec("strikeThrough")} icon={Strikethrough} title="Strikethrough" />
 
                             <ToolbarSeparator />
 
@@ -412,34 +437,34 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                             <ToolbarSeparator />
 
                             {/* Lists */}
-                            <ToolbarButton onClick={() => exec("insertUnorderedList")} icon="format_list_bulleted" title="Bullet List" />
-                            <ToolbarButton onClick={() => exec("insertOrderedList")} icon="format_list_numbered" title="Numbered List" />
+                            <ToolbarButton onClick={() => exec("insertUnorderedList")} icon={List} title="Bullet List" />
+                            <ToolbarButton onClick={() => exec("insertOrderedList")} icon={ListOrdered} title="Numbered List" />
 
                             <ToolbarSeparator />
 
                             {/* Alignment */}
-                            <ToolbarButton onClick={() => exec("justifyLeft")} icon="format_align_left" title="Align Left" />
-                            <ToolbarButton onClick={() => exec("justifyCenter")} icon="format_align_center" title="Align Center" />
-                            <ToolbarButton onClick={() => exec("justifyRight")} icon="format_align_right" title="Align Right" />
+                            <ToolbarButton onClick={() => exec("justifyLeft")} icon={AlignLeft} title="Align Left" />
+                            <ToolbarButton onClick={() => exec("justifyCenter")} icon={AlignCenter} title="Align Center" />
+                            <ToolbarButton onClick={() => exec("justifyRight")} icon={AlignRight} title="Align Right" />
 
                             <ToolbarSeparator />
 
                             {/* Links & Media */}
-                            <ToolbarButton onClick={insertLink} icon="link" title="Insert Link (⌘K)" />
+                            <ToolbarButton onClick={insertLink} icon={LinkIcon} title="Insert Link (⌘K)" />
                             <ToolbarButton
                                 onClick={() => fileInputRef.current?.click()}
-                                icon="image"
+                                icon={ImageIcon}
                                 title="Insert Image"
                             />
-                            <ToolbarButton onClick={() => exec("formatBlock", "blockquote")} icon="format_quote" title="Blockquote" />
-                            <ToolbarButton onClick={() => exec("insertHorizontalRule")} icon="horizontal_rule" title="Horizontal Rule" />
+                            <ToolbarButton onClick={() => exec("formatBlock", "blockquote")} icon={Quote} title="Blockquote" />
+                            <ToolbarButton onClick={() => exec("insertHorizontalRule")} icon={Minus} title="Horizontal Rule" />
 
                             <ToolbarSeparator />
 
                             {/* Undo/Redo */}
-                            <ToolbarButton onClick={() => exec("undo")} icon="undo" title="Undo" />
-                            <ToolbarButton onClick={() => exec("redo")} icon="redo" title="Redo" />
-                            <ToolbarButton onClick={() => exec("removeFormat")} icon="format_clear" title="Clear Formatting" />
+                            <ToolbarButton onClick={() => exec("undo")} icon={Undo} title="Undo" />
+                            <ToolbarButton onClick={() => exec("redo")} icon={Redo} title="Redo" />
+                            <ToolbarButton onClick={() => exec("removeFormat")} icon={Eraser} title="Clear Formatting" />
                         </div>
 
                         {/* Editor Area */}
@@ -467,7 +492,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
 
                         {uploadingInline && (
                             <div className="px-5 py-2 text-xs text-muted-foreground bg-muted/50 border-t border-border flex items-center gap-2">
-                                <span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                                <Loader2 className="animate-spin size-4" />
                                 Uploading image...
                             </div>
                         )}
@@ -488,7 +513,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                     {/* Status & Locale */}
                     <div className="rounded-xl border border-border bg-card p-5 space-y-4">
                         <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg text-primary">settings</span>
+                            <Settings className="size-4 text-primary" />
                             {language === "tr" ? "Yazı Ayarları" : "Post Settings"}
                         </h3>
 
@@ -525,7 +550,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                     {mode === "edit" && (
                         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
                             <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                                <span className="material-symbols-outlined text-lg text-primary">translate</span>
+                                <Languages className="size-4 text-primary" />
                                 {language === "tr" ? "Çeviri Bağlantısı" : "Translation Link"}
                             </h3>
 
@@ -542,7 +567,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                                             {translation.locale.toUpperCase()}
                                         </div>
                                         <span className="flex-1 font-medium truncate">{translation.title}</span>
-                                        <span className="material-symbols-outlined text-sm text-muted-foreground">edit</span>
+                                        <Edit2 className="size-4 text-muted-foreground" />
                                     </a>
                                 </div>
                             ) : (
@@ -556,7 +581,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                                         href={`${language === "tr" ? "/tr/panel" : "/dashboard"}/manage-blog/new?translationGroupId=${initialData?.translationGroupId}`}
                                         className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg text-sm font-bold transition-colors"
                                     >
-                                        <span className="material-symbols-outlined text-[18px]">add</span>
+                                        <Plus className="size-4.5" />
                                         {language === "tr" ? "Çeviri Ekle" : "Add Translation"}
                                     </a>
                                 </div>
@@ -567,7 +592,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                     {/* Cover Image */}
                     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                         <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg text-primary">image</span>
+                            <ImageIcon className="size-4 text-primary" />
                             {language === "tr" ? "Kapak Fotoğrafı" : "Cover Image"}
                         </h3>
 
@@ -605,10 +630,10 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                                 className="w-full aspect-video rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                             >
                                 {uploadingCover ? (
-                                    <span className="animate-spin material-symbols-outlined text-muted-foreground">progress_activity</span>
+                                    <Loader2 className="animate-spin size-6 text-muted-foreground" />
                                 ) : (
                                     <>
-                                        <span className="material-symbols-outlined text-2xl text-muted-foreground">cloud_upload</span>
+                                        <CloudUpload className="size-8 text-muted-foreground" />
                                         <span className="text-xs text-muted-foreground font-medium">
                                             {language === "tr" ? "Kapak fotoğrafı yükle" : "Upload cover image"}
                                         </span>
@@ -629,7 +654,7 @@ export function BlogEditor({ initialData, mode, initialTranslationGroupId, trans
                     {/* Excerpt */}
                     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                         <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg text-primary">short_text</span>
+                            <Type className="size-4 text-primary" />
                             {language === "tr" ? "Özet" : "Excerpt"}
                         </h3>
                         <textarea

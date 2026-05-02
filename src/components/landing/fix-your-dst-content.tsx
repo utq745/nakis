@@ -8,6 +8,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { HeroBackground } from "@/components/landing/hero-background";
 import { FixYourDstVisual } from "@/components/landing/fix-your-dst-visual";
+import { Wand2, BadgeCheck, CheckCircle2, Search, Check, X, AlertTriangle, ArrowDown, ChevronDown } from "lucide-react";
 
 interface Props {
     serviceIsItems: string[];
@@ -128,7 +129,7 @@ export default function FixYourDstClient({
                                         <Link href="/orders/new">
                                             <button className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
                                                 {translations.buttonText}
-                                                <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_fix_high</span>
+                                                <Wand2 className="size-5 group-hover:scale-110 transition-transform" />
                                             </button>
                                         </Link>
                                     </div>
@@ -136,7 +137,7 @@ export default function FixYourDstClient({
                                     <div className="flex flex-wrap items-center gap-6 pt-2">
                                         <div className="flex items-center gap-2 group">
                                             <div className="size-10 rounded-full bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <span className="material-symbols-outlined text-[20px] text-green-600 dark:text-green-400 font-bold">verified</span>
+                                                <BadgeCheck className="size-5 text-green-600 dark:text-green-400" />
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{translations.realStitch}</span>
@@ -144,7 +145,7 @@ export default function FixYourDstClient({
                                         </div>
                                         <div className="flex items-center gap-2 group">
                                             <div className="size-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <span className="material-symbols-outlined text-[20px] text-blue-600 dark:text-blue-400 font-bold">check_circle</span>
+                                                <CheckCircle2 className="size-5 text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="text-slate-700 dark:text-white text-sm font-bold leading-none tracking-tight">{translations.prodReady}</span>
@@ -244,7 +245,7 @@ export default function FixYourDstClient({
                                         />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                             <div className="size-16 rounded-full bg-white/70 opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 transition-all duration-300 flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-primary text-3xl font-bold">search</span>
+                                                <Search className="size-8 text-primary" />
                                             </div>
                                         </div>
                                     </div>
@@ -255,7 +256,7 @@ export default function FixYourDstClient({
                                         <div className="space-y-4">
                                             <div className="text-[15px] font-bold leading-relaxed text-slate-600 dark:text-white/70 flex items-start gap-3">
                                                 {index === 1 ? (
-                                                    <span className="material-symbols-outlined text-green-500 font-bold shrink-0 text-[18px] leading-relaxed">check</span>
+                                                    <Check className="size-4 text-green-500 font-bold shrink-0 mt-1" />
                                                 ) : (
                                                     <span className="size-1.5 rounded-full bg-primary/40 shrink-0 mt-[9px]"></span>
                                                 )}
@@ -263,7 +264,7 @@ export default function FixYourDstClient({
                                             </div>
                                             <div className="text-[15px] font-bold leading-relaxed text-slate-600 dark:text-white/70 flex items-start gap-3">
                                                 {index === 1 ? (
-                                                    <span className="material-symbols-outlined text-red-500 font-bold shrink-0 text-[18px] leading-relaxed">close</span>
+                                                    <X className="size-4 text-red-500 font-bold shrink-0 mt-1" />
                                                 ) : (
                                                     <span className="size-1.5 rounded-full bg-primary/40 shrink-0 mt-[9px]"></span>
                                                 )}
@@ -327,7 +328,7 @@ export default function FixYourDstClient({
                                         className="group flex items-center gap-4 p-4 rounded-2xl border border-red-200/60 bg-red-50/60 dark:border-red-500/10 dark:bg-red-500/5 hover:border-red-500/30 transition-all"
                                     >
                                         <div className="size-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                            <span className="material-symbols-outlined text-red-500 text-lg font-bold">warning</span>
+                                            <AlertTriangle className="size-5 text-red-500" />
                                         </div>
                                         <span className="text-[15px] font-bold text-slate-700 dark:text-white/80">{item}</span>
                                     </motion.div>
@@ -345,7 +346,7 @@ export default function FixYourDstClient({
                                         className="group flex items-center gap-4 p-4 rounded-2xl border border-primary/10 bg-primary/5 dark:border-primary/20 dark:bg-primary/10 hover:border-green-500/30 transition-all"
                                     >
                                         <div className="size-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                            <span className="material-symbols-outlined text-green-500 text-lg font-bold">check_circle</span>
+                                            <CheckCircle2 className="size-5 text-green-500" />
                                         </div>
                                         <span className="text-[15px] font-bold text-slate-800 dark:text-white/90">{item}</span>
                                     </motion.div>
@@ -372,7 +373,7 @@ export default function FixYourDstClient({
                                     {rightChoiceItems.map((item) => (
                                         <li key={item} className="flex gap-4 items-start">
                                             <div className="size-6 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                                                <span className="material-symbols-outlined text-[14px] text-green-700 dark:text-green-400 font-bold">check</span>
+                                                <Check className="size-3.5 text-green-700 dark:text-green-400 font-bold" />
                                             </div>
                                             <span>{item}</span>
                                         </li>
@@ -388,7 +389,7 @@ export default function FixYourDstClient({
                                     {notRightChoiceItems.map((item) => (
                                         <li key={item} className="flex gap-4 items-start">
                                             <div className="size-6 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                                                <span className="material-symbols-outlined text-[14px] text-red-700 dark:text-red-400 font-bold">close</span>
+                                                <X className="size-3.5 text-red-700 dark:text-red-400 font-bold" />
                                             </div>
                                             <span>{item}</span>
                                         </li>
@@ -462,7 +463,7 @@ export default function FixYourDstClient({
 
                                             {index < processItems.length - 1 && (
                                                 <div className="lg:hidden my-6 opacity-20">
-                                                    <span className="material-symbols-outlined text-[40px] text-primary dark:text-white">arrow_downward</span>
+                                                    <ArrowDown className="size-10 text-primary dark:text-white" />
                                                 </div>
                                             )}
                                         </motion.div>
@@ -497,9 +498,7 @@ export default function FixYourDstClient({
                                 >
                                     <summary className="flex list-none items-center justify-between gap-6 font-black text-slate-900 dark:text-white text-lg md:text-xl tracking-tight">
                                         {item.question}
-                                        <span className="material-symbols-outlined shrink-0 text-primary transition-transform duration-500 group-open:rotate-180 text-3xl">
-                                            expand_more
-                                        </span>
+                                        <ChevronDown className="size-8 shrink-0 text-primary transition-transform duration-500 group-open:rotate-180" />
                                     </summary>
                                     <p className="mt-6 text-[17px] font-bold leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl">
                                         {item.answer}
@@ -534,7 +533,7 @@ export default function FixYourDstClient({
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-95 border border-white/10"
                             >
-                                <span className="material-symbols-outlined">close</span>
+                                <X className="size-7" />
                             </button>
 
                             <div className="w-full h-full flex items-center justify-center p-4 sm:p-12">

@@ -2,25 +2,26 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Cpu, Layers, BadgeCheck } from "lucide-react";
 
 export function WhyUs() {
     const { t } = useLanguage();
 
     const features = [
         {
-            icon: "precision_manufacturing",
+            icon: Cpu,
             title: t.landing.why.card1Title,
             desc: t.landing.why.card1Desc,
             color: "blue"
         },
         {
-            icon: "wysiwyg",
+            icon: Layers,
             title: t.landing.why.card2Title,
             desc: t.landing.why.card2Desc,
             color: "indigo"
         },
         {
-            icon: "verified",
+            icon: BadgeCheck,
             title: t.landing.why.card3Title,
             desc: t.landing.why.card3Desc,
             color: "cyan"
@@ -71,7 +72,7 @@ export function WhyUs() {
                             className="group relative flex flex-col items-center text-center p-8 md:p-10 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 transition-all hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)]"
                         >
                             <div className="mb-10 w-[100px] h-[100px] rounded-[2rem] bg-white text-primary shadow-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 group-hover:rotate-6 shrink-0">
-                                <span className="material-symbols-outlined leading-none select-none" style={{ fontSize: '40px' }}>{feature.icon}</span>
+                                <feature.icon className="size-10" />
                             </div>
 
                             <h3 className="text-white mb-4 tracking-tight font-black">

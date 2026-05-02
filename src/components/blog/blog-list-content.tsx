@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ArrowRight, User } from "lucide-react";
+import { Calendar, ArrowRight, User, FileText, Loader2 } from "lucide-react";
 
 interface BlogPost {
     id: string;
@@ -43,7 +43,7 @@ export function BlogListContent({ locale }: { locale: string }) {
             {/* Hero Section */}
             <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary mb-6">
-                    <span className="material-symbols-outlined text-sm">article</span>
+                    <FileText className="size-4" />
                     Blog
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -59,11 +59,11 @@ export function BlogListContent({ locale }: { locale: string }) {
             {/* Posts Grid */}
             {loading ? (
                 <div className="flex items-center justify-center py-20">
-                    <span className="animate-spin material-symbols-outlined text-3xl text-muted-foreground">progress_activity</span>
+                    <Loader2 className="animate-spin size-8 text-muted-foreground" />
                 </div>
             ) : posts.length === 0 ? (
                 <div className="text-center py-24 text-muted-foreground">
-                    <span className="material-symbols-outlined text-6xl mb-4 block opacity-30">article</span>
+                    <FileText className="size-16 mb-4 mx-auto opacity-30" />
                     <p className="text-lg font-medium">
                         {isTR ? "Henüz blog yazısı yok" : "No blog posts yet"}
                     </p>
@@ -90,7 +90,7 @@ export function BlogListContent({ locale }: { locale: string }) {
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
-                                        <span className="material-symbols-outlined text-4xl text-primary/30">article</span>
+                                        <FileText className="size-10 text-primary/30" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

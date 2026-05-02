@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
+import { Cookie } from "lucide-react";
 import { HeroBackground } from "@/components/landing/hero-background";
 
 export default function CookieContent() {
@@ -25,7 +26,7 @@ export default function CookieContent() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>cookie</span>
+                                <Cookie className="text-primary dark:text-white size-5" />
                                 <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">Privacy Matters</span>
                             </div>
 

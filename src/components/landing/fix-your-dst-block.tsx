@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/language-provider";
 import { useSession } from "next-auth/react";
+import { Wand2 } from "lucide-react";
 
 export function FixYourDstBlock() {
     const { t, language } = useLanguage();
@@ -44,7 +45,7 @@ export function FixYourDstBlock() {
                                 className="px-10 h-16 bg-primary text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3"
                             >
                                 {content.cta}
-                                <span className="material-symbols-outlined">auto_fix_high</span>
+                                <Wand2 className="size-6" />
                             </motion.button>
                         </Link>
                     </div>

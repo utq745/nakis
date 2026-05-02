@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useLanguage } from "@/components/providers/language-provider";
-import { Plus, Edit2, Trash2, Eye, Globe, Clock, RotateCcw } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, Globe, Clock, RotateCcw, Loader2, FileText } from "lucide-react";
 import { ActionConfirmDialog } from "@/components/orders/action-confirm-dialog";
 import { toast } from "sonner";
 
@@ -167,11 +167,11 @@ export default function BlogAdminPage() {
             {/* Posts Table */}
             {loading ? (
                 <div className="flex items-center justify-center py-20">
-                    <span className="animate-spin material-symbols-outlined text-3xl text-muted-foreground">progress_activity</span>
+                    <Loader2 className="animate-spin size-8 text-muted-foreground" />
                 </div>
             ) : posts.length === 0 ? (
                 <div className="text-center py-20 text-muted-foreground">
-                    <span className="material-symbols-outlined text-5xl mb-4 block opacity-40">article</span>
+                    <FileText className="size-12 mb-4 mx-auto opacity-40" />
                     <p className="text-lg font-medium">
                         {language === "tr" ? "Henüz blog yazısı yok" : "No blog posts yet"}
                     </p>

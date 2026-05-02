@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { HeroBackground } from "@/components/landing/hero-background";
+import { HelpCircle, ChevronDown } from "lucide-react";
 
 export function FAQClient() {
     const { t, language } = useLanguage();
@@ -58,7 +59,7 @@ export function FAQClient() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 dark:bg-white/10 border border-primary/10 dark:border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-primary dark:text-white" style={{ fontSize: '20px' }}>help</span>
+                                <HelpCircle className="text-primary dark:text-white size-5" />
                                 <span className="text-primary dark:text-white/90 text-sm font-bold uppercase tracking-wider">{faqs.hero.badge}</span>
                             </div>
 
@@ -108,9 +109,7 @@ export function FAQClient() {
                                                             <h3 className="font-bold text-lg text-[#111318] dark:text-white">
                                                                 {faq.q}
                                                             </h3>
-                                                            <span className={`material-symbols-outlined transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
-                                                                expand_more
-                                                            </span>
+                                                            <ChevronDown className={`transition-transform duration-300 size-6 ${isOpen ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`} />
                                                         </button>
                                                         <AnimatePresence>
                                                             {isOpen && (

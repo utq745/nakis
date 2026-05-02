@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ThemeToggle } from "./theme-toggle";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 
 
@@ -85,6 +86,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
                                 priority
+                                fetchPriority="high"
                                 sizes="256px"
                                 className="object-contain dark:hidden"
                             />
@@ -93,6 +95,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 alt="Approval Stitch - Real Stitched Approval Sample"
                                 fill
                                 priority
+                                fetchPriority="high"
                                 sizes="256px"
                                 className="object-contain hidden dark:block"
                             />
@@ -172,7 +175,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                         }`}
                                     aria-label="Open menu"
                                 >
-                                    <span className="material-symbols-outlined">menu</span>
+                                    <Menu className="size-6" />
                                 </button>
                             </>
                         )}
@@ -215,7 +218,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="size-10 flex items-center justify-center rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] transition-colors"
                             >
-                                <span className="material-symbols-outlined text-[#111318] dark:text-white">close</span>
+                                <X className="size-6 text-[#111318] dark:text-white" />
                             </button>
                         </div>
 

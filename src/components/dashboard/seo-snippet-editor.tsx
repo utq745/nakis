@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 
 interface SeoSnippetEditorProps {
     seoTitle: string;
@@ -42,7 +43,7 @@ export function SeoSnippetEditor({
         <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-lg text-primary">search</span>
+                    <Search className="size-4 text-primary" />
                     <h3 className="font-bold text-sm text-foreground">SEO Preview</h3>
                 </div>
                 <button

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { useLanguage } from "@/components/providers/language-provider";
+import { AlertCircle, CheckCircle2, LockKeyhole, Lock, Eye, EyeOff } from "lucide-react";
 
 function ResetPasswordForm() {
     const searchParams = useSearchParams();
@@ -104,7 +105,7 @@ function ResetPasswordForm() {
         return (
             <div className="text-center">
                 <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">error</span>
+                    <AlertCircle className="text-red-600 dark:text-red-400 size-8" />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                     {t.invalidToken}
@@ -126,7 +127,7 @@ function ResetPasswordForm() {
         return (
             <div className="text-center">
                 <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-3xl">check_circle</span>
+                    <CheckCircle2 className="text-green-600 dark:text-green-400 size-8" />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                     {t.successTitle}
@@ -149,7 +150,7 @@ function ResetPasswordForm() {
             {/* Header */}
             <div className="text-center mb-8">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined text-white text-3xl">password</span>
+                    <LockKeyhole className="text-white size-8" />
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                     {t.title}
@@ -174,7 +175,7 @@ function ResetPasswordForm() {
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <span className="material-symbols-outlined text-[20px]">lock</span>
+                            <Lock className="size-5" />
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}
@@ -190,9 +191,7 @@ function ResetPasswordForm() {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-500"
                         >
-                            <span className="material-symbols-outlined text-[20px]">
-                                {showPassword ? "visibility_off" : "visibility"}
-                            </span>
+                                {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                         </button>
                     </div>
                 </div>
@@ -203,7 +202,7 @@ function ResetPasswordForm() {
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <span className="material-symbols-outlined text-[20px]">lock</span>
+                            <Lock className="size-5" />
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}

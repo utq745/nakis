@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
+import { Loader2 } from "lucide-react";
 import { BlogEditor } from "@/components/dashboard/blog-editor";
 
 export default function EditBlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -34,7 +35,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ slug: s
     if (loading) {
         return (
             <div className="p-8 flex items-center justify-center min-h-[50vh]">
-                <span className="animate-spin material-symbols-outlined text-3xl text-muted-foreground">progress_activity</span>
+                <Loader2 className="animate-spin size-8 text-muted-foreground" />
             </div>
         );
     }

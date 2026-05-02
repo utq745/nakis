@@ -6,7 +6,7 @@ import { CTA } from "@/components/landing/cta";
 import { WhyUs } from "@/components/landing/why-us";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 
 interface SeoLandingPageProps {
     title: string;
@@ -71,7 +71,7 @@ export function SeoLandingPage({ title, content, imageSrc, imageAlt, description
                                 <Link href="/orders/new">
                                     <button className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group">
                                         Start Your Order Now
-                                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                        <ArrowRight className="group-hover:translate-x-1 transition-transform size-6" />
                                     </button>
                                 </Link>
                             </div>

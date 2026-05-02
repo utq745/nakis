@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Image as ImageIcon, Search, X } from "lucide-react";
 
 
 export function WhatYouReceive() {
@@ -92,7 +93,7 @@ export function WhatYouReceive() {
                                     />
                                 ) : (
                                     <div className="flex flex-col items-center gap-4 text-gray-400 dark:text-white/20">
-                                        <span className="material-symbols-outlined text-5xl">image</span>
+                                        <ImageIcon className="size-12" />
                                         <span className="text-sm font-medium">300 x 300px</span>
                                     </div>
                                 )}
@@ -100,9 +101,7 @@ export function WhatYouReceive() {
                                 {item.isImagePopup && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                         <div className="w-16 h-16 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                            <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1", fontSize: "28px" }}>
-                                                search
-                                            </span>
+                                            <Search className="size-7 text-primary" />
                                         </div>
                                     </div>
                                 )}
@@ -155,7 +154,7 @@ export function WhatYouReceive() {
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-4 right-4 z-20 size-10 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
                             >
-                                <span className="material-symbols-outlined">close</span>
+                                <X className="size-6" />
                             </button>
 
                             <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-hidden">

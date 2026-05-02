@@ -7,6 +7,16 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Header } from "@/components/header";
 import Script from "next/script";
+import { 
+    CheckCircle2, 
+    AlertTriangle, 
+    Mail, 
+    AlertCircle, 
+    User, 
+    Lock, 
+    Eye, 
+    EyeOff 
+} from "lucide-react";
 
 import { useLanguage } from "@/components/providers/language-provider";
 
@@ -257,9 +267,10 @@ export default function RegisterPage() {
                                         : 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30'
                                 }`}
                             >
-                                <span className={`material-symbols-outlined text-[20px] ${
-                                    verificationMessage.type === 'success' ? 'text-green-500' : verificationMessage.type === 'warning' ? 'text-amber-500' : verificationMessage.type === 'info' ? 'text-blue-500' : 'text-red-500'
-                                }`}>{verificationMessage.type === 'success' ? 'check_circle' : verificationMessage.type === 'warning' ? 'warning' : verificationMessage.type === 'info' ? 'mail' : 'error'}</span>
+                                {verificationMessage.type === 'success' && <CheckCircle2 className="text-green-500 size-5" />}
+                                {verificationMessage.type === 'warning' && <AlertTriangle className="text-amber-500 size-5" />}
+                                {verificationMessage.type === 'info' && <Mail className="text-blue-500 size-5" />}
+                                {verificationMessage.type === 'error' && <AlertCircle className="text-red-500 size-5" />}
                                 <p className={`text-sm font-medium ${
                                     verificationMessage.type === 'success' ? 'text-green-600 dark:text-green-400' : verificationMessage.type === 'warning' ? 'text-amber-600 dark:text-amber-400' : verificationMessage.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'
                                 }`}>{verificationMessage.text}</p>
@@ -273,7 +284,7 @@ export default function RegisterPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 flex items-center gap-3"
                             >
-                                <span className="material-symbols-outlined text-red-500 text-[20px]">error</span>
+                                <AlertCircle className="text-red-500 size-5" />
                                 <p className="text-sm font-medium text-red-600 dark:text-red-400">{error}</p>
                             </motion.div>
                         )}
@@ -286,7 +297,7 @@ export default function RegisterPage() {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="firstName">{lp.firstName}</label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                                <span className="material-symbols-outlined text-[20px]">person</span>
+                                                <User className="size-5" />
                                             </div>
                                             <input
                                                 className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
@@ -303,7 +314,7 @@ export default function RegisterPage() {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="lastName">{lp.lastName}</label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                                <span className="material-symbols-outlined text-[20px]">person</span>
+                                                <User className="size-5" />
                                             </div>
                                             <input
                                                 className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
@@ -324,7 +335,7 @@ export default function RegisterPage() {
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="email">{lp.emailAddress}</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <span className="material-symbols-outlined text-[20px]">mail</span>
+                                        <Mail className="size-5" />
                                     </div>
                                     <input
                                         className="block w-full pl-10 pr-3 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
@@ -348,7 +359,7 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <span className="material-symbols-outlined text-[20px]">lock</span>
+                                        <Lock className="size-5" />
                                     </div>
                                     <input
                                         className="block w-full pl-10 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2230] text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm"
@@ -364,7 +375,7 @@ export default function RegisterPage() {
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-500"
                                     >
-                                        <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                                        {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                                     </button>
                                 </div>
                             </div>

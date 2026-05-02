@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Quote } from "lucide-react";
 
 export function Testimonials() {
     const { t } = useLanguage();
@@ -16,7 +17,7 @@ export function Testimonials() {
                     >
                         {/* Quote Icon */}
                         <div className="absolute -top-6 -left-6 size-12 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
-                            <span className="material-symbols-outlined font-black">format_quote</span>
+                            <Quote className="size-6 fill-white" />
                         </div>
 
                         <p className="text-xl md:text-2xl font-bold italic mb-8 leading-relaxed text-foreground dark:text-white">

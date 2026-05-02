@@ -33,8 +33,50 @@ export async function generateMetadata(): Promise<Metadata> {
             shortcut: '/favicon.ico?v=1',
             apple: '/icon.png?v=1',
         },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
+        },
     };
 }
+
+// Organization Schema for SEO
+const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Approval Stitch",
+    "url": "https://www.approvalstitch.com",
+    "logo": "https://www.approvalstitch.com/logo.png",
+    "description": "Tajima makinelerde gerçek dikiş onayı ile profesyonel nakış dijitalleştirme hizmeti.",
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+90-548-858-8394",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Turkish"],
+    },
+    "sameAs": [
+        "https://wa.me/905488588394"
+    ]
+};
+
+const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Approval Stitch",
+    "url": "https://www.approvalstitch.com/tr",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.approvalstitch.com/tr/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+};
 
 export default function TrLayout({
     children,
@@ -46,7 +88,14 @@ export default function TrLayout({
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+                />
                 <Script
                     src="https://www.googletagmanager.com/gtag/js?id=AW-17962211871"
                     strategy="afterInteractive"

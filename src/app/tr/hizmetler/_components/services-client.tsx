@@ -6,6 +6,19 @@ import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { 
+    Cpu, 
+    ShieldCheck, 
+    Wrench, 
+    Diamond, 
+    Layers, 
+    RefreshCw, 
+    Settings, 
+    Layout, 
+    Type, 
+    Palette, 
+    ArrowRight 
+} from "lucide-react";
 
 export function ServicesClient() {
     const { language, t } = useLanguage();
@@ -79,7 +92,7 @@ export function ServicesClient() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-                                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>precision_manufacturing</span>
+                                <Cpu className="text-white size-5" />
                                 <span className="text-white/90 text-sm font-bold uppercase tracking-wider">
                                     {t.servicesPage.hero.badge}
                                 </span>
@@ -118,7 +131,12 @@ export function ServicesClient() {
                                     className="p-8 rounded-3xl bg-card dark:bg-[#1e2a3d] shadow-xl hover:shadow-2xl transition-all border border-border dark:border-white/10 hover:border-primary/20"
                                 >
                                     <div className="mb-6 flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 dark:bg-white/10 text-primary dark:text-white shadow-inner">
-                                        <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                                        {item.icon === 'layers' && <Layers className="size-8" />}
+                                        {item.icon === 'swap_horiz' && <RefreshCw className="size-8" />}
+                                        {item.icon === 'settings' && <Settings className="size-8" />}
+                                        {item.icon === 'dashboard_customize' && <Layout className="size-8" />}
+                                        {item.icon === 'text_fields' && <Type className="size-8" />}
+                                        {item.icon === 'texture' && <Palette className="size-8" />}
                                     </div>
                                     <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground">{item.desc}</p>
@@ -157,7 +175,9 @@ export function ServicesClient() {
                                         service.color === 'indigo' ? 'bg-indigo-50 text-indigo-600' :
                                             'bg-cyan-50 text-cyan-600'
                                         }`}>
-                                        <span className="material-symbols-outlined text-3xl font-bold">{service.icon}</span>
+                                        {service.icon === 'verified' && <ShieldCheck className="size-8" />}
+                                        {service.icon === 'build' && <Wrench className="size-8" />}
+                                        {service.icon === 'diamond' && <Diamond className="size-8" />}
                                     </div>
 
                                     <h3 className="text-2xl font-black text-foreground mb-4">
@@ -192,7 +212,7 @@ export function ServicesClient() {
                                         </div>
                                         <Link href={language === 'tr' ? '/tr/giris' : '/login'}>
                                             <button className="p-4 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors shadow-lg">
-                                                <span className="material-symbols-outlined">arrow_forward</span>
+                                                <ArrowRight className="size-5" />
                                             </button>
                                         </Link>
                                     </div>
@@ -228,7 +248,7 @@ export function ServicesClient() {
                                             href={language === 'tr' ? '/tr/iletisim' : '/contact'}
                                             className="text-white/70 hover:text-white text-sm font-bold flex items-center gap-1 mt-2 hover:gap-2 transition-all"
                                         >
-                                            {language === 'tr' ? 'Teknik ekiple görüşün' : 'Contact our technical team'} <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                            {language === 'tr' ? 'Teknik ekiple görüşün' : 'Contact our technical team'} <ArrowRight className="size-4" />
                                         </Link>
                                     </div>
                                 </div>

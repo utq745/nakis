@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Search, Check, X } from "lucide-react";
 
 export function FixYourDstVisual() {
     const { t } = useLanguage();
@@ -52,9 +53,7 @@ export function FixYourDstVisual() {
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                         <div className="w-16 h-16 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                            <span className="material-symbols-outlined text-[#145BEC]" style={{ fontVariationSettings: "'FILL' 1", fontSize: "32px" }}>
-                                                search
-                                            </span>
+                                            <Search className="size-8 text-[#145BEC]" />
                                         </div>
                                     </div>
                                     <div className="absolute inset-0 bg-[#145BEC]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -66,9 +65,9 @@ export function FixYourDstVisual() {
                                     <div className="bg-white dark:bg-slate-900 p-4 sm:p-6">
                                         <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">{v.before}</p>
                                         <div className="flex flex-col gap-1.5">
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-500 leading-tight">{v.distortedShape}</span>
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-500 leading-tight">{v.unevenEdges}</span>
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-500 leading-tight">{v.poorFlow}</span>
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-700 leading-tight">{v.distortedShape}</span>
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-700 leading-tight">{v.unevenEdges}</span>
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-red-700 leading-tight">{v.poorFlow}</span>
                                         </div>
                                     </div>
                                     {/* After */}
@@ -76,15 +75,15 @@ export function FixYourDstVisual() {
                                         <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">{v.after}</p>
                                         <div className="flex flex-col gap-1.5">
                                             <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
-                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <Check className="size-4 text-green-500 font-bold shrink-0 mt-0.5" /> 
                                                 <span>{v.cleanShape}</span>
                                             </span>
                                             <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
-                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <Check className="size-4 text-green-500 font-bold shrink-0 mt-0.5" /> 
                                                 <span>{v.sharpBorders}</span>
                                             </span>
                                             <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
-                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <Check className="size-4 text-green-500 font-bold shrink-0 mt-0.5" /> 
                                                 <span>{v.smoothFlow}</span>
                                             </span>
                                         </div>
@@ -117,10 +116,10 @@ export function FixYourDstVisual() {
                     <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
-                        className="absolute top-4 right-4 z-10 size-12 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
-                        aria-label="Close"
+                        className="absolute top-4 right-4 z-10 size-12 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        aria-label={t?.common?.close || "Close"}
                     >
-                        <span className="material-symbols-outlined text-white text-2xl">close</span>
+                        <X className="size-7 text-white" />
                     </button>
 
                     {/* Image Container */}

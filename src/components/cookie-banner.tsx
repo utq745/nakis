@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/components/providers/language-provider";
 import Link from "next/link";
+import { Cookie } from "lucide-react";
 
 export function CookieBanner() {
     const { language } = useLanguage();
@@ -63,7 +64,7 @@ export function CookieBanner() {
                     <div className="bg-white rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 backdrop-blur-xl">
                         <div className="flex items-start gap-4 mb-4">
                             <div className="size-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-blue-600 text-2xl">cookie</span>
+                                <Cookie className="size-6 text-blue-600" />
                             </div>
                             <div>
                                 <h4 className="text-lg font-black text-[#172136] mb-1">{t.title}</h4>

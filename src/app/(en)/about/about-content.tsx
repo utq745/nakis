@@ -10,6 +10,22 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { HeroBackground } from "@/components/landing/hero-background";
+import {
+    Star,
+    ShieldCheck,
+    Store,
+    Users,
+    CreditCard,
+    XCircle,
+    Clock,
+    AlertTriangle,
+    X,
+    Check,
+    ThumbsUp,
+    Rocket,
+    ArrowRight
+} from "lucide-react";
+import { PrecisionManufacturingIcon } from "@/components/icons/precision-manufacturing";
 
 export default function AboutContent() {
     const { t, language } = useLanguage();
@@ -75,10 +91,10 @@ export default function AboutContent() {
                                         <span className="text-white/80 text-lg font-medium uppercase tracking-widest">{t.aboutPage.experience.yearsLabel}</span>
                                     </div>
                                     <div className="absolute -top-6 -right-6 w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20">
-                                        <span className="material-symbols-outlined text-white text-3xl">star</span>
+                                        <Star className="text-white size-8" />
                                     </div>
                                     <div className="absolute -bottom-6 -left-6 w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20">
-                                        <span className="material-symbols-outlined text-white text-2xl">verified</span>
+                                        <ShieldCheck className="text-white size-6" />
                                     </div>
                                 </div>
                             </motion.div>
@@ -138,9 +154,7 @@ export default function AboutContent() {
                                     className="group bg-card dark:bg-[#172136] rounded-2xl p-6 border border-border dark:border-white/10 hover:border-primary dark:hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-center"
                                 >
                                     <div className="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary dark:bg-white/10 dark:text-white group-hover:bg-primary group-hover:text-white transition-colors mb-4 mx-auto">
-                                        <span className="material-symbols-outlined text-2xl">
-                                            {index === 0 ? 'precision_manufacturing' : index === 1 ? 'storefront' : index === 2 ? 'groups' : 'verified'}
-                                        </span>
+                                        {index === 0 ? <PrecisionManufacturingIcon className="size-6" /> : index === 1 ? <Store className="size-6" /> : index === 2 ? <Users className="size-6" /> : <ShieldCheck className="size-6" />}
                                     </div>
                                     <h3 className="font-bold text-sm text-foreground dark:text-white">{audience}</h3>
                                 </motion.div>
@@ -241,9 +255,7 @@ export default function AboutContent() {
                                     className="group bg-card dark:bg-[#172136] rounded-2xl p-6 border border-border dark:border-white/10 hover:border-primary dark:hover:border-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-center"
                                 >
                                     <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 text-primary dark:bg-white/10 dark:text-white group-hover:bg-primary group-hover:text-white transition-colors mb-4 mx-auto">
-                                        <span className="material-symbols-outlined text-3xl">
-                                            {index === 0 ? 'payments' : index === 1 ? 'cancel' : index === 2 ? 'schedule' : 'warning'}
-                                        </span>
+                                        {index === 0 ? <CreditCard className="size-8" /> : index === 1 ? <XCircle className="size-8" /> : index === 2 ? <Clock className="size-8" /> : <AlertTriangle className="size-8" />}
                                     </div>
                                     <h3 className="font-bold text-foreground dark:text-white text-sm">{factor}</h3>
                                 </motion.div>
@@ -299,7 +311,7 @@ export default function AboutContent() {
                                     {t.aboutPage.noMachines.items.map((item: string, index: number) => (
                                         <li key={index} className="flex items-center gap-3">
                                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500/10 text-red-500">
-                                                <span className="material-symbols-outlined text-lg">close</span>
+                                                <X className="size-5" />
                                             </span>
                                             <span className="text-muted-foreground dark:text-white/70">{item}</span>
                                         </li>
@@ -308,7 +320,7 @@ export default function AboutContent() {
                                 <div className="bg-primary/10 dark:bg-[#172136] rounded-xl p-6 border border-primary/20 dark:border-white/10">
                                     <div className="flex items-center gap-3">
                                         <span className="flex items-center justify-center w-10 h-10 rounded-full bg-green-500/10 text-green-500">
-                                            <span className="material-symbols-outlined">check</span>
+                                            <Check className="size-6" />
                                         </span>
                                         <p className="text-foreground dark:text-white font-medium">{t.aboutPage.noMachines.conclusion}</p>
                                     </div>
@@ -325,7 +337,7 @@ export default function AboutContent() {
                                     <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-primary/20 to-blue-400/20 flex items-center justify-center">
                                         <div className="w-48 h-48 md:w-60 md:h-60 rounded-full bg-gradient-to-br from-primary/30 to-blue-400/30 flex items-center justify-center">
                                             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-2xl">
-                                                <span className="material-symbols-outlined text-white text-5xl md:text-6xl">thumb_up</span>
+                                                <ThumbsUp className="text-white size-12 md:size-16" />
                                             </div>
                                         </div>
                                     </div>
@@ -343,7 +355,7 @@ export default function AboutContent() {
                             <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
 
                             <div className="relative z-10">
-                                <span className="material-symbols-outlined text-white/30 mb-6" style={{ fontSize: '80px' }}>rocket_launch</span>
+                                <Rocket className="text-white/30 mb-6 size-20" />
                                 <h2 className="text-white mb-4 font-black">{t.aboutPage.finalCta.title}</h2>
                                 <p
                                     className="text-xl text-white/80 mb-8 max-w-[500px] mx-auto italic"
@@ -351,7 +363,7 @@ export default function AboutContent() {
                                 />
                                 <Link href={language === 'tr' ? '/tr/iletisim' : '/contact'}>
                                     <button className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl hover:shadow-2xl">
-                                        <span className="material-symbols-outlined">arrow_forward</span>
+                                        <ArrowRight className="size-6" />
                                         {t.aboutPage.finalCta.cta}
                                     </button>
                                 </Link>
