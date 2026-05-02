@@ -5,7 +5,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { BadgeCheck, Wrench, Gem, Layers, ArrowLeftRight, Settings, Layout, Type, Texture, ArrowRight, Cpu } from "lucide-react";
+import { BadgeCheck, Wrench, Gem, Layers, ArrowLeftRight, Settings, Layout, Type, Shirt, ArrowRight, Cpu } from "lucide-react";
 
 export default function ServicesContent() {
     const { language, t } = useLanguage();
@@ -59,7 +59,7 @@ export default function ServicesContent() {
         { icon: Settings, title: "Thread Selection", desc: "Expert thread and needle pairing." },
         { icon: Layout, title: "Stabilizer Choice", desc: "Fabric-specific backing recommendations." },
         { icon: Type, title: "Small Text Tuning", desc: "Optimized legibility for fine lettering." },
-        { icon: Texture, title: "Fabric Analysis", desc: "Industrial testing for various materials." },
+        { icon: Shirt, title: "Fabric Analysis", desc: "Industrial testing for various materials." },
     ];
 
     const trTechnicalExpertise = [
@@ -68,7 +68,7 @@ export default function ServicesContent() {
         { icon: Settings, title: "İplik ve İğne Seçimi", desc: "En iyi sonuçlar için uzman eşleşmeleri." },
         { icon: Layout, title: "Tela Seçimi", desc: "Kumaşa özel destekleme tavsiyeleri." },
         { icon: Type, title: "Küçük Yazı Ayarı", desc: "Okunabilir ince yazı dijitalleştirmesi." },
-        { icon: Texture, title: "Kumaş Analizi", desc: "Farklı materyaller için endüstriyel testler." },
+        { icon: Shirt, title: "Kumaş Analizi", desc: "Farklı materyaller için endüstriyel testler." },
     ];
 
     const activeExpertise = language === 'tr' ? trTechnicalExpertise : technicalExpertise;
