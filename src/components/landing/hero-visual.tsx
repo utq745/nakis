@@ -63,6 +63,7 @@ export function HeroVisual() {
                                     sizes="(max-width: 768px) 90vw, 420px"
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     priority
+                                    loading="eager"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                     <div className="w-14 h-14 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -149,6 +150,7 @@ export function HeroVisual() {
                                         fill
                                         sizes="(max-width: 768px) 90vw, 420px"
                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                         <div className="w-14 h-14 rounded-full bg-white/70 shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">

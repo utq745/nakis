@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import dynamic from "next/dynamic";
+import Image from "next/image";
 
 import { useLanguage } from "@/components/providers/language-provider";
 
@@ -72,9 +72,16 @@ function InteractiveApprovalCard({ src, label, side, rotate, onOpenModal }: Inte
                         filter: isHovered ? "contrast(1.1) saturate(1.1) brightness(1.1)" : "contrast(1) saturate(1) brightness(1)"
                     }}
                     transition={{ duration: 0.3 }}
-                    className="w-full h-auto pointer-events-none"
+                    className="w-full h-auto pointer-events-none relative aspect-[14/9]"
                 >
-                    <img src={src} alt="" className="w-full h-auto" />
+                    <Image
+                        src={src}
+                        alt=""
+                        fill
+                        priority
+                        className="object-contain"
+                        sizes="(max-width: 1200px) 400px, 650px"
+                    />
                 </motion.div>
 
                 {/* Floating Preview - Rendered via Portal to ensure it's on top of everything */}
@@ -97,8 +104,14 @@ function InteractiveApprovalCard({ src, label, side, rotate, onOpenModal }: Inte
                                 }}
                                 className="hidden xl:flex flex-col gap-2 p-2 bg-white/95 dark:bg-slate-900/95 rounded-xl shadow-[0_25px_60px_rgba(0,0,0,0.35)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-md"
                             >
-                                <div className="w-[580px] h-auto overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-950">
-                                    <img src={src} alt={label} className="w-full h-auto" />
+                                <div className="w-[580px] h-auto overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-950 relative aspect-[14/9]">
+                                    <Image
+                                        src={src}
+                                        alt={label}
+                                        fill
+                                        className="object-contain"
+                                        sizes="580px"
+                                    />
                                 </div>
                                 <div className="px-1.5 py-0.5">
                                     <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">
@@ -168,11 +181,13 @@ function HeroBackgroundContent() {
                 />
 
                 {/* Barudan Machine Image (Bottom Right) */}
-                <div className="hidden xl:block absolute right-[1%] bottom-[1%] w-[300px] opacity-30 z-0 pointer-events-none">
-                    <img
+                <div className="hidden xl:block absolute right-[1%] bottom-[1%] w-[300px] opacity-30 z-0 pointer-events-none aspect-square">
+                    <Image
                         src="/images/hero/hero-barudan.webp"
                         alt=""
-                        className="w-full h-auto"
+                        fill
+                        className="object-contain"
+                        sizes="300px"
                     />
                 </div>
 
@@ -211,11 +226,13 @@ function HeroBackgroundContent() {
                                     <span className="material-symbols-outlined">close</span>
                                 </button>
 
-                                <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 md:p-8 flex items-center justify-center min-h-[40vh] md:min-h-0 overflow-hidden">
-                                    <img
+                                <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 md:p-8 flex items-center justify-center min-h-[40vh] md:min-h-0 overflow-hidden relative">
+                                    <Image
                                         src={modalData.src}
                                         alt={modalData.label}
-                                        className="max-w-full max-h-full object-contain shadow-2xl rounded-xl border border-black/5 dark:border-white/5"
+                                        fill
+                                        className="object-contain p-4 md:p-8"
+                                        sizes="(max-width: 768px) 100vw, 800px"
                                     />
                                 </div>
 
@@ -247,6 +264,4 @@ function HeroBackgroundContent() {
     );
 }
 
-export const HeroBackground = dynamic(() => Promise.resolve(HeroBackgroundContent), {
-    ssr: false
-});
+export const HeroBackground = HeroBackgroundContent;

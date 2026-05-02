@@ -59,30 +59,26 @@ export function Hero() {
 
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-wrap gap-4">
-                                {mounted && (
-                                    <>
-                                        <Link href={isLoggedIn ? newOrderUrl : loginUrl}>
-                                            <motion.button
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
-                                            >
-                                                {t.landing.hero.uploadBtn}
-                                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                            </motion.button>
-                                        </Link>
-                                        <Link href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>
-                                            <motion.button
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                className="px-8 h-14 bg-white dark:bg-white/10 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 rounded-xl font-black text-lg hover:bg-slate-50 dark:hover:bg-white/20 transition-all flex items-center gap-3"
-                                            >
-                                                {t.landing.hero.pricingBtn}
-                                                <span className="material-symbols-outlined">auto_fix_high</span>
-                                            </motion.button>
-                                        </Link>
-                                    </>
-                                )}
+                                <Link href={isLoggedIn ? newOrderUrl : loginUrl}>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="px-8 h-14 bg-primary text-white rounded-xl font-black text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-3 group"
+                                    >
+                                        {t.landing.hero.uploadBtn}
+                                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    </motion.button>
+                                </Link>
+                                <Link href={language === 'tr' ? '/tr/fix-your-dst' : '/fix-your-dst'}>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="px-8 h-14 bg-white dark:bg-white/10 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 rounded-xl font-black text-lg hover:bg-slate-50 dark:hover:bg-white/20 transition-all flex items-center gap-3"
+                                    >
+                                        {t.landing.hero.pricingBtn}
+                                        <span className="material-symbols-outlined">auto_fix_high</span>
+                                    </motion.button>
+                                </Link>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-6 pt-2">
