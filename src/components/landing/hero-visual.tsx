@@ -122,11 +122,11 @@ export function HeroVisual() {
                             {/* Before/After Image Block */}
                             <div className="flex flex-col rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-700/40">
                                 {/* Label bar */}
-                                <div className="bg-slate-800 dark:bg-slate-700 px-4 py-2.5 flex flex-col items-center gap-0.5">
-                                    <span className="text-[11px] sm:text-xs font-black text-white uppercase tracking-widest">
+                                <div className="bg-slate-800 dark:bg-slate-700 px-4 py-4 flex flex-col items-center gap-1">
+                                    <span className="text-sm sm:text-base font-black text-white uppercase tracking-widest text-center">
                                         {v.realResults}
                                     </span>
-                                    <span className="text-[10px] sm:text-[11px] text-slate-400 italic">
+                                    <span className="text-xs sm:text-sm text-slate-400 italic text-center">
                                         {v.notMockup}
                                     </span>
                                 </div>

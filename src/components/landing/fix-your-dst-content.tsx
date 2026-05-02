@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { HeroBackground } from "@/components/landing/hero-background";
+import { FixYourDstVisual } from "@/components/landing/fix-your-dst-visual";
 
 interface Props {
     serviceIsItems: string[];
@@ -154,22 +155,7 @@ export default function FixYourDstClient({
                             </div>
 
                             <div className="relative lg:ml-10 animate-in fade-in slide-in-from-right-8 duration-700 fill-mode-both">
-                                <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group bg-slate-100 dark:bg-slate-900">
-                                    <Image
-                                        src="/images/hero/before-after.webp"
-                                        alt="Before and after DST fixing"
-                                        width={600}
-                                        height={600}
-                                        priority
-                                        unoptimized
-                                        className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
-                                </div>
-
-                                <div className="absolute -z-10 -top-10 -right-10 size-64 bg-primary/10 dark:bg-primary/20 blur-3xl rounded-full"></div>
-                                <div className="absolute -z-10 -bottom-10 -left-10 size-64 bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl rounded-full"></div>
+                                <FixYourDstVisual />
                             </div>
                         </div>
                     </div>
