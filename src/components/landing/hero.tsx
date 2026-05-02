@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 import { HeroBackground } from "./hero-background";
+import { HeroVisual } from "./hero-visual";
 import { useSession } from "next-auth/react";
 
 
@@ -105,30 +106,7 @@ export function Hero() {
                         </div>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="relative lg:ml-10"
-                    >
-                        <div className="relative z-10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-[8px] border-white/50 dark:border-white/5 backdrop-blur-sm group bg-slate-100 dark:bg-slate-900">
-                            <Image
-                                src="/images/hero/hero.webp"
-                                alt="High-quality real stitched embroidery sample"
-                                width={600}
-                                height={600}
-                                priority
-                                unoptimized
-                                className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 dark:from-black/40 via-transparent to-transparent opacity-60"></div>
-                        </div>
-
-                        {/* Background blur shape behind image */}
-                        <div className="absolute -z-10 -top-10 -right-10 size-64 bg-primary/10 dark:bg-primary/20 blur-3xl rounded-full"></div>
-                        <div className="absolute -z-10 -bottom-10 -left-10 size-64 bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl rounded-full"></div>
-                    </motion.div>
+                    <HeroVisual />
                 </div>
             </div>
         </section>

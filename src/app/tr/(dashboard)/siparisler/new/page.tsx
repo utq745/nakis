@@ -361,9 +361,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Onay Örneği (Mevcut DST)", price: "$25", desc: "Yapısal düzenleme yok. Sadece gerekirse makine düzeyinde ayarlamalar.", isQuote: false, upgradeNote: "İlk dikişten sonra düzenleme gerekirse, +$10 ile Fix Your DST'ye yükseltebilirsiniz." },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Küçük düzenlemeler (yoğunluk, trim, çekme telafisi) + yeniden dikiş dahil.", isQuote: false },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Fiyat Teklifi Al", desc: "İncelemeden sonra fiyatlandırılır (karmaşıklık + dikiş sayısı).", isQuote: true }
+                                { id: "Stitch Test (Existing DST)", label: "Dikiş Testi (Mevcut DST)", price: "$10", desc: "Dosyanızı olduğu gibi dikiyoruz. Düzenleme yok. Gerçek makine çıktısı.", isQuote: false, upgradeNote: "Test sonrası dosyanızın optimizasyona ihtiyacı varsa, +$10 ile Fix & Re-Stitch'e yükseltebilirsiniz." },
+                                { id: "Fix & Re-Stitch + Sample", label: "Fix & Re-Stitch + Sample", price: "$20", desc: "Tam dosya optimizasyonu (yoğunluk, çekme telafisi, trim, sıralama) + yeniden dikiş dahil.", isQuote: false },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "20$'dan", desc: "Tasarımınızı sıfırdan dijitalleştiriyoruz. Fiyat dikiş sayısına göre belirlenir.", isQuote: true }
                             ].map((s) => (
                                 <div
                                     key={s.id}

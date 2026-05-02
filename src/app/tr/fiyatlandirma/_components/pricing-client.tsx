@@ -4,22 +4,25 @@ import { useLanguage } from "@/components/providers/language-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { HeroBackground } from "@/components/landing/hero-background";
 
 export function PricingClient() {
     const { language, t } = useLanguage();
+    const [mounted, setMounted] = useState(false);
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-    const [isCalcOpen, setIsCalcOpen] = useState(false);
 
-    const toggleFaq = (index: number) => {
-        setOpenFaqIndex(openFaqIndex === index ? null : index);
-    };
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted || !t || !t.pricingPage) return null;
+
     const pricingPlans = [
         {
             name: t.pricingPage.plans.plan1.name,
-            price: "$25",
+            price: t.pricingPage.plans.plan1.price,
             description: t.pricingPage.plans.plan1.description,
             features: t.pricingPage.plans.plan1.features,
             notIncluded: t.pricingPage.plans.plan1.notIncluded,
@@ -29,29 +32,25 @@ export function PricingClient() {
         },
         {
             name: t.pricingPage.plans.plan2.name,
-            price: "$35",
-            priceNote: t.pricingPage.plans.plan2.priceNote,
+            price: t.pricingPage.plans.plan2.price,
             description: t.pricingPage.plans.plan2.description,
+            importantNote: t.pricingPage.plans.plan2.importantNote,
             features: t.pricingPage.plans.plan2.features,
             notIncluded: t.pricingPage.plans.plan2.notIncluded,
             bestFor: t.pricingPage.plans.plan2.bestFor,
             highlighted: true,
-            popular: t.pricingPage.plans.plan2.popular,
             cta: t.pricingPage.plans.plan2.cta,
         },
         {
             name: t.pricingPage.plans.plan3.name,
-            price: "$50<sup>*</sup>",
-            priceNote: language === "tr" ? "<sup>*</sup>7.000 vuruşa kadar" : "<sup>*</sup>Up to 7,000 stitches",
+            price: t.pricingPage.plans.plan3.price,
             description: t.pricingPage.plans.plan3.description,
             features: t.pricingPage.plans.plan3.features,
-            calculation: {
-                title: t.pricingPage.plans.plan3.howItCalculated,
-                details: t.pricingPage.plans.plan3.calculationDetails
-            },
+            supportingText: t.pricingPage.plans.plan3.supportingText,
             bestFor: t.pricingPage.plans.plan3.bestFor,
             highlighted: false,
             cta: t.pricingPage.plans.plan3.cta,
+            ctaSubtext: t.pricingPage.plans.plan3.ctaSubtext,
         },
     ];
 
@@ -109,12 +108,6 @@ export function PricingClient() {
                                         }`}
                                 >
 
-                                    {plan.popular && (
-                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#ffc107] text-[#111318] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-[0_4px_20px_rgba(255,193,7,0.4)] z-20 whitespace-nowrap">
-                                            {plan.popular}
-                                        </div>
-                                    )}
-
                                     <div className="text-center mb-6">
                                         <h3 className={`font-bold text-lg mb-2 ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}>
                                             {plan.name}
@@ -126,16 +119,15 @@ export function PricingClient() {
                                             className={`text-5xl font-black ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`}
                                             dangerouslySetInnerHTML={{ __html: plan.price }}
                                         />
-                                        {plan.priceNote && (
-                                            <span
-                                                className={`block text-xs mt-2 px-3 py-1 rounded-full mx-auto w-fit ${plan.highlighted ? 'bg-white/20 text-white' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}
-                                                dangerouslySetInnerHTML={{ __html: plan.priceNote }}
-                                            />
-                                        )}
                                     </div>
 
+                                    {/* Description */}
+                                    <p className={`text-sm text-center mb-6 font-medium ${plan.highlighted ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
+                                        {plan.description}
+                                    </p>
+
                                     {/* Features */}
-                                    <ul className="space-y-3 mb-4 flex-grow">
+                                    <ul className="space-y-3 mb-6 flex-grow">
                                         {plan.features.map((feature, fIndex) => (
                                             <li key={fIndex} className="flex items-start gap-3">
                                                 <span className={`material-symbols-outlined shrink-0 ${plan.highlighted ? 'text-white' : 'text-green-500'}`} style={{ fontSize: '20px' }}>
@@ -146,41 +138,18 @@ export function PricingClient() {
                                         ))}
                                     </ul>
 
-                                    {/* Calculation Accordion for Plan 3 */}
-                                    {plan.calculation && (
-                                        <div className="mb-6 rounded-2xl border border-border bg-accent/30 overflow-hidden">
-                                            <button
-                                                onClick={() => setIsCalcOpen(!isCalcOpen)}
-                                                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent/50 transition-colors"
-                                            >
-                                                <span className="text-xs font-bold text-foreground flex items-center gap-2">
-                                                    <span className="material-symbols-outlined text-white" style={{ fontSize: '16px', lineHeight: 1 }}>calculate</span>
-                                                    {plan.calculation.title}
-                                                </span>
-                                                <span className={`material-symbols-outlined text-muted-foreground transition-transform duration-300 ${isCalcOpen ? 'rotate-180' : ''}`} style={{ fontSize: '18px' }}>
-                                                    expand_more
-                                                </span>
-                                            </button>
-                                            <motion.div
-                                                initial={false}
-                                                animate={{ height: isCalcOpen ? 'auto' : 0, opacity: isCalcOpen ? 1 : 0 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="px-4 pb-4 pt-0 space-y-2">
-                                                    {plan.calculation.details.map((detail, dIndex) => (
-                                                        <div key={dIndex} className="flex items-center gap-2" style={{ fontSize: '12px', color: '#c5c5c5', lineHeight: 1.4 }}>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                                                            {detail}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
+                                    {/* Supporting Text (for Plan 3) */}
+                                    {plan.supportingText && (
+                                        <div className="mb-6 p-4 rounded-xl bg-primary/5 dark:bg-white/5 border border-primary/10 dark:border-white/10">
+                                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+                                                {plan.supportingText}
+                                            </p>
                                         </div>
                                     )}
 
                                     {/* Not Included */}
-                                    {plan.notIncluded && (
-                                        <div className="mb-6 mt-[15px]">
+                                    {plan.notIncluded && plan.notIncluded.length > 0 && plan.notIncluded[0] !== '-' && (
+                                        <div className="mb-6">
                                             <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>
                                                 {t.pricingPage.plans.notIncluded}:
                                             </p>
@@ -197,20 +166,39 @@ export function PricingClient() {
                                         </div>
                                     )}
 
+                                    {/* Important Note (for Plan 2) */}
+                                    {plan.importantNote && (
+                                        <div className="mb-6">
+                                            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${plan.highlighted ? 'text-white/60' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                {t.pricingPage.plans.importantNoteLabel}
+                                            </p>
+                                            <p className={`text-sm font-black ${plan.highlighted ? 'text-white' : 'text-slate-800 dark:text-slate-200'}`}>
+                                                {plan.importantNote}
+                                            </p>
+                                        </div>
+                                    )}
+
                                     {/* Best For */}
-                                    <div className={`mb-6 text-center py-3 px-[6px] rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-white/5'}`}>
-                                        <p className={`text-xs ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>{t.pricingPage.plans.bestForLabel}</p>
+                                    <div className={`mb-6 text-center py-3 px-4 rounded-xl ${plan.highlighted ? 'bg-white/10' : 'bg-[#f4f6fa] dark:bg-white/5'}`}>
+                                        <p className={`text-xs mb-1 ${plan.highlighted ? 'text-white/60' : 'text-[#616f89] dark:text-gray-500'}`}>{t.pricingPage.plans.bestForLabel}</p>
                                         <p className={`text-sm font-bold ${plan.highlighted ? 'text-white' : 'text-[#111318] dark:text-white'}`} dangerouslySetInnerHTML={{ __html: plan.bestFor }} />
                                     </div>
 
-                                    <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="block mt-auto">
-                                        <button className={`w-full py-3 rounded-xl font-bold transition-all ${plan.highlighted
-                                            ? 'bg-white text-primary hover:bg-gray-100 shadow-lg'
-                                            : 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/20'
-                                            }`}>
-                                            {plan.cta}
-                                        </button>
-                                    </Link>
+                                    <div className="mt-auto">
+                                        <Link href={language === 'tr' ? '/tr/giris' : '/login'} className="block">
+                                            <button className={`w-full py-4 rounded-xl font-black text-lg transition-all ${plan.highlighted
+                                                ? 'bg-white text-primary hover:bg-gray-100 shadow-xl'
+                                                : 'bg-primary text-white hover:bg-primary-dark shadow-xl shadow-primary/20'
+                                                }`}>
+                                                {plan.cta}
+                                            </button>
+                                        </Link>
+                                        {plan.ctaSubtext && (
+                                            <p className="text-center text-[11px] text-slate-500 dark:text-slate-400 mt-2 leading-tight">
+                                                {plan.ctaSubtext}
+                                            </p>
+                                        )}
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>
@@ -234,22 +222,37 @@ export function PricingClient() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                                    className="bg-white dark:bg-[#18181b] rounded-2xl p-6 border border-[#e5e7eb] dark:border-[#27272a]"
+                                    className="bg-white dark:bg-[#18181b] rounded-2xl border border-[#e5e7eb] dark:border-[#27272a] overflow-hidden"
                                 >
-                                    <h4
-                                        className="font-bold text-[#111318] dark:text-white mb-2 flex items-center gap-3 cursor-pointer"
-                                        onClick={() => toggleFaq(index)}
+                                    <button
+                                        onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                                        className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-[#f8fafc] dark:hover:bg-[#27272a]/50 transition-colors"
+                                        aria-expanded={openFaqIndex === index}
+                                        aria-controls={`pricing-faq-content-${index}`}
+                                        id={`pricing-faq-header-${index}`}
                                     >
-                                        <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                            <span className={`material-symbols-outlined transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
-                                                expand_more
+                                        <div className="flex items-center gap-3 flex-1">
+                                            <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                                <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>help</span>
                                             </span>
+                                            <h3 className="font-bold text-[#111318] dark:text-white">{faq.q}</h3>
+                                        </div>
+                                        <span className={`material-symbols-outlined transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-primary dark:text-green-500' : 'text-[#616f89] dark:text-green-500'}`}>
+                                            expand_more
                                         </span>
-                                        {faq.q}
-                                    </h4>
-                                    {openFaqIndex === index && (
-                                        <p className="text-[#616f89] dark:text-gray-400 pl-11 mt-2">{faq.a}</p>
-                                    )}
+                                    </button>
+
+                                    <div
+                                        className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === index ? 'max-h-96' : 'max-h-0'}`}
+                                        id={`pricing-faq-content-${index}`}
+                                        role="region"
+                                        aria-labelledby={`pricing-faq-header-${index}`}
+                                        aria-hidden={openFaqIndex !== index}
+                                    >
+                                        <div className="px-6 pb-6">
+                                            <p className="text-[#616f89] dark:text-gray-400 pl-11">{faq.a}</p>
+                                        </div>
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>

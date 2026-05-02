@@ -282,7 +282,7 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Gerçek Onaylı Nakış",
-                titleLine1: "Tasarımınızı sayısallaştırıp seçtiğiniz <span class=\"text-black dark:text-black\">Tajima</span> veya <span class=\"text-black dark:text-black\">Barudan</span> makinede diktirip üretime hazır hale getiriyoruz.",
+                titleLine1: "Tasarımınızı sayısallaştırıp seçtiğiniz <span class=\"text-black dark:text-blue-400\">Tajima</span> veya <span class=\"text-black dark:text-blue-400\">Barudan</span> makinede diktirip üretime hazır hale getiriyoruz.",
                 titleLine2: "",
                 description: "Tasarımınızı, seri üretime geçmeden önce onaylayabilmeniz için gerçek üretim makinelerinde dikiyoruz.",
                 subText: "Üretim sınıfı Tajima ve Barudan makinelerinde işlenir. Render yok. Simülasyon yok. Sadece gerçek dikişli örnekler.",
@@ -291,7 +291,39 @@ export const translations = {
                 labBadge: "Gerçek Nakış Laboratuvarı",
                 readyBadge: "Üretime Hazır",
                 precisionBadge: "Hassasiyet",
-                stitchedReality: "Dikişli Gerçeklik"
+                stitchedReality: "Dikişli Gerçeklik",
+                visual: {
+                    topHeadline: "Tüm fiyatlara gerçek dikişli numuneler dahildir. Mockup yok.",
+                    newDigitizing: "YENİ DİJİTALLEŞTİRME",
+                    price1: "$20",
+                    upToStitches: "(4.000 dikişe kadar)",
+                    nextTier: "$25 (4.000–7.000 dikiş)",
+                    extraStitches: "+$1 / 7.000 dikiş sonrası her 1.000 dikiş",
+                    machineInfo: "Her tasarım gerçek <strong>Tajima</strong> veya <strong>Barudan</strong> makinelerde dikilir",
+                    includedInPrice: "Fiyata dahildir. Ekstra ücret yok.",
+                    realProof: "Gerçek dikişli kanıt",
+                    approvalCards: "Onay kartları dahil",
+                    haveDst: "DST dosyanız mı var?",
+                    price2: "$10",
+                    stitchTest: "Dikiş\nTesti",
+                    showReal: "Dosyanız gerçek bir makinede böyle çalışır",
+                    realResults: "GERÇEK DİKİŞ SONUÇLARI",
+                    notMockup: "(gerçek çıktı, mockup değil)",
+                    before: "Önce",
+                    after: "Sonra",
+                    distortedShape: "Bozuk şekil",
+                    unevenEdges: "Düzensiz kenarlar",
+                    poorFlow: "Kötü dikiş akışı",
+                    cleanShape: "Temiz şekil",
+                    sharpBorders: "Keskin kenarlar",
+                    smoothFlow: "Pürüzsüz dikiş akışı",
+                    productionStitch: "Dosyanız üretimde böyle dikilir",
+                    optimizedOn: "Tajima'da optimize edilip test dikildi",
+                    notStitchingRight: "Doğru dikilmiyor mu?",
+                    fixAndRestitch: "+$10 Düzeltme & Yeniden Dikiş",
+                    bottomTagline1: "Otomatik dijitalleştirme yok. Varsayılan fontlar yok. Her tasarım gerçek üretim için elle hazırlanır.",
+                    bottomTagline2: "Tasarımınızın nasıl dikileceğini tahmin etmeyi bırakın. Üretimden önce gerçek sonucu görün."
+                }
             },
             intro: {
                 title: "Üreticiler ve Giyim Markaları İçin Özel Bir Hizmet",
@@ -508,69 +540,77 @@ export const translations = {
             hero: {
                 badge: "Fiyatlandırma",
                 title: "Şeffaf, Basit, Doğru Fiyat",
-                description: "Tahmini yok, sürpriz yok. Dikişli onay örnekleri için net, basit fiyatlandırma."
+                description: "Tahmin yok, sürpriz yok. Gerçek dikişli onay örnekleri için net, basit fiyatlandırma."
             },
             plans: {
                 plan1: {
-                    name: "Onay Örneği",
-                    description: "İlk test veya hızlı kontrol",
+                    name: "Dikiş Testi (Stitch Test)",
+                    price: "$10",
+                    description: "Dosyanızın gerçek bir makinede nasıl çalıştığını görün",
                     features: [
-                        "Nakış dosyanızı (DST / EMB / PES) yüklersiniz",
-                        "<strong>Bize ulaştığı şekilde</strong> dikiyoruz (ön düzenleme yok)",
-                        "Gerçek dikiş fotoğrafı + <strong>Onay Kartı</strong> teslim edilir"
+                        "Nakış dosyanızı (DST / EMB / PES) yükleyin",
+                        "Dosyanızı ulaştığı haliyle dikiyoruz (ön düzenleme yok)",
+                        "Gerçek dikişli kanıt teslim edilir (mockup yok)",
+                        "Onay Kartı dahildir"
                     ],
                     notIncluded: ["DST düzenleme / temizleme"],
-                    bestFor: "İlk test veya hızlı kontrol için",
-                    cta: "Sipariş Başlat"
+                    bestFor: "İlk test / hızlı kontrol için",
+                    cta: "Dikiş Testini Başlat"
                 },
                 plan2: {
-                    name: "DST Düzeltme + Onay Örneği",
-                    priceNote: "+$10 yükseltme ($25 ödendiyse)",
-                    description: "İnceleme sonrası düzenleme gerektirebilecek tasarımlar için",
+                    name: "Düzeltme & Yeniden Dikiş (Fix & Re-Stitch)",
+                    price: "+$10",
+                    description: "Dosyanızı üretime tam hazır hale getirmek için optimize ediyoruz",
                     features: [
-                        "Nakış dosyanızı (DST / EMB / PES) yüklersiniz",
-                        "Sadece <strong>küçük düzeltmeler</strong> yapıyoruz (yoğunluk, çekme telafisi, temizleme, overlok dikişleri vb.) <br /><i>(Tamamen yeniden dijitalleştirme değil)</i>",
-                        "Düzenlemeden sonra <strong>yeniden dikiyoruz</strong>",
-                        "Güncellenmiş dikiş fotoğrafı + <strong>Güncellenmiş Onay Kartı</strong> teslim edilir"
+                        "Nakış dosyanızı (DST / EMB / PES) yükleyin",
+                        "Tam dosya optimizasyonu (yoğunluk, çekme telafisi, temizleme vb.)",
+                        "Tasarımı üretime hazır hale getiriyoruz",
+                        "Düzenlemeden sonra yeniden dikiyoruz",
+                        "Güncellenmiş dikişli kanıt teslim edilir (mockup yok)",
+                        "Güncellenmiş Onay Kartı dahildir"
                     ],
-                    notIncluded: ["Sıfırdan profesyonel dijitalleştirme (DST)"],
-                    bestFor: "İlk incelemeden sonra ayarlama gerektiren tasarımlar",
-                    cta: "Sipariş Başlat",
-                    popular: "Tavsiye Edilen"
+                    notIncluded: ["Sıfırdan dijitalleştirme (yeni DST oluşturma)"],
+                    importantNote: "Önce Dikiş Testi ($10) gerektirir",
+                    bestFor: "Düzgün dikilmeyen veya üretim ayarı gerektiren dosyalar",
+                    cta: "Dosyamı Düzelt"
                 },
                 plan3: {
-                    name: "Yeni Dijitalleştirme + Onay Örneği",
-                    description: "Vuruş sayısına göre özel fiyatlandırma",
-                    howItCalculated: "Simple pricing by stitch count",
-                    calculationDetails: [
-                        "Up to 7,000 stitches → $50 flat",
-                        "7,001–30,000 stitches → +$3 per 1,000 stitches",
-                        "30,000+ stitches → $155 flat",
-                        "We calculate the stitch count for you and apply this pricing — no surprises."
-                    ],
+                    name: "Yeni Dijitalleştirme + Dikiş",
+                    price: "20$'dan başlayan fiyatlarla",
+                    description: "Tasarımınızı dijitalleştirip gerçek makinede dikiyoruz",
                     features: [
-                        "Dilediğiniz formatta (AI, PDF, JPG vb.) tasarım yükleyin",
-                        "Vuruş sayısına göre size özel fiyat teklifi. <i>(Göndereceğiniz tasarıma göre vuruş adedi hesaplanarak size fiyat teklifi yapılır)</i>",
-                        "Sıfırdan profesyonel dijitalleştirme (DST)",
-                        "Gerçek makinede dikiş numunesi ve Onay Kartı dahildir"
+                        "Tasarımınızı dilediğiniz formatta yükleyin (AI, PDF, JPG vb.)",
+                        "Sıfırdan profesyonel DST dijitalleştirme",
+                        "Gerçek dikişli numune dahildir (mockup yok)",
+                        "Onay Kartı dahildir",
+                        "Üretime hazır teslim edilir",
+                        "Her tasarım gerçek Tajima veya Barudan makinede dikilir (fiyata dahildir)",
+                        "Basit, şeffaf fiyatlandırma:",
+                        "20$ (4.000 dikişe kadar)",
+                        "25$ (4.000–7.000 dikiş)",
+                        "+1$ / 7.000 dikiş sonrası her 1.000 dikiş"
                     ],
-                    bestFor: "Elinizde DST dosyası yoksa veya<br>yeni bir tasarım dikilecekse",
-                    cta: "Fiyat Teklifi Al"
+                    notIncluded: ["-"],
+                    supportingText: "Dikiş sayısını sizin için hesaplıyor ve bu fiyatlandırmayı uyguluyoruz.\nTahmin yok. Sürpriz yok.",
+                    bestFor: "DST dosyanız yoksa veya yeni bir tasarım gerekiyorsa",
+                    cta: "Dikiş Sayısını Hesapla",
+                    ctaSubtext: "Tasarımınızı yükleyin. Dikiş sayısını ve fiyatı sizin için hesaplayalım."
                 },
                 included: "Dahil",
                 notIncluded: "Dahil Değil",
-                bestForLabel: "Kimler için:"
+                bestForLabel: "Kimler için:",
+                importantNoteLabel: "Önemli Not:"
             },
             faq: {
                 title: "Sıkça Sorulan Sorular",
                 q1: "Hangi dosya formatlarını kabul ediyorsunuz?",
-                a1: "Onay Örneği ve DST Düzeltme için mevcut DST dosyanıza ihtiyacımız var. Tam Dijitalleştirme için AI, PDF, PNG, JPG ve diğer yaygın görüntü formatlarını kabul ediyoruz.",
+                a1: "Dikiş Testi (Stitch Test) ve Dosya Düzeltme için mevcut DST, EMB veya PES dosyanıza ihtiyacımız var. Yeni Dijitalleştirme için AI, PDF, PNG, JPG ve diğer yaygın görüntü formatlarını kabul ediyoruz.",
                 q2: "'Onay Kartı' nedir?",
-                a2: "Tasarımınızı gerçek bir Tajima nakış makinesinde çalıştırıp, seri üretime geçmeden önce onaylamanız için ölçümler, renk kodları ve dikiş detaylarıyla yüksek çözünürlüklü bir tarama gönderiyoruz.",
-                q3: "$25'ten $35 pakete yükseltme yapabilir miyim?",
-                a3: "Evet! Onay Örneği ($25) ile başladıysanız ve düzenlemeye ihtiyacınız varsa, sadece $10 daha ödeyerek DST Düzeltme paketine yükseltebilirsiniz.",
+                a2: "Tasarımınızı gerçek bir Tajima veya Barudan makinede dikip; ölçümler, renk kodları ve dikiş detaylarıyla yüksek çözünürlüklü bir dikiş kanıtı gönderiyoruz. Bu, seri üretime geçmeden önce hatasız bir sonuç almanızı sağlar.",
+                q3: "Dikiş Testinden Dosya Düzeltme paketine geçebilir miyim?",
+                a3: "Evet! Dikiş Testi ($10) ile başladıysanız ve dosyanızın optimize edilmesi gerekiyorsa, sadece $10 daha ödeyerek Fix & Re-Stitch paketine yükseltebilirsiniz.",
                 q4: "Ne kadar sürer?",
-                a4: "Standart siparişler 24-48 saat içinde tamamlanır. Hızlandırılmış teslim için bizimle iletişime geçebilirsiniz.",
+                a4: "Standart siparişler genellikle 24 saat içinde tamamlanır. Çok karmaşık tasarımlar veya yüksek hacimli işler 48 saate kadar sürebilir.",
                 customQuoteTitle: "Özel Bir Teklif Mi Gerekiyor?",
                 customQuoteDesc: "Yüksek hacim, çoklu tasarımlar veya özel gereksinimler için bize ulaşın.",
                 contactUs: "Bize Ulaşın"
@@ -959,7 +999,7 @@ export const translations = {
         landing: {
             hero: {
                 badge: "Real Approval Stitch",
-                titleLine1: "We digitize your design, stitch it on your chosen <span class=\"text-black dark:text-black\">Tajima</span> or <span class=\"text-black dark:text-black\">Barudan</span> machine, and deliver it ready for production.",
+                titleLine1: "We digitize your design, stitch it on your chosen <span class=\"text-black dark:text-blue-400\">Tajima</span> or <span class=\"text-black dark:text-blue-400\">Barudan</span> machine, and deliver it ready for production.",
                 titleLine2: "",
                 description: "Every embroidery file is created, tested on your selected machine, and delivered with stitched proof and approval-ready documentation.",
                 subText: "Each order includes approval cards for your client and detailed production cards for your operator.",
@@ -968,7 +1008,39 @@ export const translations = {
                 labBadge: "Real Stitch Lab",
                 readyBadge: "Production Ready",
                 precisionBadge: "Precision",
-                stitchedReality: "Stitched Reality"
+                stitchedReality: "Stitched Reality",
+                visual: {
+                    topHeadline: "All prices include real stitched samples. No mockups.",
+                    newDigitizing: "NEW DIGITIZING",
+                    price1: "$20",
+                    upToStitches: "(up to 4,000 stitches)",
+                    nextTier: "$25 (4,000–7,000 stitches)",
+                    extraStitches: "+$1 per 1,000 stitches after 7,000",
+                    machineInfo: "Every design is stitched on real <strong>Tajima</strong> or <strong>Barudan</strong> machines",
+                    includedInPrice: "Included in the price. No extra cost.",
+                    realProof: "Real stitched proof",
+                    approvalCards: "Approval cards included",
+                    haveDst: "Have a DST file?",
+                    price2: "$10",
+                    stitchTest: "Stitch\nTest",
+                    showReal: "This is how your file runs on a real machine",
+                    realResults: "REAL STITCH RESULTS",
+                    notMockup: "(actual output, not a mockup)",
+                    before: "Before",
+                    after: "After",
+                    distortedShape: "Distorted shape",
+                    unevenEdges: "Uneven edges",
+                    poorFlow: "Poor stitch flow",
+                    cleanShape: "Clean shape",
+                    sharpBorders: "Sharp borders",
+                    smoothFlow: "Smooth stitch flow",
+                    productionStitch: "This is how your file actually stitches in production",
+                    optimizedOn: "Optimized and test stitched on Tajima",
+                    notStitchingRight: "Not stitching right?",
+                    fixAndRestitch: "+$10 Fix & Re-stitch",
+                    bottomTagline1: "No auto-digitizing. No default fonts. Every design is manually prepared for real production.",
+                    bottomTagline2: "Stop guessing how your design will stitch. See the real result before production."
+                }
             },
             intro: {
                 title: "A Specialized Service for Manufacturers and Apparel Brands",
@@ -1185,70 +1257,78 @@ export const translations = {
         pricingPage: {
             hero: {
                 badge: "Pricing",
-                title: "Transparency. Simplicity. Real Value.",
-                description: "No estimates, no surprises. Clear, simple pricing for stitched approval samples."
+                title: "Transparent, Simple, Accurate Pricing",
+                description: "No estimates. No surprises. Clear, simple pricing for real stitched samples."
             },
             plans: {
                 plan1: {
-                    name: "Approval Sample",
-                    description: "First test or quick check",
+                    name: "Stitch Test",
+                    price: "$10",
+                    description: "See how your file actually runs on a real machine",
                     features: [
                         "Upload your embroidery file (DST / EMB / PES)",
-                        "We stitch it <strong>exactly as provided</strong> (no pre-editing)",
-                        "Real stitched photo + <strong>Approval Card</strong> delivered"
+                        "We stitch it exactly as provided (no pre-editing)",
+                        "Real stitched proof delivered (no mockups)",
+                        "Approval Card included"
                     ],
                     notIncluded: ["DST editing / cleanup"],
                     bestFor: "First test / quick check",
-                    cta: "Start Order"
+                    cta: "Start Stitch Test"
                 },
                 plan2: {
-                    name: "Fix Your DST + Approval Sample",
-                    priceNote: "+$10 upgrade if $25 already paid",
-                    description: "Designs that may require adjustments after review",
+                    name: "Fix & Re-Stitch",
+                    price: "+$10",
+                    description: "We optimize your file to be fully production-ready",
                     features: [
                         "Upload your embroidery file (DST / EMB / PES)",
-                        "We do <strong>small fixes only</strong> (density, pull comp, trims, lock stitches, etc.) <br /><i>(No full re-digitizing)</i>",
-                        "We <strong>re-stitch after editing</strong>",
-                        "Updated stitched photo + <strong>Updated Approval Card</strong> delivered"
+                        "Full file optimization (density, pull comp, trims, sequencing, etc.)",
+                        "We make the design production-ready",
+                        "We re-stitch after editing",
+                        "Updated stitched proof delivered (no mockups)",
+                        "Updated Approval Card included"
                     ],
-                    notIncluded: ["Professional digitizing from scratch (DST)"],
-                    bestFor: "Designs that need adjustments after the first review",
-                    cta: "Start Order",
-                    popular: "Recommended"
+                    notIncluded: ["Digitizing from scratch (new DST creation)"],
+                    importantNote: "Requires Stitch Test first ($10)",
+                    bestFor: "Files that don’t stitch correctly or need production-level adjustments",
+                    cta: "Fix My File"
                 },
                 plan3: {
-                    name: "New Digitizing + Approval Sample",
-                    description: "Custom quote based on stitch count",
-                    howItCalculated: "Simple pricing by stitch count",
-                    calculationDetails: [
-                        "Up to 7,000 stitches → $50 flat",
-                        "7,001–30,000 stitches → +$3 per 1,000 stitches",
-                        "30,000+ stitches → $155 flat",
-                        "We calculate the stitch count for you and apply this pricing — no surprises."
-                    ],
+                    name: "New Digitizing + Stitch",
+                    price: "From $20",
+                    description: "We digitize your design and stitch it on a real machine",
                     features: [
-                        "Upload artwork in any format (AI, PDF, JPG, etc.)",
-                        "Get a custom quote based on stitch count. <i>(We calculate the stitch count based on your design and provide a quote)</i>",
+                        "Upload your artwork in any format (AI, PDF, JPG, etc.)",
                         "Professional DST digitizing from scratch",
-                        "Real machine stitch sample and Approval Card included"
+                        "Real stitched sample included (no mockups)",
+                        "Approval Card included",
+                        "Delivered production-ready",
+                        "Every design is stitched on a real Tajima or Barudan machine (included in the price)",
+                        "Simple, transparent pricing:",
+                        "$20 (up to 4,000 stitches)",
+                        "$25 (4,000–7,000 stitches)",
+                        "+$1 per 1,000 stitches after 7,000"
                     ],
-                    bestFor: "When you don't have a DST file or starting a new design",
-                    cta: "Get Quote"
+                    notIncluded: ["-"],
+                    supportingText: "We calculate the stitch count for you and apply this pricing.\nNo estimates. No surprises.",
+                    bestFor: "When you don’t have a DST file or need a new design",
+                    cta: "Calculate Stitch Count",
+                    ctaSubtext: "Upload your design. We calculate stitches and price for you."
                 },
                 included: "Included",
                 notIncluded: "Not Included",
-                bestForLabel: "Best for:"
+                bestForLabel: "Best for:",
+                importantNoteLabel: "Important Note:"
             },
             faq: {
                 title: "Frequently Asked Questions",
-                q1: "What file formats do you accept?",
-                a1: "For Approval Sample and Fix Your DST, we need your existing DST file. For Full Digitizing, we accept AI, PDF, PNG, JPG and other common image formats.",
+                q1: "Which file formats do you accept?",
+                a1: "For Stitch Test and Fix & Re-Stitch, we need your existing DST, EMB, or PES files. For New Digitizing, we accept AI, PDF, PNG, JPG, and other common image formats.",
                 q2: "What is an 'Approval Card'?",
-                a2: "We run your design on an actual Tajima embroidery machine and send you a high-resolution scan with measurements, color codes, and stitch details so you can approve it before mass production.",
-                q3: "Can I upgrade from $25 to $35 package?",
-                a3: "Yes! If you started with Approval Sample ($25) and need edits, you can upgrade to the Fix Your DST package for just $10 more.",
+                a2: "We stitch your design on a real Tajima or Barudan machine and send a high-resolution stitched proof with measurements, color codes, and stitch details. This ensures zero errors before you start production.",
+                q3: "Can I upgrade from a Stitch Test to a Fix & Re-Stitch?",
+                a3: "Yes! If you started with a Stitch Test ($10) and your file needs optimization, you can upgrade to Fix & Re-Stitch by paying just $10 more.",
                 q4: "How long does it take?",
-                a4: "Standard orders are completed within 24-48 hours. Rush orders can be arranged, contact us for expedited turnaround.",
+                a4: "Standard orders are usually completed within 24 hours. Very complex designs or high-volume orders may take up to 48 hours.",
                 customQuoteTitle: "Need a Custom Quote?",
                 customQuoteDesc: "For high volume, multiple designs or special requirements, reach out to us.",
                 contactUs: "Contact Us"

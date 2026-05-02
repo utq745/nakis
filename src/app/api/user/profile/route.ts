@@ -18,7 +18,7 @@ const profileSchema = z.object({
 export async function GET() {
     try {
         const session = await auth();
-        if (!session?.user) {
+        if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -40,7 +40,8 @@ export async function GET() {
         });
 
         return NextResponse.json(user);
-    } catch {
+    } catch (error) {
+        console.error("Profile fetch error:", error);
         return NextResponse.json(
             { error: "Failed to fetch profile" },
             { status: 500 }

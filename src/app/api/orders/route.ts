@@ -123,8 +123,8 @@ export async function POST(request: Request) {
 
         // Determine price based on service type (fixed prices)
         const SERVICE_PRICES: Record<string, number> = {
-            "Approval Sample (Existing DST)": 25,
-            "Fix Your DST + Sample": 35,
+            "Stitch Test (Existing DST)": 10,
+            "Fix & Re-Stitch + Sample": 20,
             "New Digitizing + Sample": 0, // Package 3: Price will be determined by Admin
         };
         const orderPrice = SERVICE_PRICES[validatedData.serviceType || ""] || 0;

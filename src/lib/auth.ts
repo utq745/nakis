@@ -164,7 +164,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
 
             if (token && session.user) {
-                session.user.id = token.id as string;
+                session.user.id = (token.id || token.sub) as string;
                 session.user.role = token.role as Role;
                 session.user.image = token.image as string | null;
                 if (token.name) session.user.name = token.name as string;

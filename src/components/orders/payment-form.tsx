@@ -882,7 +882,7 @@ export function PaymentForm({ orderId, orderTitle, price, locale, initialBilling
                             </div>
 
                             {/* Revision Fee - Only for Package 1 */}
-                            {hasRevision && serviceType === "Approval Sample (Existing DST)" && (
+                            {hasRevision && serviceType === "Stitch Test (Existing DST)" && (
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-amber-500">
                                         {locale === "tr" ? "Revizyon Ücreti" : "Revision Fee"}

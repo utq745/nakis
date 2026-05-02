@@ -366,9 +366,9 @@ export default function NewOrderPage() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "Approval Sample (Existing DST)", label: "Approval Sample (Existing DST)", price: "$25", desc: "No structural edits. Only machine-level adjustments if needed.", isQuote: false, upgradeNote: "If edits are needed after first stitch, you can upgrade to Fix Your DST for +$10." },
-                                { id: "Fix Your DST + Sample", label: "Fix Your DST + Sample", price: "$35", desc: "Minor edits (density, trims, pull comp.) + re-stitch included.", isQuote: false },
-                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "Get Quote", desc: "Quoted after review (complexity + stitch count).", isQuote: true }
+                                { id: "Stitch Test (Existing DST)", label: "Stitch Test (Existing DST)", price: "$10", desc: "We stitch your file exactly as provided. No edits. Real machine output.", isQuote: false, upgradeNote: "If your file needs optimization after testing, upgrade to Fix & Re-Stitch for +$10." },
+                                { id: "Fix & Re-Stitch + Sample", label: "Fix & Re-Stitch + Sample", price: "$20", desc: "Full file optimization (density, pull comp, trims, sequencing) + re-stitch included.", isQuote: false },
+                                { id: "New Digitizing + Sample", label: "New Digitizing + Sample", price: "From $20", desc: "We digitize your design from scratch. Price based on stitch count.", isQuote: true }
                             ].map((s) => (
                                 <div
                                     key={s.id}

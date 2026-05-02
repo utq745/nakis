@@ -187,9 +187,11 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
     const wilcomSourceFiles = order.files.filter((f) => f.type === "wilcom_source");
 
     function calculateQuoteFromStitches(count: number): number {
-        const base = 35;
-        const extra = Math.max(0, count - 7000) * 0.003;
-        return Math.round((base + extra) * 100) / 100;
+        // New pricing: $20 (up to 4,000), $25 (4,000-7,000), +$1 per 1,000 above 7,000
+        if (count <= 4000) return 20;
+        if (count <= 7000) return 25;
+        const extraThousands = Math.ceil((count - 7000) / 1000);
+        return 25 + extraThousands;
     }
 
     function handleDeleteFile(fileId: string) {
@@ -1313,13 +1315,19 @@ export function OrderDetailClient({ order, isAdmin }: OrderDetailClientProps) {
                                 <div className="h-px bg-border/50" />
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div className="flex justify-between col-span-2">
-                                        <span className="text-muted-foreground">Sabit Ücret:</span>
-                                        <span className="text-foreground font-medium">$35.00</span>
+                                        <span className="text-muted-foreground">Kademe:</span>
+                                        <span className="text-foreground font-medium">
+                                            {Number(stitchCount) <= 4000
+                                                ? "≤ 4,000 dikiş → $20"
+                                                : Number(stitchCount) <= 7000
+                                                    ? "4,000 – 7,000 dikiş → $25"
+                                                    : "7,000+ dikiş → $25 + ek"}
+                                        </span>
                                     </div>
                                     {Number(stitchCount) > 7000 && (
                                         <div className="flex justify-between col-span-2">
                                             <span className="text-muted-foreground">Ek Ücret:</span>
-                                            <span className="text-amber-400 font-medium">${((Number(stitchCount) - 7000) * 0.003).toFixed(2)}</span>
+                                            <span className="text-amber-400 font-medium">+${Math.ceil((Number(stitchCount) - 7000) / 1000)}.00 ({Math.ceil((Number(stitchCount) - 7000) / 1000)}K × $1)</span>
                                         </div>
                                     )}
                                 </div>

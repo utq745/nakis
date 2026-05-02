@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const dict = getDictionary('tr');
 
     return {
-        title: "Fiyatlandırma Paketleri - 25$'dan Başlayan Fiyatlar | Approval Stitch",
+        title: "Fiyatlandırma Paketleri - 10$'dan Başlayan Fiyatlar | Approval Stitch",
         description: dict.pricingPage.hero.description,
         alternates: {
             canonical: 'https://www.approvalstitch.com/tr/fiyatlandirma',
@@ -29,33 +29,33 @@ export default function PricingPage() {
         "@graph": [
             {
                 "@type": "Product",
-                "name": dict.pricingPage.plans.plan1.name, // Approval
+                "name": "Nakış Dosyası Dikiş Testi",
                 "description": dict.pricingPage.plans.plan1.description,
                 "offers": {
                     "@type": "Offer",
-                    "price": "25",
+                    "price": "10",
                     "priceCurrency": "USD",
                     "availability": "https://schema.org/InStock"
                 }
             },
             {
                 "@type": "Product",
-                "name": dict.pricingPage.plans.plan2.name, // Fix
+                "name": "DST Dosya Düzenleme ve Optimizasyon",
                 "description": dict.pricingPage.plans.plan2.description,
                 "offers": {
                     "@type": "Offer",
-                    "price": "35",
+                    "price": "20",
                     "priceCurrency": "USD",
                     "availability": "https://schema.org/InStock"
                 }
             },
             {
                 "@type": "Product",
-                "name": dict.pricingPage.plans.plan3.name, // Digitizing
+                "name": "Yeni Nakış Desen Tasarımı (Digitizing)",
                 "description": dict.pricingPage.plans.plan3.description,
                 "offers": {
                     "@type": "Offer",
-                    "price": "60",
+                    "price": "20",
                     "priceCurrency": "USD",
                     "availability": "https://schema.org/InStock"
                 }

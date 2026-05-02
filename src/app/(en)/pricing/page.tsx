@@ -3,11 +3,11 @@ import PricingContent from "./pricing-content";
 
 export const metadata: Metadata = {
     title: "Pricing | Transparent Embroidery Digitizing Prices | Approval Stitch",
-    description: "Simple, transparent pricing for embroidery digitizing services. Starting at $25 for stitch approval, $35 for file fixing, $60 for full digitizing.",
-    keywords: ["embroidery digitizing price", "digitizing cost", "stitch approval price", "DST file price", "embroidery pricing", "affordable digitizing"],
+    description: "Simple, transparent pricing for embroidery digitizing services. Starting at $10 for stitch test, +$10 for file optimization, and from $20 for new digitizing.",
+    keywords: ["embroidery digitizing price", "digitizing cost", "stitch test price", "DST file fix", "embroidery verification", "affordable digitizing"],
     openGraph: {
         title: "Pricing | Transparent Embroidery Digitizing Prices",
-        description: "Simple, transparent pricing for embroidery digitizing services. Starting at $25 for stitch approval.",
+        description: "Simple, transparent pricing for embroidery digitizing services. Starting at $10 for a real machine stitch test.",
         type: "website",
         images: [
             {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Pricing | Embroidery Digitizing Prices",
-        description: "Simple, transparent pricing for embroidery digitizing services. Starting at $25.",
+        description: "Simple, transparent pricing for embroidery digitizing services. Starting at $10.",
         images: ["/images/hero/embroidery-hero.webp"],
     },
     alternates: {
@@ -57,8 +57,8 @@ const breadcrumbSchema = {
 const pricingSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "Embroidery Digitizing Services",
-    "description": "Professional embroidery digitizing services with real stitch verification on Tajima machines.",
+    "name": "Embroidery Digitizing & Stitch Test",
+    "description": "Professional embroidery digitizing services with real stitch verification on Tajima and Barudan machines.",
     "brand": {
         "@type": "Brand",
         "name": "Approval Stitch"
@@ -66,29 +66,29 @@ const pricingSchema = {
     "offers": [
         {
             "@type": "Offer",
-            "name": "Real Stitched Approval",
-            "price": "25.00",
+            "name": "Stitch Test (No Editing)",
+            "price": "10.00",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2025-12-31",
+            "priceValidUntil": "2026-12-31",
             "url": "https://www.approvalstitch.com/pricing"
         },
         {
             "@type": "Offer",
-            "name": "Fix & Verify Service",
-            "price": "35.00",
+            "name": "Fix & Re-Stitch",
+            "price": "20.00",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2025-12-31",
+            "priceValidUntil": "2026-12-31",
             "url": "https://www.approvalstitch.com/pricing"
         },
         {
             "@type": "Offer",
-            "name": "Full Master Digitizing",
-            "price": "60.00",
+            "name": "New Digitizing + Stitch",
+            "price": "20.00",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock",
-            "priceValidUntil": "2025-12-31",
+            "priceValidUntil": "2026-12-31",
             "url": "https://www.approvalstitch.com/pricing"
         }
     ],
