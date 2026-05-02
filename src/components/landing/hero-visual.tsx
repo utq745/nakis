@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 
@@ -8,6 +9,11 @@ export function HeroVisual() {
     const { t } = useLanguage();
     const v = t?.landing?.hero?.visual;
     const [lightbox, setLightbox] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     if (!v) return null;
 
@@ -213,9 +219,9 @@ export function HeroVisual() {
             </div>
 
             {/* ─── LIGHTBOX POPUP ─── */}
-            {lightbox && (
+            {mounted && lightbox && createPortal(
                 <div
-                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm cursor-zoom-out animate-[fadeIn_0.15s_ease-out]"
+                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out animate-[fadeIn_0.15s_ease-out]"
                     onClick={() => setLightbox(null)}
                     onKeyDown={(e) => e.key === "Escape" && setLightbox(null)}
                     role="dialog"
@@ -246,7 +252,8 @@ export function HeroVisual() {
                             priority
                         />
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );
