@@ -4,6 +4,7 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motio
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
+import { X, CheckCircle2 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/language-provider";
 
@@ -222,7 +223,7 @@ function HeroBackgroundContent() {
                                     onClick={() => setModalData(null)}
                                     className="absolute top-6 right-6 z-20 size-12 flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20 text-slate-900 dark:text-white backdrop-blur-md transition-all active:scale-95 border border-black/5 dark:border-white/5"
                                 >
-                                    <span className="material-symbols-outlined">close</span>
+                                    <X className="size-6" />
                                 </button>
 
                                 <div className="flex-1 bg-slate-50 dark:bg-slate-950 p-4 md:p-8 flex items-center justify-center min-h-[40vh] md:min-h-0 overflow-hidden">
@@ -245,7 +246,7 @@ function HeroBackgroundContent() {
                                         <ul className="space-y-2">
                                             {t.landing.backgroundCards.features.map((item: string) => (
                                                 <li key={item} className="flex items-center gap-3 text-xs font-bold text-slate-700 dark:text-slate-300">
-                                                    <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+                                                    <CheckCircle2 className="size-4 text-green-500" />
                                                     {item}
                                                 </li>
                                             ))}
