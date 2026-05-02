@@ -99,6 +99,7 @@ export function WhatYouReceive() {
                                         loading={index === 0 ? "eager" : "lazy"}
                                         className="object-cover"
                                         sizes="(max-width: 768px) 100vw, 33vw"
+                                        quality={60}
                                     />
                                 ) : (
                                     <div className="flex flex-col items-center gap-4 text-gray-400 dark:text-white/20">

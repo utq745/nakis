@@ -58,6 +58,7 @@
     "@types/nodemailer": "^7.0.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "baseline-browser-mapping": "^2.10.25",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "sqlite3": "^6.0.1",
