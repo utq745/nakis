@@ -13,7 +13,7 @@ export function HeroVisual() {
 
     return (
         <>
-            <div className="relative w-full max-w-[960px] mx-auto flex flex-col gap-5">
+            <div className="relative w-full max-w-[1040px] mx-auto flex flex-col gap-5">
                 {/* Top Headline */}
                 <h2 className="text-center text-xl sm:text-2xl md:text-[1.7rem] font-black italic text-slate-800 dark:text-white leading-tight tracking-tight">
                     {v.topHeadline}
@@ -169,14 +169,17 @@ export function HeroVisual() {
                                     <div className="bg-white dark:bg-slate-900 p-3">
                                         <p className="text-sm sm:text-base font-black text-slate-800 dark:text-white mb-1.5">{v.after}</p>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-green-500" style={{ fontSize: '14px' }}>check_circle</span> {v.cleanShape}
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <span>{v.cleanShape}</span>
                                             </span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-green-500" style={{ fontSize: '14px' }}>check_circle</span> {v.sharpBorders}
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <span>{v.sharpBorders}</span>
                                             </span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-green-500" style={{ fontSize: '14px' }}>check_circle</span> {v.smoothFlow}
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <span className="material-symbols-outlined text-green-500 shrink-0 mt-0.5" style={{ fontSize: '14px' }}>check_circle</span> 
+                                                <span>{v.smoothFlow}</span>
                                             </span>
                                         </div>
                                     </div>

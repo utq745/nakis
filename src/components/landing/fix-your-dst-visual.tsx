@@ -13,7 +13,7 @@ export function FixYourDstVisual() {
 
     return (
         <>
-            <div className="relative w-full max-w-[600px] mx-auto">
+            <div className="relative w-full max-w-[680px] mx-auto">
                 {/* Unified Card */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-700">
                     <div className="flex flex-col">
@@ -69,14 +69,17 @@ export function FixYourDstVisual() {
                                     <div className="bg-white dark:bg-slate-900 p-4 sm:p-6">
                                         <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">{v.after}</p>
                                         <div className="flex flex-col gap-1.5">
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-center gap-2 leading-tight">
-                                                <span className="material-symbols-outlined text-green-500 font-bold" style={{ fontSize: '18px' }}>check</span> {v.cleanShape}
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
+                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <span>{v.cleanShape}</span>
                                             </span>
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-center gap-2 leading-tight">
-                                                <span className="material-symbols-outlined text-green-500 font-bold" style={{ fontSize: '18px' }}>check</span> {v.sharpBorders}
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
+                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <span>{v.sharpBorders}</span>
                                             </span>
-                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-center gap-2 leading-tight">
-                                                <span className="material-symbols-outlined text-green-500 font-bold" style={{ fontSize: '18px' }}>check</span> {v.smoothFlow}
+                                            <span className="text-[13px] sm:text-[15px] font-bold text-green-600 dark:text-green-400 flex items-start gap-2 leading-tight text-left">
+                                                <span className="material-symbols-outlined text-green-500 font-bold shrink-0 mt-0.5" style={{ fontSize: '18px' }}>check</span> 
+                                                <span>{v.smoothFlow}</span>
                                             </span>
                                         </div>
                                     </div>
