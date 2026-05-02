@@ -20,6 +20,7 @@ export const translations = {
             confirmDelete: "Silmek istediğinize emin misiniz?",
             deleteSuccess: "Dosya silindi",
             notAvailable: "Yok",
+            close: "Kapat",
         },
         notifications: {
             title: "Bildirimler",
@@ -735,6 +736,7 @@ export const translations = {
             confirmDelete: "Are you sure you want to delete?",
             deleteSuccess: "File deleted",
             notAvailable: "N/A",
+            close: "Close",
         },
         notifications: {
             title: "Notifications",
