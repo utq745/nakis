@@ -121,6 +121,17 @@ export function Process() {
                                             if (item.isCorporate) setIsCorporateModalOpen(true);
                                             if (item.isImagePopup) setSelectedImage({ src: item.image, title: item.title });
                                         }}
+                                        role={(item.video || item.isCorporate || item.isImagePopup) ? 'button' : undefined}
+                                        tabIndex={(item.video || item.isCorporate || item.isImagePopup) ? 0 : undefined}
+                                        onKeyDown={(e) => {
+                                            if ((e.key === 'Enter' || e.key === ' ') && (item.video || item.isCorporate || item.isImagePopup)) {
+                                                e.preventDefault();
+                                                if (item.video) setSelectedVideo(item.video);
+                                                if (item.isCorporate) setIsCorporateModalOpen(true);
+                                                if (item.isImagePopup) setSelectedImage({ src: item.image, title: item.title });
+                                            }
+                                        }}
+                                        aria-label={item.title}
                                     >
                                         <Image
                                             src={
@@ -288,6 +299,7 @@ export function Process() {
                             <button
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
+                                aria-label="Close modal"
                             >
                                 <X className="size-7" />
                             </button>

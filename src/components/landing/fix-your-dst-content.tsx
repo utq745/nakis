@@ -235,6 +235,15 @@ export default function FixYourDstClient({
                                     <div
                                         className="relative aspect-[4/3] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden cursor-pointer"
                                         onClick={() => setSelectedImage({ src: block.imageSrc, title: block.title })}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setSelectedImage({ src: block.imageSrc, title: block.title });
+                                            }
+                                        }}
+                                        aria-label={block.title}
                                     >
                                         <Image
                                             src={block.imageSrc}
@@ -532,6 +541,7 @@ export default function FixYourDstClient({
                             <button
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-6 right-6 z-20 size-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-95 border border-white/10"
+                                aria-label="Close modal"
                             >
                                 <X className="size-7" />
                             </button>

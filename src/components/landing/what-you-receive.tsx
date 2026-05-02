@@ -80,6 +80,15 @@ export function WhatYouReceive() {
                                         setSelectedImage({ src: item.image, title: item.title });
                                     }
                                 }}
+                                role={item.isImagePopup ? "button" : undefined}
+                                tabIndex={item.isImagePopup ? 0 : undefined}
+                                onKeyDown={(e) => {
+                                    if ((e.key === 'Enter' || e.key === ' ') && item.isImagePopup) {
+                                        e.preventDefault();
+                                        setSelectedImage({ src: item.image, title: item.title });
+                                    }
+                                }}
+                                aria-label={item.title}
                             >
                                 {item.image ? (
                                     <Image
@@ -153,6 +162,7 @@ export function WhatYouReceive() {
                             <button
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-4 right-4 z-20 size-10 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-xl transition-all active:scale-90"
+                                aria-label="Close modal"
                             >
                                 <X className="size-6" />
                             </button>

@@ -56,6 +56,7 @@ export function HeroVisual() {
                                 type="button"
                                 onClick={() => setLightbox("/images/hero/hero.webp")}
                                 className="relative w-full aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/40 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                aria-label="View enlarged digitizing sample"
                             >
                                 <Image
                                     src="/images/hero/hero.webp"
@@ -142,6 +143,7 @@ export function HeroVisual() {
                                     type="button"
                                     onClick={() => setLightbox("/images/hero/before-after.webp")}
                                     className="relative w-full aspect-[2/1] bg-[#1a1a1a] cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                    aria-label="View enlarged before and after comparison"
                                 >
                                     <Image
                                         src="/images/hero/before-after.webp"
@@ -174,16 +176,16 @@ export function HeroVisual() {
                                     <div className="bg-white dark:bg-slate-900 p-3">
                                         <p className="text-sm sm:text-base font-black text-slate-800 dark:text-white mb-1.5">{v.after}</p>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-800 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.cleanShape}</span>
                                             </span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-800 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.sharpBorders}</span>
                                             </span>
-                                            <span className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 flex items-start gap-1 text-left">
-                                                <CheckCircle2 className="size-3.5 text-green-500 shrink-0 mt-0.5" /> 
+                                            <span className="text-[11px] sm:text-xs font-bold text-green-800 dark:text-green-400 flex items-start gap-1 text-left">
+                                                <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-500 shrink-0 mt-0.5" /> 
                                                 <span>{v.smoothFlow}</span>
                                             </span>
                                         </div>

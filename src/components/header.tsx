@@ -89,6 +89,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 fetchPriority="high"
                                 sizes="256px"
                                 className="object-contain dark:hidden"
+                                unoptimized
                             />
                             <Image
                                 src="/images/approval-stich-logo-w.webp"
@@ -98,6 +99,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                 fetchPriority="high"
                                 sizes="256px"
                                 className="object-contain hidden dark:block"
+                                unoptimized
                             />
                         </div>
                     </Link>
@@ -204,6 +206,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                         fill
                                         sizes="240px"
                                         className="object-contain dark:hidden"
+                                        unoptimized
                                     />
                                     <Image
                                         src="/images/approval-stich-logo-w.webp"
@@ -211,6 +214,7 @@ export function Header({ forceSolid = false, fullWidth = false }: { forceSolid?:
                                         fill
                                         sizes="240px"
                                         className="object-contain hidden dark:block"
+                                        unoptimized
                                     />
                                 </div>
                             </div>
